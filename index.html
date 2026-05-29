@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hanna</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hanna">
+  <meta name="theme-color" content="#ff8fc2">
+  <meta name="description" content="Bem-vinda">
+
+  <!-- Ícones para iOS (Safari não lê o manifest) -->
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="assets/icons/icon-512.png">
+
+  <!-- Ícone genérico para navegadores -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Tela Inicial -->
+<div id="telaInicial">
+  <div class="tela-inicial-bg">
+    <div class="estrelinhas" id="estrelinhas"></div>
+    <div class="initial-card">
+      <div class="title-pixel">HANNA</div>
+      <div class="subtitle-pixel">Bem-vinda</div>
+      <img src="assets/sprites/hanna/hanna.png" alt="Hanna" id="hannaInicial">
+      <button id="btnEntrar" class="btn-principal">
+        <span>✦ Começar ✦</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Tela do Jogo -->
+<div id="telaJogo" style="display:none;">
+
+  <!-- Header fixo -->
+  <header class="game-header">
+    <span class="header-title">HANNA</span>
+    <div id="amizadeContainer">
+      <img src="assets/ui/coracao-1.png" class="coracaoAmizade" id="coracao1">
+      <img src="assets/ui/coracao-1.png" class="coracaoAmizade" id="coracao2">
+      <img src="assets/ui/coracao-1.png" class="coracaoAmizade" id="coracao3">
+      <img src="assets/ui/coracao-1.png" class="coracaoAmizade" id="coracao4">
+      <img src="assets/ui/coracao-1.png" class="coracaoAmizade" id="coracao5">
+    </div>
+  </header>
+
+  <div class="game-scroll">
+
+    <!-- Cenário -->
+    <div id="cenarioHanna">
+
+      <div id="overlayPeriodo"></div>
+
+        <p id="mensagem"></p>
+
+        <div id="zzzContainer" style="display:none;">
+            <span class="zzz z1">Z</span>
+            <span class="zzz z2">Z</span>
+            <span class="zzz z3">Z</span>
+        </div>
+
+        <!-- Banho: overlay dentro do cenário -->
+        <div id="telaBanho">
+            <div class="bolhas">
+                <span class="bolha"></span>
+                <span class="bolha"></span>
+                <span class="bolha"></span>
+                <span class="bolha"></span>
+                <span class="bolha"></span>
+            </div>
+            <img src="assets/sprites/hanna/banho.png" id="hannaBanho">
+        </div>
+        
+      <div class="personagens-wrap">
+
+            <div id="hannaContainer">
+                <div id="hannaFala"></div>
+                <img src="assets/sprites/hanna/neutra.png"
+                alt="Hanna"
+                id="hannaSprite">
+            </div>
+
+            <img src="" id="spriteConjunta" style="display:none;">
+
+            <div id="gatinhaContainer" style="display:none;">
+
+                <div id="gatinhaFala"></div>
+
+                <span id="nomeGatinha"></span>
+
+                <img src="assets/sprites/gatinha/gatinha.png"
+                alt="Gatinha"
+                id="gatinhaSprite">
+
+            </div>
+
+            <img
+              src="assets/events/noite-feliz.png"
+              id="eventoNoite"
+              style="display:none;"
+            >
+
+        </div>
+    </div>
+
+    <!-- Status -->
+    <div class="status-card">
+      <div class="recursos-row">
+        <div class="recurso-chip"><span>🌱</span><span id="sementes">0</span></div>
+        <div class="recurso-chip"><span>🪙</span><span id="moedas">0</span></div>
+      </div>
+
+      <div class="barraContainer">
+        <div class="barraTitulo"><span>Fome</span><span id="fomePorcentagem">100%</span></div>
+        <div class="barra"><div id="barraFome"></div></div>
+      </div>
+
+      <div class="barraContainer">
+        <div class="barraTitulo"><span>Felicidade</span><span id="felicidadePorcentagem">100%</span></div>
+        <div class="barra"><div id="barraFelicidade"></div></div>
+      </div>
+
+      <div class="barraContainer">
+        <div class="barraTitulo"><span>Energia</span><span id="energiaPorcentagem">100%</span></div>
+        <div class="barra"><div id="barraEnergia"></div></div>
+      </div>
+
+      <div class="barraContainer">
+
+        <div class="barraTitulo">
+
+        <span>Higiene</span>
+
+        <span id="higienePorcentagem">100%</span>
+
+        </div>
+
+        <div class="barra">
+
+            <div id="barraHigiene"></div>
+
+                </div>
+
+        </div>
+
+        <div class="barraContainer" id="vinculoContainer" style="display:none;">
+
+          <div class="barraTitulo">
+
+            <span>
+                Vínculo
+              <span id="vinculoTexto">
+                Desconhecidas 🤍
+              </span>
+            </span>
+
+            <span id="vinculoPorcentagem">
+              0%
+            </span>
+
+          </div>
+
+          <div class="barra">
+
+            <div id="barraVinculo"></div>
+
+          </div>
+
+        </div>
+
+    </div>
+
+    <!-- Ações rápidas -->
+    <div class="section-label">✦ Interagir</div>
+    <div class="botoes-grid">
+        <button class="btn-acao btn-rosa" id="btnCarinho">
+
+            <img src="assets/ui/icons/icon-carinho.png" class="iconeBotao">
+
+            <span class="btn-text">Carinho</span>
+
+        </button>
+
+        <button class="btn-acao btn-laranja" id="btnComida">
+
+            <img src="assets/ui/icons/icon-comida.png" class="iconeBotao">
+
+            <span class="btn-text">Comida</span>
+
+        </button>
+
+        <button class="btn-acao btn-amarelo" id="btnDormir">
+
+            <img src="assets/ui/icons/icon-dormir.png" class="iconeBotao">
+
+            <span class="btn-text">Dormir</span>
+
+        </button>
+
+        <button class="btn-acao btn-verde" id="btnAbrirFazenda">
+
+            <img src="assets/ui/icons/icon-fazenda.png" class="iconeBotao">
+
+            <span class="btn-text">Plantar</span>
+
+        </button>
+
+        <button class="btn-acao btn-azul" id="btnBanho">
+
+            <img src="assets/ui/icons/icon-banho.png" class="iconeBotao">
+
+            <span class="btn-text">Banho</span>
+
+        </button>
+
+        <button class="btn-acao btn-games" id="btnMinigames">
+
+            <img src="assets/ui/icons/icon-minigames.png" class="iconeBotao">
+
+            <span class="btn-text">Mini Games</span>
+
+        </button>
+     
+    </div>
+
+  </div><!-- fim game-scroll -->
+</div>
+
+<!-- Bottom Navigatin -->
+
+    <div class="bottomNav" style="display:none;">
+
+        <button class="navItem" id="navHome">
+
+            <img src="assets/ui/icons/icon-home.png" class="iconeNav">
+
+            <p>Home</p>
+
+        </button>
+
+        <button class="navItem" id="navFarm">
+
+            <img src="assets/ui/icons/icon-farm.png" class="iconeNav">
+
+            <p>Fazenda</p>
+
+        </button>
+
+        <button class="navItem" id="navLembretes">
+
+            <img src="assets/ui/icons/icon-reminder.png" class="iconeNav">
+
+            <p>Lembretes</p>
+
+        </button>
+
+        <button class="navItem" id="navLoja">
+
+            <img src="assets/ui/icons/icon-shop.png" class="iconeNav">
+
+            <p>Loja</p>
+
+        </button>
+
+        <button class="navItem" id="navGames">
+
+            <img src="assets/ui/icons/icon-minigames.png" class="iconeNav">
+
+            <p>Games</p>
+
+        </button>
+
+        <button class="navItem" id="navConfig">
+
+            <img src="assets/ui/icons/icon-config.png" class="iconeNav">
+
+            <p>Config</p>
+
+        </button>
+
+    </div>
+
+<!-- Tela Configuração -->
+
+<div id="telaConfig" style="display:none;">
+
+  <div class="tela-secundaria">
+
+    <div class="tela-sec-header">
+
+      <button class="btn-back" id="btnVoltarConfig">‹</button>
+
+      <span class="tela-sec-title">
+        Configurações
+      </span>
+
+    </div>
+
+    <div class="config-container">
+
+      <!-- Aparência -->
+
+      <div class="config-card">
+
+        <h3>Aparência</h3>
+
+        <button class="config-btn" id="btnModoNoturno">
+          Ativar modo noturno
+        </button>
+
+      </div>
+
+      <!-- Dados -->
+
+      <div class="config-card">
+
+        <h3>Dados</h3>
+
+        <button class="config-btn config-danger" id="btnResetar">
+          Resetar progresso
+        </button>
+
+      </div>
+
+      <!-- Carta -->
+
+      <div class="config-card">
+
+        <h3>Recado da Desenvolvedora</h3>
+
+          <button class="config-btn" id="btnCarta">
+            Leia Aqui!
+          </button>
+
+      </div>  
+
+        <div class="config-card">
+
+          <h3>Gatinha Pretinha</h3>
+
+          <input
+            type="text"
+            id="inputNomeGatinha"
+            class="input-cozy"
+            placeholder="Digite o nome dela..."
+            maxlength="16"
+          >
+
+          <button
+            class="config-btn"
+            id="btnSalvarNomeGatinha"
+          >
+            Salvar nome
+          </button>
+
+        </div>
+
+    </div>
+
+  </div>
+
+</div>
+    
+<!-- Tela Loja -->
+
+<!-- Tela Carta -->
+
+<div id="telaCarta" style="display:none;">
+
+  <div class="tela-secundaria carta-bg">
+
+    <div class="tela-sec-header">
+
+      <button class="btn-back" id="btnVoltarCarta">‹</button>
+
+      <span class="tela-sec-title">
+        Uma cartinha 💌
+      </span>
+
+    </div>
+
+    <div class="carta-container">
+
+      <img
+        src="assets/sprites/hanna-gatinha/gatinhas-beijinho.png"
+        class="carta-sprite"
+      >
+
+      <div class="carta-texto">
+
+        <h2>Cozy Aprontamento</h2>
+
+        <p>
+          Como eu sempre ando aprontando, 
+          minha cabeça não para e em meio a
+          uma fala sua no nosso grupo sobre 
+          não querer mais jogar cod e queria
+          jogar outros tipos de jogos, veio a 
+          ideia de criar um jogo só pra você.
+          E assim...
+        </p>
+
+        <p>
+          A Hanna nasceu! A partir de uma vontade de te 
+          presentear nesse dia dos namorados, fazer você 
+          ter um entretenimento, e colocar tudo o que 
+          amamos em um joguinho fofo.
+
+          Espero que você curta muito esse jogo,
+          pois ele foi pensado com muito carinho e
+          aprontamento (que não pode faltar hehe).
+        </p>
+
+        <p>
+          Obrigada por me inspirar, cuidar de mim e me fazer feliz.
+          Eu te amo ♥️
+        </p>
+
+      </div>
+
+      <img
+        src="assets/sprites/hanna-gatinha/gatinhas-abraco.png"
+        class="carta-sprite pequena"
+      >
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Fecha Carta -->
+
+<div id="telaPedido" class="telaEspecial">
+
+      <div class="pedidoCard">
+
+        <div class="pedidoSpriteBox">
+
+          <img
+          src="assets/sprites/hanna-gatinha/pedido.png"
+          id="spritePedido">
+
+        </div>
+
+        <div id="textoPedido">
+
+        </div>
+
+        <div
+        class="pedidoBtns"
+        id="pedidoBtns">
+
+          <button id="btnSimPedido">
+
+            SIM
+
+          </button>
+
+          <button id="btnNaoPedido">
+
+            NÃO
+
+          </button>
+
+        </div>
+
+      </div>
+
+</div>
+
+<div id="telaPedidoReal"
+class="telaEspecial">
+
+  <div class="pedidoCard">
+
+    <div class="pedidoSpriteBox">
+
+      <img
+      src="assets/sprites/hanna-gatinha/felizes.png"
+      id="spritePedidoReal">
+
+    </div>
+
+    <div id="textoPedidoReal">
+
+    </div>
+
+    <div class="pedidoBtns">
+
+      <button
+      id="btnSimReal"
+      style="display:none;"
+      >
+        SIM
+      </button>
+
+      <button
+      id="btnNaoReal"
+      style="display:none;"
+      >
+          NÃO
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div id="telaLoja" style="display:none;">
+
+  <div class="tela-secundaria">
+
+    <div class="tela-sec-header">
+
+      <button class="btn-back" id="btnVoltar">‹</button>
+
+      <span class="tela-sec-title">
+        Lojinha da Hanna
+      </span>
+
+      <div class="saldo-loja">
+        🪙 <span id="saldoLoja">0</span>
+      </div>
+
+    </div>
+
+    <div class="loja-grid">
+
+      <!-- Coleira -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/coleira.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Coleira</h3>
+
+          <p>+10 felicidade</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 50</span>
+
+            <button id="btnUrsinho" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Peixinho -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/peixe.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Peixinho</h3>
+
+          <p>+15 fome</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 30</span>
+
+            <button id="btnMorango" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Sashimi -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/sashimi.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Sashimi</h3>
+
+          <p>+25 fome</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 80</span>
+
+            <button id="btnSashimi" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Novelo -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/novelo.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Novelo</h3>
+
+          <p>+20 felicidade</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 120</span>
+
+            <button id="btnNovelo" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Ratinho -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/ratinho.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Ratinho</h3>
+
+          <p>+25 felicidade</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 180</span>
+
+            <button id="btnRatinho" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Gatinha -->
+      <div class="item-loja item-premium">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/gatinha-preta.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Gatinha Pretinha</h3>
+
+          <p>Uma companheira para a Hanna 💖</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 5.000</span>
+
+            <button id="btnGatinha" class="btn-comprar">
+              Adotar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Atum -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/atum.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Atum Premium</h3>
+
+          <p>+35 fome</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 150</span>
+
+            <button id="btnAtum" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Biscoito -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/biscoito.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Biscoitinho Rosa</h3>
+
+          <p>+10 fome • +10 felicidade</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 90</span>
+
+            <button id="btnBiscoito" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Donut -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/donut.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Donut Felino</h3>
+
+          <p>+20 felicidade</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 110</span>
+
+            <button id="btnDonut" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Varinha -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/varinha.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Varinha Estelar</h3>
+
+          <p>+40 felicidade</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 350</span>
+
+            <button id="btnVarinha" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Ratinho Robô -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/ratinho-robo.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Ratinho Robô</h3>
+
+          <p>+50 felicidade</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 500</span>
+
+            <button id="btnRobo" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Almofada -->
+      <div class="item-loja">
+
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/almofada.png" class="iconeLoja">
+        </div>
+
+        <div class="item-loja-info">
+
+          <h3>Almofada Fofinha</h3>
+
+          <p>+20 energia</p>
+
+          <div class="item-loja-footer">
+
+            <span class="preco-chip">🪙 220</span>
+
+            <button id="btnAlmofada" class="btn-comprar">
+              Comprar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="categoriaLoja">
+
+        ✨ Especiais
+
+      </div>
+
+      <div class="itemLoja especial">
+
+        <img
+        src="assets/ui/buque-anel.png"
+        class="itemEspecialImg">
+
+        <div class="itemEspecialInfo">
+
+          <h3>
+            Pedido Especial
+          </h3>
+
+          <p>
+            Upgrade de Relacionamento Felino
+          </p>
+
+          <span class="precoEspecial">
+            🪙 10.000
+          </span>
+
+          <button id="btnPedidoEspecial">
+
+            Comprar
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+      
+
+<!-- Tela de Lembretes -->
+<div id="telaLembretes" style="display:none;">
+  <div class="tela-lembretes-bg">
+
+    <div class="tela-sec-header lembrete-header">
+      <button class="btn-back btn-back-lembrete" id="btnVoltarLembretes">‹</button>
+      <span class="tela-sec-title lembrete-titulo">Lembretes</span>
+    </div>
+
+    <!-- Hanna mini decorativa -->
+    <div class="lembrete-hanna-deco">
+      <img src="assets/sprites/hanna/contente.png" alt="" class="hanna-deco-img">
+      <div class="fala-deco">Não esqueça de nada! </div>
+    </div>
+
+    <!-- Formulário -->
+    <div class="lembrete-form-card">
+      <div class="form-row">
+        <select id="tipoLembrete" class="input-cozy">
+          <option value="📚">📚 Tarefa</option>
+          <option value="⏰">⏰ Alerta</option>
+          <option value="🎂">🎂 Aniversário</option>
+        </select>
+      </div>
+      <input type="text" id="inputLembrete" class="input-cozy" placeholder="Digite seu lembrete...">
+      <div class="form-row-2">
+        <input type="date" id="dataLembrete" class="input-cozy input-metade">
+        <input type="time" id="horaLembrete" class="input-cozy input-metade">
+      </div>
+      <!-- Recorrência — aparece só para Alerta e Aniversário -->
+      <div class="form-row" id="rowRecorrencia" style="display:none;">
+        <select id="recorrenciaLembrete" class="input-cozy">
+          <option value="nenhuma">🔔 Sem repetição</option>
+          <option value="diario">📅 Diário</option>
+          <option value="semanal">📆 Semanal</option>
+          <option value="mensal">🗓️ Mensal</option>
+          <option value="anual">🎂 Anual</option>
+        </select>
+      </div>
+      <button id="btnSalvarLembrete" class="btn-salvar-lembrete">✦ Salvar lembrete</button>
+    </div>
+
+    <!-- Lista -->
+    <div class="lembrete-lista-titulo">Seus lembretes</div>
+    <div id="listaLembretes"></div>
+
+  </div>
+</div>
+
+<div id="telaFazenda" class="tela-secundaria">
+
+  <div class="topo-fazenda">
+
+    <h1 class="fazenda-titulo">
+        Fazendinha
+    </h1>
+
+    <div class="sementes-chip">
+
+        🌱
+
+        <span id="sementesFazenda">
+            0
+        </span>
+
+    </div>
+
+    <div class="botoes-fazenda">
+
+        <button id="btnPlantar">
+            Plantar
+        </button>
+
+        <button id="btnVoltarFazenda">
+            Voltar
+        </button>
+
+    </div>
+
+</div>
+
+<!-- Fazenda Cozy -->
+
+<div class="fazenda-area">
+
+    <!-- Card da Hanna -->
+
+    <div class="fazenda-card fazenda-card-grande">
+
+        <div class="fazenda-topo-cozy">
+
+            <img
+                src="assets/sprites/hanna/fazenda.png"
+                class="fazenda-hanna-grande"
+            >
+
+            <div class="fazenda-balao" id="balaoFazenda">
+
+                Vamos cuidar da hortinha! 🌱
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Card da Plantação -->
+
+    <div class="fazenda-plantacao-card">
+
+        <div class="titulo-plantacao">
+            🌱 Hortinha da Hanna
+        </div>
+
+        <div id="fazenda">
+
+            <div class="slotPlantacao" data-slot="0">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+            <div class="slotPlantacao" data-slot="1">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+            <div class="slotPlantacao" data-slot="2">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+            <div class="slotPlantacao" data-slot="3">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+            <div class="slotPlantacao" data-slot="4">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+            <div class="slotPlantacao" data-slot="5">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+            <div class="slotPlantacao" data-slot="6">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+            <div class="slotPlantacao" data-slot="7">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+            <div class="slotPlantacao" data-slot="8">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+            <div class="slotPlantacao" data-slot="9">
+                <img src="assets/farm/vazio.png" class="spritePlantacao">
+            </div>
+
+        </div>
+
+    </div>
+  </div>
+</div>  
+
+<!-- Tela Minigames (Menu) -->
+<div id="telaMinigames" style="display:none;">
+  <div class="tela-secundaria">
+
+    <div class="tela-sec-header">
+      <button class="btn-back" id="btnVoltarMinigames">‹</button>
+      <span class="tela-sec-title">Mini Games</span>
+    </div>
+
+    <!-- Hanna animada no topo -->
+    <div class="mg-topo">
+      <img src="assets/sprites/hanna/animada.png" class="mg-hanna-deco" alt="Hanna animada">
+      <div class="mg-fala">Vamos jogar!</div>
+    </div>
+
+    <!-- Cards dos minigames -->
+    <div class="mg-lista">
+
+      <!-- Jogo 1: Memória das Patas -->
+      <div class="mg-card" id="mgCardMemoria">
+        <div class="mg-card-icon">
+          <img src="assets/ui/icons/icon-minigames.png" alt="">
+        </div>
+        <div class="mg-card-info">
+          <div class="mg-card-titulo">Memória das Patas</div>
+          <div class="mg-card-desc">Repita a sequência de patas que a Hanna faz! Quanto mais acertar, mais moedas!</div>
+          <div class="mg-card-recompensa">🪙 5–25 moedas</div>
+        </div>
+        <button class="mg-btn-jogar" data-jogo="memoria">Jogar</button>
+      </div>
+
+      <!-- Jogo 2: Pega Peixe -->
+      <div class="mg-card" id="mgCardPeixe">
+        <div class="mg-card-icon">
+          <img src="assets/ui/icons/icon-comida.png" alt="">
+        </div>
+        <div class="mg-card-info">
+          <div class="mg-card-titulo">Pega Peixe</div>
+          <div class="mg-card-desc">Toque nos peixes antes que escapem! Evite as bombas ou perderá pontos!</div>
+          <div class="mg-card-recompensa">🪙 5–30 moedas</div>
+        </div>
+        <button class="mg-btn-jogar" data-jogo="peixe">Jogar</button>
+      </div>
+
+      <!-- Jogo 3: Adivinhe o Humor -->
+      <div class="mg-card" id="mgCardHumor">
+        <div class="mg-card-icon">
+          <img src="assets/sprites/hanna/curiosa.png" alt="" style="width:48px;image-rendering:pixelated;">
+        </div>
+        <div class="mg-card-info">
+          <div class="mg-card-titulo">Adivinhe o Humor</div>
+          <div class="mg-card-desc">A Hanna mostra uma expressão — você adivinhe o estado dela antes do tempo acabar!</div>
+          <div class="mg-card-recompensa">🪙 8–20 moedas</div>
+        </div>
+        <button class="mg-btn-jogar" data-jogo="humor">Jogar</button>
+      </div>
+
+      <!-- Jogo 4: Reflexo Felino -->
+      <div class="mg-card" id="mgCardReflex">
+        <div class="mg-card-icon">
+          <img src="assets/ui/icons/icon-carinho.png" alt="">
+        </div>
+        <div class="mg-card-info">
+          <div class="mg-card-titulo">Reflexo Felino</div>
+          <div class="mg-card-desc">Toque na Hanna exatamente quando ela piscar! Muito cedo ou tarde e você erra!</div>
+          <div class="mg-card-recompensa">🪙 10–35 moedas</div>
+        </div>
+        <button class="mg-btn-jogar" data-jogo="reflexo">Jogar</button>
+      </div>
+
+        <!-- Jogo 5: Cartinhas da Hanna -->
+        <div class="mg-card" id="mgCardCartinhas">
+            <div class="mg-card-icon">
+                <img src="assets/sprites/hanna/feliz.png"
+                alt="Cartinhas"
+                style="width:44px;image-rendering:pixelated;">
+            </div>
+
+            <div class="mg-card-info">
+                <div class="mg-card-titulo">Cartinhas da Hanna</div>
+
+                <div class="mg-card-desc">
+                    Encontre todos os pares das cartinhas da Hanna!
+                    Três dificuldades com recompensas diferentes.
+                </div>
+
+                <div class="mg-card-recompensa">
+                    🪙 5–50 moedas
+                </div>
+            </div>
+
+            <button class="mg-btn-jogar"
+                    data-jogo="cartinhas">
+                Jogar
+            </button>
+        </div>
+
+        <!-- Jogo 6: Operação Sardinha -->
+        <div class="mg-card" id="mgCardSardinha">
+            <div class="mg-card-icon">
+
+              <img
+              src="assets/ui/icons/icon-sardinha.png"
+              class="mg-sprite-icon">
+
+          </div>
+            <div class="mg-card-info">
+                <div class="mg-card-titulo">Operação Sardinha 🔫</div>
+                <div class="mg-card-desc">
+                    Ratos invasores estão atacando a despensa! Escolha sua agente e elimine as ondas antes que roubem todas as sardinhas!
+                </div>
+                <div class="mg-card-recompensa">🪙 10–50 moedas</div>
+            </div>
+            <button class="mg-btn-jogar" data-jogo="sardinha">Jogar</button>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Arena do Jogo (tela compartilhada pelos 4 jogos) -->
+<div id="telaArena" style="display:none;">
+
+  <!-- Header -->
+  <div class="arena-header">
+    <button class="btn-back" id="btnVoltarArena">‹</button>
+    <span class="arena-titulo" id="arenaTitulo">Mini Game</span>
+    <div class="arena-moedas-live">🪙 <span id="arenaScore">0</span></div>
+  </div>
+
+  <!-- Área do jogo (cada jogo renderiza aqui) -->
+  <div id="arenaConteudo"></div>
+
+</div>
+
+<!-- Trilhas Sonoras -->
+
+<!-- Tela Inicial -->
+<audio id="musicaMenu" class="trilha" src="assets/music/menu.mp3" loop preload="none"></audio>
+
+<!-- Tela principal do jogo (casa da Hanna) -->
+<audio id="musicaCasa" class="trilha" src="assets/music/casa.mp3" loop preload="none"></audio>
+
+<!-- Fazenda -->
+<audio id="musicaFazenda" class="trilha" src="assets/music/fazenda.mp3" loop preload="none"></audio>
+
+<!-- Loja -->
+<audio id="musicaLoja" class="trilha" src="assets/music/loja.mp3" loop preload="none"></audio>
+
+<!-- Lembretes -->
+<audio id="musicaLembretes" class="trilha" src="assets/music/lembretes.mp3" loop preload="none"></audio>
+
+<!-- Menu de Minigames -->
+<audio id="musicaMinigames" class="trilha" src="assets/music/minigames-menu.mp3" loop preload="none"></audio>
+
+<!-- Arena (dentro dos minigames em jogo) -->
+<audio id="musicaArena" class="trilha" src="assets/music/arena.mp3" loop preload="none"></audio>
+
+<!-- Pedido Especial -->
+<audio id="musicaPedido" class="trilha" src="assets/music/pedido.mp3" loop preload="none"></audio>
+
+<!-- Sons da Gatinha -->
+<audio id="somMeow1"      src="assets/music/cat/meow1.mp3"      preload="none"></audio>
+<audio id="somMeow2"      src="assets/music/cat/meow2.mp3"      preload="none"></audio>
+<audio id="somMeow3"      src="assets/music/cat/meow3.mp3"      preload="none"></audio>
+<audio id="somPurr"       src="assets/music/cat/purr.mp3"       preload="none"></audio>
+<audio id="somMeowAdocao" src="assets/music/cat/meow-adocao.mp3" preload="none"></audio>
+
+<div id="efeitosMoedas"></div>
+
+<audio id="somMoeda" src="assets/music/moeda.wav"></audio>
+
+<audio id="somChuva" src="assets/music/chuva.mp3" loop></audio>
+
+
+<!--Alerta Saldo Loja-->
+<div id="alertaLoja"></div>
+
+<!--Animações de Particulas-->
+<div id="efeitosParticulas"></div>
+<div id="overlayFinal"></div>
+
+
+<script src="script.js"></script>
+</body>
+</html>
