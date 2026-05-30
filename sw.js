@@ -1,5 +1,5 @@
 const CACHE_NAME =
-"hanna-cache-v2";
+"hanna-cache-v6";
 
 const ASSETS = [
 

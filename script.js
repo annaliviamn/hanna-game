@@ -145,85 +145,52 @@ let trilhaAtual = null;
  * Troca suavemente a trilha sonora.
  * @param {string|null} nome  - chave de `trilhas`, ou null para silenciar tudo
  */
+let _fadeOutTimer = null;
+let _fadeInTimer  = null;
+
 function tocarTrilha(nome) {
-  // PARA TODAS AS TRILHAS
 
-  Object.values(trilhas).forEach(audio => {
-
-    if (!audio) return;
-
-    audio.pause();
-
-  });
+  // Já tocando a mesma — não faz nada
   if (
     trilhaAtual === nome &&
     trilhas[nome] &&
     !trilhas[nome].paused
-  ) {
+  ) return;
 
-    return;
+  const VOLUME_ALVO = 0.4;
 
-  }
-  // Para a trilha atual com fade rápido
-  if (trilhaAtual && trilhas[trilhaAtual]) {
-    const antiga = trilhas[trilhaAtual];
-    const fadeOut = setInterval(() => {
+  // Cancela fades anteriores
+  clearInterval(_fadeOutTimer);
+  clearInterval(_fadeInTimer);
 
-      if (antiga.volume > 0.01) {
+  // Para TODAS as trilhas imediatamente (exceto a que vai tocar)
+  Object.values(trilhas).forEach(audio => {
+    if (!audio) return;
+    audio.pause();
+    audio.volume = VOLUME_ALVO;
+  });
 
-          antiga.volume =
-          Math.max(
-              0,
-              antiga.volume - 0.015
-          );
-
-      } else {
-
-          antiga.pause();
-
-          antiga.volume =
-          parseFloat(
-            volumeMusica.value
-          );
-
-          clearInterval(fadeOut);
-
-      }
-
-    }, 80);
-  }
   trilhaAtual = nome;
-  if (nome && trilhas[nome]) {
-    const nova = trilhas[nome];
-    nova.volume = 0;
-    nova.currentTime = 0;
-    nova.play().catch(() => {
-      // Autoplay bloqueado pelo navegador — a música tocará após
-      // a primeira interação do usuário (comportamento normal em mobile)
-    });
-    const fadeIn = setInterval(() => {
 
-      const volumeFinal =
-      parseFloat(volumeMusica.value);
+  if (!nome || !trilhas[nome] || isMuted) return;
 
-      if (nova.volume < volumeFinal) {
+  const nova = trilhas[nome];
+  nova.volume = 0;
+  nova.currentTime = 0;
+  nova.play().catch(() => {});
 
-          nova.volume =
-          Math.min(
-              volumeFinal,
-              nova.volume + 0.015
-          );
+  _fadeInTimer = setInterval(() => {
+    if (nova.volume < VOLUME_ALVO - 0.01) {
+      nova.volume = Math.min(VOLUME_ALVO, nova.volume + 0.02);
+    } else {
+      nova.volume = VOLUME_ALVO;
+      clearInterval(_fadeInTimer);
+    }
+  }, 80);
 
-      } else {
-
-          clearInterval(fadeIn);
-
-      }
-
-    }, 80);
-  }
 }
 
+// visibilitychange gerenciado no bloco de áudio mais abaixo
 
 // ELEMENTOS 
 const mensagem          = document.getElementById("mensagem");
@@ -421,9 +388,7 @@ function voltarParaMenu() {
 
   pararJogoAtivo();
 
-  telaArena.style.display     = "none";
-
-  telaMinigames.style.display = "block";
+  abrirTela(telaMinigames);
 
   animarTela(telaMinigames);
 
@@ -441,11 +406,7 @@ function voltarParaJogo() {
 
   pararJogoAtivo();
 
-  telaArena.style.display      = "none";
-
-  telaMinigames.style.display  = "none";
-
-  telaJogo.style.display       = "block";
+  abrirTela(telaJogo);
 
   arenaConteudo.innerHTML      = "";
 
@@ -483,6 +444,15 @@ function esconderTodasAsTelas() {
 
 }
 
+function abrirTela(tela) {
+
+    esconderTodasAsTelas();
+
+    tela.style.display = "block";
+
+    window.scrollTo(0, 0);
+
+}
 
 // GANHAR MOEDAS
 
@@ -694,7 +664,7 @@ function jogoMemoria() {
     const novaCor = cores[Math.floor(Math.random() * cores.length)];
     sequencia.push(novaCor);
     vez = [];
-    ganharMoedas(5);
+    ganharMoedas(25);
     hanna.src = "assets/sprites/hanna/contente.png";
     jogoAtivo.timers.push(setTimeout(() => {
       hanna.src = "assets/sprites/hanna/curiosa.png";
@@ -724,7 +694,7 @@ function jogoMemoria() {
         bloqueado = true;
         hanna.src = "assets/sprites/hanna/brava.png";
         status.textContent = "Errou! 😿";
-        const total = Math.max(0, (nivelAtual - 1) * 5);
+        const total = Math.max(0, (nivelAtual - 1) * 25);
         jogoAtivo.timers.push(setTimeout(() => {
           mostrarResultado(
             "Fim de jogo!",
@@ -851,7 +821,11 @@ function jogoPeixe() {
     clearInterval(spawnInterval);
     clearInterval(countInterval);
     // 0–5 peixes: 5 moedas | 6–12: 15 | 13–20: 25 | 21+: 30
-    const recomp = pontos >= 21 ? 30 : pontos >= 13 ? 25 : pontos >= 6 ? 15 : Math.max(0, pontos);
+    const recomp =
+    pontos >= 21 ? 120 :
+    pontos >= 13 ? 80  :
+    pontos >= 6  ? 45  :
+    Math.max(10, pontos * 3);
     ganharMoedas(recomp);
     const emoji = pontos >= 15 ? "🐟" : pontos >= 8 ? "😺" : "😿";
     jogoAtivo.timers.push(setTimeout(() => {
@@ -983,7 +957,11 @@ function jogoHumor() {
     if (acertou) {
       if (btn) btn.classList.add("certo");
       streak++;
-      const ganho = streak >= 4 ? 3 : streak >= 2 ? 2 : 1;
+      const ganho =
+      streak >= 7 ? 30 :
+      streak >= 5 ? 20 :
+      streak >= 3 ? 12 :
+      8;
       totalMoedas += ganho;
       streakEl.textContent = `🔥 Sequência: ${streak} (+${ganho} moeda${ganho>1?"s":""})`;
       spriteEl.src = "assets/sprites/hanna/apaixonada.png";
@@ -1097,9 +1075,9 @@ function jogoReflexo() {
       // Acertou!
       acertos++;
       esperando = false;
-      const ganho = 5;
+      const ganho = 20;
       totalMoedas += ganho;
-      setFeedback("Perfeito! ⚡ +5", "#6acf88");
+      setFeedback("Perfeito! ⚡ +20", "#6acf88");
       hannaEl.src = "assets/sprites/hanna/apaixonada.png";
       rodada++;
       jogoAtivo.timers.push(setTimeout(novaRodada, 1000));
@@ -1425,21 +1403,16 @@ let amizade     = Number(localStorage.getItem("amizade"))     || 0;
 let vinculoGatinhas = Number(localStorage.getItem("vinculoGatinhas")) || 0;
 
 let gatinhaDesbloqueada = localStorage.getItem("gatinhaDesbloqueada") === "true";
-let nomeGatinha = localStorage.getItem("nomeGatinha") || "Mimi";
+let nomeGatinha = localStorage.getItem("nomeGatinha") || "";
 
 let dormindo = localStorage.getItem("dormindo") === "true";
 let lembretes = JSON.parse(localStorage.getItem("lembretes")) || [];
 
-// NOME DA GATINHA
-
-nomeDaGatinhaTexto.textContent =
-nomeGatinha;
+// NOME DA GATINHA — só exibe se foi adotada e já tem nome
+nomeDaGatinhaTexto.textContent = (gatinhaDesbloqueada && nomeGatinha) ? nomeGatinha : "";
 
 if (inputNomeGatinha) {
-
-    inputNomeGatinha.value =
-    nomeGatinha;
-
+    inputNomeGatinha.value = (gatinhaDesbloqueada && nomeGatinha) ? nomeGatinha : "";
 }
 
 btnSalvarNomeGatinha.onclick = () => {
@@ -1476,11 +1449,39 @@ if (!gatinhaDesbloqueada) {
     inputNomeGatinha.placeholder =
     "Adote a gatinha primeiro 🖤";
 
+} else if (!nomeGatinha) {
+
+    inputNomeGatinha.placeholder = "Dê um nome pra ela 🐾";
+
 }
 
 // ÚLTIMA VEZ ONLINE
 
 let ultimoAcesso = Number(localStorage.getItem("ultimoAcesso")) || Date.now();
+
+// ── COMPENSAR TEMPO OFFLINE ──────────────────────────────────
+// Calcula quantos minutos se passaram desde o último acesso
+// e aplica a degradação de stats proporcionalmente (máx 8h)
+(function compensarTempoOffline() {
+  const agora       = Date.now();
+  const minutosOff  = Math.min((agora - ultimoAcesso) / 60000, 480); // máx 8h
+
+  if (minutosOff >= 1 && !dormindo) {
+    fome       = Math.max(0, fome       - 2   * minutosOff);
+    felicidade = Math.max(0, felicidade - 1   * minutosOff);
+    energia    = Math.max(0, energia    - 0.5 * minutosOff);
+    higiene    = Math.max(0, higiene    - 1   * minutosOff);
+  }
+
+  // Atualiza ultimoAcesso e salva a cada 30s enquanto o app está aberto
+  localStorage.setItem("ultimoAcesso", agora);
+  setInterval(() => {
+    localStorage.setItem("ultimoAcesso", Date.now());
+  }, 30000);
+})();
+
+// ── REAGENDAR CRESCIMENTO DAS PLANTAS OFFLINE ─────────────────
+// (executado após a declaração de fazenda e slotsPlantacao, mais abaixo)
 
 // MENSAGEM
 let msgTimer;
@@ -1612,7 +1613,7 @@ function iniciarFalasIdle() {
 
       }
 
-      else if (vinculo > 70) {
+      else if (amizade > 3.5) {
 
           listaAtual =
           frasesIdle.apaixonada;
@@ -1787,15 +1788,18 @@ function atualizarStatus() {
 }
 
 function _salvar() {
-  localStorage.setItem("fome",       fome);
-  localStorage.setItem("felicidade", felicidade);
-  localStorage.setItem("energia",    energia);
-  localStorage.setItem("higiene", higiene);
-  localStorage.setItem("sementes",   sementes);
-  localStorage.setItem("moedas",     moedas);
-  localStorage.setItem("amizade",    amizade);
-  localStorage.setItem("vinculoGatinhas",   vinculoGatinhas);
-  localStorage.setItem("dormindo", dormindo);
+  localStorage.setItem("fome",                fome);
+  localStorage.setItem("felicidade",          felicidade);
+  localStorage.setItem("energia",             energia);
+  localStorage.setItem("higiene",             higiene);
+  localStorage.setItem("sementes",            sementes);
+  localStorage.setItem("moedas",              moedas);
+  localStorage.setItem("amizade",             amizade);
+  localStorage.setItem("vinculoGatinhas",     vinculoGatinhas);
+  localStorage.setItem("dormindo",            dormindo);
+  localStorage.setItem("gatinhaDesbloqueada", gatinhaDesbloqueada ? "true" : "false");
+  localStorage.setItem("nomeGatinha",         nomeGatinha);
+  salvarFazenda();
 }
 
 // EVENTOS ALEATÓRIOS DO DIA
@@ -2124,27 +2128,33 @@ btnEntrar.addEventListener("click", () => {
 
 somBotao.play().catch(()=>{});
 
-    vibrar(15);
+vibrar(15);
 
-    telaInicial.classList.add("fadeOut");
+telaInicial.classList.add("fadeOut");
 
-    setTimeout(() => {
+setTimeout(() => {
 
-        telaInicial.style.display = "none";
+    telaInicial.style.display = "none";
 
-        telaJogo.style.display = "block";
+    abrirTela(telaJogo);
 
-        telaJogo.classList.add("fadeIn");
+    telaJogo.classList.add("fadeIn");
 
-        tocarTrilha("casa");
+    tocarTrilha("casa");
 
-        mensagemHorario();
+    mensagemHorario();
 
-        iniciarFalasIdle();
+    iniciarFalasIdle();
 
-        iniciarMomentosEspeciais();
+    iniciarMomentosEspeciais();
 
-    }, 800);
+    // Mostra a gatinha imediatamente se já foi adotada
+    if (gatinhaDesbloqueada) {
+        gatinhaContainer.style.display = "flex";
+        if (nomeGatinha) nomeDaGatinhaTexto.textContent = nomeGatinha;
+    }
+
+}, 800);
 
 });
 
@@ -2159,48 +2169,62 @@ document.addEventListener("click", function iniciarMenuMusic() {
 const slotsPlantacao = document.querySelectorAll(".slotPlantacao");
 const valorPlantas = {
 
-    flor: 10,
+    flor: 35,
 
-    rosa: 15,
+    rosa: 55,
 
-    morango: 20,
+    morango: 85,
 
-    cenoura: 25,
+    cenoura: 110,
 
-    abobora: 35,
+    abobora: 180,
 
-    lavanda: 40,
+    lavanda: 260,
 
-    margarida: 45,
+    margarida: 350,
 
-    girassol: 100
+    girassol: 3500
 
 };
-const fazenda = [
+const fazenda = (() => {
+  const salvo = localStorage.getItem("fazenda");
+  if (salvo) {
+    try { return JSON.parse(salvo); } catch(e) {}
+  }
+  return [
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+  ];
+})();
 
-  { plantada:false, pronta:false, flor:"" },
-  { plantada:false, pronta:false, flor:"" },
-  { plantada:false, pronta:false, flor:"" },
-  { plantada:false, pronta:false, flor:"" },
-  { plantada:false, pronta:false, flor:"" },
+function salvarFazenda() {
+  localStorage.setItem("fazenda", JSON.stringify(fazenda));
+}
 
-  { plantada:false, pronta:false, flor:"" },
-  { plantada:false, pronta:false, flor:"" },
-  { plantada:false, pronta:false, flor:"" },
-  { plantada:false, pronta:false, flor:"" },
-  { plantada:false, pronta:false, flor:"" }
+// Restaura sprites dos slots ao carregar
+function restaurarSlotsVisuais() {
+  slotsPlantacao.forEach((slotHTML, idx) => {
+    const slot   = fazenda[idx];
+    const sprite = slotHTML.querySelector("img");
+    if (!sprite) return;
+    if (slot.pronta) {
+      sprite.src = `assets/farm/${slot.flor}.png`;
+    } else if (slot.plantada) {
+      sprite.src = "assets/farm/semente.png";
+    } else {
+      sprite.src = "assets/farm/vazio.png";
+    }
+  });
+}
 
-];
-
-btnAbrirFazenda.addEventListener("click", () => {
-
-    esconderTodasAsTelas();
-
-    telaFazenda.style.display = "block";
-
-    tocarTrilha("fazenda");
-
-});
 
 // HANNA NA FAZENDA
 const hannaFazendaSprite = document.getElementById("hannaFazendaSprite");
@@ -2234,14 +2258,61 @@ slotsPlantacao.forEach((slotHTML, idx) => {
     moedas += valorPlantas[slot.flor];
     amizade  = Math.min(5, amizade + 0.08);
     slot.plantada = slot.pronta = false;
-    const plantaColhida = slot.flor;
-    plantaColhida
-    sprite.src    = "assets/farm/vazio.png";
+    slot.flor = "";
+    sprite.src = "assets/farm/vazio.png";
     atualizarStatus();
-    mostrarMensagem(`Você colheu ${slot.flor}! 🪙 +${valorPlantas[slot.flor]}`);
-    falarFazenda(`Uau, ${slot.flor}! 🪙 +${valorPlantas[slot.flor]}`, "assets/sprites/hanna/brincando.png");
+    salvarFazenda();
+    mostrarMensagem(`Você colheu! 🪙 +${valorPlantas[slot.flor] || 0}`);
+    falarFazenda(`Que colheita boa! 🌸`, "assets/sprites/hanna/brincando.png");
   });
 });
+
+// Restaura os visuais dos slots ao carregar a página
+restaurarSlotsVisuais();
+
+// ── REAGENDAR CRESCIMENTO DAS PLANTAS OFFLINE ─────────────────
+(function reagendarCrescimentoOffline() {
+  const agora   = Date.now();
+  const PLANTAS = ["rosa","flor","morango","cenoura","abobora","lavanda","margarida","girassol"];
+  const MATURACAO = 300000;
+
+  fazenda.forEach((slot, idx) => {
+    if (!slot.plantada || slot.pronta) return;
+
+    if (!slot.flor) {
+      slot.flor = PLANTAS[Math.floor(Math.random() * PLANTAS.length)];
+    }
+    if (!slot.tempoFim || slot.tempoFim === 0) {
+      slot.tempoFim = agora + 60000;
+      salvarFazenda();
+    }
+
+    const tempoRestante = slot.tempoFim - agora;
+
+    // Busca o sprite agora pra uso imediato
+    const spriteAgora = slotsPlantacao[idx]?.querySelector("img");
+
+    if (tempoRestante <= 0) {
+      // Já devia ter brotado offline
+      slot.pronta = true;
+      salvarFazenda();
+      if (spriteAgora) spriteAgora.src = `assets/farm/${slot.flor}.png`;
+    } else {
+      // Mostra brotinho se passou mais da metade
+      const progresso = 1 - tempoRestante / MATURACAO;
+      if (spriteAgora && progresso > 0.5) spriteAgora.src = "assets/farm/brotinho.png";
+
+      // Rebusca o sprite dentro do timeout — evita referência stale
+      setTimeout(() => {
+        slot.pronta = true;
+        salvarFazenda();
+        const s = slotsPlantacao[idx]?.querySelector("img");
+        if (s) s.src = `assets/farm/${slot.flor}.png`;
+        mostrarMensagem("Uma flor cresceu! 🌸");
+      }, tempoRestante);
+    }
+  });
+})();
 
 btnPlantar.addEventListener("click", () => {
 
@@ -2278,27 +2349,38 @@ btnPlantar.addEventListener("click", () => {
   const plantas = [
 
     "rosa",
+    "rosa",
 
+    "flor",
     "flor",
 
     "morango",
+    "morango",
 
+    "cenoura",
     "cenoura",
 
     "abobora",
+    "abobora",
 
+    "lavanda",
     "lavanda",
 
     "margarida",
+    "margarida",
 
-    // rara
+    // MUITO rara 🌻
     "girassol"
 
-    ];
+  ];
 
     slot.flor = plantas[
     Math.floor(Math.random() * plantas.length)
     ];
+
+  const tempoMaturacao = 300000; // 5 minutos
+  slot.tempoFim = Date.now() + tempoMaturacao;
+  salvarFazenda();
 
   sprite.src = "assets/farm/semente.png";
 
@@ -2309,7 +2391,7 @@ btnPlantar.addEventListener("click", () => {
   sprite.style.display = "block";
 
   mostrarMensagem("A Hanna plantou uma sementinha 🌱");
-  falarFazenda("Plantei! Agora é só regar 💧", "assets/sprites/hanna/feliz.png");
+  falarFazenda("Plantei! Agora é só esperar 💧", "assets/sprites/hanna/feliz.png");
 
   setTimeout(() => {
 
@@ -2317,16 +2399,42 @@ btnPlantar.addEventListener("click", () => {
 
   }, 5000);
 
+  const tempoRestante =
+  Math.max(0, slot.tempoFim - Date.now());
+
+  if (tempoRestante <= 0) {
+
+      slot.pronta = true;
+
+      sprite.src = `assets/farm/${slot.flor}.png`;
+
+      salvarFazenda();
+
+      return;
+
+  }
+
+  setTimeout(() => {
+
+      slot.pronta = true;
+
+      salvarFazenda();
+
+      sprite.src = `assets/farm/${slot.flor}.png`;
+
+  }, tempoRestante);
+
   setTimeout(() => {
 
     slot.pronta = true;
+    salvarFazenda();
 
     sprite.src = `assets/farm/${slot.flor}.png`;
 
     mostrarMensagem("Uma flor cresceu! 🌸");
     falarFazenda("Cresceu! Toca pra colher! 🌸", "assets/sprites/hanna/animada.png");
 
-  }, 300000);
+  }, tempoRestante);
 
 });
 
@@ -2428,9 +2536,7 @@ setInterval(() => {
 // Loja e Lembretes Botão
 btnVoltar.addEventListener("click", () => {
 
-    telaLoja.style.display = "none";
-
-    telaJogo.style.display = "block";
+    abrirTela(telaJogo);
 
     tocarTrilha("casa");
 
@@ -2440,9 +2546,7 @@ if (btnLoja) {
 
     btnLoja.addEventListener("click", () => {
 
-        telaJogo.style.display = "none";
-
-        telaLoja.style.display = "block";
+        abrirTela(telaLoja);
 
         animarTela(telaLoja);
 
@@ -2456,9 +2560,7 @@ if (btnLembretes) {
 
     btnLembretes.addEventListener("click", () => {
 
-        telaJogo.style.display = "none";
-
-        telaLembretes.style.display = "block";
+        abrirTela(telaLembretes);
 
         animarTela(telaLembretes);
 
@@ -2750,7 +2852,7 @@ btnGatinha.addEventListener("click", () => {
   if (gatinhaDesbloqueada) {
 
         mostrarAlertaLoja(
-    `🖤 ${nomeGatinha} já mora com vocês`
+    `🖤 ${nomeGatinha || "sua gatinha"} já mora com vocês`
     );
 
     return;
@@ -2790,7 +2892,7 @@ btnGatinha.addEventListener("click", () => {
 inputNomeGatinha.placeholder =
 "Digite o nome dela...";
 
-  nomeDaGatinha =
+  nomeGatinha =
   nomeEscolhido.trim();
 
   nomeGatinhaElemento.textContent =
@@ -2824,11 +2926,9 @@ inputNomeGatinha.placeholder =
     nomeGatinha
   );
 
-  gatinhaContainer.style.display =
-    "flex";
+  gatinhaContainer.style.display = "flex";
 
-  nomeDaGatinhaTexto.textContent =
-    nomeGatinha;
+  nomeDaGatinhaTexto.textContent = nomeGatinha;
 
     // MOSTRAR NOME
 
@@ -2880,9 +2980,7 @@ if (btnVoltarLembretes) {
 
     btnVoltarLembretes.addEventListener("click", () => {
 
-        telaLembretes.style.display = "none";
-
-        telaJogo.style.display = "block";
+        abrirTela(telaJogo);
 
         tocarTrilha("casa");
 
@@ -3143,165 +3241,65 @@ if (dormindo) {
 
 // Botão de minigames na tela principal
 document.getElementById("btnMinigames").addEventListener("click", () => {
-  telaJogo.style.display      = "none";
-  telaMinigames.style.display = "block";
+  abrirTela(telaMinigames);
   document.querySelector(".bottomNav").style.display = "none";
   tocarTrilha("minigames");
   window.scrollTo(0, 0);
 });
 
-// Nav Games (bottom nav)
-if (navGames) {
+let telaAnteriorConfig = "casa";
 
-  navGames.addEventListener("click", () => {
+// ── BOTÃO MUTE ───────────────────────────────────────────────
+let isMuted = localStorage.getItem("muted") === "true";
 
-    telaJogo.style.display = "none";
+const btnMute    = document.getElementById("btnMute");
+const iconeMute  = document.getElementById("iconeMute");
+const textMute   = document.getElementById("textMute");
 
-    telaFazenda.style.display = "none";
+function aplicarMute() {
 
-    telaLoja.style.display = "none";
+  Object.values(trilhas).forEach(audio => {
 
-    telaLembretes.style.display = "none";
+    if (!audio) return;
 
-    telaArena.style.display = "none";
-
-    telaMinigames.style.display = "block";
-
-    animarTela(telaMinigames);
-
-    document.querySelector(".bottomNav")
-    .style.display = "none";
-
-    tocarTrilha("minigames");
-
-    window.scrollTo(0, 0);
+    audio.muted = isMuted;
 
   });
 
-}
+  if (iconeMute) {
 
-let telaAnteriorConfig =
-"casa";
-
-navConfig.addEventListener("click", () => {
-
-  if (
-    telaMinigames.style.display ===
-    "block"
-  ) {
-
-      telaAnteriorConfig =
-      "minigames";
+    iconeMute.textContent =
+    isMuted ? "🔇" : "🔊";
 
   }
 
-  else if (
-      telaLoja.style.display ===
-      "block"
-  ) {
+  if (textMute) {
 
-      telaAnteriorConfig =
-      "loja";
+    textMute.textContent =
+    isMuted ? "Mudo" : "Som";
 
   }
 
-  else if (
-      telaFazenda.style.display ===
-      "block"
-  ) {
-
-      telaAnteriorConfig =
-      "fazenda";
-
-  }
-
-  else {
-
-      telaAnteriorConfig =
-      "casa";
-
-  }
-
-  esconderTodasAsTelas();
-
-  telaJogo.style.display = "none";
-
-  telaConfig.style.display = "block";
-
-  animarTela(telaConfig);
-
-  window.scrollTo(0, 0);
-
-});
-
-btnVoltarConfig.addEventListener("click", () => {
-
-  telaConfig.style.display = "none";
-
-  telaConfig.style.display = "block";
-
-  if (
-    telaAnteriorConfig ===
-    "minigames"
-) {
-
-    telaMinigames.style.display =
-    "block";
-
-    tocarTrilha("minigames");
-
-    animarTela(telaMinigames);
+  localStorage.setItem("muted", isMuted);
 
 }
 
-else if (
-    telaAnteriorConfig ===
-    "loja"
-) {
-
-    telaLoja.style.display =
-    "block";
-
-    tocarTrilha("loja");
-
-    animarTela(telaLoja);
-
+if (btnMute) {
+  btnMute.addEventListener("click", () => {
+    isMuted = !isMuted;
+    aplicarMute();
+    if (!isMuted && trilhaAtual && trilhas[trilhaAtual]) {
+      trilhas[trilhaAtual].play().catch(() => {});
+    }
+  });
 }
 
-else if (
-    telaAnteriorConfig ===
-    "fazenda"
-) {
-
-    telaFazenda.style.display =
-    "block";
-
-    tocarTrilha("fazenda");
-
-    animarTela(telaFazenda);
-
-}
-
-else {
-
-    telaJogo.style.display =
-    "block";
-
-    tocarTrilha("casa");
-
-    animarTela(telaJogo);
-
-}
-
-  window.scrollTo(0, 0);
-
-});
+// Aplica estado de mute salvo ao carregar
+aplicarMute();
 
 btnCarta.addEventListener("click", () => {
 
-  telaConfig.style.display = "none";
-
-  telaCarta.style.display = "block";
+  abrirTela(telaCarta);
 
   animarTela(telaCarta);
 
@@ -3311,9 +3309,7 @@ btnCarta.addEventListener("click", () => {
 
 btnVoltarCarta.addEventListener("click", () => {
 
-  telaCarta.style.display = "none";
-
-  telaConfig.style.display = "block";
+  abrirTela(telaConfig);
 
   animarTela(telaConfig);
 
@@ -3383,9 +3379,7 @@ btnModoNoturno.onclick = () => {
 // Voltar do menu de minigames
 document.getElementById("btnVoltarMinigames").addEventListener("click", () => {
 
-  telaMinigames.style.display = "none";
-
-  telaJogo.style.display = "block";
+  abrirTela(telaJogo);
 
   document.querySelector(".bottomNav")
   .style.display = "flex";
@@ -3484,14 +3478,14 @@ function jogoCartinhas() {
     btn.addEventListener("click", () => iniciarCartinhas(btn.dataset.dif));
   });
 
-  // INÍCIO DO JOGO
+  // JOGO 5
   function iniciarCartinhas(dificuldade) {
     pararJogoAtivo();
 
     const config = {
-      facil:   { pares: 6,  colunas: 4, moedaBase: 15, tempoBase: 90  },
-      medio:   { pares: 10, colunas: 4, moedaBase: 30, tempoBase: 150 },
-      dificil: { pares: 14, colunas: 4, moedaBase: 50, tempoBase: 210 },
+      facil:   { pares: 6,  colunas: 4, moedaBase: 60,  tempoBase: 90  },
+      medio:   { pares: 10, colunas: 4, moedaBase: 140, tempoBase: 150 },
+      dificil: { pares: 14, colunas: 4, moedaBase: 260, tempoBase: 210 },
     }[dificuldade];
 
     // Embaralha e pega os sprites necessários
@@ -3642,9 +3636,7 @@ function jogoCartinhas() {
 document.getElementById("btnVoltarFazenda")
 .onclick = function () {
 
-    telaFazenda.style.display = "none";
-
-    telaJogo.style.display = "block";
+    abrirTela(telaJogo);
 
     tocarTrilha("casa");
 
@@ -3664,7 +3656,7 @@ btnBanho.addEventListener("click", () => {
         volumeEfeitos.value
     );
 
-    somCompra.play().catch(()=>{});
+    somBanho.play().catch(()=>{});
 
     mostrarMensagem("A Hanna está tomando banho 🫧");
 
@@ -3701,55 +3693,21 @@ btnBanho.addEventListener("click", () => {
 
 // ABRIR FAZENDA
 
-btnAbrirFazenda.addEventListener("click", () => {
-
-    telaJogo.style.display = "none";
-
-    telaFazenda.style.display = "block";
-
-    // MOSTRAR BALÃO NOVAMENTE
-
-  balaoFazenda.classList.remove("fade-out-balao");
-
-  void balaoFazenda.offsetWidth;
-
-  // ESCONDER DEPOIS DE 4 SEGUNDOS
-
-  setTimeout(() => {
-
-  balaoFazenda.classList.add("fade-out-balao");
-
-  }, 4000);
-
-});
-
-// CONTROLE DE TELAS
-
-function fecharTodasTelas() {
-
-    telaJogo.style.display = "none";
-
-    telaFazenda.style.display = "none";
-
-    telaLoja.style.display = "none";
-
-    telaLembretes.style.display = "none";
-
-    telaMinigames.style.display = "none";
-
-}
-
-// BOTÃO FAZENDA
-
 btnAbrirFazenda.onclick = () => {
 
-    fecharTodasTelas();
-
-    telaFazenda.style.display = "block";
+    abrirTela(telaFazenda);
 
     animarTela(telaFazenda);
 
     tocarTrilha("fazenda");
+
+    balaoFazenda.classList.remove("fade-out-balao");
+
+    void balaoFazenda.offsetWidth;
+
+    setTimeout(() => {
+        balaoFazenda.classList.add("fade-out-balao");
+    }, 4000);
 
 };
 
@@ -3757,15 +3715,8 @@ btnAbrirFazenda.onclick = () => {
 // NAVBAR
 
 navHome.onclick = () => {
-    esconderTodasAsTelas();
 
-    telaJogo.style.display = "block";
-
-    telaFazenda.style.display = "none";
-
-    telaLoja.style.display = "none";
-
-    telaLembretes.style.display = "none";
+    abrirTela(telaJogo);
 
     tocarTrilha("casa");
 
@@ -3773,15 +3724,8 @@ navHome.onclick = () => {
 
 
 navFarm.onclick = () => {
-    esconderTodasAsTelas();
 
-    telaJogo.style.display = "none";
-
-    telaFazenda.style.display = "block";
-
-    telaLoja.style.display = "none";
-
-    telaLembretes.style.display = "none";
+    abrirTela(telaFazenda);
 
     tocarTrilha("fazenda");
 
@@ -3789,15 +3733,8 @@ navFarm.onclick = () => {
 
 
 navLoja.onclick = () => {
-    esconderTodasAsTelas();
 
-    telaJogo.style.display = "none";
-
-    telaFazenda.style.display = "none";
-
-    telaLoja.style.display = "block";
-
-    telaLembretes.style.display = "none";
+    abrirTela(telaLoja);
 
     tocarTrilha("loja");
 
@@ -3805,15 +3742,8 @@ navLoja.onclick = () => {
 
 
 navLembretes.onclick = () => {
-    esconderTodasAsTelas();
 
-    telaJogo.style.display = "none";
-
-    telaFazenda.style.display = "none";
-
-    telaLoja.style.display = "none";
-
-    telaLembretes.style.display = "block";
+    abrirTela(telaLembretes);
 
     renderizarLembretes();
 
@@ -3825,14 +3755,12 @@ navLembretes.onclick = () => {
 
 navGames.onclick = () => {
 
-    esconderTodasAsTelas();
-
     // GARANTE NAVBAR VISÍVEL
 
     document.querySelector(".bottomNav")
     .style.display = "flex";
 
-    telaMinigames.style.display = "block";
+    abrirTela(telaMinigames);
 
     animarTela(telaMinigames);
 
@@ -3846,25 +3774,13 @@ navGames.onclick = () => {
 
 navConfig.onclick = () => {
 
-    esconderTodasAsTelas();
-
-    telaConfig.style.display = "block";
+    abrirTela(telaConfig);
 
     animarTela(telaConfig);
 
     window.scrollTo(0, 0);
 
 };
-
-function animarTela(tela) {
-
-    tela.classList.remove("fadeTela");
-
-    void tela.offsetWidth;
-
-    tela.classList.add("fadeTela");
-
-}
 
 function animacoesAleatoriasHanna() {
 
@@ -3974,7 +3890,7 @@ function pausarTodasTrilhas() {
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         pausarTodasTrilhas();
-    } else if (trilhaAtual && trilhas[trilhaAtual]) {
+    } else if (!isMuted && trilhaAtual && trilhas[trilhaAtual]) {
         trilhas[trilhaAtual].play().catch(() => {});
     }
 });
@@ -4091,7 +4007,7 @@ if (btnAceitarPedidoEl) {
     });
 }
 
-// 🔫 OPERAÇÃO SARDINHA
+// JOGO 6
 
 function jogoSardinha() {
   abrirArena("Operação Sardinha");
@@ -4330,8 +4246,8 @@ function iniciarSardinha(agente) {
     gameOver = true;
 
     const moedas = vitoria
-      ? Math.min(50, 10 + Math.floor(score / 3))
-      : Math.max(5,  Math.floor(score / 5));
+      ? Math.min(250, 40 + Math.floor(score / 1.8))
+      : Math.max(20, Math.floor(score / 3));
 
     ganharMoedas(moedas);
 
@@ -4540,7 +4456,7 @@ function iniciarMomentosEspeciais() {
                 "Muito carinho por aqui",
 
                 chance:
-                () => vinculo > 70
+                () => amizade > 3.5
             },
 
             {
@@ -4589,5 +4505,15 @@ function iniciarMomentosEspeciais() {
         }, 6000);
 
     }, 120000);
+
+}
+
+function animarTela(tela) {
+
+    tela.classList.remove("fadeTela");
+
+    void tela.offsetWidth;
+
+    tela.classList.add("fadeTela");
 
 }
