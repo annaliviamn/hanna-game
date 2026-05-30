@@ -317,6 +317,18 @@
 
     <div class="config-container">
 
+      <!-- Como Jogar -->
+
+      <div class="config-card">
+
+        <h3>Ajuda</h3>
+
+        <button class="config-btn" id="btnComoJogar">
+          Como jogar
+        </button>
+
+      </div>
+
       <!-- Aparência -->
 
       <div class="config-card">
@@ -378,6 +390,80 @@
   </div>
 </div>
     
+<!-- Tela Como Jogar -->
+
+<div id="telaComoJogar" style="display:none;">
+  <div class="tela-secundaria">
+
+    <div class="tela-sec-header">
+      <button class="btn-back" id="btnVoltarComoJogar">‹</button>
+      <span class="tela-sec-title">Como jogar</span>
+    </div>
+
+    <div class="tutorial-container">
+
+      <!-- Cuidados básicos -->
+      <div class="tutorial-card">
+        <div class="tutorial-header">
+          <img src="assets/sprites/hanna/feliz.png" class="tutorial-sprite" />
+          <h3>Cuidados básicos</h3>
+        </div>
+        <p>A Hanna precisa de atenção diária. Dê comida quando estiver com fome, faça carinho pra ela ficar feliz, coloque pra dormir quando estiver cansada e dê banho pra manter a higiene em dia.</p>
+        <p>Se os status chegarem a zero ela fica triste, mas não se preocupe, sempre dá pra recuperar.</p>
+      </div>
+
+      <!-- Moedas -->
+      <div class="tutorial-card">
+        <div class="tutorial-header">
+          <img src="assets/sprites/hanna/animada.png" class="tutorial-sprite" />
+          <h3>Moedas</h3>
+        </div>
+        <p>Moedas são ganhas jogando os minigames e colhendo plantas na fazenda. Elas servem pra comprar itens na loja: comidas especiais, brinquedos e outros mimos pra Hanna.</p>
+      </div>
+
+      <!-- Fazenda -->
+      <div class="tutorial-card">
+        <div class="tutorial-header">
+          <img src="assets/sprites/hanna/curiosa.png" class="tutorial-sprite" />
+          <h3>Fazenda</h3>
+        </div>
+        <p>Na fazendinha você planta sementes e espera elas crescerem. Depois de um tempo, toca no canteiro pra colher e ganhar moedas. Quanto mais planta, mais colhe.</p>
+        <p>Sementes podem ser compradas na loja.</p>
+      </div>
+
+      <!-- Gatinha -->
+      <div class="tutorial-card">
+        <div class="tutorial-header">
+          <img src="assets/sprites/gatinha/gatinha-sorrindo.png" class="tutorial-sprite" />
+          <h3>A gatinha pretinha</h3>
+        </div>
+        <p>Quando tiver moedas suficientes, você pode adotar uma gatinha pra fazer companhia pra Hanna. Dê um nome pra ela e se você pode alterá-lo a qualquer momento nas configurações.</p>
+        <p>Conforme o vínculo entre elas cresce, momentos especiais vão aparecer, e com vínculo alto elas até dormem juntas.</p>
+      </div>
+
+      <!-- Minigames -->
+      <div class="tutorial-card">
+        <div class="tutorial-header">
+          <img src="assets/sprites/hanna/brincando.png" class="tutorial-sprite" />
+          <h3>Minigames</h3>
+        </div>
+        <p>Existem seis minigames pra jogar: Memória das Patas, Pega Peixe, Adivinhe o Humor, Reflexo Felino, Cartinhas da Hanna e Operação Sardinha.</p>
+        <p>Cada um dá moedas ao vencer e alguns aumentam a felicidade da Hanna também.</p>
+      </div>
+
+      <!-- Lembretes -->
+      <div class="tutorial-card">
+        <div class="tutorial-header">
+          <img src="assets/sprites/hanna/sonolenta.png" class="tutorial-sprite" />
+          <h3>Lembretes</h3>
+        </div>
+        <p>Você pode configurar lembretes pra não esquecer de cuidar da Hanna, aniversários, alertas em geral, etc. As notificações aparecem mesmo com o app fechado, é só permitir na primeira vez que pedir.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!-- Tela Loja -->
 
 <!-- Tela Carta -->
@@ -1002,11 +1088,6 @@ class="telaEspecial">
     <div class="fazenda-card fazenda-card-grande">
 
         <div class="fazenda-topo-cozy">
-
-            <img
-              src="assets/..."
-              class="fazendaImagem"
-            />
 
             <div class="fazenda-balao" id="balaoFazenda">
 

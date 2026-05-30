@@ -258,7 +258,7 @@ textarea {
 }
 
 #hannaSprite {
-  width: 190px;
+  width: 135px;
   image-rendering: pixelated;
   position: relative;
   z-index: 2;
@@ -2091,7 +2091,7 @@ body.dark-mode .bottomNav {
 }
 
 #gatinhaSprite {
-  width: 170px;
+  width: 125px;
   image-rendering: pixelated;
   animation: idleFloat 4s ease-in-out infinite;
   transform: translateY(10px);
@@ -2241,7 +2241,7 @@ body.dark-mode .bottomNav {
 #zzzContainer {
   position: absolute;
 
-  top: 50px;
+  top: 95px;
   left: 35%;
 
   transform: translateX(-10px);
@@ -2271,18 +2271,18 @@ body.dark-mode .bottomNav {
 }
 
 .z1 {
-  font-size: 10px;
+  font-size: 8px;
   animation-delay: 0s;
 }
 
 .z2 {
-  font-size: 14px;
+  font-size: 11px;
   margin-left: 10px;
   animation-delay: .5s;
 }
 
 .z3 {
-  font-size: 18px;
+  font-size: 14px;
   margin-left: 22px;
   animation-delay: 1s;
 }
@@ -2621,6 +2621,62 @@ body.dark-mode .bottomNav {
 
 .config-danger:active {
   box-shadow: 0 1px 0 #c94444;
+}
+
+/* TELA COMO JOGAR */
+
+.tutorial-container {
+  padding: 18px 16px 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tutorial-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--pink-mid);
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.tutorial-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tutorial-header h3 {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--pink-deep);
+  line-height: 1.5;
+}
+
+.tutorial-sprite {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+.tutorial-card p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-mid);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.tutorial-card p:last-child {
+  margin-bottom: 0;
+}
+
+body.dark-mode .tutorial-card {
+  background: var(--bg-card);
+  border-color: var(--pink-mid);
 }
 
 /* CARTA ESPECIAL */

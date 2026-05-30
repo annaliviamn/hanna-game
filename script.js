@@ -222,6 +222,9 @@ const volumeMusica  = { value: "0.4" };
 const volumeEfeitos = { value: "0.7" };
 const telaCarta         = document.getElementById("telaCarta");
 const btnVoltarCarta    = document.getElementById("btnVoltarCarta");
+const telaComoJogar     = document.getElementById("telaComoJogar");
+const btnComoJogar      = document.getElementById("btnComoJogar");
+const btnVoltarComoJogar = document.getElementById("btnVoltarComoJogar");
 const saldoLoja         = document.getElementById("saldoLoja");
 
 const telaInicial       = document.getElementById("telaInicial");
@@ -342,17 +345,20 @@ function abrirPedidoReal() {
 `E na verdade...
 
 talvez esse pedido
-não fosse só delas... 💖
+não fosse só delas...
 
-    Kika Simplicio, este jogo foi inspirado em nós, e olha que coisa, tudo começou justamente porque alguém, com um belo par de olhos castanhos, me enviou um belo gatinho pretinho, e daí surgiu a hAnna que virou Hanna nesse game, que nada mais é do que uma celebração de tudo o que sentimos. E também vale ressaltar que a ideia do jogo veio de uma frase sua no nosso grupo, você dizia que estava querendo jogar algo novo, ou stardew valley comigo, e aí veio tudo na minha cabeça... “vou criar um jogo pra minha amada com tudo o que gostamos e eu que lute hahaha”.
+	  Kika Simplicio, este jogo foi inspirado em nós, e olha que coisa, tudo começou justamente porque alguém, com um belo par de olhos castanhos, me enviou um belo gatinho pretinho, e daí surgiu a “hAnna” que virou Hanna nesse game, que nada mais é do que uma celebração de tudo o que sentimos. E também vale ressaltar que a ideia do jogo veio de uma frase sua no nosso grupo, você dizia que estava querendo jogar algo novo, ou stardew valley comigo, e aí veio tudo na minha cabeça... “vou criar um jogo pra minha amada com tudo o que gostamos e eu que lute haha”.
 
-    Desde o dia em que te revelei meus sentimentos, não teve um único dia que não pensei em você, em nós, e conforme as coisas foram avançando eu sentia uma energia e felicidade maravilhosa, talvez seja porque você exala essa energia, sério, é só eu falar com você que eu sinto minha “bateria” ser recarregada haha. Será que um belo sotaque recifense tenha esse poder, talvez sim hein! Já diria as Anavitoria e “meus males se vão com tua voz”, elas estavam muito certas nessa bela canção, que aliás combina demais com a gente, pois você me mandou ela e sinto que a letra é recíproca demais, pois como eu disse, é só te ouvir e minha bateria recarrega e fico toda serelepe kkkk.
+	  Desde o dia em que te revelei meus sentimentos, não teve um único dia que não pensei em você, em nós, e conforme as coisas foram avançando eu sentia uma energia e felicidade maravilhosa, talvez seja porque você exala essa energia, sério, é só eu falar com você que eu sinto minha “bateria” ser recarregada haha. Será que um belo sotaque recifense tenha esse poder?! Talvez sim hein! Já diria as Anavitoria e “meus males se vão com tua voz”, elas estavam muito certas nessa bela canção, que aliás combina demais com a gente, pois você me mandou ela e sinto que a letra é recíproca demais, pois como eu disse, só de te ouvir a minha bateria recarrega na hora e fico toda serelepe kkkk.
 
-    Eu sei que sempre apronto coisas mirabolantes pra poder fazer você sorrir, às vezes até chorar (prendam essa criminosa!!!), mas é que tem algo em “kanna” que me desperta um lado aprontão nível 10, não acho que essa bela morena recifense mereça nada “básico”, ela merece tudo do melhor pra soltar um sorriso de canto a canto, como ela tá fazendo justamente agora lendo esse texto hehe (me diz que tá sorrindo, prfv).
+	  Eu sei que sempre apronto coisas mirabolantes pra poder fazer você sorrir, às vezes até chorar (prendam essa criminosa!!!), mas é que tem algo em “kanna” que me desperta um lado aprontão nível 10, não acho que essa bela morena recifense mereça nada “básico”, ela merece tudo do melhor pra soltar um sorriso de canto a canto, como ela tá fazendo justamente agora lendo esse texto hehe (me diz que tá sorrindo, prfv).
 
-    Bom, volto aqui a frisar o quanto eu gosto do seu jeito, do seu humor, do seu gosto musical extremamente variado kkkk, da sua voz, da sua amizade, do seu cuidado comigo e com minha família, e obviamente, eu amo o jeito que você demonstra seus sentimentos por mim, não é tão escrachada como eu, mas é muito fofo, amo quando me chama de apelidinhos fofos, então, eu amo que eu amo você no geral, não é mesmo?!
+	  Bom, volto aqui a frisar o quanto eu gosto do seu jeito, do seu humor, do seu gosto musical extremamente variado kkkk, da sua voz, da sua amizade, que diga-se de passagem, desde o primeiro dia já tivemos uma conexão fora do comum, tanto que deu no que deu haha, do seu cuidado comigo e com minha família, e obviamente, eu amo o jeito que você demonstra seus sentimentos por mim,  é muito fofo, amo quando me chama de apelidinhos fofos, ou seja, no saldo geral, eu amo você por completo, não é mesmo?!
 
-    Com tudo isso dito, queria aproveitar esse espaço e te perguntar uma coisa bem importante, momento de limpar as lágrimas hein hahaha. Mas Kika, meu bemzinho...
+	  Com tudo isso dito...
+
+    Kika Simplicio, queria aproveitar esse espaço e te perguntar uma coisa bem importante, momento de limpar as lágrimas hein haha. Mas Kika, meu bemzinho, você aceita namorar comigo?
+
 
 ...
 
@@ -441,6 +447,8 @@ function esconderTodasAsTelas() {
     telaCarta.style.display = "none";
 
     telaArena.style.display = "none";
+
+    telaComoJogar.style.display = "none";
 
 }
 
@@ -1200,37 +1208,37 @@ function tocarPurr() {
 const momentosJuntas = [
   {
     sprite: "assets/sprites/hanna-gatinha/gatinhas-abraco.png",
-    fala: "🤗 se abraçando fofinho!",
+    fala: "se abraçando fofinho 🤗",
     som: "purr",
   },
   {
     sprite: "assets/sprites/hanna-gatinha/gatinhas-beijinho.png",
-    fala: "💋 beijinho da gatinha preta!",
+    fala: "beijinho da gatinha preta 💋",
     som: "purr",
   },
   {
     sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando.png",
-    fala: "🎀 brincando juntas!",
+    fala: "brincando juntas.",
     som: "meow",
   },
   {
-    sprite: "assets/sprites/hanna-gatinha/gatinhas-carinho.png",
-    fala: "💜 se fazendo carinho...",
+    sprite: "assets/sprites/hanna-gatinha/gatinhas-carinho2.png",
+    fala: "se fazendo carinho...",
     som: "purr",
   },
   {
     sprite: "assets/sprites/hanna-gatinha/gatinhas-lambendo.png",
-    fala: "👅 se lambendo de carinho!",
+    fala: "se lambendo de carinho.",
     som: "purr",
   },
   {
     sprite: "assets/sprites/hanna-gatinha/noite-feliz.png",
-    fala: "🌙 noitinha feliz juntas~",
+    fala: "noitinha feliz juntas 🌙",
     som: null,
   },
   {
     sprite: "assets/sprites/hanna-gatinha/gatinhas-dormindo.png",
-    fala: "💤 soneca fofa juntas...",
+    fala: "soneca fofa juntas 💤",
     som: null,
   },
 ];
@@ -1293,7 +1301,13 @@ document.getElementById("hannaContainer").addEventListener("click", () => {
   const spriteEscolhida = spritesCliqueHanna[Math.floor(Math.random() * spritesCliqueHanna.length)];
   const spriteAnterior  = hannaSprite.src;
   hannaSprite.src = `assets/sprites/hanna/${spriteEscolhida}.png`;
-  setTimeout(() => { hannaSprite.src = spriteAnterior; }, 2000);
+  setTimeout(() => {
+
+  if (momentoConjuntoAtivo) return;
+
+  hannaSprite.src = spriteAnterior;
+
+  }, 2000);
 
   // Balão de fala
   const fala = falasHanna[Math.floor(Math.random() * falasHanna.length)];
@@ -1317,7 +1331,13 @@ document.getElementById("hannaContainer").addEventListener("click", () => {
   });
 
 // Momentos juntos: acontecem a cada 3–6 min se a gatinha estiver desbloqueada
+// Progressivo por vínculo:
+//   0–40%  → apenas brincam lado a lado (sprites individuais animadas)
+//   40–70% → momentos simples (brincando, carinho)
+//   70–100%→ todos os momentos (abraço, beijinho, lambendo, dormindo juntas)
 let momentoJuntasTimer;
+
+let momentoConjuntoAtivo = false;
 
 function agendarMomentoJuntas() {
   clearTimeout(momentoJuntasTimer);
@@ -1328,15 +1348,46 @@ function agendarMomentoJuntas() {
 function dispararMomentoJuntas() {
   if (!gatinhaDesbloqueada || dormindo) {
     agendarMomentoJuntas();
+    spriteConjunta.style.display = "none";
+    momentoConjuntoAtivo = false;
+
     return;
   }
 
-  const momento = momentosJuntas[Math.floor(Math.random() * momentosJuntas.length)];
+  // Vínculo baixo — só animação lado a lado, sem sprite conjunta
+  if (vinculoGatinhas < 40) {
+    mostrarMensagem("as gatinhas ficaram se olhando...");
+    agendarMomentoJuntas();
+    return;
+  }
+
+  // Filtra momentos pelo nível de vínculo
+  const momentosFiltrados = vinculoGatinhas >= 70
+    ? momentosJuntas  // todos
+    : momentosJuntas.filter(m =>
+        m.sprite.includes("brincando") ||
+        m.sprite.includes("carinho")
+      );
+
+  if (momentosFiltrados.length === 0) {
+    agendarMomentoJuntas();
+    return;
+  }
+
+  const momento = momentosFiltrados[Math.floor(Math.random() * momentosFiltrados.length)];
+  const hannaContainer = document.getElementById("hannaContainer");
   const spriteConjunta = document.getElementById("spriteConjunta");
 
-  // Esconde Hanna e gatinha individuais, mostra sprite conjunta
-  hannaSprite.style.display      = "none";
-  gatinhaContainer.style.display = "none";
+  momentoConjuntoAtivo = true;
+
+  if (hannaContainer) {
+
+  hannaContainer.style.visibility = "hidden";
+  hannaContainer.style.opacity = "0";
+
+  }
+  gatinhaContainer.style.visibility = "hidden";
+  gatinhaContainer.style.opacity = "0";
   spriteConjunta.src              = momento.sprite;
   spriteConjunta.style.display    = "block";
 
@@ -1347,13 +1398,31 @@ function dispararMomentoJuntas() {
   mostrarMensagem(momento.fala);
 
   setTimeout(() => {
-    spriteConjunta.style.display   = "none";
-    hannaSprite.style.display      = "block";
-    if (gatinhaDesbloqueada) gatinhaContainer.style.display = "flex";
-    gatinhaFalaEl && gatinhaFalaEl.classList.remove("visivel");
-  }, 5000);
 
-  agendarMomentoJuntas();
+    spriteConjunta.style.display = "none";
+
+    if (hannaContainer) {
+
+      hannaContainer.style.visibility = "visible";
+      hannaContainer.style.opacity = "1";
+
+    }
+
+    if (gatinhaDesbloqueada) {
+
+      gatinhaContainer.style.visibility = "visible";
+      gatinhaContainer.style.opacity = "1";
+
+    }
+
+    gatinhaFalaEl &&
+    gatinhaFalaEl.classList.remove("visivel");
+
+    momentoConjuntoAtivo = false;
+
+    agendarMomentoJuntas();
+
+  }, 5000);
 }
 
 // Inicia agendamento assim que a gatinha for desbloqueada (ou já está no load)
@@ -1463,17 +1532,30 @@ let ultimoAcesso = Number(localStorage.getItem("ultimoAcesso")) || Date.now();
 // Calcula quantos minutos se passaram desde o último acesso
 // e aplica a degradação de stats proporcionalmente (máx 8h)
 (function compensarTempoOffline() {
-  const agora       = Date.now();
-  const minutosOff  = Math.min((agora - ultimoAcesso) / 60000, 480); // máx 8h
+  const agora      = Date.now();
+  const minutosOff = Math.min((agora - ultimoAcesso) / 60000, 480);
 
-  if (minutosOff >= 1 && !dormindo) {
-    fome       = Math.max(0, fome       - 2   * minutosOff);
-    felicidade = Math.max(0, felicidade - 1   * minutosOff);
-    energia    = Math.max(0, energia    - 0.5 * minutosOff);
-    higiene    = Math.max(0, higiene    - 1   * minutosOff);
+  if (minutosOff >= 1) {
+    if (dormindo) {
+      // Recupera energia enquanto dormia offline
+      energia = Math.min(100, energia + 0.5 * minutosOff);
+
+      // Se energia encheu, acorda
+      if (energia >= 100) {
+        energia  = 100;
+        dormindo = false;
+        localStorage.setItem("dormindo", "false");
+        zzzContainer.style.display = "none";
+      }
+    } else {
+      // Degrada stats normalmente
+      fome       = Math.max(0, fome       - 2   * minutosOff);
+      felicidade = Math.max(0, felicidade - 1   * minutosOff);
+      energia    = Math.max(0, energia    - 0.5 * minutosOff);
+      higiene    = Math.max(0, higiene    - 1   * minutosOff);
+    }
   }
 
-  // Atualiza ultimoAcesso e salva a cada 30s enquanto o app está aberto
   localStorage.setItem("ultimoAcesso", agora);
   setInterval(() => {
     localStorage.setItem("ultimoAcesso", Date.now());
@@ -1525,13 +1607,13 @@ function iniciarFalasIdle() {
 
       normal: [
 
-          "Você voltou 💖",
+          "Você voltou.",
 
           "Vamos brincar?",
 
           "Tava com saudade...",
 
-          "Hoje você tá linda ✨",
+          "Hoje você tá linda.",
 
           "Me faz carinho?"
 
@@ -1539,9 +1621,9 @@ function iniciarFalasIdle() {
 
       fome: [
 
-          "Barriguinha vazia 😿",
+          "Barriguinha vazia...",
 
-          "Será que tem peixinho? 🐟",
+          "Ser que tem peixinho?",
 
           "Acho que tô com fome..."
 
@@ -1549,7 +1631,7 @@ function iniciarFalasIdle() {
 
       cansada: [
 
-          "Tô com soninho 😴",
+          "Tô com soninho.",
 
           "Será que dá pra cochilar?",
 
@@ -1569,11 +1651,11 @@ function iniciarFalasIdle() {
 
       apaixonada: [
 
-          "Você me faz feliz 💖",
+          "Você me faz feliz.",
 
-          "Gosto quando você aparece 🌸",
+          "Gosto quando você aparece.",
 
-          "Você é especial pra mim ✨"
+          "Você é especial pra mim."
 
       ]
 
@@ -1637,6 +1719,9 @@ function iniciarFalasIdle() {
 
 // ATUALIZAR STATUS
 function atualizarStatus() {
+
+  if (momentoConjuntoAtivo) return;
+
   // corações
   coracoes.forEach((c, i) => {
     c.src = amizade >= i + 1
@@ -1701,11 +1786,30 @@ function atualizarStatus() {
   if (sementesFazendaEl) sementesFazendaEl.textContent = sementes;
 
   if (gatinhaDesbloqueada) {
-    // Só exibe o container individual se a sprite conjunta NÃO estiver visível
+    // Só exibe containers individuais se a sprite conjunta NÃO estiver visível
     const _conjunta = document.getElementById("spriteConjunta");
     const conjuntaAtiva = _conjunta && _conjunta.style.display !== "none";
-    if (!conjuntaAtiva) {
-      gatinhaContainer.style.display = "flex";
+    if (!momentoConjuntoAtivo) {
+
+      const hannaContainer =
+      document.getElementById("hannaContainer");
+
+      const spriteConjunta =
+      document.getElementById("spriteConjunta");
+
+      const conjuntaVisivel =
+      spriteConjunta &&
+      spriteConjunta.style.display === "block";
+
+      if (!conjuntaVisivel) {
+
+        if (hannaContainer)
+          hannaContainer.style.display = "flex";
+
+        gatinhaContainer.style.display = "flex";
+
+      }
+
     }
     nomeDaGatinhaTexto.textContent = nomeGatinha;
 
@@ -1724,6 +1828,8 @@ function atualizarStatus() {
     if (!_conjunta || _conjunta.style.display === "none") {
       hannaSprite.src = "assets/sprites/hanna/dormindo.png";
       hannaSprite.style.animation = "none";
+      // Para animação da gatinha também quando dorme separada
+      if (gatinhaDesbloqueada) gatinhaSprite.style.animation = "none";
     } else {
       // Sprite conjunta ativa — sem animação
       _conjunta.style.animation = "none";
@@ -1812,7 +1918,7 @@ const eventosDoDia = [
     sprite:    "vergonha",
     animacao:  "vergonhaWiggle 0.6s ease-in-out infinite alternate",
     duracao:   4000,
-    fala:      "Aaaa para de olhar!! 🙈",
+    fala:      "Aaaa, para de olhar!",
     // Aparece quando está feliz ou apaixonada (humor alto)
     condicao:  () => felicidade >= 70 && !dormindo,
     peso:      3,
@@ -1822,7 +1928,7 @@ const eventosDoDia = [
     sprite:    "aprontona",
     animacao:  "aprontonaSneak 1s ease-in-out infinite",
     duracao:   5000,
-    fala:      "Eu não fiz nada... 😼",
+    fala:      "Eu não fiz nada...",
     // Aparece com qualquer humor, mais comum quando a fome tá ok
     condicao:  () => fome >= 40 && !dormindo,
     peso:      4,
@@ -1832,7 +1938,7 @@ const eventosDoDia = [
     sprite:    "doidinha",
     animacao:  "doidinhaSpin 0.5s linear infinite",
     duracao:   4500,
-    fala:      "WHEEEEE 🌀✨",
+    fala:      "WHEEEEE 🌀",
     // Aparece só quando energia está alta
     condicao:  () => energia >= 70 && !dormindo,
     peso:      2,
@@ -1842,7 +1948,7 @@ const eventosDoDia = [
     sprite:    "chorando-felicidade",
     animacao:  "chorandoFelizFloat 3s ease-in-out infinite",
     duracao:   5500,
-    fala:      "Tô chorando de amor por você 😭💖",
+    fala:      "Tô chorando de amor por você...",
     // Só aparece com felicidade e vínculo muito altos
     condicao:  () => felicidade >= 85 && amizade >= 3 && !dormindo,
     peso:      2,
@@ -1852,7 +1958,7 @@ const eventosDoDia = [
     sprite:    "metida",
     animacao:  "metidaFloat 4s ease-in-out infinite",
     duracao:   5000,
-    fala:      "Sei lá, sou muito fofa mesmo 💅",
+    fala:      "Sei lá, sou muito fofa mesmo.",
     // Aparece quando está contente ou apaixonada
     condicao:  () => felicidade >= 60 && !dormindo,
     peso:      3,
@@ -1901,8 +2007,10 @@ function dispararEventoAleatorio() {
   mostrarMensagem(evento.fala);
 
   setTimeout(() => {
-    hannaSprite.src            = spriteAnterior;
-    hannaSprite.style.animation = animacaoAnterior;
+
+    if (momentoConjuntoAtivo) return;
+
+    hannaSprite.src = spriteAnterior;
     eventoEmAndamento           = false;
   }, evento.duracao);
 
@@ -1964,7 +2072,7 @@ somBotao.play().catch(()=>{});
   }
   sementes++;
   criarParticulas("💖", 8);
-  mostrarMensagem("Purrrr 💖");
+  mostrarMensagem("Purrrr...");
   hannaSprite.src = "assets/sprites/hanna/carinho.png";
   gatinhaSpriteTemp("gatinha-apaixonada", 2000);
   setTimeout(atualizarStatus, 2000);
@@ -1995,7 +2103,7 @@ somBotao.play().catch(()=>{});
 
     criarParticulas("🐟", 6);
 
-    mostrarMensagem("Miauu! obrigada pela comida 🐟");
+    mostrarMensagem("Miauu! obrigada pela comida.");
 
     hannaSprite.src =
     "assets/sprites/hanna/comendo.png";
@@ -2028,14 +2136,24 @@ function iniciarSono() {
 
     atualizarStatus(); // roda primeiro
 
-    if (gatinhaDesbloqueada) {
-      // Mostra sprite conjunta dormindo — sobrescreve o que atualizarStatus fez
+    if (gatinhaDesbloqueada && vinculoGatinhas >= 70) {
+      // Vínculo alto — dormem juntas
+      const hannaContainer = document.getElementById("hannaContainer");
       const spriteConjunta = document.getElementById("spriteConjunta");
-      hannaSprite.style.display      = "none";
-      gatinhaContainer.style.display = "none";
+      if (hannaContainer) {
+
+        hannaContainer.style.visibility = "hidden";
+        hannaContainer.style.opacity = "0";
+
+      }
+
+      gatinhaContainer.style.visibility = "hidden";
+      gatinhaContainer.style.opacity = "0";
+
       spriteConjunta.src             = "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
       spriteConjunta.style.display   = "block";
     } else {
+      // Vínculo baixo — cada uma dorme no seu canto
       hannaSprite.src = "assets/sprites/hanna/dormindo.png";
     }
 
@@ -2062,15 +2180,19 @@ function iniciarSono() {
 
             // Restaura sprites individuais se estava mostrando a conjunta
             const spriteConjunta = document.getElementById("spriteConjunta");
+            const hannaContainer = document.getElementById("hannaContainer");
             if (spriteConjunta) {
               spriteConjunta.style.animation = "";
               spriteConjunta.style.display   = "none";
             }
-            hannaSprite.style.display = "block";
+            if (hannaContainer) hannaContainer.style.display = "flex";
             hannaSprite.style.animation = "";
-            if (gatinhaDesbloqueada) gatinhaContainer.style.display = "flex";
+            if (gatinhaDesbloqueada) {
+              gatinhaContainer.style.display = "flex";
+              gatinhaSprite.style.animation = "";
+            }
 
-            mostrarMensagem("A Hanna acordou descansada 💖");
+            mostrarMensagem("A Hanna acordou descansada.");
 
         }
 
@@ -2097,7 +2219,7 @@ somBotao.play().catch(()=>{});
     if (dormindo) return;
 
 
-    mostrarMensagem("A Hanna foi dormir 😴");
+    mostrarMensagem("A Hanna foi dormir.");
 
 
     iniciarSono();
@@ -2263,14 +2385,14 @@ slotsPlantacao.forEach((slotHTML, idx) => {
     atualizarStatus();
     salvarFazenda();
     mostrarMensagem(`Você colheu! 🪙 +${valorPlantas[slot.flor] || 0}`);
-    falarFazenda(`Que colheita boa! 🌸`, "assets/sprites/hanna/brincando.png");
+    falarFazenda(`Que colheita boa!`, "assets/sprites/hanna/brincando.png");
   });
 });
 
 // Restaura os visuais dos slots ao carregar a página
 restaurarSlotsVisuais();
 
-// ── REAGENDAR CRESCIMENTO DAS PLANTAS OFFLINE ─────────────────
+// REAGENDAR CRESCIMENTO DAS PLANTAS OFFLINE
 (function reagendarCrescimentoOffline() {
   const agora   = Date.now();
   const PLANTAS = ["rosa","flor","morango","cenoura","abobora","lavanda","margarida","girassol"];
@@ -2308,7 +2430,7 @@ restaurarSlotsVisuais();
         salvarFazenda();
         const s = slotsPlantacao[idx]?.querySelector("img");
         if (s) s.src = `assets/farm/${slot.flor}.png`;
-        mostrarMensagem("Uma flor cresceu! 🌸");
+        mostrarMensagem("Uma flor cresceu.");
       }, tempoRestante);
     }
   });
@@ -2320,8 +2442,8 @@ btnPlantar.addEventListener("click", () => {
 
   if (slotLivre === -1) {
 
-    mostrarMensagem("Todos os canteiros estão ocupados 🌱", "fazenda");
-    falarFazenda("Todos os canteiros cheios! 🌿", "assets/sprites/hanna/curiosa.png");
+    mostrarMensagem("Todos os canteiros estão ocupados.", "fazenda");
+    falarFazenda("Todos os canteiros cheios.", "assets/sprites/hanna/curiosa.png");
 
     return;
 
@@ -2369,7 +2491,7 @@ btnPlantar.addEventListener("click", () => {
     "margarida",
     "margarida",
 
-    // MUITO rara 🌻
+    // MUITO rara
     "girassol"
 
   ];
@@ -2390,8 +2512,8 @@ btnPlantar.addEventListener("click", () => {
 
   sprite.style.display = "block";
 
-  mostrarMensagem("A Hanna plantou uma sementinha 🌱");
-  falarFazenda("Plantei! Agora é só esperar 💧", "assets/sprites/hanna/feliz.png");
+  mostrarMensagem("A Hanna plantou uma sementinha.");
+  falarFazenda("Plantei! Agora é só esperar.", "assets/sprites/hanna/feliz.png");
 
   setTimeout(() => {
 
@@ -2431,8 +2553,8 @@ btnPlantar.addEventListener("click", () => {
 
     sprite.src = `assets/farm/${slot.flor}.png`;
 
-    mostrarMensagem("Uma flor cresceu! 🌸");
-    falarFazenda("Cresceu! Toca pra colher! 🌸", "assets/sprites/hanna/animada.png");
+    mostrarMensagem("Uma flor cresceu.");
+    falarFazenda("Cresceu! Toca pra colher.", "assets/sprites/hanna/animada.png");
 
   }, tempoRestante);
 
@@ -2525,7 +2647,7 @@ setInterval(() => {
   const reacoes = [
     { sprite:"assets/sprites/hanna/curiosa.png",    frase:"A Hanna está curiosa 👀" },
     { sprite:"assets/sprites/hanna/animada.png",    frase:"A Hanna quer brincar 😺" },
-    { sprite:"assets/sprites/hanna/apaixonada.png", frase:"Purrrr 💖" },
+    { sprite:"assets/sprites/hanna/apaixonada.png", frase:"Purrrr..." },
   ];
   const r = reacoes[Math.floor(Math.random() * reacoes.length)];
   hannaSprite.src = r.sprite;
@@ -2581,7 +2703,7 @@ btnUrsinho.addEventListener("click", () => {
 
 somCompra.play().catch(()=>{});
   felicidade = Math.min(100, felicidade + 10);
-  mostrarMensagem("A Hanna amou a nova coleira 🎀");
+  mostrarMensagem("A Hanna amou a nova coleira.");
   hannaSprite.src = "assets/sprites/hanna/contente.png";
   atualizarStatus();
 });
@@ -2598,7 +2720,7 @@ btnMorango.addEventListener("click", () => {
 
 somCompra.play().catch(()=>{});
   fome = Math.min(100, fome + 15);
-  mostrarMensagem("A Hanna devorou o peixinho 🐟");
+  mostrarMensagem("A Hanna devorou o peixinho.");
   hannaSprite.src = "assets/sprites/hanna/comendo.png";
   atualizarStatus();
 });
@@ -2631,7 +2753,7 @@ btnSashimi.addEventListener("click", () => {
 
 somCompra.play().catch(()=>{});
 
-  mostrarMensagem("A Hanna amou o sashimi 🍣");
+  mostrarMensagem("A Hanna amou o sashimi.");
   atualizarStatus();
 });
 
@@ -2652,7 +2774,7 @@ btnNovelo.addEventListener("click", () => {
 
 somCompra.play().catch(()=>{});
 
-  mostrarMensagem("A Hanna brincou com o novelo 🧶");
+  mostrarMensagem("A Hanna brincou com o novelo.");
   atualizarStatus();
 });
 
@@ -2673,7 +2795,7 @@ btnRatinho.addEventListener("click", () => {
 
   somCompra.play().catch(()=>{});
 
-  mostrarMensagem("A Hanna adorou o ratinho 🐭");
+  mostrarMensagem("A Hanna adorou o ratinho.");
   atualizarStatus();
 });
 
@@ -2694,7 +2816,7 @@ btnAtum.addEventListener("click", () => {
 
   somCompra.play().catch(()=>{});
 
-  mostrarMensagem("Atum premium delicioso 🐟");
+  mostrarMensagem("Atum premium, delicioso.");
   atualizarStatus();
 });
 
@@ -2716,7 +2838,7 @@ btnBiscoito.addEventListener("click", () => {
 
   somCompra.play().catch(()=>{});
 
-  mostrarMensagem("Biscoitinho crocante 💖");
+  mostrarMensagem("Biscoitinho crocante.");
   atualizarStatus();
 });
 
@@ -2737,7 +2859,7 @@ btnDonut.addEventListener("click", () => {
 
   somCompra.play().catch(()=>{});
 
-  mostrarMensagem("Donut felino delicioso 🍩");
+  mostrarMensagem("Donut felino, delicioso.");
   atualizarStatus();
 });
 
@@ -2758,7 +2880,7 @@ btnVarinha.addEventListener("click", () => {
 
   somCompra.play().catch(()=>{});
 
-  mostrarMensagem("Magia felina ✨");
+  mostrarMensagem("Magia felina.");
   atualizarStatus();
 });
 
@@ -2779,7 +2901,7 @@ btnRobo.addEventListener("click", () => {
 
   somCompra.play().catch(()=>{});
 
-  mostrarMensagem("Ratinho robô ativado 🤖");
+  mostrarMensagem("Ratinho robô ativado.");
   atualizarStatus();
 });
 
@@ -2800,17 +2922,28 @@ btnAlmofada.addEventListener("click", () => {
 
   somCompra.play().catch(()=>{});
 
-  mostrarMensagem("A Hanna descansou fofinha 💤");
+  mostrarMensagem("A Hanna descansou fofinha.");
   atualizarStatus();
 });
 
 btnPedidoEspecial.addEventListener(
 "click", () => {
 
+    if (vinculoGatinhas < 80) {
+
+    mostrarMensagem(
+      "Elas precisam criar um vínculo maior antes disso",
+      "loja"
+    );
+
+    return;
+
+    }
+
     if (moedas < 10000) {
 
-        mostrarMensagem(
-        "Moedas insuficientes 😿"
+        mostrarAlertaLoja(
+        "⚠️ Moedas insuficientes"
         );
 
         return;
@@ -3102,7 +3235,7 @@ function renderizarLembretes() {
             );
           }
           const labels = { diario:"diário", semanal:"semanal", mensal:"mensal", anual:"anual" };
-          mostrarMensagem(`🔁 Lembrete ${labels[rec]} reagendado!`);
+          mostrarMensagem(`Lembrete ${labels[rec]} reagendado.`);
         } else {
           // Único: remove
           cancelarNotificacaoSW(lembrete.id);
@@ -3192,9 +3325,9 @@ btnSalvarLembrete.addEventListener("click", async () => {
     if (permitido) {
       const sw = await navigator.serviceWorker.ready;
       sw.active?.postMessage({ tipo: "AGENDAR_LEMBRETE", id, texto: conteudo, timestamp });
-      mostrarMensagem("✅ Lembrete agendado!");
+      mostrarMensagem("Lembrete agendado.");
     } else {
-      mostrarMensagem("⚠️ Permita notificações para ser lembrado!");
+      mostrarMensagem("Permita notificações para ser lembrado.");
     }
   }
 
@@ -3206,7 +3339,7 @@ btnSalvarLembrete.addEventListener("click", async () => {
   tipoLembrete.value         = "📚";
 });
 
-// ── INIT ─────────────────────────────────────
+// INIT 
 atualizarStatus();
 renderizarLembretes();
 iniciarMomentosGatinha();
@@ -3249,7 +3382,7 @@ document.getElementById("btnMinigames").addEventListener("click", () => {
 
 let telaAnteriorConfig = "casa";
 
-// ── BOTÃO MUTE ───────────────────────────────────────────────
+// BOTÃO MUTE
 let isMuted = localStorage.getItem("muted") === "true";
 
 const btnMute    = document.getElementById("btnMute");
@@ -3312,6 +3445,22 @@ btnVoltarCarta.addEventListener("click", () => {
   abrirTela(telaConfig);
 
   animarTela(telaConfig);
+
+  window.scrollTo(0, 0);
+
+});
+
+btnComoJogar.addEventListener("click", () => {
+
+  abrirTela(telaComoJogar);
+
+  window.scrollTo(0, 0);
+
+});
+
+btnVoltarComoJogar.addEventListener("click", () => {
+
+  abrirTela(telaConfig);
 
   window.scrollTo(0, 0);
 
@@ -3410,7 +3559,7 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
 function jogoCartinhas() {
   abrirArena("Cartinhas da Hanna");
 
-  // ── DIFICULDADE ─────────────────────────────────────────
+  // DIFICULDADE
   // Fácil  = 6 pares (12 cartas)  | grid 4×3
   // Médio  = 10 pares (20 cartas) | grid 4×5
   // Difícil= 14 pares (28 cartas) | grid 4×7
@@ -3658,7 +3807,7 @@ btnBanho.addEventListener("click", () => {
 
     somBanho.play().catch(()=>{});
 
-    mostrarMensagem("A Hanna está tomando banho 🫧");
+    mostrarMensagem("A Hanna está tomando banho.");
 
     criarParticulas("🫧", 18);
 
@@ -3879,7 +4028,7 @@ atualizarPeriodoDoDia();
 
 // CARREGAR VOLUMES
 
-// ── PAUSAR AO MINIMIZAR / RETOMAR AO VOLTAR ──────────────────
+// PAUSAR AO MINIMIZAR / RETOMAR AO VOLTAR
 function pausarTodasTrilhas() {
     Object.values(trilhas).forEach(audio => {
         if (!audio) return;
@@ -3953,7 +4102,7 @@ Você quer namorar comigo?`;
 
 }
 
-// ── LISTENERS DOS BOTÕES DO PEDIDO ────────────────────────
+// LISTENERS DOS BOTÕES DO PEDIDO
 btnSimPedido.addEventListener("click", () => {
     abrirPedidoReal();
 });
@@ -3980,7 +4129,7 @@ btnNaoPedido.addEventListener("click", () => {
         btnNaoPedido.textContent = "NÃO";
         naoPedidoCliques = 0;
         tocarTrilha("casa");
-        mostrarMensagem("A Hanna ficou triste... 😿");
+        mostrarMensagem("A Hanna ficou triste...");
         return;
     }
     // Move o botão pra um lugar aleatório pra ficar difícil clicar
@@ -4003,7 +4152,7 @@ if (btnAceitarPedidoEl) {
             setTimeout(() => criarParticulas("💖", 10), i * 300);
             setTimeout(() => criarParticulas("🌟", 8), i * 300 + 150);
         }
-        mostrarMensagem("Que momento especial!");
+        mostrarMensagem("Que momento especial.");
     });
 }
 
@@ -4013,7 +4162,7 @@ function jogoSardinha() {
   abrirArena("Operação Sardinha");
   const arena = document.getElementById("arenaConteudo");
 
-  // ── ESCOLHA DE AGENTE ──────────────────────────────────────
+  // ESCOLHA DE AGENTE
   arena.innerHTML = `
     <div class="sardinha-escolha">
       <div class="sardinha-titulo-op">ESCOLHA SUA AGENTE</div>
@@ -4439,7 +4588,7 @@ function iniciarMomentosEspeciais() {
 
             {
                 sprite:
-                "assets/sprites/hanna/gatinhas-dormindo.png",
+                "assets/sprites/hanna-gatinha/gatinhas-dormindo.png",
 
                 frase:
                 "Elas dormiram juntinhas 💤",
@@ -4450,7 +4599,7 @@ function iniciarMomentosEspeciais() {
 
             {
                 sprite:
-                "assets/sprites/hanna/gatinhas-carinho.png",
+                "assets/sprites/hanna-gatinha/gatinhas-carinho.png",
 
                 frase:
                 "Muito carinho por aqui",
@@ -4461,7 +4610,7 @@ function iniciarMomentosEspeciais() {
 
             {
                 sprite:
-                "assets/sprites/hanna/gatinhas-brincando.png",
+                "assets/sprites/hanna-gatinha/gatinhas-brincando2.png",
 
                 frase:
                 "As duas estão brincando",

@@ -1,5 +1,5 @@
 const CACHE_NAME =
-"hanna-cache-v6";
+"hanna-cache-v14";
 
 const ASSETS = [
 
@@ -13,7 +13,7 @@ const ASSETS = [
 
 ];
 
-// ── SERVICE WORKER — Hanna App
+// SERVICE WORKER — Hanna App
 
 self.addEventListener("install", (e) => {
 
@@ -61,7 +61,7 @@ self.addEventListener("activate", (e) => {
 
 });
 
-// ── CACHE FIRST ──
+// CACHE FIRST
 
 self.addEventListener("fetch", (e) => {
 
