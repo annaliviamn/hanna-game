@@ -1,6 +1,7 @@
 /* HANNA — CSS MOBILE-FIRST COZY PIXEL */
 
 :root {
+  color-scheme: only light;
   --pink-light:   #fff0f6;
   --pink-mid:     #ffd6ea;
   --pink-main:    #ff8fc2;
@@ -240,7 +241,7 @@ textarea {
 
 #mensagem {
   position: absolute;
-  top: 12px; left: 50%; transform: translateX(-50%);
+  top: 60px; left: 50%; transform: translateX(-50%);
   background: rgba(255,255,255,0.88);
   backdrop-filter: blur(8px);
   padding: 7px 14px;
@@ -268,7 +269,7 @@ textarea {
 }
 
 #spriteConjunta {
-  width: 200px;
+  width: 180px;
   image-rendering: pixelated;
   position: relative;
   z-index: 2;
@@ -2241,7 +2242,7 @@ body.dark-mode .bottomNav {
 #zzzContainer {
   position: absolute;
 
-  top: 95px;
+  top: 150px;
   left: 35%;
 
   transform: translateX(-10px);

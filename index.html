@@ -7,6 +7,7 @@
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
+  <meta name="color-scheme" content="only light">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1025,6 +1026,7 @@ class="telaEspecial">
       <input type="text" id="inputLembrete" class="input-cozy" placeholder="Digite seu lembrete...">
       <div class="form-row-2">
         <input type="date" id="dataLembrete" class="input-cozy input-metade">
+        <input type="text" id="dataAniversario" class="input-cozy input-metade" placeholder="DD/MM" maxlength="5" inputmode="numeric" style="display:none;">
         <input type="time" id="horaLembrete" class="input-cozy input-metade">
       </div>
       <!-- Recorrência — aparece só para Alerta e Aniversário -->
@@ -1294,42 +1296,39 @@ class="telaEspecial">
 <!-- Trilhas Sonoras -->
 
 <!-- Tela Inicial -->
-<audio id="musicaMenu" class="trilha" src="assets/music/menu.mp3" loop preload="none"></audio>
+<audio playsinline id="musicaMenu" class="trilha" src="assets/music/menu.mp3" loop preload="none"></audio>
 
 <!-- Tela principal do jogo (casa da Hanna) -->
-<audio id="musicaCasa" class="trilha" src="assets/music/casa.mp3" loop preload="none"></audio>
+<audio playsinline id="musicaCasa" class="trilha" src="assets/music/casa.mp3" loop preload="none"></audio>
 
 <!-- Fazenda -->
-<audio id="musicaFazenda" class="trilha" src="assets/music/fazenda.mp3" loop preload="none"></audio>
+<audio playsinline id="musicaFazenda" class="trilha" src="assets/music/fazenda.mp3" loop preload="none"></audio>
 
 <!-- Loja -->
-<audio id="musicaLoja" class="trilha" src="assets/music/loja.mp3" loop preload="none"></audio>
+<audio playsinline id="musicaLoja" class="trilha" src="assets/music/loja.mp3" loop preload="none"></audio>
 
 <!-- Lembretes -->
-<audio id="musicaLembretes" class="trilha" src="assets/music/lembretes.mp3" loop preload="none"></audio>
+<audio playsinline id="musicaLembretes" class="trilha" src="assets/music/lembretes.mp3" loop preload="none"></audio>
 
 <!-- Menu de Minigames -->
-<audio id="musicaMinigames" class="trilha" src="assets/music/minigames-menu.mp3" loop preload="none"></audio>
+<audio playsinline id="musicaMinigames" class="trilha" src="assets/music/minigames-menu.mp3" loop preload="none"></audio>
 
 <!-- Arena (dentro dos minigames em jogo) -->
-<audio id="musicaArena" class="trilha" src="assets/music/arena.mp3" loop preload="none"></audio>
+<audio playsinline id="musicaArena" class="trilha" src="assets/music/arena.mp3" loop preload="none"></audio>
 
 <!-- Pedido Especial -->
-<audio id="musicaPedido" class="trilha" src="assets/music/pedido.mp3" loop preload="none"></audio>
+<audio playsinline id="musicaPedido" class="trilha" src="assets/music/pedido.mp3" loop preload="none"></audio>
 
 <!-- Sons da Gatinha -->
-<audio id="somMeow1"      src="assets/music/cat/meow1.mp3"      preload="none"></audio>
-<audio id="somMeow2"      src="assets/music/cat/meow2.mp3"      preload="none"></audio>
-<audio id="somMeow3"      src="assets/music/cat/meow3.mp3"      preload="none"></audio>
-<audio id="somPurr"       src="assets/music/cat/purr.mp3"       preload="none"></audio>
-<audio id="somMeowAdocao" src="assets/music/cat/meow-adocao.mp3" preload="none"></audio>
+<audio playsinline id="somMeow1"      src="assets/music/cat/meow1.mp3"      preload="none"></audio>
+<audio playsinline id="somMeow2"      src="assets/music/cat/meow2.mp3"      preload="none"></audio>
+<audio playsinline id="somMeow3"      src="assets/music/cat/meow3.mp3"      preload="none"></audio>
+<audio playsinline id="somPurr"       src="assets/music/cat/purr.mp3"       preload="none"></audio>
+<audio playsinline id="somMeowAdocao" src="assets/music/cat/meow-adocao.mp3" preload="none"></audio>
 
 <div id="efeitosMoedas"></div>
 
-<audio id="somMoeda" src="assets/music/moeda.wav"></audio>
-
-<audio id="somChuva" src="assets/music/chuva.mp3" loop></audio>
-
+<audio playsinline id="somMoeda" src="assets/music/moeda.wav"></audio>
 
 <!--Alerta Saldo Loja-->
 <div id="alertaLoja"></div>

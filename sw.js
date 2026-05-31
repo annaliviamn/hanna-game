@@ -1,127 +1,139 @@
-const CACHE_NAME =
-"hanna-cache-v14";
+const CACHE_NAME = "hanna-cache-v18";
 
 const ASSETS = [
-
   "./",
-
   "./index.html",
-
   "./style.css",
-
   "./script.js"
-
 ];
 
-// SERVICE WORKER — Hanna App
-
+// ── INSTALL ──────────────────────────────────────────────────
 self.addEventListener("install", (e) => {
-
   self.skipWaiting();
-
   e.waitUntil(
-
-    caches.open(CACHE_NAME)
-
-      .then(cache => {
-
-        return cache.addAll(ASSETS);
-
-      })
-
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
-
 });
 
+// ── ACTIVATE ─────────────────────────────────────────────────
 self.addEventListener("activate", (e) => {
-
   e.waitUntil(
-
-    caches.keys().then(keys => {
-
-      return Promise.all(
-
-        keys
-
-          .filter(
-            key =>
-            key !== CACHE_NAME
-          )
-
-          .map(
-            key =>
-            caches.delete(key)
-          )
-
-      );
-
-    }).then(() => self.clients.claim())
-
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      )
+    ).then(() => self.clients.claim())
   );
-
 });
 
-// CACHE FIRST
-
+// ── CACHE FIRST ───────────────────────────────────────────────
 self.addEventListener("fetch", (e) => {
-
   e.respondWith(
-
-    caches.match(e.request)
-
-      .then(response => {
-
-        return response ||
-
-        fetch(e.request);
-
-      })
-
+    caches.match(e.request).then(r => r || fetch(e.request))
   );
-
 });
 
-// Recebe mensagem do app principal para agendar uma notificação
-self.addEventListener("message", (event) => {
+// ── INDEXEDDB — persiste lembretes mesmo com SW reiniciado ────
+function abrirDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open("hanna-lembretes", 1);
+    req.onupgradeneeded = e => {
+      e.target.result.createObjectStore("lembretes", { keyPath: "id" });
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+async function salvarLembrete(lembrete) {
+  const db   = await abrirDB();
+  const tx   = db.transaction("lembretes", "readwrite");
+  tx.objectStore("lembretes").put(lembrete);
+  return new Promise(r => tx.oncomplete = r);
+}
+
+async function removerLembrete(id) {
+  const db   = await abrirDB();
+  const tx   = db.transaction("lembretes", "readwrite");
+  tx.objectStore("lembretes").delete(id);
+  return new Promise(r => tx.oncomplete = r);
+}
+
+async function listarLembretes() {
+  const db   = await abrirDB();
+  const tx   = db.transaction("lembretes", "readonly");
+  return new Promise((resolve, reject) => {
+    const req = tx.objectStore("lembretes").getAll();
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+// ── VERIFICAR E DISPARAR LEMBRETES PENDENTES ─────────────────
+async function verificarLembretes() {
+  const agora     = Date.now();
+  const lembretes = await listarLembretes();
+
+  for (const l of lembretes) {
+    if (l.timestamp <= agora) {
+      await self.registration.showNotification("Hanna lembrou você!", {
+        body:     l.texto,
+        icon:     "assets/sprites/hanna/contente.png",
+        badge:    "assets/sprites/hanna/contente.png",
+        tag:      `lembrete-${l.id}`,
+        renotify: true,
+        data:     { id: l.id },
+      });
+      await removerLembrete(l.id);
+    }
+  }
+}
+
+// Verifica lembretes pendentes a cada sync periódico
+self.addEventListener("periodicsync", e => {
+  if (e.tag === "hanna-lembretes") e.waitUntil(verificarLembretes());
+});
+
+// ── MENSAGENS DO APP ──────────────────────────────────────────
+self.addEventListener("message", async (event) => {
   const { tipo, id, texto, timestamp } = event.data || {};
 
   if (tipo === "AGENDAR_LEMBRETE") {
-    const agora   = Date.now();
-    const atraso  = timestamp - agora;
+    if (!timestamp || timestamp <= Date.now()) return;
 
-    if (atraso <= 0) return; // horário já passou
+    // Salva no IndexedDB — persiste mesmo se o SW for reiniciado
+    await salvarLembrete({ id, texto, timestamp });
 
-    // Agenda a notificação com setTimeout dentro do SW
-    setTimeout(() => {
-      self.registration.showNotification("🐾 Hanna lembrou você!", {
-        body:    texto,
-        icon:    "assets/sprites/hanna/contente.png",
-        badge:   "assets/sprites/hanna/contente.png",
-        tag:     `lembrete-${id}`,
+    // Tenta agendar via setTimeout também (funciona se o SW estiver vivo)
+    const atraso = timestamp - Date.now();
+    setTimeout(async () => {
+      await self.registration.showNotification("Hanna lembrou você!", {
+        body:     texto,
+        icon:     "assets/sprites/hanna/contente.png",
+        badge:    "assets/sprites/hanna/contente.png",
+        tag:      `lembrete-${id}`,
         renotify: true,
-        data:    { id },
+        data:     { id },
       });
+      await removerLembrete(id);
     }, atraso);
   }
 
   if (tipo === "CANCELAR_LEMBRETE") {
-    // Fecha notificação se ainda estiver visível
-    self.registration.getNotifications({ tag: `lembrete-${id}` })
-      .then(notifs => notifs.forEach(n => n.close()));
+    await removerLembrete(id);
+    const notifs = await self.registration.getNotifications({ tag: `lembrete-${id}` });
+    notifs.forEach(n => n.close());
   }
 });
 
-// Clique na notificação → abre o app
+// ── CLIQUE NA NOTIFICAÇÃO ─────────────────────────────────────
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true })
       .then(clients => {
-        if (clients.length > 0) {
-          clients[0].focus();
-        } else {
-          self.clients.openWindow("./");
-        }
+        if (clients.length > 0) return clients[0].focus();
+        return self.clients.openWindow("./");
       })
   );
 });

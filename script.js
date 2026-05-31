@@ -5,7 +5,21 @@ async function registrarSW() {
   if (!("serviceWorker" in navigator)) return;
   try {
     swRegistration = await navigator.serviceWorker.register("sw.js");
-    console.log("✅ Service Worker registrado");
+    console.log("Service Worker registrado");
+
+    // Registra sync periódico para lembretes (Android background)
+    if ("periodicSync" in swRegistration) {
+      try {
+        const status = await navigator.permissions.query({ name: "periodic-background-sync" });
+        if (status.state === "granted") {
+          await swRegistration.periodicSync.register("hanna-lembretes", {
+            minInterval: 60 * 1000, // mínimo 1 min
+          });
+        }
+      } catch (e) {
+        // periodicSync não suportado — o IndexedDB no SW ainda cobre
+      }
+    }
   } catch (e) {
     console.warn("SW não registrado:", e);
   }
@@ -39,7 +53,15 @@ function cancelarNotificacaoSW(id) {
 // Inicia tudo
 registrarSW();
 
-// VIBRAÇÃO
+// Configura áudio para mixing — permite tocar junto com Spotify, etc.
+// No iOS/Android PWA, setar volume antes do primeiro play libera o mixing
+function configurarAudioMixing() {
+  document.querySelectorAll("audio").forEach(a => {
+    a.setAttribute("playsinline", "");
+    a.setAttribute("webkit-playsinline", "");
+  });
+}
+configurarAudioMixing();
 
 function vibrar(ms = 20) {
 
@@ -1346,9 +1368,18 @@ function agendarMomentoJuntas() {
 }
 
 function dispararMomentoJuntas() {
+
+  const spriteConjunta =
+  document.getElementById("spriteConjunta");
+
   if (!gatinhaDesbloqueada || dormindo) {
+
     agendarMomentoJuntas();
-    spriteConjunta.style.display = "none";
+
+    if (spriteConjunta) {
+      spriteConjunta.style.display = "none";
+    }
+
     momentoConjuntoAtivo = false;
 
     return;
@@ -1376,20 +1407,17 @@ function dispararMomentoJuntas() {
 
   const momento = momentosFiltrados[Math.floor(Math.random() * momentosFiltrados.length)];
   const hannaContainer = document.getElementById("hannaContainer");
-  const spriteConjunta = document.getElementById("spriteConjunta");
 
   momentoConjuntoAtivo = true;
 
   if (hannaContainer) {
-
-  hannaContainer.style.visibility = "hidden";
-  hannaContainer.style.opacity = "0";
-
+  hannaContainer.style.display = "none";
   }
-  gatinhaContainer.style.visibility = "hidden";
-  gatinhaContainer.style.opacity = "0";
-  spriteConjunta.src              = momento.sprite;
-  spriteConjunta.style.display    = "block";
+
+  gatinhaContainer.style.display = "none";
+
+  spriteConjunta.src = momento.sprite;
+  spriteConjunta.style.display = "block";
 
   if (momento.som === "purr") tocarPurr();
   else if (momento.som === "meow") tocarMeow();
@@ -1402,18 +1430,15 @@ function dispararMomentoJuntas() {
     spriteConjunta.style.display = "none";
 
     if (hannaContainer) {
-
-      hannaContainer.style.visibility = "visible";
-      hannaContainer.style.opacity = "1";
-
+      hannaContainer.style.display = "flex";
     }
 
     if (gatinhaDesbloqueada) {
-
-      gatinhaContainer.style.visibility = "visible";
-      gatinhaContainer.style.opacity = "1";
-
+      gatinhaContainer.style.display = "flex";
     }
+
+    // FORÇA atualização visual
+    atualizarStatus();
 
     gatinhaFalaEl &&
     gatinhaFalaEl.classList.remove("visivel");
@@ -1427,7 +1452,7 @@ function dispararMomentoJuntas() {
 
 // Inicia agendamento assim que a gatinha for desbloqueada (ou já está no load)
 function iniciarMomentosGatinha() {
-  if (gatinhaDesbloqueada) agendarMomentoJuntas();
+  return;
 }
 
 // SPRITE DA GATINHA
@@ -1447,7 +1472,7 @@ function gatinhaSpriteTemp(nome, ms = 2000) {
 function atualizarGatinha() {
   if (!gatinhaDesbloqueada) return;
 
-  // Dormindo: conjunta se tiver a Kika, senão individual
+  // Dormindo: conjunta se tiver a gatinha, senão individual
   if (dormindo) {
     gatinhaSpritePor("gatinha-dormindo");
     return;
@@ -1542,10 +1567,40 @@ let ultimoAcesso = Number(localStorage.getItem("ultimoAcesso")) || Date.now();
 
       // Se energia encheu, acorda
       if (energia >= 100) {
-        energia  = 100;
+
+        energia = 100;
+
         dormindo = false;
+
+        momentoConjuntoAtivo = false;
+
         localStorage.setItem("dormindo", "false");
+
         zzzContainer.style.display = "none";
+
+        const hannaContainer =
+        document.getElementById("hannaContainer");
+
+        const gatinhaContainer =
+        document.getElementById("gatinhaContainer");
+
+        const spriteConjunta =
+        document.getElementById("spriteConjunta");
+
+        if (spriteConjunta) {
+          spriteConjunta.style.display = "none";
+        }
+
+        if (hannaContainer) {
+          hannaContainer.style.display = "flex";
+        }
+
+        if (gatinhaContainer) {
+          gatinhaContainer.style.display = "flex";
+        }
+
+        atualizarGatinha();
+        atualizarStatus();
       }
     } else {
       // Degrada stats normalmente
@@ -1720,8 +1775,25 @@ function iniciarFalasIdle() {
 // ATUALIZAR STATUS
 function atualizarStatus() {
 
-  if (momentoConjuntoAtivo) return;
+  const spriteConjunta =
+  document.getElementById("spriteConjunta");
 
+  const conjuntaVisivel =
+  spriteConjunta &&
+  window.getComputedStyle(spriteConjunta)
+  .display !== "none";
+
+  if (
+    momentoConjuntoAtivo &&
+    !dormindo &&
+    conjuntaVisivel
+  ) {
+    return;
+  }
+
+  if (!conjuntaVisivel) {
+    momentoConjuntoAtivo = false;
+  }
   // corações
   coracoes.forEach((c, i) => {
     c.src = amizade >= i + 1
@@ -1799,7 +1871,7 @@ function atualizarStatus() {
 
       const conjuntaVisivel =
       spriteConjunta &&
-      spriteConjunta.style.display === "block";
+      spriteConjunta.style.display !== "none";
 
       if (!conjuntaVisivel) {
 
@@ -1824,20 +1896,28 @@ function atualizarStatus() {
 
     zzzContainer.style.display = "flex";
 
-    const _conjunta = document.getElementById("spriteConjunta");
-    if (!_conjunta || _conjunta.style.display === "none") {
+    const _conjunta =
+    document.getElementById("spriteConjunta");
+    const conjuntaAtiva = _conjunta && _conjunta.style.display !== "none";
+
+    if (!conjuntaAtiva) {
+      // Dormindo separadas — mostra sprites individuais
       hannaSprite.src = "assets/sprites/hanna/dormindo.png";
       hannaSprite.style.animation = "none";
-      // Para animação da gatinha também quando dorme separada
       if (gatinhaDesbloqueada) gatinhaSprite.style.animation = "none";
+
+      const hannaContainer = document.getElementById("hannaContainer");
+      if (hannaContainer) hannaContainer.style.display = "flex";
+      if (gatinhaDesbloqueada) gatinhaContainer.style.display = "flex";
     } else {
-      // Sprite conjunta ativa — sem animação
+      // Dormindo juntas — mantém só a sprite conjunta, sem animação
       _conjunta.style.animation = "none";
     }
 
-    return;
+    atualizarGatinha();
 
-    }
+    return;
+  }
 
     zzzContainer.style.display = "none";
 
@@ -2134,28 +2214,24 @@ function iniciarSono() {
 
     localStorage.setItem("dormindo", "true");
 
-    atualizarStatus(); // roda primeiro
-
     if (gatinhaDesbloqueada && vinculoGatinhas >= 70) {
       // Vínculo alto — dormem juntas
       const hannaContainer = document.getElementById("hannaContainer");
       const spriteConjunta = document.getElementById("spriteConjunta");
       if (hannaContainer) {
-
-        hannaContainer.style.visibility = "hidden";
-        hannaContainer.style.opacity = "0";
-
+        hannaContainer.style.display = "none";
       }
-
-      gatinhaContainer.style.visibility = "hidden";
-      gatinhaContainer.style.opacity = "0";
-
+      gatinhaContainer.style.display = "none";
       spriteConjunta.src             = "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
       spriteConjunta.style.display   = "block";
     } else {
       // Vínculo baixo — cada uma dorme no seu canto
-      hannaSprite.src = "assets/sprites/hanna/dormindo.png";
+      hannaSprite.src            = "assets/sprites/hanna/dormindo.png";
+      hannaSprite.style.animation = "none";
+      if (gatinhaDesbloqueada) gatinhaSprite.style.animation = "none";
     }
+
+    atualizarStatus(); // roda depois de ajustar sprites
 
 
     clearInterval(dormirInterval);
@@ -2168,34 +2244,50 @@ function iniciarSono() {
 
         if (energia >= 100) {
 
-            energia = 100;
+          energia = 100;
 
-            dormindo = false;
+          dormindo = false;
 
-            zzzContainer.style.display = "none";
+          momentoConjuntoAtivo = false;
 
-            localStorage.setItem("dormindo", "false");
+          clearInterval(dormirInterval);
 
-            clearInterval(dormirInterval);
+          const hannaContainer =
+          document.getElementById("hannaContainer");
 
-            // Restaura sprites individuais se estava mostrando a conjunta
-            const spriteConjunta = document.getElementById("spriteConjunta");
-            const hannaContainer = document.getElementById("hannaContainer");
-            if (spriteConjunta) {
-              spriteConjunta.style.animation = "";
-              spriteConjunta.style.display   = "none";
-            }
-            if (hannaContainer) hannaContainer.style.display = "flex";
-            hannaSprite.style.animation = "";
-            if (gatinhaDesbloqueada) {
-              gatinhaContainer.style.display = "flex";
-              gatinhaSprite.style.animation = "";
-            }
+          const spriteConjunta =
+          document.getElementById("spriteConjunta");
 
-            mostrarMensagem("A Hanna acordou descansada.");
+          if (spriteConjunta) {
+            spriteConjunta.style.display   = "none";
+            spriteConjunta.style.animation = "";
+          }
+
+          if (hannaContainer) {
+            hannaContainer.style.display     = "flex";
+            hannaContainer.style.visibility  = "";
+            hannaContainer.style.opacity     = "";
+          }
+
+          hannaSprite.style.display   = "block";
+          hannaSprite.style.animation = "";
+
+          if (gatinhaDesbloqueada) {
+            gatinhaContainer.style.display     = "flex";
+            gatinhaContainer.style.visibility  = "";
+            gatinhaContainer.style.opacity     = "";
+            gatinhaSprite.style.animation      = "";
+          }
+
+          localStorage.setItem("dormindo", "false");
+
+          zzzContainer.style.display = "none";
+
+          mostrarMensagem("A Hanna acordou descansada.");
+
+          atualizarStatus();
 
         }
-
 
         atualizarStatus();
 
@@ -2374,18 +2466,34 @@ function falarFazenda(texto, sprite) {
 
 slotsPlantacao.forEach((slotHTML, idx) => {
   slotHTML.addEventListener("click", () => {
+
     const slot   = fazenda[idx];
     const sprite = slotHTML.querySelector("img");
+
     if (!slot.pronta) return;
-    moedas += valorPlantas[slot.flor];
-    amizade  = Math.min(5, amizade + 0.08);
-    slot.plantada = slot.pronta = false;
-    slot.flor = "";
+
+    // GUARDA O VALOR ANTES DE LIMPAR
+    const valorColheita = valorPlantas[slot.flor];
+
+    moedas += valorColheita;
+    amizade = Math.min(5, amizade + 0.08);
+
+    slot.plantada = false;
+    slot.pronta   = false;
+    slot.flor     = "";
+
     sprite.src = "assets/farm/vazio.png";
+
     atualizarStatus();
     salvarFazenda();
-    mostrarMensagem(`Você colheu! 🪙 +${valorPlantas[slot.flor] || 0}`);
-    falarFazenda(`Que colheita boa!`, "assets/sprites/hanna/brincando.png");
+
+    mostrarMensagem(`Você colheu! 🪙 +${valorColheita}`);
+
+    falarFazenda(
+      `Que colheita boa!`,
+      "assets/sprites/hanna/brincando.png"
+    );
+
   });
 });
 
@@ -3275,14 +3383,28 @@ const recorrenciaLembrete = document.getElementById("recorrenciaLembrete");
 
 tipoLembrete.addEventListener("change", () => {
   const tipo = tipoLembrete.value;
-  if (tipo === "⏰" || tipo === "🎂") {
-    rowRecorrencia.style.display = "block";
-    // Pré-seleciona anual para aniversários
-    if (tipo === "🎂") recorrenciaLembrete.value = "anual";
-    else recorrenciaLembrete.value = "nenhuma";
+  const dataAniversario = document.getElementById("dataAniversario");
+  const horaRow = horaLembrete.parentElement;
+
+  if (tipo === "🎂") {
+    dataLembrete.style.display    = "none";
+    dataAniversario.style.display = "block";
+    horaLembrete.style.display    = "none"; // aniversário não precisa de hora
+    horaLembrete.value            = "";
+    rowRecorrencia.style.display  = "block";
+    recorrenciaLembrete.value     = "anual";
+  } else if (tipo === "⏰") {
+    dataLembrete.style.display    = "block";
+    dataAniversario.style.display = "none";
+    horaLembrete.style.display    = "block";
+    rowRecorrencia.style.display  = "block";
+    recorrenciaLembrete.value     = "nenhuma";
   } else {
-    rowRecorrencia.style.display = "none";
-    recorrenciaLembrete.value = "nenhuma";
+    dataLembrete.style.display    = "block";
+    dataAniversario.style.display = "none";
+    horaLembrete.style.display    = "block";
+    rowRecorrencia.style.display  = "none";
+    recorrenciaLembrete.value     = "nenhuma";
   }
 });
 
@@ -3290,10 +3412,11 @@ btnSalvarLembrete.addEventListener("click", async () => {
   const texto = inputLembrete.value.trim();
   if (!texto) return;
 
-  const tipo        = tipoLembrete.value;
-  const data        = dataLembrete.value;
-  const hora        = horaLembrete.value;
-  const recorrencia = recorrenciaLembrete ? recorrenciaLembrete.value : "nenhuma";
+  const tipo            = tipoLembrete.value;
+  const dataAniversario = document.getElementById("dataAniversario");
+  const data            = tipo === "🎂" ? dataAniversario.value : dataLembrete.value;
+  const hora            = horaLembrete.value;
+  const recorrencia     = recorrenciaLembrete ? recorrenciaLembrete.value : "nenhuma";
 
   let conteudo = `${tipo} ${texto}`;
   if (tipo === "🎂" && data) conteudo += ` — ${data}`;
@@ -3302,18 +3425,52 @@ btnSalvarLembrete.addEventListener("click", async () => {
 
   // Monta timestamp
   let timestamp = null;
-  if (data && hora) {
-    timestamp = new Date(`${data}T${hora}:00`).getTime();
-  } else if (hora) {
-    const hoje = new Date().toISOString().slice(0, 10);
-    timestamp = new Date(`${hoje}T${hora}:00`).getTime();
-  } else if (tipo === "🎂" && data) {
-    // Aniversário sem hora: notifica às 08:00
-    timestamp = new Date(`${data}T08:00:00`).getTime();
+  if (tipo === "🎂" && data) {
+
+    const [dia, mes] = data.split("/");
+
+    if (dia && mes) {
+
+      const agora = new Date();
+
+      let ano = agora.getFullYear();
+
+      let aniv = new Date(
+        `${ano}-${mes.padStart(2,"0")}-${dia.padStart(2,"0")}T08:00:00`
+      );
+
+      if (aniv <= agora) {
+        aniv.setFullYear(ano + 1);
+      }
+
+      timestamp = aniv.getTime();
+    }
+
+  }
+
+  // ALERTAS E TAREFAS
+  else if (hora) {
+
+    const hoje =
+    new Date().toISOString().slice(0, 10);
+
+    timestamp =
+    new Date(`${hoje}T${hora}:00`).getTime();
+
+    // se já passou do horário hoje,
+    // joga pra amanhã
+    if (timestamp <= Date.now()) {
+      timestamp += 86400000;
+    }
+
   }
 
   const id = Date.now();
   const novoLembrete = { id, tipo, recorrencia, texto: conteudo, data, hora, feito: false, timestamp };
+  console.log("TIPO:", tipo);
+  console.log("DATA:", data);
+  console.log("HORA:", hora);
+  console.log("TIMESTAMP:", timestamp);
 
   lembretes.push(novoLembrete);
   localStorage.setItem("lembretes", JSON.stringify(lembretes));
@@ -3331,12 +3488,17 @@ btnSalvarLembrete.addEventListener("click", async () => {
     }
   }
 
-  inputLembrete.value        = "";
-  dataLembrete.value         = "";
-  horaLembrete.value         = "";
-  recorrenciaLembrete.value  = "nenhuma";
+  inputLembrete.value          = "";
+  dataLembrete.value           = "";
+  horaLembrete.value           = "";
+  horaLembrete.style.display   = "block";
+  recorrenciaLembrete.value    = "nenhuma";
   rowRecorrencia.style.display = "none";
-  tipoLembrete.value         = "📚";
+  tipoLembrete.value           = "📚";
+  dataAniversario.value        = "";
+  dataAniversario.style.display = "none";
+  dataLembrete.style.display   = "block";
+
 });
 
 // INIT 
@@ -4003,26 +4165,9 @@ function atualizarPeriodoDoDia() {
 
   }
 
-    else if (hora >= 0 && hora < 6) {
-
-        overlay.classList.add("periodo-madrugada");
-
-    }
-
-    const chanceChuva = Math.random();
-
-    if (chanceChuva < 0.25) {
-
-      overlay.classList.add("periodo-chuva");
-
-    iniciarChuva();
-
-}
-
 }
 
 atualizarPeriodoDoDia();
-
 
 // CONFIG ÁUDIO
 
