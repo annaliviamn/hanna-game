@@ -293,6 +293,14 @@
 
         </button>
 
+        <button class="navItem" id="navTrofeus">
+
+            <img src="assets/ui/icons/icon-trofeu.png" class="iconeNav">
+
+            <p>Troféus</p>
+
+        </button>
+
         <button class="navItem" id="btnMute">
 
             <span id="iconeMute" style="font-size:20px;">🔊</span>
@@ -460,6 +468,49 @@
         </div>
         <p>Você pode configurar lembretes pra não esquecer de cuidar da Hanna, aniversários, alertas em geral, etc. As notificações aparecem mesmo com o app fechado, é só permitir na primeira vez que pedir.</p>
       </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Tela Troféus -->
+
+<div id="telaTrofeus" style="display:none;">
+  <div class="tela-secundaria">
+
+    <div class="tela-sec-header">
+      <span class="tela-sec-title">Troféus</span>
+    </div>
+
+    <div class="trofeus-container">
+
+      <div class="trofeus-progresso">
+        <span id="trofeuContador">0 / 16 conquistados</span>
+        <div class="trofeus-barra-wrap">
+          <div class="trofeus-barra-fill" id="trofeuBarraFill"></div>
+        </div>
+      </div>
+
+      <!-- Platina — aparece destacada no topo -->
+      <div class="trofeu-card trofeu-platina" id="cardPlatina">
+        <div class="trofeu-img-wrap">
+          <img id="trofeuPlatinaImg" src="assets/sprites/hanna/platina-locked.png" class="trofeu-sprite">
+        </div>
+        <div class="trofeu-info">
+          <div class="trofeu-tipo">🏆 Platina</div>
+          <div class="trofeu-nome" id="trofeuPlatinaNome">???</div>
+          <div class="trofeu-desc" id="trofeuPlatinaDesc">Complete todas as conquistas para desbloquear.</div>
+        </div>
+      </div>
+
+      <div class="trofeus-secao-titulo">Cuidados</div>
+      <div class="trofeus-grid" id="gridCuidados"></div>
+
+      <div class="trofeus-secao-titulo">Progressão</div>
+      <div class="trofeus-grid" id="gridProgressao"></div>
+
+      <div class="trofeus-secao-titulo">Minigames</div>
+      <div class="trofeus-grid" id="gridMinigames"></div>
 
     </div>
   </div>
@@ -642,6 +693,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Coleira</h3>
+          <p class="item-desc">Um mimo especial pra deixar a Hanna se sentindo linda.</p>
 
           <p>+10 felicidade</p>
 
@@ -669,6 +721,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Peixinho</h3>
+          <p class="item-desc">O petisco favorito da Hanna. Ela vai devorar em segundos.</p>
 
           <p>+15 fome</p>
 
@@ -696,6 +749,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Sashimi</h3>
+          <p class="item-desc">Uma iguaria felina. Fome? Que fome?</p>
 
           <p>+25 fome</p>
 
@@ -723,6 +777,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Novelo</h3>
+          <p class="item-desc">Horas de entretenimento garantidas. A Hanna adora uma bagunça.</p>
 
           <p>+20 felicidade</p>
 
@@ -750,6 +805,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Ratinho</h3>
+          <p class="item-desc">O brinquedo perfeito pra uma tarde cheia de energia.</p>
 
           <p>+25 felicidade</p>
 
@@ -778,6 +834,8 @@ class="telaEspecial">
 
           <h3>Gatinha Pretinha</h3>
 
+          <p class="item-desc">Uma companheira pra vida toda. Com vínculo alto, momentos especiais acontecem.</p>
+
           <p>Uma companheira para a Hanna 💖</p>
 
           <div class="item-loja-footer">
@@ -804,6 +862,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Atum Premium</h3>
+          <p class="item-desc">O melhor do mercado. A Hanna merece o premium.</p>
 
           <p>+35 fome</p>
 
@@ -831,6 +890,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Biscoitinho Rosa</h3>
+          <p class="item-desc">Um snack que agrada fome e coração ao mesmo tempo.</p>
 
           <p>+10 fome • +10 felicidade</p>
 
@@ -858,6 +918,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Donut Felino</h3>
+          <p class="item-desc">Doce, fofo e irresistível. Exatamente como a Hanna.</p>
 
           <p>+20 felicidade</p>
 
@@ -885,6 +946,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Varinha Estelar</h3>
+          <p class="item-desc">Magia de verdade. A Hanna fica completamente hipnotizada.</p>
 
           <p>+40 felicidade</p>
 
@@ -912,6 +974,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Ratinho Robô</h3>
+          <p class="item-desc">Tecnologia felina de ponta. O brinquedo mais sofisticado da loja.</p>
 
           <p>+50 felicidade</p>
 
@@ -939,6 +1002,7 @@ class="telaEspecial">
         <div class="item-loja-info">
 
           <h3>Almofada Fofinha</h3>
+          <p class="item-desc">Um cantinho macio e quentinho pra Hanna repor as energias.</p>
 
           <p>+20 energia</p>
 

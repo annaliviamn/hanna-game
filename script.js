@@ -63,6 +63,14 @@ function configurarAudioMixing() {
 }
 configurarAudioMixing();
 
+// Helper pra tocar efeitos respeitando o mute
+function playEfeito(audio) {
+  if (!audio) return;
+  audio.muted = isMuted;
+  audio.currentTime = 0;
+  audio.play().catch(() => {});
+}
+
 function vibrar(ms = 20) {
 
     if (
@@ -244,9 +252,11 @@ const volumeMusica  = { value: "0.4" };
 const volumeEfeitos = { value: "0.7" };
 const telaCarta         = document.getElementById("telaCarta");
 const btnVoltarCarta    = document.getElementById("btnVoltarCarta");
-const telaComoJogar     = document.getElementById("telaComoJogar");
-const btnComoJogar      = document.getElementById("btnComoJogar");
+const telaComoJogar      = document.getElementById("telaComoJogar");
+const btnComoJogar       = document.getElementById("btnComoJogar");
 const btnVoltarComoJogar = document.getElementById("btnVoltarComoJogar");
+const telaTrofeus        = document.getElementById("telaTrofeus");
+const navTrofeus         = document.getElementById("navTrofeus");
 const saldoLoja         = document.getElementById("saldoLoja");
 
 const telaInicial       = document.getElementById("telaInicial");
@@ -472,6 +482,8 @@ function esconderTodasAsTelas() {
 
     telaComoJogar.style.display = "none";
 
+    telaTrofeus.style.display = "none";
+
 }
 
 function abrirTela(tela) {
@@ -611,6 +623,16 @@ function criarParticulas(emoji = "💖", quantidade = 6) {
 
 function mostrarResultado(titulo, emoji, ganhou, desc, jogoFn) {
   pararJogoAtivo();
+
+  // Dispara conquista de minigame se ganhou (ganhou > 0 e emoji positivo)
+  if (ganhou > 0 && emoji !== "😿") {
+    if      (jogoFn === jogoMemoria)   desbloquearConquista("mestre_memoria");
+    else if (jogoFn === jogoPeixe)     desbloquearConquista("pescadora");
+    else if (jogoFn === jogoHumor)     desbloquearConquista("leitora_humores");
+    else if (jogoFn === jogoReflexo)   desbloquearConquista("reflexos_felinos");
+    else if (jogoFn === jogoCartinhas) desbloquearConquista("colecionadora");
+  }
+
   arenaConteudo.innerHTML = `
     <div class="resultado-card">
       <div class="resultado-emoji">${emoji}</div>
@@ -1192,7 +1214,16 @@ parseFloat(
     volumeEfeitos.value
 );
 
-// SONS DA GATINHA 
+// Sons de interação específicos
+// Coloca os arquivos em assets/music/ com esses nomes
+const somCarinho = criarAudio("assets/music/som-carinho.mp3");
+const somComida  = criarAudio("assets/music/som-comida.mp3");
+const somDormir  = criarAudio("assets/music/som-dormir.mp3");
+const somAcordar = criarAudio("assets/music/som-acordar.mp3");
+
+[somCarinho, somComida, somDormir, somAcordar].forEach(s => {
+  s.volume = parseFloat(volumeEfeitos.value);
+}); 
 
 const sonsMeow = [
   document.getElementById("somMeow1"),
@@ -1858,39 +1889,27 @@ function atualizarStatus() {
   if (sementesFazendaEl) sementesFazendaEl.textContent = sementes;
 
   if (gatinhaDesbloqueada) {
-    // Só exibe containers individuais se a sprite conjunta NÃO estiver visível
     const _conjunta = document.getElementById("spriteConjunta");
     const conjuntaAtiva = _conjunta && _conjunta.style.display !== "none";
-    if (!momentoConjuntoAtivo) {
 
-      const hannaContainer =
-      document.getElementById("hannaContainer");
-
-      const spriteConjunta =
-      document.getElementById("spriteConjunta");
-
-      const conjuntaVisivel =
-      spriteConjunta &&
-      spriteConjunta.style.display !== "none";
-
-      if (!conjuntaVisivel) {
-
-        if (hannaContainer)
-          hannaContainer.style.display = "flex";
-
-        gatinhaContainer.style.display = "flex";
-
-      }
-
+    if (!conjuntaAtiva) {
+      const hannaContainer = document.getElementById("hannaContainer");
+      if (hannaContainer) hannaContainer.style.display = "flex";
+      gatinhaContainer.style.display = "flex";
     }
+
     nomeDaGatinhaTexto.textContent = nomeGatinha;
 
-    // Mostra a barra de vínculo só quando a gatinha estiver desbloqueada
     const vinculoContainer = document.getElementById("vinculoContainer");
     if (vinculoContainer) vinculoContainer.style.display = "block";
   }
 
   saldoLoja.textContent = moedas;
+
+  // Conquistas automáticas verificadas a cada update
+  if (moedas >= 10000) desbloquearConquista("milionaria");
+  if (fome >= 90 && felicidade >= 90 && energia >= 90 && higiene >= 90) desbloquearConquista("bem_cuidada");
+  if (vinculoGatinhas >= 100 && gatinhaDesbloqueada) desbloquearConquista("inseparaveis");
 
   if (dormindo) {
 
@@ -1988,7 +2007,164 @@ function _salvar() {
   salvarFazenda();
 }
 
-// EVENTOS ALEATÓRIOS DO DIA
+// ── FEEDBACK FLUTUANTE NAS BARRAS ────────────────────────────
+// Mostra "+10" etc flutuando sobre a barra quando um stat sobe
+function mostrarFeedbackBarra(barraId, valor) {
+  const container = document.querySelector(`#${barraId}`)?.closest(".barraContainer");
+  if (!container) return;
+
+  // Remove feedback anterior se ainda estiver visível
+  container.querySelector(".stat-feedback")?.remove();
+
+  const el = document.createElement("span");
+  el.className   = "stat-feedback";
+  el.textContent = valor > 0 ? `+${Math.round(valor)}` : `${Math.round(valor)}`;
+  el.style.color = valor > 0 ? "#a8ffb0" : "#ffb0b0";
+
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 1500);
+}
+
+// ── SISTEMA DE CONQUISTAS ─────────────────────────────────────
+
+const somConquista = criarAudio("assets/music/som-conquista.mp3");
+
+const CONQUISTAS = {
+  // Cuidados
+  primeiro_carinho:   { nome: "Primeiro carinho",      desc: "Você deu o primeiro carinho pra Hanna.",         sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
+  bem_alimentada:     { nome: "Bem alimentada",         desc: "A Hanna está de barriga cheia.",                 sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
+  hora_do_banho:      { nome: "Hora do banho",          desc: "Limpinha e feliz!",                              sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
+  boa_noite:          { nome: "Boa noite",              desc: "A Hanna foi dormir descansada.",                 sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
+  // Progressão
+  jardineira:         { nome: "Jardineira",             desc: "Primeira planta colhida na fazenda.",            sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  milionaria:         { nome: "Milionária",             desc: "10.000 moedas acumuladas.",                      sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  bem_cuidada:        { nome: "Bem cuidada",            desc: "Todos os status acima de 90% ao mesmo tempo.",  sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  nova_companheira:   { nome: "Nova companheira",       desc: "A gatinha pretinha chegou!",                    sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  inseparaveis:       { nome: "Inseparáveis",           desc: "Vínculo máximo com a gatinha pretinha.",        sprite: "assets/sprites/hanna-gatinha/felizes.png", secao: "progressao" },
+  // Minigames
+  mestre_memoria:     { nome: "Mestre da Memória",      desc: "Venceu o jogo Memória das Patas.",              sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  pescadora:          { nome: "Pescadora",              desc: "Venceu o jogo Pega Peixe.",                     sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  leitora_humores:    { nome: "Leitora de Humores",     desc: "Venceu o jogo Adivinhe o Humor.",               sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  reflexos_felinos:   { nome: "Reflexos Felinos",       desc: "Venceu o jogo Reflexo Felino.",                 sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  colecionadora:      { nome: "Colecionadora",          desc: "Venceu o jogo Cartinhas da Hanna.",             sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  cirurgia_felina:    { nome: "Cirurgiã Felina",        desc: "Venceu a Operação Sardinha.",                   sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+};
+
+const TOTAL_CONQUISTAS = Object.keys(CONQUISTAS).length;
+
+let conquistasDesbloqueadas = JSON.parse(localStorage.getItem("conquistas") || "{}");
+
+function desbloquearConquista(id) {
+  if (conquistasDesbloqueadas[id]) return;
+
+  conquistasDesbloqueadas[id] = true;
+  localStorage.setItem("conquistas", JSON.stringify(conquistasDesbloqueadas));
+
+  const c = CONQUISTAS[id];
+  if (!c) return;
+
+  somConquista.currentTime = 0;
+  somConquista.muted = isMuted;
+  somConquista.play().catch(() => {});
+
+  const toast = document.createElement("div");
+  toast.className = "conquista-toast";
+  toast.innerHTML = `
+    <img src="${c.sprite}" class="conquista-sprite">
+    <div class="conquista-info">
+      <div class="conquista-label">Conquista desbloqueada!</div>
+      <div class="conquista-nome">${c.nome}</div>
+      <div class="conquista-desc">${c.desc}</div>
+    </div>
+  `;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("conquista-visivel"));
+  setTimeout(() => {
+    toast.classList.remove("conquista-visivel");
+    setTimeout(() => toast.remove(), 500);
+  }, 3500);
+
+  // Verifica platina
+  const total = Object.keys(conquistasDesbloqueadas).length;
+  if (total >= TOTAL_CONQUISTAS) {
+    setTimeout(() => desbloquearPlatina(), 4000);
+  }
+}
+
+function desbloquearPlatina() {
+  if (conquistasDesbloqueadas["platina"]) return;
+  conquistasDesbloqueadas["platina"] = true;
+  localStorage.setItem("conquistas", JSON.stringify(conquistasDesbloqueadas));
+
+  somConquista.currentTime = 0;
+  somConquista.muted = isMuted;
+  somConquista.play().catch(() => {});
+
+  const toast = document.createElement("div");
+  toast.className = "conquista-toast conquista-toast-platina";
+  toast.innerHTML = `
+    <img src="assets/sprites/hanna/platina.png" class="conquista-sprite">
+    <div class="conquista-info">
+      <div class="conquista-label">🏆 Platina desbloqueada!</div>
+      <div class="conquista-nome">Minha Hanna</div>
+      <div class="conquista-desc">Você completou todas as conquistas.</div>
+    </div>
+  `;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("conquista-visivel"));
+  setTimeout(() => {
+    toast.classList.remove("conquista-visivel");
+    setTimeout(() => toast.remove(), 500);
+  }, 5000);
+}
+
+function renderizarTrofeus() {
+  const desbloqueadas = Object.keys(conquistasDesbloqueadas).filter(k => k !== "platina");
+  const total = desbloqueadas.length;
+
+  // Progresso
+  const contador = document.getElementById("trofeuContador");
+  const barraFill = document.getElementById("trofeuBarraFill");
+  if (contador) contador.textContent = `${total} / ${TOTAL_CONQUISTAS} conquistados`;
+  if (barraFill) barraFill.style.width = `${(total / TOTAL_CONQUISTAS) * 100}%`;
+
+  // Platina
+  const platina = conquistasDesbloqueadas["platina"];
+  const platinaImg  = document.getElementById("trofeuPlatinaImg");
+  const platinaNome = document.getElementById("trofeuPlatinaNome");
+  const platinaDesc = document.getElementById("trofeuPlatinaDesc");
+  const cardPlatina = document.getElementById("cardPlatina");
+
+  if (platinaImg)  platinaImg.src = platina ? "assets/sprites/hanna/platina.png" : "assets/sprites/hanna/platina-locked.png";
+  if (platinaNome) platinaNome.textContent = platina ? "Minha Hanna" : "???";
+  if (platinaDesc) platinaDesc.textContent = platina ? "Você completou todas as conquistas." : "Complete todas as conquistas para desbloquear.";
+  if (cardPlatina) cardPlatina.classList.toggle("trofeu-desbloqueado", !!platina);
+
+  // Grids por seção
+  const secoes = { cuidados: "gridCuidados", progressao: "gridProgressao", minigames: "gridMinigames" };
+
+  Object.entries(secoes).forEach(([secao, gridId]) => {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    Object.entries(CONQUISTAS)
+      .filter(([, c]) => c.secao === secao)
+      .forEach(([id, c]) => {
+        const desbloqueada = !!conquistasDesbloqueadas[id];
+        const card = document.createElement("div");
+        card.className = `trofeu-card ${desbloqueada ? "trofeu-desbloqueado" : "trofeu-bloqueado"}`;
+        card.innerHTML = `
+          <div class="trofeu-img-wrap">
+            <img src="${c.sprite}" class="trofeu-sprite">
+          </div>
+          <div class="trofeu-nome">${desbloqueada ? c.nome : "???"}</div>
+          <div class="trofeu-desc">${desbloqueada ? c.desc : "Ainda não conquistado."}</div>
+        `;
+        grid.appendChild(card);
+      });
+  });
+}
 
 let eventoEmAndamento = false;
 
@@ -2137,10 +2313,12 @@ btnCarinho.addEventListener("click", () => {
   );
 
 somBotao.play().catch(()=>{});
+  somCarinho.currentTime = 0;
+  somCarinho.play().catch(()=>{});
   vibrar(10);
-  if (gatinhaDesbloqueada) tocarPurr();
   felicidade = Math.min(100, felicidade + 10);
   amizade    = Math.min(5,   amizade    + 0.05);
+  mostrarFeedbackBarra("barraFelicidade", 10);
   if (gatinhaDesbloqueada) {
 
     vinculoGatinhas =
@@ -2153,6 +2331,7 @@ somBotao.play().catch(()=>{});
   sementes++;
   criarParticulas("💖", 8);
   mostrarMensagem("Purrrr...");
+  desbloquearConquista("primeiro_carinho");
   hannaSprite.src = "assets/sprites/hanna/carinho.png";
   gatinhaSpriteTemp("gatinha-apaixonada", 2000);
   setTimeout(atualizarStatus, 2000);
@@ -2176,14 +2355,19 @@ btnComida.addEventListener("click", () => {
     );
 
 somBotao.play().catch(()=>{});
+  somComida.currentTime = 0;
+  somComida.play().catch(()=>{});
 
     fome = Math.min(100, fome + 10);
 
     amizade = Math.min(5, amizade + 0.05);
 
+    mostrarFeedbackBarra("barraFome", 10);
+
     criarParticulas("🐟", 6);
 
     mostrarMensagem("Miauu! obrigada pela comida.");
+    desbloquearConquista("bem_alimentada");
 
     hannaSprite.src =
     "assets/sprites/hanna/comendo.png";
@@ -2285,6 +2469,9 @@ function iniciarSono() {
 
           mostrarMensagem("A Hanna acordou descansada.");
 
+          somAcordar.currentTime = 0;
+          somAcordar.play().catch(()=>{});
+
           atualizarStatus();
 
         }
@@ -2307,11 +2494,13 @@ btnDormir.addEventListener("click", () => {
 
 somBotao.play().catch(()=>{});
 
-
     if (dormindo) return;
 
+    somDormir.currentTime = 0;
+    somDormir.play().catch(()=>{});
 
     mostrarMensagem("A Hanna foi dormir.");
+    desbloquearConquista("boa_noite");
 
 
     iniciarSono();
@@ -2488,6 +2677,7 @@ slotsPlantacao.forEach((slotHTML, idx) => {
     salvarFazenda();
 
     mostrarMensagem(`Você colheu! 🪙 +${valorColheita}`);
+    desbloquearConquista("jardineira");
 
     falarFazenda(
       `Que colheita boa!`,
@@ -2811,6 +3001,7 @@ btnUrsinho.addEventListener("click", () => {
 
 somCompra.play().catch(()=>{});
   felicidade = Math.min(100, felicidade + 10);
+  mostrarFeedbackBarra("barraFelicidade", 10);
   mostrarMensagem("A Hanna amou a nova coleira.");
   hannaSprite.src = "assets/sprites/hanna/contente.png";
   atualizarStatus();
@@ -2828,6 +3019,7 @@ btnMorango.addEventListener("click", () => {
 
 somCompra.play().catch(()=>{});
   fome = Math.min(100, fome + 15);
+  mostrarFeedbackBarra("barraFome", 15);
   mostrarMensagem("A Hanna devorou o peixinho.");
   hannaSprite.src = "assets/sprites/hanna/comendo.png";
   atualizarStatus();
@@ -3123,6 +3315,7 @@ btnGatinha.addEventListener("click", () => {
   moedas -= 5000;
 
   gatinhaDesbloqueada = true;
+  desbloquearConquista("nova_companheira");
 
   inputNomeGatinha.disabled =
   false;
@@ -3389,8 +3582,7 @@ tipoLembrete.addEventListener("change", () => {
   if (tipo === "🎂") {
     dataLembrete.style.display    = "none";
     dataAniversario.style.display = "block";
-    horaLembrete.style.display    = "none"; // aniversário não precisa de hora
-    horaLembrete.value            = "";
+    horaLembrete.style.display    = "block"; // hora opcional pro aniversário
     rowRecorrencia.style.display  = "block";
     recorrenciaLembrete.value     = "anual";
   } else if (tipo === "⏰") {
@@ -3420,6 +3612,7 @@ btnSalvarLembrete.addEventListener("click", async () => {
 
   let conteudo = `${tipo} ${texto}`;
   if (tipo === "🎂" && data) conteudo += ` — ${data}`;
+  if (tipo === "🎂" && hora) conteudo += ` às ${hora}`;
   if (tipo === "⏰" && data) conteudo += ` — ${data}`;
   if (tipo === "⏰" && hora) conteudo += ` às ${hora}`;
 
@@ -3432,11 +3625,11 @@ btnSalvarLembrete.addEventListener("click", async () => {
     if (dia && mes) {
 
       const agora = new Date();
-
+      const horaAniv = hora || "08:00";
       let ano = agora.getFullYear();
 
       let aniv = new Date(
-        `${ano}-${mes.padStart(2,"0")}-${dia.padStart(2,"0")}T08:00:00`
+        `${ano}-${mes.padStart(2,"0")}-${dia.padStart(2,"0")}T${horaAniv}:00`
       );
 
       if (aniv <= agora) {
@@ -3553,26 +3746,34 @@ const textMute   = document.getElementById("textMute");
 
 function aplicarMute() {
 
+  // Trilhas
   Object.values(trilhas).forEach(audio => {
-
     if (!audio) return;
-
     audio.muted = isMuted;
+  });
 
+  // Efeitos sonoros
+  const efeitos = [
+    somBotao, somCompra, somBanho, somPurr,
+    somCarinho, somComida, somDormir, somAcordar,
+    document.getElementById("somMoeda"),
+    document.getElementById("somChuva"),
+    document.getElementById("somMeow1"),
+    document.getElementById("somMeow2"),
+    document.getElementById("somMeow3"),
+    document.getElementById("somMeowAdocao"),
+  ];
+  efeitos.forEach(audio => {
+    if (!audio) return;
+    audio.muted = isMuted;
   });
 
   if (iconeMute) {
-
-    iconeMute.textContent =
-    isMuted ? "🔇" : "🔊";
-
+    iconeMute.textContent = isMuted ? "🔇" : "🔊";
   }
 
   if (textMute) {
-
-    textMute.textContent =
-    isMuted ? "Mudo" : "Som";
-
+    textMute.textContent = isMuted ? "Mudo" : "Som";
   }
 
   localStorage.setItem("muted", isMuted);
@@ -3627,6 +3828,13 @@ btnVoltarComoJogar.addEventListener("click", () => {
   window.scrollTo(0, 0);
 
 });
+
+navTrofeus.onclick = () => {
+  abrirTela(telaTrofeus);
+  renderizarTrofeus();
+  tocarTrilha("casa");
+  window.scrollTo(0, 0);
+};
 
 // MODO ESCURO
 
@@ -3970,6 +4178,7 @@ btnBanho.addEventListener("click", () => {
     somBanho.play().catch(()=>{});
 
     mostrarMensagem("A Hanna está tomando banho.");
+    desbloquearConquista("hora_do_banho");
 
     criarParticulas("🫧", 18);
 
@@ -3988,6 +4197,9 @@ btnBanho.addEventListener("click", () => {
     higiene = Math.min(100, higiene + 100);
 
     felicidade = Math.min(100, felicidade + 5);
+
+    mostrarFeedbackBarra("barraHigiene", 100);
+    mostrarFeedbackBarra("barraFelicidade", 5);
 
     atualizarStatus();
 
@@ -4184,12 +4396,19 @@ function pausarTodasTrilhas() {
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         pausarTodasTrilhas();
+        // Salva tudo + ultimoAcesso quando app vai pra background
+        _salvar();
+        localStorage.setItem("ultimoAcesso", Date.now());
     } else if (!isMuted && trilhaAtual && trilhas[trilhaAtual]) {
         trilhas[trilhaAtual].play().catch(() => {});
     }
 });
 
-window.addEventListener("pagehide", pausarTodasTrilhas);
+window.addEventListener("pagehide", () => {
+    pausarTodasTrilhas();
+    _salvar();
+    localStorage.setItem("ultimoAcesso", Date.now());
+});
 
 function escreverPedido(texto, aoTerminar) {
 
@@ -4544,6 +4763,8 @@ function iniciarSardinha(agente) {
       : Math.max(20, Math.floor(score / 3));
 
     ganharMoedas(moedas);
+
+    if (vitoria) desbloquearConquista("cirurgia_felina");
 
     const titulo    = vitoria ? "🏆 MISSÃO CUMPRIDA!" : "GAME OVER";
     const subtitulo = vitoria
