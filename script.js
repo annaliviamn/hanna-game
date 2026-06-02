@@ -619,6 +619,149 @@ function criarParticulas(emoji = "💖", quantidade = 6) {
 
 }
 
+
+// ── SISTEMA DE CONQUISTAS ─────────────────────────────────────
+
+const somConquista = criarAudio("assets/music/som-conquista.mp3");
+
+const CONQUISTAS = {
+  // Cuidados
+  primeiro_carinho:   { nome: "Primeiro carinho",      desc: "Você deu o primeiro carinho pra Hanna.",         sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
+  bem_alimentada:     { nome: "Bem alimentada",         desc: "A Hanna está de barriga cheia.",                 sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
+  hora_do_banho:      { nome: "Hora do banho",          desc: "Limpinha e feliz!",                              sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
+  boa_noite:          { nome: "Boa noite",              desc: "A Hanna foi dormir descansada.",                 sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
+  // Progressão
+  jardineira:         { nome: "Jardineira",             desc: "Primeira planta colhida na fazenda.",            sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  milionaria:         { nome: "Milionária",             desc: "10.000 moedas acumuladas.",                      sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  bem_cuidada:        { nome: "Bem cuidada",            desc: "Todos os status acima de 90% ao mesmo tempo.",  sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  nova_companheira:   { nome: "Nova companheira",       desc: "A gatinha pretinha chegou!",                    sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  inseparaveis:       { nome: "Inseparáveis",           desc: "Vínculo máximo com a gatinha pretinha.",        sprite: "assets/sprites/hanna-gatinha/felizes.png", secao: "progressao" },
+  // Minigames
+  mestre_memoria:     { nome: "Mestre da Memória",      desc: "Venceu o jogo Memória das Patas.",              sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  pescadora:          { nome: "Pescadora",              desc: "Venceu o jogo Pega Peixe.",                     sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  leitora_humores:    { nome: "Leitora de Humores",     desc: "Venceu o jogo Adivinhe o Humor.",               sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  reflexos_felinos:   { nome: "Reflexos Felinos",       desc: "Venceu o jogo Reflexo Felino.",                 sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  colecionadora:      { nome: "Colecionadora",          desc: "Venceu o jogo Cartinhas da Hanna.",             sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  cirurgia_felina:    { nome: "Cirurgiã Felina",        desc: "Venceu a Operação Sardinha.",                   sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+};
+
+const TOTAL_CONQUISTAS = Object.keys(CONQUISTAS).length;
+
+let conquistasDesbloqueadas = JSON.parse(localStorage.getItem("conquistas") || "{}");
+
+function desbloquearConquista(id) {
+  if (conquistasDesbloqueadas[id]) return;
+
+  conquistasDesbloqueadas[id] = true;
+  localStorage.setItem("conquistas", JSON.stringify(conquistasDesbloqueadas));
+
+  const c = CONQUISTAS[id];
+  if (!c) return;
+
+  somConquista.currentTime = 0;
+  somConquista.muted = (typeof isMuted !== "undefined") ? isMuted : false;
+  somConquista.play().catch(() => {});
+
+  const toast = document.createElement("div");
+  toast.className = "conquista-toast";
+  toast.innerHTML = `
+    <img src="${c.sprite}" class="conquista-sprite">
+    <div class="conquista-info">
+      <div class="conquista-label">Conquista desbloqueada!</div>
+      <div class="conquista-nome">${c.nome}</div>
+      <div class="conquista-desc">${c.desc}</div>
+    </div>
+  `;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("conquista-visivel"));
+  setTimeout(() => {
+    toast.classList.remove("conquista-visivel");
+    setTimeout(() => toast.remove(), 500);
+  }, 3500);
+
+  // Verifica platina
+  const total = Object.keys(conquistasDesbloqueadas).length;
+  if (total >= TOTAL_CONQUISTAS) {
+    setTimeout(() => desbloquearPlatina(), 4000);
+  }
+}
+
+function desbloquearPlatina() {
+  if (conquistasDesbloqueadas["platina"]) return;
+  conquistasDesbloqueadas["platina"] = true;
+  localStorage.setItem("conquistas", JSON.stringify(conquistasDesbloqueadas));
+
+  somConquista.currentTime = 0;
+  somConquista.muted = (typeof isMuted !== "undefined") ? isMuted : false;
+  somConquista.play().catch(() => {});
+
+  const toast = document.createElement("div");
+  toast.className = "conquista-toast conquista-toast-platina";
+  toast.innerHTML = `
+    <img src="assets/sprites/hanna/platina.png" class="conquista-sprite">
+    <div class="conquista-info">
+      <div class="conquista-label">🏆 Platina desbloqueada!</div>
+      <div class="conquista-nome">Minha Hanna</div>
+      <div class="conquista-desc">Você completou todas as conquistas.</div>
+    </div>
+  `;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("conquista-visivel"));
+  setTimeout(() => {
+    toast.classList.remove("conquista-visivel");
+    setTimeout(() => toast.remove(), 500);
+  }, 5000);
+}
+
+function renderizarTrofeus() {
+  const desbloqueadas = Object.keys(conquistasDesbloqueadas).filter(k => k !== "platina");
+  const total = desbloqueadas.length;
+
+  // Progresso
+  const contador = document.getElementById("trofeuContador");
+  const barraFill = document.getElementById("trofeuBarraFill");
+  if (contador) contador.textContent = `${total} / ${TOTAL_CONQUISTAS} conquistados`;
+  if (barraFill) barraFill.style.width = `${(total / TOTAL_CONQUISTAS) * 100}%`;
+
+  // Platina
+  const platina = conquistasDesbloqueadas["platina"];
+  const platinaImg  = document.getElementById("trofeuPlatinaImg");
+  const platinaNome = document.getElementById("trofeuPlatinaNome");
+  const platinaDesc = document.getElementById("trofeuPlatinaDesc");
+  const cardPlatina = document.getElementById("cardPlatina");
+
+  if (platinaImg)  platinaImg.src = platina ? "assets/sprites/hanna/platina.png" : "assets/sprites/hanna/platina-locked.png";
+  if (platinaNome) platinaNome.textContent = platina ? "Minha Hanna" : "???";
+  if (platinaDesc) platinaDesc.textContent = platina ? "Você completou todas as conquistas." : "Complete todas as conquistas para desbloquear.";
+  if (cardPlatina) cardPlatina.classList.toggle("trofeu-desbloqueado", !!platina);
+
+  // Grids por seção
+  const secoes = { cuidados: "gridCuidados", progressao: "gridProgressao", minigames: "gridMinigames" };
+
+  Object.entries(secoes).forEach(([secao, gridId]) => {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    Object.entries(CONQUISTAS)
+      .filter(([, c]) => c.secao === secao)
+      .forEach(([id, c]) => {
+        const desbloqueada = !!conquistasDesbloqueadas[id];
+        const card = document.createElement("div");
+        card.className = `trofeu-card ${desbloqueada ? "trofeu-desbloqueado" : "trofeu-bloqueado"}`;
+        card.innerHTML = `
+          <div class="trofeu-img-wrap">
+            <img src="${c.sprite}" class="trofeu-sprite">
+          </div>
+          <div class="trofeu-nome">${desbloqueada ? c.nome : "???"}</div>
+          <div class="trofeu-desc">${desbloqueada ? c.desc : "Ainda não conquistado."}</div>
+        `;
+        grid.appendChild(card);
+      });
+  });
+}
+
+
 // TELA DE RESULTADO
 
 function mostrarResultado(titulo, emoji, ganhou, desc, jogoFn) {
@@ -2023,147 +2166,6 @@ function mostrarFeedbackBarra(barraId, valor) {
 
   container.appendChild(el);
   setTimeout(() => el.remove(), 1500);
-}
-
-// ── SISTEMA DE CONQUISTAS ─────────────────────────────────────
-
-const somConquista = criarAudio("assets/music/som-conquista.mp3");
-
-const CONQUISTAS = {
-  // Cuidados
-  primeiro_carinho:   { nome: "Primeiro carinho",      desc: "Você deu o primeiro carinho pra Hanna.",         sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
-  bem_alimentada:     { nome: "Bem alimentada",         desc: "A Hanna está de barriga cheia.",                 sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
-  hora_do_banho:      { nome: "Hora do banho",          desc: "Limpinha e feliz!",                              sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
-  boa_noite:          { nome: "Boa noite",              desc: "A Hanna foi dormir descansada.",                 sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
-  // Progressão
-  jardineira:         { nome: "Jardineira",             desc: "Primeira planta colhida na fazenda.",            sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
-  milionaria:         { nome: "Milionária",             desc: "10.000 moedas acumuladas.",                      sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
-  bem_cuidada:        { nome: "Bem cuidada",            desc: "Todos os status acima de 90% ao mesmo tempo.",  sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
-  nova_companheira:   { nome: "Nova companheira",       desc: "A gatinha pretinha chegou!",                    sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
-  inseparaveis:       { nome: "Inseparáveis",           desc: "Vínculo máximo com a gatinha pretinha.",        sprite: "assets/sprites/hanna-gatinha/felizes.png", secao: "progressao" },
-  // Minigames
-  mestre_memoria:     { nome: "Mestre da Memória",      desc: "Venceu o jogo Memória das Patas.",              sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
-  pescadora:          { nome: "Pescadora",              desc: "Venceu o jogo Pega Peixe.",                     sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
-  leitora_humores:    { nome: "Leitora de Humores",     desc: "Venceu o jogo Adivinhe o Humor.",               sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
-  reflexos_felinos:   { nome: "Reflexos Felinos",       desc: "Venceu o jogo Reflexo Felino.",                 sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
-  colecionadora:      { nome: "Colecionadora",          desc: "Venceu o jogo Cartinhas da Hanna.",             sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
-  cirurgia_felina:    { nome: "Cirurgiã Felina",        desc: "Venceu a Operação Sardinha.",                   sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
-};
-
-const TOTAL_CONQUISTAS = Object.keys(CONQUISTAS).length;
-
-let conquistasDesbloqueadas = JSON.parse(localStorage.getItem("conquistas") || "{}");
-
-function desbloquearConquista(id) {
-  if (conquistasDesbloqueadas[id]) return;
-
-  conquistasDesbloqueadas[id] = true;
-  localStorage.setItem("conquistas", JSON.stringify(conquistasDesbloqueadas));
-
-  const c = CONQUISTAS[id];
-  if (!c) return;
-
-  somConquista.currentTime = 0;
-  somConquista.muted = isMuted;
-  somConquista.play().catch(() => {});
-
-  const toast = document.createElement("div");
-  toast.className = "conquista-toast";
-  toast.innerHTML = `
-    <img src="${c.sprite}" class="conquista-sprite">
-    <div class="conquista-info">
-      <div class="conquista-label">Conquista desbloqueada!</div>
-      <div class="conquista-nome">${c.nome}</div>
-      <div class="conquista-desc">${c.desc}</div>
-    </div>
-  `;
-  document.body.appendChild(toast);
-  requestAnimationFrame(() => toast.classList.add("conquista-visivel"));
-  setTimeout(() => {
-    toast.classList.remove("conquista-visivel");
-    setTimeout(() => toast.remove(), 500);
-  }, 3500);
-
-  // Verifica platina
-  const total = Object.keys(conquistasDesbloqueadas).length;
-  if (total >= TOTAL_CONQUISTAS) {
-    setTimeout(() => desbloquearPlatina(), 4000);
-  }
-}
-
-function desbloquearPlatina() {
-  if (conquistasDesbloqueadas["platina"]) return;
-  conquistasDesbloqueadas["platina"] = true;
-  localStorage.setItem("conquistas", JSON.stringify(conquistasDesbloqueadas));
-
-  somConquista.currentTime = 0;
-  somConquista.muted = isMuted;
-  somConquista.play().catch(() => {});
-
-  const toast = document.createElement("div");
-  toast.className = "conquista-toast conquista-toast-platina";
-  toast.innerHTML = `
-    <img src="assets/sprites/hanna/platina.png" class="conquista-sprite">
-    <div class="conquista-info">
-      <div class="conquista-label">🏆 Platina desbloqueada!</div>
-      <div class="conquista-nome">Minha Hanna</div>
-      <div class="conquista-desc">Você completou todas as conquistas.</div>
-    </div>
-  `;
-  document.body.appendChild(toast);
-  requestAnimationFrame(() => toast.classList.add("conquista-visivel"));
-  setTimeout(() => {
-    toast.classList.remove("conquista-visivel");
-    setTimeout(() => toast.remove(), 500);
-  }, 5000);
-}
-
-function renderizarTrofeus() {
-  const desbloqueadas = Object.keys(conquistasDesbloqueadas).filter(k => k !== "platina");
-  const total = desbloqueadas.length;
-
-  // Progresso
-  const contador = document.getElementById("trofeuContador");
-  const barraFill = document.getElementById("trofeuBarraFill");
-  if (contador) contador.textContent = `${total} / ${TOTAL_CONQUISTAS} conquistados`;
-  if (barraFill) barraFill.style.width = `${(total / TOTAL_CONQUISTAS) * 100}%`;
-
-  // Platina
-  const platina = conquistasDesbloqueadas["platina"];
-  const platinaImg  = document.getElementById("trofeuPlatinaImg");
-  const platinaNome = document.getElementById("trofeuPlatinaNome");
-  const platinaDesc = document.getElementById("trofeuPlatinaDesc");
-  const cardPlatina = document.getElementById("cardPlatina");
-
-  if (platinaImg)  platinaImg.src = platina ? "assets/sprites/hanna/platina.png" : "assets/sprites/hanna/platina-locked.png";
-  if (platinaNome) platinaNome.textContent = platina ? "Minha Hanna" : "???";
-  if (platinaDesc) platinaDesc.textContent = platina ? "Você completou todas as conquistas." : "Complete todas as conquistas para desbloquear.";
-  if (cardPlatina) cardPlatina.classList.toggle("trofeu-desbloqueado", !!platina);
-
-  // Grids por seção
-  const secoes = { cuidados: "gridCuidados", progressao: "gridProgressao", minigames: "gridMinigames" };
-
-  Object.entries(secoes).forEach(([secao, gridId]) => {
-    const grid = document.getElementById(gridId);
-    if (!grid) return;
-    grid.innerHTML = "";
-
-    Object.entries(CONQUISTAS)
-      .filter(([, c]) => c.secao === secao)
-      .forEach(([id, c]) => {
-        const desbloqueada = !!conquistasDesbloqueadas[id];
-        const card = document.createElement("div");
-        card.className = `trofeu-card ${desbloqueada ? "trofeu-desbloqueado" : "trofeu-bloqueado"}`;
-        card.innerHTML = `
-          <div class="trofeu-img-wrap">
-            <img src="${c.sprite}" class="trofeu-sprite">
-          </div>
-          <div class="trofeu-nome">${desbloqueada ? c.nome : "???"}</div>
-          <div class="trofeu-desc">${desbloqueada ? c.desc : "Ainda não conquistado."}</div>
-        `;
-        grid.appendChild(card);
-      });
-  });
 }
 
 let eventoEmAndamento = false;
