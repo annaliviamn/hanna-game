@@ -269,7 +269,7 @@ textarea {
 }
 
 #spriteConjunta {
-  width: 200px;
+  width: 210px;
   image-rendering: pixelated;
 
   position: absolute;
@@ -281,6 +281,8 @@ textarea {
   animation: none;
 
   transform: translateX(-50%);
+
+  pointer-events: none;
 }
 
 .personagens-wrap {
