@@ -269,13 +269,18 @@ textarea {
 }
 
 #spriteConjunta {
-  width: 135px;
+  width: 200px;
   image-rendering: pixelated;
-  position: relative;
-  z-index: 2;
-  filter: drop-shadow(0 4px 8px rgba(200,80,150,0.2));
-  animation: idleFloat 3s ease-in-out infinite;
-  transform: translateY(10px);
+
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+
+  z-index: 3;
+
+  animation: none;
+
+  transform: translateX(-50%);
 }
 
 .personagens-wrap {
@@ -285,7 +290,7 @@ textarea {
   gap: 8px;
   width: 100%;
   position: absolute;
-  bottom: 0;
+  bottom: -5px;
   left: 0;
   z-index: 2;
 }
@@ -2100,6 +2105,10 @@ body.dark-mode .bottomNav {
   align-items: center;
   position: relative;
   cursor: pointer;
+
+  contain: paint;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 #gatinhaSprite {
@@ -2923,6 +2932,43 @@ body.dark-mode .tutorial-card {
   border-color: #c084fc;
   box-shadow: 0 4px 28px rgba(192,132,252,0.5);
   background: linear-gradient(135deg, #2d1445, #1a0d2e);
+}
+
+/* MENSAGEM GLOBAL */
+
+.mensagem-global {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: rgba(30, 10, 50, 0.88);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(255, 143, 194, 0.4);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  z-index: 99998;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  max-width: 300px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mensagem-global-visivel {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.mensagem-global-saindo {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-6px);
 }
 
 /* CARTA ESPECIAL */

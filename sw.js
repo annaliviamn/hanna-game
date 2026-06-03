@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanna-cache-v18";
+const CACHE_NAME = "hanna-cache-v27";
 
 const ASSETS = [
   "./",
@@ -33,7 +33,7 @@ self.addEventListener("fetch", (e) => {
   );
 });
 
-// ── INDEXEDDB — persiste lembretes mesmo com SW reiniciado ────
+// ── INDEXEDDB ────────────────────────────────────────────────
 function abrirDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open("hanna-lembretes", 1);
@@ -46,22 +46,22 @@ function abrirDB() {
 }
 
 async function salvarLembrete(lembrete) {
-  const db   = await abrirDB();
-  const tx   = db.transaction("lembretes", "readwrite");
+  const db = await abrirDB();
+  const tx = db.transaction("lembretes", "readwrite");
   tx.objectStore("lembretes").put(lembrete);
   return new Promise(r => tx.oncomplete = r);
 }
 
 async function removerLembrete(id) {
-  const db   = await abrirDB();
-  const tx   = db.transaction("lembretes", "readwrite");
+  const db = await abrirDB();
+  const tx = db.transaction("lembretes", "readwrite");
   tx.objectStore("lembretes").delete(id);
   return new Promise(r => tx.oncomplete = r);
 }
 
 async function listarLembretes() {
-  const db   = await abrirDB();
-  const tx   = db.transaction("lembretes", "readonly");
+  const db = await abrirDB();
+  const tx = db.transaction("lembretes", "readonly");
   return new Promise((resolve, reject) => {
     const req = tx.objectStore("lembretes").getAll();
     req.onsuccess = e => resolve(e.target.result);
@@ -70,26 +70,45 @@ async function listarLembretes() {
 }
 
 // ── VERIFICAR E DISPARAR LEMBRETES PENDENTES ─────────────────
+// Chamada tanto pelo periodicsync quanto pelo alarm (quando disponível)
+// e também ao receber mensagem CHECK_LEMBRETES do app
 async function verificarLembretes() {
   const agora     = Date.now();
   const lembretes = await listarLembretes();
 
   for (const l of lembretes) {
     if (l.timestamp <= agora) {
-      await self.registration.showNotification("Hanna lembrou você!", {
+      await self.registration.showNotification("Hanna lembrou você! 🐾", {
         body:     l.texto,
         icon:     "assets/sprites/hanna/contente.png",
         badge:    "assets/sprites/hanna/contente.png",
         tag:      `lembrete-${l.id}`,
         renotify: true,
         data:     { id: l.id },
+        vibrate:  [200, 100, 200],
       });
       await removerLembrete(l.id);
     }
   }
 }
 
-// Verifica lembretes pendentes a cada sync periódico
+// ── ALARME INTERNO: verifica a cada 1 min enquanto SW vivo ───
+// (funciona enquanto o app está em foreground ou SW não foi morto)
+let _alarmeInterval = null;
+
+function iniciarAlarmeInterno() {
+  if (_alarmeInterval) return;
+  _alarmeInterval = setInterval(() => {
+    verificarLembretes().catch(() => {});
+  }, 60 * 1000);
+}
+
+// Inicia o alarme interno assim que o SW ativa
+self.addEventListener("activate", () => {
+  iniciarAlarmeInterno();
+});
+
+// ── PERIODIC SYNC (background, Android) ──────────────────────
 self.addEventListener("periodicsync", e => {
   if (e.tag === "hanna-lembretes") e.waitUntil(verificarLembretes());
 });
@@ -98,25 +117,29 @@ self.addEventListener("periodicsync", e => {
 self.addEventListener("message", async (event) => {
   const { tipo, id, texto, timestamp } = event.data || {};
 
-  if (tipo === "AGENDAR_LEMBRETE") {
-    if (!timestamp || timestamp <= Date.now()) return;
+  // App abrindo — verifica imediatamente se tem algo vencido
+  if (tipo === "CHECK_LEMBRETES") {
+    await verificarLembretes();
+    return;
+  }
 
-    // Salva no IndexedDB — persiste mesmo se o SW for reiniciado
+  if (tipo === "AGENDAR_LEMBRETE") {
+    if (!timestamp) return;
+
+    // Sempre salva no IndexedDB (persiste se SW for morto e reiniciado)
     await salvarLembrete({ id, texto, timestamp });
 
-    // Tenta agendar via setTimeout também (funciona se o SW estiver vivo)
+    // Se ainda não venceu, verifica no momento exato via setTimeout
+    // (funciona enquanto o SW estiver vivo — complementa o IndexedDB)
     const atraso = timestamp - Date.now();
-    setTimeout(async () => {
-      await self.registration.showNotification("Hanna lembrou você!", {
-        body:     texto,
-        icon:     "assets/sprites/hanna/contente.png",
-        badge:    "assets/sprites/hanna/contente.png",
-        tag:      `lembrete-${id}`,
-        renotify: true,
-        data:     { id },
-      });
-      await removerLembrete(id);
-    }, atraso);
+    if (atraso > 0) {
+      setTimeout(() => {
+        verificarLembretes().catch(() => {});
+      }, atraso);
+    } else {
+      // Já venceu — dispara agora
+      await verificarLembretes();
+    }
   }
 
   if (tipo === "CANCELAR_LEMBRETE") {
