@@ -63,6 +63,38 @@ function configurarAudioMixing() {
 }
 configurarAudioMixing();
 
+// Desbloqueio de AudioContext para PWA no Android/iOS
+// Browsers móveis exigem gesto do usuário para iniciar áudio
+// Tocar e pausar silenciosamente em todas as trilhas libera o contexto
+let _audioDesbloqueado = false;
+
+function desbloquearAudio() {
+  if (_audioDesbloqueado) return;
+  _audioDesbloqueado = true;
+
+  // Força carregamento de todos os áudios com um play silencioso
+  const todosAudios = [
+    ...Object.values(trilhas),
+    document.getElementById("somMoeda"),
+    document.getElementById("somChuva"),
+    document.getElementById("somMeow1"),
+    document.getElementById("somMeow2"),
+    document.getElementById("somMeow3"),
+    document.getElementById("somMeowAdocao"),
+    document.getElementById("somPurr"),
+  ].filter(Boolean);
+
+  todosAudios.forEach(a => {
+    a.muted = true;
+    a.volume = 0;
+    const p = a.play();
+    if (p) p.then(() => { a.pause(); a.currentTime = 0; a.muted = isMuted; a.volume = 0.4; }).catch(() => {});
+  });
+}
+
+document.addEventListener("touchstart", desbloquearAudio, { once: true, passive: true });
+document.addEventListener("click",      desbloquearAudio, { once: true });
+
 // Helper pra tocar efeitos respeitando o mute
 function playEfeito(audio) {
   if (!audio) return;
@@ -1681,8 +1713,6 @@ localStorage.getItem("dormindo") === "true";
 
 const estadoVisual = {
 
-  dormindo: dormindo,
-
   momentoConjunto: false,
 
   spriteConjunta: null
@@ -1867,22 +1897,10 @@ function renderizarGatinhas() {
   const gatinhaSprite =
   document.getElementById("gatinhaSprite");
 
-  // RESET VISUAL
-  if (hannaContainer) {
-    hannaContainer.style.display = "flex";
-  }
-
-  if (gatinhaDesbloqueada) {
-    gatinhaContainer.style.display = "flex";
-  }
-
-  if (spriteConjunta) {
-    spriteConjunta.style.display = "none";
-  }
-
   // DORMINDO JUNTAS
   if (
-    estadoVisual.dormindo &&
+    dormindo &&
+    gatinhaDesbloqueada &&
     vinculoGatinhas >= 70
   ) {
 
@@ -1892,26 +1910,38 @@ function renderizarGatinhas() {
 
     gatinhaContainer.style.display = "none";
 
-    spriteConjunta.src =
-    "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
-
-    spriteConjunta.style.display = "block";
-
-    spriteConjunta.style.bottom = "-48px";
+    if (spriteConjunta) {
+      spriteConjunta.src = "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
+      spriteConjunta.style.display = "block";
+      spriteConjunta.style.bottom = "-48px";
+    }
 
     return;
   }
 
-  // MOMENTOS CONJUNTOS
-  if (estadoVisual.momentoConjunto) {
+  // DORMINDO SEPARADAS
+  if (dormindo) {
+
+    if (spriteConjunta) spriteConjunta.style.display = "none";
+
+    if (hannaContainer) hannaContainer.style.display = "flex";
 
     if (hannaSprite) {
-      hannaSprite.style.display = "none";
+      hannaSprite.src = "assets/sprites/hanna/dormindo.png";
+      hannaSprite.style.animation = "none";
     }
 
-    if (gatinhaSprite) {
-      gatinhaSprite.style.display = "none";
+    if (gatinhaDesbloqueada && gatinhaSprite) {
+      gatinhaContainer.style.display = "flex";
+      gatinhaSprite.style.animation = "none";
+      atualizarGatinha();
     }
+
+    return;
+  }
+
+  // MOMENTOS CONJUNTOS (abraço, brincadeira, etc.)
+  if (estadoVisual.momentoConjunto) {
 
     if (hannaContainer) {
       hannaContainer.style.display = "none";
@@ -1919,13 +1949,27 @@ function renderizarGatinhas() {
 
     gatinhaContainer.style.display = "none";
 
-    spriteConjunta.src =
-    estadoVisual.spriteConjunta;
+    if (spriteConjunta) {
+      spriteConjunta.src = estadoVisual.spriteConjunta;
+      spriteConjunta.style.display = "block";
+      spriteConjunta.style.bottom = "0px";
+    }
 
-    spriteConjunta.style.display = "block";
+    return;
+  }
 
-    spriteConjunta.style.bottom = "0px";
+  // ESTADO NORMAL — sprites individuais
+  if (spriteConjunta) spriteConjunta.style.display = "none";
 
+  if (hannaContainer) hannaContainer.style.display = "flex";
+
+  if (hannaSprite) {
+    hannaSprite.style.animation = "";
+  }
+
+  if (gatinhaDesbloqueada) {
+    gatinhaContainer.style.display = "flex";
+    if (gatinhaSprite) gatinhaSprite.style.animation = "";
   }
 
 }
@@ -2049,26 +2093,8 @@ function iniciarFalasIdle() {
 // ATUALIZAR STATUS
 function atualizarStatus() {
 
-  if (estadoVisual.momentoConjunto) {
-    return;
-  }
-
-  const spriteConjunta =
-  document.getElementById("spriteConjunta");
-
-  const hannaContainer =
-  document.getElementById("hannaContainer");
-
-  // Se momento conjunto ativo: garante que só a sprite conjunta aparece e sai
-  if (momentoConjuntoAtivo) {
-    if (spriteConjunta) spriteConjunta.style.display = "block";
-    if (hannaContainer)  hannaContainer.style.display = "none";
-    gatinhaContainer.style.display = "none";
-    return;
-  }
-
-  // Sem momento conjunto: garante que a sprite conjunta está escondida
-  if (spriteConjunta) spriteConjunta.style.display = "none";
+  // Toda lógica de visibilidade de sprites fica em renderizarGatinhas
+  renderizarGatinhas();
   // corações
   coracoes.forEach((c, i) => {
     c.src = amizade >= i + 1
@@ -2134,12 +2160,6 @@ function atualizarStatus() {
 
   if (gatinhaDesbloqueada) {
 
-    // Mostra containers individuais apenas quando não há momento conjunto ativo
-    if (!momentoConjuntoAtivo && !dormindo) {
-      if (hannaContainer) hannaContainer.style.display = "flex";
-      gatinhaContainer.style.display = "flex";
-    }
-
     nomeDaGatinhaTexto.textContent = nomeGatinha;
 
     const vinculoContainer =
@@ -2159,77 +2179,43 @@ function atualizarStatus() {
   if (vinculoGatinhas >= 100 && gatinhaDesbloqueada) desbloquearConquista("inseparaveis");
 
   if (dormindo) {
-
     zzzContainer.style.display = "flex";
-
-    if (momentoConjuntoAtivo) {
-      // Dormindo juntas — guard do topo já cuida da visibilidade
-    } else {
-      // Dormindo separadas — sprites individuais
-      hannaSprite.src = "assets/sprites/hanna/dormindo.png";
-      hannaSprite.style.animation = "none";
-      if (hannaContainer) hannaContainer.style.display = "flex";
-      if (gatinhaDesbloqueada) {
-        gatinhaSprite.style.animation = "none";
-        gatinhaContainer.style.display = "flex";
-        atualizarGatinha();
-      }
-    }
-
     return;
   }
 
   zzzContainer.style.display = "none";
 
-  if (energia <= 20) {
+  // Só atualiza sprite da Hanna se não houver momento conjunto ativo
+  if (!momentoConjuntoAtivo) {
 
-    hannaSprite.src = "assets/sprites/hanna/sonolenta.png";
-
-    trocarAnimacao("tristeFloat 4s ease-in-out infinite");
-
+    if (energia <= 20) {
+      hannaSprite.src = "assets/sprites/hanna/sonolenta.png";
+      trocarAnimacao("tristeFloat 4s ease-in-out infinite");
     }
-
     else if (fome <= 15) {
-
-    hannaSprite.src = "assets/sprites/hanna/brava.png";
-
-    trocarAnimacao("bravaShake 0.4s infinite");
-
+      hannaSprite.src = "assets/sprites/hanna/brava.png";
+      trocarAnimacao("bravaShake 0.4s infinite");
     }
-
     else if (fome <= 50) {
-
-    hannaSprite.src = "assets/sprites/hanna/triste.png";
-
-    trocarAnimacao("tristeFloat 4s ease-in-out infinite");
-
+      hannaSprite.src = "assets/sprites/hanna/triste.png";
+      trocarAnimacao("tristeFloat 4s ease-in-out infinite");
     }
-
     else if (felicidade >= 95) {
-
-    hannaSprite.src = "assets/sprites/hanna/apaixonada.png";
-
-    trocarAnimacao("apaixonadaFloat 5s ease-in-out infinite");
-
+      hannaSprite.src = "assets/sprites/hanna/apaixonada.png";
+      trocarAnimacao("apaixonadaFloat 5s ease-in-out infinite");
     }
-
     else if (felicidade >= 80) {
-
-    hannaSprite.src = "assets/sprites/hanna/contente.png";
-
-    trocarAnimacao("felizBounce 2.5s ease-in-out infinite");
-
+      hannaSprite.src = "assets/sprites/hanna/contente.png";
+      trocarAnimacao("felizBounce 2.5s ease-in-out infinite");
     }
-
     else {
-
-    hannaSprite.src = "assets/sprites/hanna/neutra.png";
-
-    trocarAnimacao("idleFloat 4.5s ease-in-out infinite");
-
+      hannaSprite.src = "assets/sprites/hanna/neutra.png";
+      trocarAnimacao("idleFloat 4.5s ease-in-out infinite");
     }
 
-  atualizarGatinha();
+    atualizarGatinha();
+  }
+
   _salvar();
 }
 
