@@ -273,7 +273,7 @@ textarea {
   image-rendering: pixelated;
 
   position: absolute;
-  bottom: -28px;
+  bottom: 0px;
   left: 50%;
 
   z-index: 3;
@@ -2264,7 +2264,7 @@ body.dark-mode .bottomNav {
 #zzzContainer {
   position: absolute;
 
-  top: 150px;
+  top: 100px;
   left: 35%;
 
   transform: translateX(-10px);

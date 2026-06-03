@@ -63,38 +63,6 @@ function configurarAudioMixing() {
 }
 configurarAudioMixing();
 
-// Desbloqueio de AudioContext para PWA no Android/iOS
-// Browsers móveis exigem gesto do usuário para iniciar áudio
-// Tocar e pausar silenciosamente em todas as trilhas libera o contexto
-let _audioDesbloqueado = false;
-
-function desbloquearAudio() {
-  if (_audioDesbloqueado) return;
-  _audioDesbloqueado = true;
-
-  // Força carregamento de todos os áudios com um play silencioso
-  const todosAudios = [
-    ...Object.values(trilhas),
-    document.getElementById("somMoeda"),
-    document.getElementById("somChuva"),
-    document.getElementById("somMeow1"),
-    document.getElementById("somMeow2"),
-    document.getElementById("somMeow3"),
-    document.getElementById("somMeowAdocao"),
-    document.getElementById("somPurr"),
-  ].filter(Boolean);
-
-  todosAudios.forEach(a => {
-    a.muted = true;
-    a.volume = 0;
-    const p = a.play();
-    if (p) p.then(() => { a.pause(); a.currentTime = 0; a.muted = isMuted; a.volume = 0.4; }).catch(() => {});
-  });
-}
-
-document.addEventListener("touchstart", desbloquearAudio, { once: true, passive: true });
-document.addEventListener("click",      desbloquearAudio, { once: true });
-
 // Helper pra tocar efeitos respeitando o mute
 function playEfeito(audio) {
   if (!audio) return;
@@ -279,6 +247,7 @@ const btnCarta          = document.getElementById("btnCarta");
 const inputNomeGatinha  = document.getElementById("inputNomeGatinha");
 const btnSalvarNomeGatinha = document.getElementById("btnSalvarNomeGatinha");
 const btnModoNoturno    = document.getElementById("btnModoNoturno");
+const btnResetar = document.getElementById("btnResetar");
 // Volume fixo — sliders removidos, valores padrão constantes
 const volumeMusica  = { value: "0.4" };
 const volumeEfeitos = { value: "0.7" };
@@ -311,6 +280,40 @@ const telaPedidoReal = document.getElementById("telaPedidoReal");
 const textoPedidoReal = document.getElementById("textoPedidoReal");
 const btnSimReal = document.getElementById("btnSimReal");
 const btnNaoReal = document.getElementById("btnNaoReal");
+
+// Botão de Resetar o Game
+btnResetar.addEventListener("click", () => {
+
+  const confirmar = confirm(
+    "Tem certeza que deseja apagar todo o progresso?"
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  resetandoProgresso = true;
+
+  sementes = 0;
+  moedas = 0;
+  amizade = 0;
+  vinculoGatinhas = 0;
+
+  gatinhaDesbloqueada = false;
+  nomeGatinha = "";
+
+  conquistasDesbloqueadas = {};
+
+  momentoConjuntoAtivo = false;
+
+  estadoVisual.momentoConjunto = false;
+  estadoVisual.spriteConjunta = null;
+
+  localStorage.clear();
+
+  location.reload();
+
+});
 
 // Pedido Hanna
 btnSimPedido.addEventListener("click", () => {
@@ -1346,7 +1349,7 @@ const navLoja = document.getElementById("navLoja");
 const navGames = document.getElementById("navGames");
 
 // LOJA
-const btnLoja = document.getElementById("btnLoja");
+const btnLoja = null; // navegação feita via navLoja.onclick abaixo
 const telaLoja  = document.getElementById("telaLoja");
 const btnVoltar = document.getElementById("btnVoltar");
 const btnUrsinho = document.getElementById("btnUrsinho");
@@ -1354,7 +1357,7 @@ const btnMorango = document.getElementById("btnMorango");
 const btnGatinha = document.getElementById("btnGatinha");
 
 // LEMBRETES
-const btnLembretes = document.getElementById("btnLembretes");
+const btnLembretes = null; // navegação feita via navLembretes.onclick abaixo
 const telaLembretes      = document.getElementById("telaLembretes");
 const btnVoltarLembretes = document.getElementById("btnVoltarLembretes");
 const btnSalvarLembrete  = document.getElementById("btnSalvarLembrete");
@@ -1461,13 +1464,9 @@ const momentosJuntas = [
   },
   {
     sprite: "assets/sprites/hanna-gatinha/noite-feliz.png",
-    fala: "noitinha feliz juntas 🌙",
+    fala: "psiu... ouviu essa fofoca? 🐾",
     som: null,
-  },
-  {
-    sprite: "assets/sprites/hanna-gatinha/gatinhas-dormindo.png",
-    fala: "soneca fofa juntas 💤",
-    som: null,
+    condicao: () => new Date().getHours() >= 19 || new Date().getHours() < 6,
   },
 ];
 
@@ -1605,13 +1604,14 @@ function dispararMomentoJuntas() {
     return;
   }
 
-  // Filtra momentos pelo nível de vínculo
-  const momentosFiltrados = vinculoGatinhas >= 70
-    ? momentosJuntas  // todos
+  // Filtra momentos pelo nível de vínculo e condições especiais
+  const momentosFiltrados = (vinculoGatinhas >= 70
+    ? momentosJuntas
     : momentosJuntas.filter(m =>
         m.sprite.includes("brincando") ||
         m.sprite.includes("lambendo")
-      );
+      )
+  ).filter(m => !m.condicao || m.condicao());
 
   if (momentosFiltrados.length === 0) {
     agendarMomentoJuntas();
@@ -1710,6 +1710,8 @@ let nomeGatinha = localStorage.getItem("nomeGatinha") || "";
 
 let dormindo =
 localStorage.getItem("dormindo") === "true";
+
+let resetandoProgresso = false;
 
 const estadoVisual = {
 
@@ -1897,51 +1899,60 @@ function renderizarGatinhas() {
   const gatinhaSprite =
   document.getElementById("gatinhaSprite");
 
+  // RESET VISUAL — garante que sprites individuais estão visíveis por padrão
+  if (hannaContainer) {
+    hannaContainer.style.display = "flex";
+  }
+
+  if (hannaSprite) {
+    hannaSprite.style.display = "block";
+  }
+
+  if (gatinhaDesbloqueada) {
+    gatinhaContainer.style.display = "flex";
+    if (gatinhaSprite) gatinhaSprite.style.display = "block";
+  }
+
+  if (spriteConjunta) {
+    spriteConjunta.style.display = "none";
+  }
+
   // DORMINDO JUNTAS
-  if (
-    dormindo &&
-    gatinhaDesbloqueada &&
-    vinculoGatinhas >= 70
-  ) {
+  if (dormindo && gatinhaDesbloqueada && vinculoGatinhas >= 70) {
 
-    if (hannaContainer) {
-      hannaContainer.style.display = "none";
-    }
-
+    if (hannaContainer) hannaContainer.style.display = "none";
     gatinhaContainer.style.display = "none";
-
-    if (spriteConjunta) {
-      spriteConjunta.src = "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
-      spriteConjunta.style.display = "block";
-      spriteConjunta.style.bottom = "-48px";
-    }
-
+    spriteConjunta.src = "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
+    spriteConjunta.style.display = "block";
+    spriteConjunta.style.bottom = "-65px";
     return;
   }
 
   // DORMINDO SEPARADAS
   if (dormindo) {
 
-    if (spriteConjunta) spriteConjunta.style.display = "none";
-
     if (hannaContainer) hannaContainer.style.display = "flex";
-
     if (hannaSprite) {
       hannaSprite.src = "assets/sprites/hanna/dormindo.png";
       hannaSprite.style.animation = "none";
     }
-
-    if (gatinhaDesbloqueada && gatinhaSprite) {
+    if (gatinhaDesbloqueada) {
       gatinhaContainer.style.display = "flex";
-      gatinhaSprite.style.animation = "none";
-      atualizarGatinha();
+      if (gatinhaSprite) gatinhaSprite.style.animation = "none";
     }
-
     return;
   }
 
-  // MOMENTOS CONJUNTOS (abraço, brincadeira, etc.)
+  // MOMENTOS CONJUNTOS
   if (estadoVisual.momentoConjunto) {
+
+    if (hannaSprite) {
+      hannaSprite.style.display = "none";
+    }
+
+    if (gatinhaSprite) {
+      gatinhaSprite.style.display = "none";
+    }
 
     if (hannaContainer) {
       hannaContainer.style.display = "none";
@@ -1949,27 +1960,13 @@ function renderizarGatinhas() {
 
     gatinhaContainer.style.display = "none";
 
-    if (spriteConjunta) {
-      spriteConjunta.src = estadoVisual.spriteConjunta;
-      spriteConjunta.style.display = "block";
-      spriteConjunta.style.bottom = "0px";
-    }
+    spriteConjunta.src =
+    estadoVisual.spriteConjunta;
 
-    return;
-  }
+    spriteConjunta.style.display = "block";
 
-  // ESTADO NORMAL — sprites individuais
-  if (spriteConjunta) spriteConjunta.style.display = "none";
+    spriteConjunta.style.bottom = "";
 
-  if (hannaContainer) hannaContainer.style.display = "flex";
-
-  if (hannaSprite) {
-    hannaSprite.style.animation = "";
-  }
-
-  if (gatinhaDesbloqueada) {
-    gatinhaContainer.style.display = "flex";
-    if (gatinhaSprite) gatinhaSprite.style.animation = "";
   }
 
 }
@@ -2093,8 +2090,9 @@ function iniciarFalasIdle() {
 // ATUALIZAR STATUS
 function atualizarStatus() {
 
-  // Toda lógica de visibilidade de sprites fica em renderizarGatinhas
+  // Toda visibilidade de sprites fica em renderizarGatinhas
   renderizarGatinhas();
+
   // corações
   coracoes.forEach((c, i) => {
     c.src = amizade >= i + 1
@@ -2105,52 +2103,21 @@ function atualizarStatus() {
   barraFome.style.width        = fome + "%";
   barraFelicidade.style.width  = felicidade + "%";
   barraEnergia.style.width     = energia + "%";
-  barraHigiene.style.width = higiene + "%";
-  barraVinculo.style.width = vinculoGatinhas + "%";
+  barraHigiene.style.width     = higiene + "%";
+  barraVinculo.style.width     = vinculoGatinhas + "%";
 
-  vinculoPorcentagem.textContent =
-  Math.floor(vinculoGatinhas) + "%";
+  vinculoPorcentagem.textContent = Math.floor(vinculoGatinhas) + "%";
 
-
-  if (vinculoGatinhas < 20) {
-
-      vinculoTexto.textContent =
-      "Desconhecidas 🤍";
-
-  }
-
-  else if (vinculoGatinhas < 40) {
-
-      vinculoTexto.textContent =
-      "Amigas 💜";
-
-  }
-
-  else if (vinculoGatinhas < 60) {
-
-      vinculoTexto.textContent =
-      "Próximas 🌸";
-
-  }
-
-  else if (vinculoGatinhas < 80) {
-
-      vinculoTexto.textContent =
-      "Apaixonadinhas 💖";
-
-  }
-
-  else {
-
-      vinculoTexto.textContent =
-      "Inseparáveis 💍";
-
-  }
+  if (vinculoGatinhas < 20)       vinculoTexto.textContent = "Desconhecidas 🤍";
+  else if (vinculoGatinhas < 40)  vinculoTexto.textContent = "Amigas 💜";
+  else if (vinculoGatinhas < 60)  vinculoTexto.textContent = "Próximas 🌸";
+  else if (vinculoGatinhas < 80)  vinculoTexto.textContent = "Apaixonadinhas 💖";
+  else                            vinculoTexto.textContent = "Inseparáveis 💍";
 
   fomePorcentagem.textContent       = Math.floor(fome) + "%";
   felicidadePorcentagem.textContent = Math.floor(felicidade) + "%";
   energiaPorcentagem.textContent    = Math.floor(energia) + "%";
-  higienePorcentagem.textContent = Math.floor(higiene) + "%";
+  higienePorcentagem.textContent    = Math.floor(higiene) + "%";
 
   sementesTexto.textContent = sementes;
   moedasTexto.textContent   = moedas;
@@ -2159,21 +2126,14 @@ function atualizarStatus() {
   if (sementesFazendaEl) sementesFazendaEl.textContent = sementes;
 
   if (gatinhaDesbloqueada) {
-
     nomeDaGatinhaTexto.textContent = nomeGatinha;
-
-    const vinculoContainer =
-    document.getElementById("vinculoContainer");
-
-    if (vinculoContainer) {
-      vinculoContainer.style.display = "block";
-    }
-
+    const vinculoContainer = document.getElementById("vinculoContainer");
+    if (vinculoContainer) vinculoContainer.style.display = "block";
   }
 
   saldoLoja.textContent = moedas;
 
-  // Conquistas automáticas verificadas a cada update
+  // Conquistas automáticas
   if (moedas >= 10000) desbloquearConquista("milionaria");
   if (fome >= 90 && felicidade >= 90 && energia >= 90 && higiene >= 90) desbloquearConquista("bem_cuidada");
   if (vinculoGatinhas >= 100 && gatinhaDesbloqueada) desbloquearConquista("inseparaveis");
@@ -2185,34 +2145,27 @@ function atualizarStatus() {
 
   zzzContainer.style.display = "none";
 
-  // Só atualiza sprite da Hanna se não houver momento conjunto ativo
-  if (!momentoConjuntoAtivo) {
-
+  // Sprite da Hanna (só se não houver momento conjunto ativo)
+  if (!estadoVisual.momentoConjunto && !momentoConjuntoAtivo) {
     if (energia <= 20) {
       hannaSprite.src = "assets/sprites/hanna/sonolenta.png";
       trocarAnimacao("tristeFloat 4s ease-in-out infinite");
-    }
-    else if (fome <= 15) {
+    } else if (fome <= 15) {
       hannaSprite.src = "assets/sprites/hanna/brava.png";
       trocarAnimacao("bravaShake 0.4s infinite");
-    }
-    else if (fome <= 50) {
+    } else if (fome <= 50) {
       hannaSprite.src = "assets/sprites/hanna/triste.png";
       trocarAnimacao("tristeFloat 4s ease-in-out infinite");
-    }
-    else if (felicidade >= 95) {
+    } else if (felicidade >= 95) {
       hannaSprite.src = "assets/sprites/hanna/apaixonada.png";
       trocarAnimacao("apaixonadaFloat 5s ease-in-out infinite");
-    }
-    else if (felicidade >= 80) {
+    } else if (felicidade >= 80) {
       hannaSprite.src = "assets/sprites/hanna/contente.png";
       trocarAnimacao("felizBounce 2.5s ease-in-out infinite");
-    }
-    else {
+    } else {
       hannaSprite.src = "assets/sprites/hanna/neutra.png";
       trocarAnimacao("idleFloat 4.5s ease-in-out infinite");
     }
-
     atualizarGatinha();
   }
 
@@ -2583,25 +2536,17 @@ function iniciarSono() {
     localStorage.setItem("dormindo", "true");
 
     if (gatinhaDesbloqueada && vinculoGatinhas >= 70) {
-      // Vínculo alto — dormem juntas
-      momentoConjuntoAtivo = true;
-      const hannaContainer = document.getElementById("hannaContainer");
-      const spriteConjunta = document.getElementById("spriteConjunta");
-      if (hannaContainer) {
-        hannaContainer.style.display = "none";
-      }
-      gatinhaContainer.style.display = "none";
-      spriteConjunta.src             = "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
-      spriteConjunta.style.display   = "block";
+      // Vínculo alto — dormem juntas via renderizarGatinhas
+      momentoConjuntoAtivo = false; // momento conjunto é diferente de dormindo juntas
     } else {
-      // Vínculo baixo — cada uma dorme no seu canto
+      // Vínculo baixo — sprites individuais
       momentoConjuntoAtivo = false;
-      hannaSprite.src            = "assets/sprites/hanna/dormindo.png";
+      hannaSprite.src = "assets/sprites/hanna/dormindo.png";
       hannaSprite.style.animation = "none";
       if (gatinhaDesbloqueada) gatinhaSprite.style.animation = "none";
     }
 
-    atualizarStatus(); // roda depois de ajustar sprites
+    atualizarStatus(); // chama renderizarGatinhas que cuida de tudo
 
 
     clearInterval(dormirInterval);
@@ -2750,18 +2695,8 @@ btnEntrar.addEventListener("click", () => {
       }
 
       // Restaura estado visual de sono se o jogo recarregou dormindo
-      if (dormindo && gatinhaDesbloqueada && vinculoGatinhas >= 70) {
-          momentoConjuntoAtivo = true;
-          const hannaContainer = document.getElementById("hannaContainer");
-          const spriteConjunta = document.getElementById("spriteConjunta");
-          if (hannaContainer) hannaContainer.style.display = "none";
-          gatinhaContainer.style.display = "none";
-          if (spriteConjunta) {
-              spriteConjunta.src = "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
-              spriteConjunta.style.bottom = "-48px";
-              spriteConjunta.style.display = "block";
-          }
-      }
+      // renderizarGatinhas (chamada por atualizarStatus abaixo) cuida de tudo
+      momentoConjuntoAtivo = false;
 
       atualizarStatus();
 
@@ -2977,7 +2912,9 @@ btnPlantar.addEventListener("click", () => {
 
     "rosa",
     "rosa",
+    "rosa",
 
+    "flor",
     "flor",
     "flor",
 
@@ -2996,7 +2933,7 @@ btnPlantar.addEventListener("click", () => {
     "margarida",
     "margarida",
 
-    // MUITO rara
+    // ULTRA rara — 1 em 20
     "girassol"
 
   ];
@@ -3215,8 +3152,8 @@ somCompra.play().catch(()=>{});
 });
 
 btnMorango.addEventListener("click", () => {
-  if (moedas < 30) { mostrarAlertaLoja("⚠️ Moedas insuficientes"); return; }
-  moedas -= 30;
+  if (moedas < 80) { mostrarAlertaLoja("⚠️ Moedas insuficientes"); return; }
+  moedas -= 80;
   somCompra.currentTime = 0; 
   
   somCompra.volume =
@@ -3225,8 +3162,8 @@ btnMorango.addEventListener("click", () => {
   );
 
 somCompra.play().catch(()=>{});
-  fome = Math.min(100, fome + 15);
-  mostrarFeedbackBarra("barraFome", 15);
+  fome = Math.min(100, fome + 30);
+  mostrarFeedbackBarra("barraFome", 30);
   mostrarMensagem("A Hanna devorou o peixinho.");
   hannaSprite.src = "assets/sprites/hanna/comendo.png";
   atualizarStatus();
@@ -3244,13 +3181,14 @@ const btnAlmofada = document.getElementById("btnAlmofada");
 const btnPedidoEspecial = document.getElementById("btnPedidoEspecial");
 
 btnSashimi.addEventListener("click", () => {
-  if (moedas < 80) {
+  if (moedas < 180) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 80;
-  fome = Math.min(100, fome + 25);
+  moedas -= 180;
+  fome = Math.min(100, fome + 50);
+  mostrarFeedbackBarra("barraFome", 50);
 
   somCompra.currentTime = 0;
   somCompra.volume =
@@ -3307,13 +3245,14 @@ btnRatinho.addEventListener("click", () => {
 });
 
 btnAtum.addEventListener("click", () => {
-  if (moedas < 150) {
+  if (moedas < 300) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 150;
-  fome = Math.min(100, fome + 35);
+  moedas -= 300;
+  fome = Math.min(100, fome + 70);
+  mostrarFeedbackBarra("barraFome", 70);
 
   somCompra.currentTime = 0;
   somCompra.volume =
@@ -3328,14 +3267,16 @@ btnAtum.addEventListener("click", () => {
 });
 
 btnBiscoito.addEventListener("click", () => {
-  if (moedas < 90) {
+  if (moedas < 200) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 90;
-  fome = Math.min(100, fome + 10);
-  felicidade = Math.min(100, felicidade + 10);
+  moedas -= 200;
+  fome = Math.min(100, fome + 25);
+  felicidade = Math.min(100, felicidade + 25);
+  mostrarFeedbackBarra("barraFome", 25);
+  mostrarFeedbackBarra("barraFelicidade", 25);
 
   somCompra.currentTime = 0;
   somCompra.volume =
@@ -3350,13 +3291,14 @@ btnBiscoito.addEventListener("click", () => {
 });
 
 btnDonut.addEventListener("click", () => {
-  if (moedas < 110) {
+  if (moedas < 250) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 110;
-  felicidade = Math.min(100, felicidade + 20);
+  moedas -= 250;
+  felicidade = Math.min(100, felicidade + 45);
+  mostrarFeedbackBarra("barraFelicidade", 45);
 
   somCompra.currentTime = 0;
   somCompra.volume =
@@ -4650,26 +4592,40 @@ function pausarTodasTrilhas() {
 }
 
 document.addEventListener("visibilitychange", () => {
+
     if (document.hidden) {
-        pausarTodasTrilhas();
-        // Salva tudo + ultimoAcesso quando app vai pra background
-        _salvar();
-        localStorage.setItem("ultimoAcesso", Date.now());
-    } else {
-        // App voltou ao foco — pede SW pra verificar lembretes vencidos
-        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ tipo: "CHECK_LEMBRETES" });
+
+        if (!resetandoProgresso) {
+            _salvar();
+            localStorage.setItem("ultimoAcesso", Date.now());
         }
+
+        pausarTodasTrilhas();
+
+    } else {
+
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+                tipo: "CHECK_LEMBRETES"
+            });
+        }
+
         if (!isMuted && trilhaAtual && trilhas[trilhaAtual]) {
             trilhas[trilhaAtual].play().catch(() => {});
         }
     }
+
 });
 
 window.addEventListener("pagehide", () => {
+
     pausarTodasTrilhas();
-    _salvar();
-    localStorage.setItem("ultimoAcesso", Date.now());
+
+    if (!resetandoProgresso) {
+        _salvar();
+        localStorage.setItem("ultimoAcesso", Date.now());
+    }
+
 });
 
 function escreverPedido(texto, aoTerminar) {
@@ -5242,18 +5198,22 @@ function iniciarMomentosEspeciais() {
             )
         ];
 
-        hannaSprite.src =
-        momento.sprite;
+        // Usa o sistema correto de sprites conjuntas
+        momentoConjuntoAtivo = true;
+        estadoVisual.momentoConjunto = true;
+        estadoVisual.spriteConjunta = momento.sprite;
+        renderizarGatinhas();
 
         mostrarMensagem(
         momento.frase
         );
 
         setTimeout(() => {
-
-            hannaSprite.src =
-            "assets/sprites/hanna/neutra.png";
-
+            momentoConjuntoAtivo = false;
+            estadoVisual.momentoConjunto = false;
+            estadoVisual.spriteConjunta = null;
+            renderizarGatinhas();
+            atualizarStatus();
         }, 6000);
 
     }, 120000);
