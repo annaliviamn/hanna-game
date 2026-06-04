@@ -5232,6 +5232,9 @@ function iniciarMomentosEspeciais() {
         // chance pequena
         if (Math.random() > 0.35) return;
 
+        // só ativa se a gatinha foi adotada
+        if (!gatinhaDesbloqueada) return;
+
         // não ativa em telas especiais
         if (
             telaPedido.style.display === "flex" ||
