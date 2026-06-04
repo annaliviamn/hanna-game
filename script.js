@@ -2427,14 +2427,8 @@ agendarProximoEvento();
 
 // AÇÕES
 btnCarinho.addEventListener("click", () => {
-  if (
-    hannaSprite.src.includes("dormindo")
-  ) {
-
-    mostrarMensagem(
-      "A Hanna está dormindo 💤"
-    );
-
+  if (dormindo) {
+    mostrarFalaHanna("Zzz... 💤");
     return;
   }
   somBotao.volume =
@@ -2468,16 +2462,10 @@ somBotao.play().catch(()=>{});
 });
 
 btnComida.addEventListener("click", () => {
-    if (
-    hannaSprite.src.includes("dormindo")
-    ) {
-
-    mostrarMensagem(
-      "A Hanna está dormindo 💤"
-    );
-
+  if (dormindo) {
+    mostrarFalaHanna("Zzz... 💤");
     return;
-    }
+  }
 
     somBotao.volume =
     parseFloat(
@@ -4354,6 +4342,11 @@ document.getElementById("btnVoltarFazenda")
 // BANHO
 
 btnBanho.addEventListener("click", () => {
+
+  if (dormindo) {
+    mostrarFalaHanna("Zzz... 💤");
+    return;
+  }
 
     telaBanho.style.display = "flex";
 
