@@ -1486,6 +1486,7 @@ let gatinhaFalaTimer;
 // Balão de fala quando clica na gatinha
 function mostrarFalaGatinha(texto) {
   if (!gatinhaFalaEl) return;
+  if (telaJogo.style.display !== "block") return;
   clearTimeout(gatinhaFalaTimer);
   gatinhaFalaEl.textContent = texto;
   gatinhaFalaEl.classList.add("visivel");
@@ -1512,6 +1513,7 @@ const falasHanna = [
 
 function mostrarFalaHanna(texto) {
   if (!hannaFalaEl) return;
+  if (telaJogo.style.display !== "block") return;
   clearTimeout(hannaFalaTimer);
   hannaFalaEl.textContent = texto;
   hannaFalaEl.classList.add("visivel");
