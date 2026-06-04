@@ -423,8 +423,7 @@ function abrirPedidoReal() {
 
 `E na verdade...
 
-talvez esse pedido
-não fosse só delas...
+talvez esse pedido não fosse só delas...
 
 	  Kika Simplicio, este jogo foi inspirado em nós, e olha que coisa, tudo começou justamente porque alguém, com um belo par de olhos castanhos, me enviou um belo gatinho pretinho, e daí surgiu a “hAnna” que virou Hanna nesse game, que nada mais é do que uma celebração de tudo o que sentimos. E também vale ressaltar que a ideia do jogo veio de uma frase sua no nosso grupo, você dizia que estava querendo jogar algo novo, ou stardew valley comigo, e aí veio tudo na minha cabeça... “vou criar um jogo pra minha amada com tudo o que gostamos e eu que lute haha”.
 
@@ -436,7 +435,7 @@ não fosse só delas...
 
 	  Com tudo isso dito...
 
-    Kika Simplicio, queria aproveitar esse espaço e te perguntar uma coisa bem importante, momento de limpar as lágrimas hein haha. Mas Kika, meu bemzinho, você aceita namorar comigo?
+    Kika Simplicio, queria aproveitar esse espaço e te perguntar uma coisa bem importante, momento de limpar as lágrimas hein haha. Mas Kika, meu bemzinho...
 
 
 ...
@@ -669,8 +668,6 @@ function criarParticulas(emoji = "💖", quantidade = 6) {
 
 // ── SISTEMA DE CONQUISTAS ─────────────────────────────────────
 
-const somConquista = criarAudio("assets/music/som-conquista.mp3");
-
 const CONQUISTAS = {
   // Cuidados
   primeiro_carinho:   { nome: "Primeiro carinho",      desc: "Você deu o primeiro carinho pra Hanna.",         sprite: "assets/sprites/hanna/animada.png",    secao: "cuidados" },
@@ -681,7 +678,7 @@ const CONQUISTAS = {
   jardineira:         { nome: "Jardineira",             desc: "Primeira planta colhida na fazenda.",            sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
   milionaria:         { nome: "Milionária",             desc: "10.000 moedas acumuladas.",                      sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
   bem_cuidada:        { nome: "Bem cuidada",            desc: "Todos os status acima de 90% ao mesmo tempo.",  sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
-  nova_companheira:   { nome: "Nova companheira",       desc: "A gatinha pretinha chegou!",                    sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  nova_companheira:   { nome: "Nova companheira",       desc: "A gatinha pretinha chegou!",                    sprite: "assets/sprites/gatinha/gatinha-sorrindo.png", secao: "progressao" },
   inseparaveis:       { nome: "Inseparáveis",           desc: "Vínculo máximo com a gatinha pretinha.",        sprite: "assets/sprites/hanna-gatinha/felizes.png", secao: "progressao" },
   // Minigames
   mestre_memoria:     { nome: "Mestre da Memória",      desc: "Venceu o jogo Memória das Patas.",              sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
@@ -1410,6 +1407,7 @@ const somCarinho = criarAudio("assets/music/som-carinho.mp3");
 const somComida  = criarAudio("assets/music/som-comida.mp3");
 const somDormir  = criarAudio("assets/music/som-dormir.mp3");
 const somAcordar = criarAudio("assets/music/som-acordar.mp3");
+const somConquista = criarAudio("assets/music/som-conquista.mp3");
 
 [somCarinho, somComida, somDormir, somAcordar].forEach(s => {
   s.volume = parseFloat(volumeEfeitos.value);
@@ -2076,10 +2074,9 @@ function iniciarFalasIdle() {
           )
       ];
 
-      mostrarMensagem(frase);
+      mostrarFalaHanna(frase);
 
   }, 90000);
-
 }
 
 // ATUALIZAR STATUS
@@ -2402,7 +2399,8 @@ function dispararEventoAleatorio() {
     if (momentoConjuntoAtivo) return;
 
     hannaSprite.src = spriteAnterior;
-    eventoEmAndamento           = false;
+    trocarAnimacao(animacaoAnterior);
+    eventoEmAndamento = false;
   }, evento.duracao);
 
 }
@@ -5089,31 +5087,14 @@ function iniciarFinalRomantico() {
 
 function mensagemHorario() {
 
-    const hora =
-    new Date().getHours();
+    const hora = new Date().getHours();
 
     if (hora < 12) {
-
-        mostrarMensagem(
-        "Bom dia meu bem 🌞"
-        );
-
-    }
-
-    else if (hora < 18) {
-
-        mostrarMensagem(
-        "Boa tarde 🌸"
-        );
-
-    }
-
-    else {
-
-        mostrarMensagem(
-        "Boa noite meu amor 🌙"
-        );
-
+        mostrarFalaHanna("Bom dia meu bem 🌞");
+    } else if (hora < 18) {
+        mostrarFalaHanna("Boa tarde 🌸");
+    } else {
+        mostrarFalaHanna("Boa noite meu amor 🌙");
     }
 
 }
