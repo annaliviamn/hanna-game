@@ -2085,26 +2085,9 @@ function iniciarFalasIdle() {
 // ATUALIZAR STATUS
 function atualizarStatus() {
 
-  if (estadoVisual.momentoConjunto) {
-    return;
-  }
+  // Toda visibilidade de sprites fica em renderizarGatinhas
+  renderizarGatinhas();
 
-  const spriteConjunta =
-  document.getElementById("spriteConjunta");
-
-  const hannaContainer =
-  document.getElementById("hannaContainer");
-
-  // Se momento conjunto ativo: garante que só a sprite conjunta aparece e sai
-  if (momentoConjuntoAtivo) {
-    if (spriteConjunta) spriteConjunta.style.display = "block";
-    if (hannaContainer)  hannaContainer.style.display = "none";
-    gatinhaContainer.style.display = "none";
-    return;
-  }
-
-  // Sem momento conjunto: garante que a sprite conjunta está escondida
-  if (spriteConjunta) spriteConjunta.style.display = "none";
   // corações
   coracoes.forEach((c, i) => {
     c.src = amizade >= i + 1
@@ -2115,52 +2098,21 @@ function atualizarStatus() {
   barraFome.style.width        = fome + "%";
   barraFelicidade.style.width  = felicidade + "%";
   barraEnergia.style.width     = energia + "%";
-  barraHigiene.style.width = higiene + "%";
-  barraVinculo.style.width = vinculoGatinhas + "%";
+  barraHigiene.style.width     = higiene + "%";
+  barraVinculo.style.width     = vinculoGatinhas + "%";
 
-  vinculoPorcentagem.textContent =
-  Math.floor(vinculoGatinhas) + "%";
+  vinculoPorcentagem.textContent = Math.floor(vinculoGatinhas) + "%";
 
-
-  if (vinculoGatinhas < 20) {
-
-      vinculoTexto.textContent =
-      "Desconhecidas 🤍";
-
-  }
-
-  else if (vinculoGatinhas < 40) {
-
-      vinculoTexto.textContent =
-      "Amigas 💜";
-
-  }
-
-  else if (vinculoGatinhas < 60) {
-
-      vinculoTexto.textContent =
-      "Próximas 🌸";
-
-  }
-
-  else if (vinculoGatinhas < 80) {
-
-      vinculoTexto.textContent =
-      "Apaixonadinhas 💖";
-
-  }
-
-  else {
-
-      vinculoTexto.textContent =
-      "Inseparáveis 💍";
-
-  }
+  if (vinculoGatinhas < 20)       vinculoTexto.textContent = "Desconhecidas 🤍";
+  else if (vinculoGatinhas < 40)  vinculoTexto.textContent = "Amigas 💜";
+  else if (vinculoGatinhas < 60)  vinculoTexto.textContent = "Próximas 🌸";
+  else if (vinculoGatinhas < 80)  vinculoTexto.textContent = "Apaixonadinhas 💖";
+  else                            vinculoTexto.textContent = "Inseparáveis 💍";
 
   fomePorcentagem.textContent       = Math.floor(fome) + "%";
   felicidadePorcentagem.textContent = Math.floor(felicidade) + "%";
   energiaPorcentagem.textContent    = Math.floor(energia) + "%";
-  higienePorcentagem.textContent = Math.floor(higiene) + "%";
+  higienePorcentagem.textContent    = Math.floor(higiene) + "%";
 
   sementesTexto.textContent = sementes;
   moedasTexto.textContent   = moedas;
@@ -2169,103 +2121,48 @@ function atualizarStatus() {
   if (sementesFazendaEl) sementesFazendaEl.textContent = sementes;
 
   if (gatinhaDesbloqueada) {
-
-    // Mostra containers individuais apenas quando não há momento conjunto ativo
-    if (!momentoConjuntoAtivo && !dormindo) {
-      if (hannaContainer) hannaContainer.style.display = "flex";
-      gatinhaContainer.style.display = "flex";
-    }
-
     nomeDaGatinhaTexto.textContent = nomeGatinha;
-
-    const vinculoContainer =
-    document.getElementById("vinculoContainer");
-
-    if (vinculoContainer) {
-      vinculoContainer.style.display = "block";
-    }
-
+    const vinculoContainer = document.getElementById("vinculoContainer");
+    if (vinculoContainer) vinculoContainer.style.display = "block";
   }
 
   saldoLoja.textContent = moedas;
 
-  // Conquistas automáticas verificadas a cada update
+  // Conquistas automáticas
   if (moedas >= 10000) desbloquearConquista("milionaria");
   if (fome >= 90 && felicidade >= 90 && energia >= 90 && higiene >= 90) desbloquearConquista("bem_cuidada");
   if (vinculoGatinhas >= 100 && gatinhaDesbloqueada) desbloquearConquista("inseparaveis");
 
   if (dormindo) {
-
     zzzContainer.style.display = "flex";
-
-    if (momentoConjuntoAtivo) {
-      // Dormindo juntas — guard do topo já cuida da visibilidade
-    } else {
-      // Dormindo separadas — sprites individuais
-      hannaSprite.src = "assets/sprites/hanna/dormindo.png";
-      hannaSprite.style.animation = "none";
-      if (hannaContainer) hannaContainer.style.display = "flex";
-      if (gatinhaDesbloqueada) {
-        gatinhaSprite.style.animation = "none";
-        gatinhaContainer.style.display = "flex";
-        atualizarGatinha();
-      }
-    }
-
     return;
   }
 
   zzzContainer.style.display = "none";
 
-  if (energia <= 20) {
-
-    hannaSprite.src = "assets/sprites/hanna/sonolenta.png";
-
-    trocarAnimacao("tristeFloat 4s ease-in-out infinite");
-
+  if (!estadoVisual.momentoConjunto && !momentoConjuntoAtivo) {
+    if (energia <= 20) {
+      hannaSprite.src = "assets/sprites/hanna/sonolenta.png";
+      trocarAnimacao("tristeFloat 4s ease-in-out infinite");
+    } else if (fome <= 15) {
+      hannaSprite.src = "assets/sprites/hanna/brava.png";
+      trocarAnimacao("bravaShake 0.4s infinite");
+    } else if (fome <= 50) {
+      hannaSprite.src = "assets/sprites/hanna/triste.png";
+      trocarAnimacao("tristeFloat 4s ease-in-out infinite");
+    } else if (felicidade >= 95) {
+      hannaSprite.src = "assets/sprites/hanna/apaixonada.png";
+      trocarAnimacao("apaixonadaFloat 5s ease-in-out infinite");
+    } else if (felicidade >= 80) {
+      hannaSprite.src = "assets/sprites/hanna/contente.png";
+      trocarAnimacao("felizBounce 2.5s ease-in-out infinite");
+    } else {
+      hannaSprite.src = "assets/sprites/hanna/neutra.png";
+      trocarAnimacao("idleFloat 4.5s ease-in-out infinite");
     }
+    atualizarGatinha();
+  }
 
-    else if (fome <= 15) {
-
-    hannaSprite.src = "assets/sprites/hanna/brava.png";
-
-    trocarAnimacao("bravaShake 0.4s infinite");
-
-    }
-
-    else if (fome <= 50) {
-
-    hannaSprite.src = "assets/sprites/hanna/triste.png";
-
-    trocarAnimacao("tristeFloat 4s ease-in-out infinite");
-
-    }
-
-    else if (felicidade >= 95) {
-
-    hannaSprite.src = "assets/sprites/hanna/apaixonada.png";
-
-    trocarAnimacao("apaixonadaFloat 5s ease-in-out infinite");
-
-    }
-
-    else if (felicidade >= 80) {
-
-    hannaSprite.src = "assets/sprites/hanna/contente.png";
-
-    trocarAnimacao("felizBounce 2.5s ease-in-out infinite");
-
-    }
-
-    else {
-
-    hannaSprite.src = "assets/sprites/hanna/neutra.png";
-
-    trocarAnimacao("idleFloat 4.5s ease-in-out infinite");
-
-    }
-
-  atualizarGatinha();
   _salvar();
 }
 
