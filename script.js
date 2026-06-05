@@ -3307,6 +3307,24 @@ btnDonut.addEventListener("click", () => {
   atualizarStatus();
 });
 
+// PACK DE SEMENTES
+document.getElementById("btnPackSementes").addEventListener("click", () => {
+  if (moedas < 800) {
+    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    return;
+  }
+
+  moedas -= 800;
+  sementes += 10;
+
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+
+  mostrarMensagem("10 sementes adicionadas! 🌱");
+  atualizarStatus();
+});
+
 btnVarinha.addEventListener("click", () => {
   if (moedas < 350) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
