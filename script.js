@@ -1875,6 +1875,13 @@ function mostrarMensagem(texto, local = "home") {
     toast.id = "mensagemGlobal";
     toast.className = "mensagem-global";
     document.body.appendChild(toast);
+
+    // Clique dispensa o toast imediatamente
+    toast.addEventListener("click", () => {
+      clearTimeout(msgTimer);
+      toast.classList.add("mensagem-global-saindo");
+      setTimeout(() => toast.classList.remove("mensagem-global-visivel", "mensagem-global-saindo"), 400);
+    });
   }
 
   clearTimeout(msgTimer);
