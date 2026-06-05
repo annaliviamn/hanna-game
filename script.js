@@ -1735,24 +1735,28 @@ if (inputNomeGatinha) {
 
 btnSalvarNomeGatinha.onclick = () => {
 
-    const novoNome =
-    inputNomeGatinha.value.trim();
+    const novoNome = inputNomeGatinha.value.trim();
 
     if (!novoNome) return;
 
+    // Cobrar 2.000 moedas só se já tem nome (renomeando)
+    if (nomeGatinha) {
+        if (moedas < 2000) {
+            mostrarMensagem("⚠️ Você precisa de 2.000 moedas pra trocar o nome.");
+            return;
+        }
+        moedas -= 2000;
+    }
+
     nomeGatinha = novoNome;
 
-    nomeDaGatinhaTexto.textContent =
-    nomeGatinha;
+    nomeDaGatinhaTexto.textContent = nomeGatinha;
 
-    localStorage.setItem(
-        "nomeGatinha",
-        nomeGatinha
-    );
+    localStorage.setItem("nomeGatinha", nomeGatinha);
 
-    mostrarMensagem(
-        `${nomeGatinha} adorou o novo nome 💖`
-    );
+    mostrarMensagem(`${nomeGatinha} adorou o novo nome 💖`);
+
+    atualizarStatus();
 
 };
 
@@ -3407,14 +3411,21 @@ btnPedidoEspecial.addEventListener(
 
 });
 
+// Cinza o botão de adotar se já tem gatinha
+if (gatinhaDesbloqueada) {
+  btnGatinha.dataset.adotado = "true";
+  btnGatinha.textContent = "Já adotado 💖";
+  btnGatinha.classList.add("btn-adotado");
+  btnGatinha.style.opacity = "0.5";
+  btnGatinha.style.cursor = "not-allowed";
+}
+
 btnGatinha.addEventListener("click", () => {
 
   if (gatinhaDesbloqueada) {
     mostrarAlertaLoja(`🖤 ${nomeGatinha || "sua gatinha"} já mora com vocês`);
     return;
   }
-
-  // Cooldown de 24h após a gatinha ir embora
   if (gatinhaBloqueadaAte && Date.now() < gatinhaBloqueadaAte) {
     const horasRestantes = Math.ceil((gatinhaBloqueadaAte - Date.now()) / 3600000);
     mostrarAlertaLoja(`A gatinha ainda precisa de espaço. Volte em ${horasRestantes}h.`);
@@ -3540,15 +3551,11 @@ inputNomeGatinha.placeholder =
     `${nomeGatinha} foi adotada! 🖤`
   );
 
-  btnGatinha.dataset.adotado =
-  "true";
-
-  btnGatinha.textContent =
-  "Já adotado 💖";
-
-  btnGatinha.classList.add(
-  "btn-adotado"
-  );
+  btnGatinha.dataset.adotado = "true";
+  btnGatinha.textContent = "Já adotado 💖";
+  btnGatinha.classList.add("btn-adotado");
+  btnGatinha.style.opacity = "0.5";
+  btnGatinha.style.cursor = "not-allowed";
 
   atualizarStatus();
   iniciarMomentosGatinha();
@@ -4391,6 +4398,22 @@ btnBanho.addEventListener("click", () => {
 });
 
 
+// REPLAY DO PEDIDO
+const btnReplayPedido = document.getElementById("btnReplayPedido");
+const cardReplayPedido = document.getElementById("cardReplayPedido");
+
+// Mostra o card se o pedido já foi feito
+if (localStorage.getItem("pedidoFeito") === "true") {
+    if (cardReplayPedido) cardReplayPedido.style.display = "block";
+}
+
+if (btnReplayPedido) {
+    btnReplayPedido.addEventListener("click", () => {
+        abrirTela(telaPedido);
+        abrirTelaPedido();
+    });
+}
+
 // ABRIR FAZENDA
 
 btnAbrirFazenda.onclick = () => {
@@ -5055,20 +5078,36 @@ function iniciarFinalRomantico() {
 
         clearInterval(intervalo);
 
-        telaPedidoReal.style.display =
-        "none";
+        telaPedidoReal.style.display = "none";
 
-        telaJogo.style.display =
-        "block";
+        telaJogo.style.display = "block";
 
-        document.querySelector(".bottomNav")
-        .style.display = "flex";
+        document.querySelector(".bottomNav").style.display = "flex";
 
         tocarTrilha("casa");
 
-        mostrarMensagem(
-        "Agora vocês namoram oficialmente 💖"
-        );
+        // Gatinhas comemoram juntas!
+        if (gatinhaDesbloqueada) {
+            momentoConjuntoAtivo = true;
+            estadoVisual.momentoConjunto = true;
+            estadoVisual.spriteConjunta = "assets/sprites/hanna-gatinha/gatinhas-abraco.png";
+            renderizarGatinhas();
+
+            setTimeout(() => {
+                momentoConjuntoAtivo = false;
+                estadoVisual.momentoConjunto = false;
+                estadoVisual.spriteConjunta = null;
+                renderizarGatinhas();
+                atualizarStatus();
+            }, 6000);
+        }
+
+        mostrarFalaHanna("Agora somos namoradas 💖");
+        mostrarMensagem("Agora vocês namoram oficialmente 💖");
+
+        // Salva flag e mostra botão de replay nas configs
+        localStorage.setItem("pedidoFeito", "true");
+        if (cardReplayPedido) cardReplayPedido.style.display = "block";
 
     }, 10000);
 
