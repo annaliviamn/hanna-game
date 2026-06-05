@@ -677,7 +677,7 @@ const CONQUISTAS = {
   // Progressão
   jardineira:         { nome: "Jardineira",             desc: "Primeira planta colhida na fazenda.",            sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
   milionaria:         { nome: "Milionária",             desc: "10.000 moedas acumuladas.",                      sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
-  bem_cuidada:        { nome: "Bem cuidada",            desc: "Todos os status acima de 90% ao mesmo tempo.",  sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  bem_cuidada:        { nome: "Bem cuidada",            desc: "Todos os status acima de 95% ao mesmo tempo.",  sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
   nova_companheira:   { nome: "Nova companheira",       desc: "A gatinha pretinha chegou!",                    sprite: "assets/sprites/gatinha/gatinha-sorrindo.png", secao: "progressao" },
   inseparaveis:       { nome: "Inseparáveis",           desc: "Vínculo máximo com a gatinha pretinha.",        sprite: "assets/sprites/hanna-gatinha/felizes.png", secao: "progressao" },
   // Minigames
@@ -2138,7 +2138,7 @@ function atualizarStatus() {
 
   // Conquistas automáticas
   if (moedas >= 10000) desbloquearConquista("milionaria");
-  if (fome >= 90 && felicidade >= 90 && energia >= 90 && higiene >= 90) desbloquearConquista("bem_cuidada");
+  if (fome >= 95 && felicidade >= 95 && energia >= 95 && higiene >= 95) desbloquearConquista("bem_cuidada");
   if (vinculoGatinhas >= 100 && gatinhaDesbloqueada) desbloquearConquista("inseparaveis");
 
   if (dormindo) {
@@ -4372,33 +4372,20 @@ btnBanho.addEventListener("click", () => {
 
     criarParticulas("🫧", 18);
 
-    hannaSprite.src =
-    "assets/sprites/hanna/banho.png";
+    hannaSprite.src = "assets/sprites/hanna/banho.png";
 
     gatinhaSpriteTemp("gatinha-assustada", 9000);
 
-    setTimeout(() => {
-
-        hannaSprite.src =
-        "assets/sprites/hanna/neutra.png";
-
-    }, 1200);
-
     higiene = Math.min(100, higiene + 100);
-
     felicidade = Math.min(100, felicidade + 5);
 
     mostrarFeedbackBarra("barraHigiene", 100);
     mostrarFeedbackBarra("barraFelicidade", 5);
 
-    atualizarStatus();
-
     setTimeout(() => {
-
         telaBanho.style.display = "none";
-
         somBanho.pause();
-
+        atualizarStatus();
     }, 9000);
 
 });
@@ -5101,8 +5088,19 @@ function mensagemHorario() {
 
 }
 
+let _alertaLojaTimer = null;
+
 function mostrarAlertaLoja(texto) {
-  mostrarMensagem(texto);
+  const el = document.getElementById("alertaLoja");
+  if (!el) return;
+  clearTimeout(_alertaLojaTimer);
+  el.textContent = texto;
+  el.style.opacity = "1";
+  el.style.transform = "translateX(-50%) translateY(0px)";
+  _alertaLojaTimer = setTimeout(() => {
+    el.style.opacity = "0";
+    el.style.transform = "translateX(-50%) translateY(-8px)";
+  }, 2500);
 }
 
 function iniciarMomentosEspeciais() {
