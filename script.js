@@ -4379,12 +4379,12 @@ btnBanho.addEventListener("click", () => {
 
     criarParticulas("🫧", 18);
 
-    // Usa o #hannaBanho (tamanho grande) e esconde o #hannaSprite durante o banho
+    // Abre a tela do banho
+    telaBanho.style.display = "flex";
+
+    // Mostra hannaBanho (sprite grande) e esconde hannaSprite pequeno
     const hannaBanho = document.getElementById("hannaBanho");
-    if (hannaBanho) {
-        hannaBanho.src = "assets/sprites/hanna/banho.png";
-        hannaBanho.style.display = "block";
-    }
+    if (hannaBanho) hannaBanho.style.display = "block";
     hannaSprite.style.display = "none";
 
     gatinhaSpriteTemp("gatinha-assustada", 9000);
@@ -4398,7 +4398,6 @@ btnBanho.addEventListener("click", () => {
     setTimeout(() => {
         telaBanho.style.display = "none";
         somBanho.pause();
-        // Restaura hannaSprite e esconde hannaBanho
         hannaSprite.style.display = "block";
         if (hannaBanho) hannaBanho.style.display = "none";
         atualizarStatus();
