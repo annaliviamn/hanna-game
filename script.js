@@ -1706,10 +1706,10 @@ function atualizarGatinha() {
   else if (felicidade >= 80) gatinhaSpritePor("gatinha-animada");
   else                       gatinhaSpritePor("gatinha-neutra");
 }
-let fome        = Number(localStorage.getItem("fome"))        || 100;
-let felicidade  = Number(localStorage.getItem("felicidade"))  || 100;
-let energia     = Number(localStorage.getItem("energia"))     || 100;
-let higiene     = Number(localStorage.getItem("higiene"))     || 100;
+let fome        = Number(localStorage.getItem("fome"))        || 40;
+let felicidade  = Number(localStorage.getItem("felicidade"))  || 35;
+let energia     = Number(localStorage.getItem("energia"))     || 50;
+let higiene     = Number(localStorage.getItem("higiene"))     || 30;
 let sementes    = Number(localStorage.getItem("sementes"))    || 0;
 let moedas      = Number(localStorage.getItem("moedas"))      || 0;
 let amizade     = Number(localStorage.getItem("amizade"))     || 0;
