@@ -1862,11 +1862,13 @@ function mostrarMensagem(texto, local = "home") {
     balaoFazenda.style.opacity = "1";
     msgTimer = setTimeout(() => {
       balaoFazenda.style.opacity = "0";
-    }, 3500);
+    }, 2000);
     return;
   }
 
-  // Toast global — aparece em qualquer tela
+  // Toast só aparece na home
+  if (telaJogo.style.display !== "block") return;
+
   let toast = document.getElementById("mensagemGlobal");
   if (!toast) {
     toast = document.createElement("div");
@@ -1883,7 +1885,7 @@ function mostrarMensagem(texto, local = "home") {
   msgTimer = setTimeout(() => {
     toast.classList.add("mensagem-global-saindo");
     setTimeout(() => toast.classList.remove("mensagem-global-visivel", "mensagem-global-saindo"), 400);
-  }, 3500);
+  }, 2000);
 
 }
 
@@ -2427,7 +2429,7 @@ agendarProximoEvento();
 
 // AÇÕES
 btnCarinho.addEventListener("click", () => {
-  if (dormindo) {
+  if (dormindo || momentoConjuntoAtivo) {
     mostrarFalaHanna("Zzz... 💤");
     return;
   }
@@ -2462,7 +2464,7 @@ somBotao.play().catch(()=>{});
 });
 
 btnComida.addEventListener("click", () => {
-  if (dormindo) {
+  if (dormindo || momentoConjuntoAtivo) {
     mostrarFalaHanna("Zzz... 💤");
     return;
   }
@@ -4343,12 +4345,10 @@ document.getElementById("btnVoltarFazenda")
 
 btnBanho.addEventListener("click", () => {
 
-  if (dormindo) {
+  if (dormindo || momentoConjuntoAtivo) {
     mostrarFalaHanna("Zzz... 💤");
     return;
   }
-
-    telaBanho.style.display = "flex";
 
     somBanho.currentTime = 0;
 
