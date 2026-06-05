@@ -682,7 +682,7 @@ const CONQUISTAS = {
   inseparaveis:       { nome: "Inseparáveis",           desc: "Vínculo máximo com a gatinha pretinha.",        sprite: "assets/sprites/hanna-gatinha/felizes.png", secao: "progressao" },
   // Minigames
   mestre_memoria:     { nome: "Mestre da Memória",      desc: "Venceu o jogo Memória das Patas.",              sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
-  pescadora:          { nome: "Pescadora",              desc: "Venceu o jogo Pega Peixe.",                     sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
+  domino_mestre:      { nome: "Mestre do Dominó",       desc: "Venceu a Hanna no dominó.",                       sprite: "assets/sprites/hanna/animada.png",   secao: "minigames" },
   leitora_humores:    { nome: "Leitora de Humores",     desc: "Venceu o jogo Adivinhe o Humor.",               sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
   reflexos_felinos:   { nome: "Reflexos Felinos",       desc: "Venceu o jogo Reflexo Felino.",                 sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
   colecionadora:      { nome: "Colecionadora",          desc: "Venceu o jogo Cartinhas da Hanna.",             sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
@@ -814,7 +814,7 @@ function mostrarResultado(titulo, emoji, ganhou, desc, jogoFn) {
   // Dispara conquista de minigame se ganhou (ganhou > 0 e emoji positivo)
   if (ganhou > 0 && emoji !== "😿") {
     if      (jogoFn === jogoMemoria)   desbloquearConquista("mestre_memoria");
-    else if (jogoFn === jogoPeixe)     desbloquearConquista("pescadora");
+    else if (jogoFn === jogoDomino)    desbloquearConquista("domino_mestre");
     else if (jogoFn === jogoHumor)     desbloquearConquista("leitora_humores");
     else if (jogoFn === jogoReflexo)   desbloquearConquista("reflexos_felinos");
     else if (jogoFn === jogoCartinhas) desbloquearConquista("colecionadora");
@@ -960,122 +960,235 @@ function jogoMemoria() {
   iniciar();
 }
 
-//   JOGO 2 — PEGA PEIXE
-//   Peixes e bombas caem. Toque peixes (+1 ponto) evite bombas (-1 vida).
-//   30 segundos. 3 vidas. Recompensa proporcional aos peixes pegos.
+//   JOGO 2 — DOMINÓ
+//   Você vs Hanna. 7 peças cada, resto no estoque.
+//   Encaixe nas pontas. Quem esvaziar a mão primeiro ganha.
+//   Recompensa: 30–80 moedas.
 
-function jogoPeixe() {
-  abrirArena("Pega Peixe");
+function jogoDomino() {
+  abrirArena("Dominó com a Hanna");
 
-  arenaConteudo.innerHTML = `
-    <div class="peixe-info">
-      <div class="peixe-timer">⏱️ <span id="peixeTimer">30</span>s</div>
-      <div class="peixe-vidas">❤️ <span id="peixeVidas">3</span></div>
-      <div class="peixe-timer">🐟 <span id="peixePontos">0</span></div>
-    </div>
-    <div class="peixe-arena" id="peixeArena"></div>
-    <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--text-light);font-weight:700;">
-      Toque nos peixes! Evite as bombas 💣
-    </div>`;
+  // Gera as 28 peças do dominó (0-6 x 0-6)
+  function gerarPecas() {
+    const pecas = [];
+    for (let i = 0; i <= 6; i++)
+      for (let j = i; j <= 6; j++)
+        pecas.push([i, j]);
+    // embaralha
+    for (let i = pecas.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pecas[i], pecas[j]] = [pecas[j], pecas[i]];
+    }
+    return pecas;
+  }
 
-  const arena  = document.getElementById("peixeArena");
-  let vidas    = 3;
-  let pontos   = 0;
-  let tempo    = 30;
-  let rodando  = true;
+  const todas = gerarPecas();
+  let maoJogador = todas.splice(0, 7);
+  let maoHanna   = todas.splice(0, 7);
+  let estoque    = todas;
+  let mesa       = []; // peças na mesa
+  let pontaEsq   = null; // valor da ponta esquerda
+  let pontaDir   = null; // valor da ponta direita
+  let vezJogador = true;
+  let rodando    = true;
 
-  const timerEl  = document.getElementById("peixeTimer");
-  const vidasEl  = document.getElementById("peixeVidas");
-  const pontosEl = document.getElementById("peixePontos");
+  function renderizarPeca(a, b, pequena = false) {
+    const tam = pequena ? "peca-dom-p" : "peca-dom";
+    return `<div class="${tam}"><span>${a}</span><span class="dom-div">·</span><span>${b}</span></div>`;
+  }
 
-  const itens = ["🐟","🐠","🐡","🦐","🦑"];
-  const perigo = ["💣","🪨"];
+  function pecaJogavel(peca) {
+    if (mesa.length === 0) return true;
+    return peca[0] === pontaEsq || peca[1] === pontaEsq ||
+           peca[0] === pontaDir  || peca[1] === pontaDir;
+  }
 
-  function criarItem() {
-    if (!rodando) return;
-    const isBomba = Math.random() < 0.28;
-    const emoji   = isBomba
-      ? perigo[Math.floor(Math.random() * perigo.length)]
-      : itens[Math.floor(Math.random() * itens.length)];
+  function jogarPeca(peca, lado) {
+    if (mesa.length === 0) {
+      mesa.push(peca);
+      pontaEsq = peca[0];
+      pontaDir = peca[1];
+      return true;
+    }
+    if (lado === "esq") {
+      if (peca[1] === pontaEsq) { mesa.unshift(peca); pontaEsq = peca[0]; return true; }
+      if (peca[0] === pontaEsq) { mesa.unshift([peca[1], peca[0]]); pontaEsq = peca[1]; return true; }
+    } else {
+      if (peca[0] === pontaDir) { mesa.push(peca); pontaDir = peca[1]; return true; }
+      if (peca[1] === pontaDir) { mesa.push([peca[1], peca[0]]); pontaDir = peca[0]; return true; }
+    }
+    return false;
+  }
 
-    const el = document.createElement("div");
-    el.className = "peixe-item";
-    el.textContent = emoji;
-    const x = Math.random() * (arena.clientWidth - 44);
-    el.style.left = x + "px";
-    const dur = 2200 + Math.random() * 1400;
-    el.style.animationDuration = dur + "ms";
-    arena.appendChild(el);
+  function temJogada(mao) {
+    return mao.some(p => pecaJogavel(p));
+  }
 
-    el.addEventListener("click", (e) => {
-      if (!rodando) return;
-      e.stopPropagation();
+  function render() {
+    const pecasJogaveis = maoJogador.filter(p => pecaJogavel(p));
 
-      // splash
-      const splash = document.createElement("div");
-      splash.className = "peixe-splash";
-      splash.textContent = isBomba ? "💥" : "✨";
-      splash.style.left = x + "px";
-      splash.style.top  = el.style.top || "60px";
-      arena.appendChild(splash);
-      jogoAtivo.timers.push(setTimeout(() => splash.remove(), 500));
+    arenaConteudo.innerHTML = `
+      <div class="dom-wrap">
+        <div class="dom-info">
+          <span>🐱 Hanna: <b>${maoHanna.length}</b> peças</span>
+          <span>📦 Estoque: <b>${estoque.length}</b></span>
+        </div>
 
-      el.remove();
+        <div class="dom-mesa-wrap">
+          <div class="dom-mesa" id="domMesa">
+            ${mesa.length === 0
+              ? '<span class="dom-vazia">Jogue a primeira peça</span>'
+              : mesa.map(p => renderizarPeca(p[0], p[1], true)).join("")}
+          </div>
+        </div>
 
-      if (isBomba) {
-        vidas--;
-        vidasEl.textContent = "❤️".repeat(Math.max(0, vidas));
-        if (vidas <= 0) terminar();
-      } else {
-        pontos++;
-        pontosEl.textContent = pontos;
+        <div class="dom-pontas">
+          ${mesa.length > 0 ? `<span>◀ <b>${pontaEsq}</b></span><span><b>${pontaDir}</b> ▶</span>` : ""}
+        </div>
+
+        <div class="dom-sua-mao">
+          <div class="dom-label">Suas peças ${vezJogador ? "(sua vez 🎯)" : "(vez da Hanna...)"}</div>
+          <div class="dom-pecas" id="domPecas">
+            ${maoJogador.map((p, i) => {
+              const jogavel = pecaJogavel(p) && vezJogador;
+              return `<div class="peca-dom ${jogavel ? "peca-jogavel" : "peca-bloqueada"}" data-i="${i}">
+                <span>${p[0]}</span><span class="dom-div">·</span><span>${p[1]}</span>
+              </div>`;
+            }).join("")}
+          </div>
+        </div>
+
+        <div class="dom-acoes">
+          ${vezJogador && pecasJogaveis.length === 0 && estoque.length > 0
+            ? `<button class="dom-btn" id="btnComprarDom">Comprar do estoque 📦</button>`
+            : ""}
+          ${vezJogador && pecasJogaveis.length === 0 && estoque.length === 0
+            ? `<button class="dom-btn" id="btnPassarDom">Passar a vez ➡️</button>`
+            : ""}
+        </div>
+      </div>`;
+
+    // Listeners das peças
+    document.querySelectorAll(".peca-jogavel").forEach(el => {
+      el.addEventListener("click", () => {
+        if (!vezJogador || !rodando) return;
+        const i = parseInt(el.dataset.i);
+        const peca = maoJogador[i];
+
+        // Tenta jogar nos dois lados
+        let ok = false;
+        if (mesa.length === 0) { ok = jogarPeca(peca, "dir"); }
+        else {
+          // Tenta lado que encaixa
+          const podeEsq = peca[0] === pontaEsq || peca[1] === pontaEsq;
+          const podeDir = peca[0] === pontaDir  || peca[1] === pontaDir;
+          if (podeDir && !podeEsq) ok = jogarPeca(peca, "dir");
+          else if (podeEsq && !podeDir) ok = jogarPeca(peca, "esq");
+          else if (podeEsq && podeDir) {
+            // Encaixa nos dois — tenta dir primeiro
+            ok = jogarPeca(peca, "dir") || jogarPeca(peca, "esq");
+          }
+        }
+
+        if (ok) {
+          maoJogador.splice(i, 1);
+          if (maoJogador.length === 0) { terminar("jogador"); return; }
+          vezJogador = false;
+          render();
+          jogoAtivo.timers.push(setTimeout(turnoHanna, 1200));
+        }
+      });
+    });
+
+    const btnComprar = document.getElementById("btnComprarDom");
+    if (btnComprar) btnComprar.addEventListener("click", () => {
+      if (estoque.length > 0) {
+        maoJogador.push(estoque.pop());
+        render();
       }
     });
 
-    // Remove se chegar embaixo sem clicar
-    jogoAtivo.timers.push(setTimeout(() => {
-      if (el.parentNode) el.remove();
-    }, dur + 100));
+    const btnPassar = document.getElementById("btnPassarDom");
+    if (btnPassar) btnPassar.addEventListener("click", () => {
+      vezJogador = false;
+      render();
+      jogoAtivo.timers.push(setTimeout(turnoHanna, 1200));
+    });
   }
 
-  // Spawn periódico (fica mais rápido com tempo)
-  const spawnInterval = setInterval(() => {
-    if (!rodando) { clearInterval(spawnInterval); return; }
-    criarItem();
-    if (tempo < 15) criarItem(); // mais itens no final
-  }, 900);
-  jogoAtivo.intervals.push(spawnInterval);
+  function turnoHanna() {
+    if (!rodando) return;
 
-  // Countdown
-  const countInterval = setInterval(() => {
-    if (!rodando) { clearInterval(countInterval); return; }
-    tempo--;
-    timerEl.textContent = tempo;
-    if (tempo <= 0) terminar();
-  }, 1000);
-  jogoAtivo.intervals.push(countInterval);
+    // IA: joga a primeira peça válida
+    let jogou = false;
+    for (let i = 0; i < maoHanna.length; i++) {
+      const p = maoHanna[i];
+      if (pecaJogavel(p)) {
+        const lado = (mesa.length === 0 || p[0] === pontaDir || p[1] === pontaDir) ? "dir" : "esq";
+        jogarPeca(p, lado);
+        maoHanna.splice(i, 1);
+        jogou = true;
+        break;
+      }
+    }
 
-  function terminar() {
+    if (!jogou) {
+      // Hanna compra do estoque
+      if (estoque.length > 0) {
+        maoHanna.push(estoque.pop());
+      }
+      // Passa a vez de volta
+    }
+
+    if (maoHanna.length === 0) { terminar("hanna"); return; }
+
+    vezJogador = true;
+
+    // Verifica se ninguém pode jogar (travado)
+    if (!temJogada(maoJogador) && !temJogada(maoHanna) && estoque.length === 0) {
+      terminar("travado");
+      return;
+    }
+
+    render();
+  }
+
+  function terminar(quem) {
     rodando = false;
-    clearInterval(spawnInterval);
-    clearInterval(countInterval);
-    // 0–5 peixes: 5 moedas | 6–12: 15 | 13–20: 25 | 21+: 30
-    const recomp =
-    pontos >= 21 ? 120 :
-    pontos >= 13 ? 80  :
-    pontos >= 6  ? 45  :
-    Math.max(10, pontos * 3);
+    let titulo, emoji, recomp, desc;
+
+    if (quem === "jogador") {
+      titulo = "Você ganhou! 🎉";
+      emoji  = "🏆";
+      recomp = 80;
+      desc   = "Esvaziou a mão primeiro! A Hanna ficou impressionada.";
+      desbloquearConquista("domino_mestre");
+    } else if (quem === "hanna") {
+      titulo = "A Hanna ganhou! 😹";
+      emoji  = "😿";
+      recomp = 20;
+      desc   = "A Hanna esvaziou a mão primeiro. Tente de novo!";
+    } else {
+      titulo = "Jogo travado!";
+      emoji  = "🤝";
+      recomp = 35;
+      const ptJog  = maoJogador.reduce((s, p) => s + p[0] + p[1], 0);
+      const ptHanna = maoHanna.reduce((s, p) => s + p[0] + p[1], 0);
+      desc = ptJog < ptHanna
+        ? "Ninguém pode jogar — mas você tinha menos pontos! Vitória por pontos! 🎉"
+        : ptJog > ptHanna
+        ? "Ninguém pode jogar — a Hanna tinha menos pontos. Quase!"
+        : "Empate total! Que partida equilibrada!";
+      if (ptJog < ptHanna) recomp = 50;
+    }
+
     ganharMoedas(recomp);
-    const emoji = pontos >= 15 ? "🐟" : pontos >= 8 ? "😺" : "😿";
     jogoAtivo.timers.push(setTimeout(() => {
-      mostrarResultado(
-        pontos >= 15 ? "Mestre da pesca!" : "Jogo finalizado!",
-        emoji, recomp,
-        `Você pegou ${pontos} peixes! ${pontos >= 15 ? "Incrível!" : "Tente pegar mais da próxima vez!"}`,
-        jogoPeixe
-      );
+      mostrarResultado(titulo, emoji, recomp, desc, jogoDomino);
     }, 600));
   }
+
+  render();
 }
 
 //   JOGO 3 — ADIVINHE O HUMOR
@@ -4126,7 +4239,7 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
   btn.addEventListener("click", () => {
     const jogo = btn.dataset.jogo;
     if      (jogo === "memoria")   jogoMemoria();
-    else if (jogo === "peixe")     jogoPeixe();
+    else if (jogo === "domino")     jogoDomino();
     else if (jogo === "humor")     jogoHumor();
     else if (jogo === "reflexo")   jogoReflexo();
     else if (jogo === "cartinhas") jogoCartinhas();
