@@ -992,9 +992,43 @@ function jogoDomino() {
   let vezJogador = true;
   let rodando    = true;
 
-  function renderizarPeca(a, b, pequena = false) {
-    const tam = pequena ? "peca-dom-p" : "peca-dom";
-    return `<div class="${tam}"><span>${a}</span><span class="dom-div">·</span><span>${b}</span></div>`;
+  function gerarPontos(valor) {
+
+    const layouts = {
+      0: [],
+      1: [5],
+      2: [1, 9],
+      3: [1, 5, 9],
+      4: [1, 3, 7, 9],
+      5: [1, 3, 5, 7, 9],
+      6: [1, 3, 4, 6, 7, 9]
+    };
+
+    const ativos = layouts[valor];
+
+    let html = "";
+
+    for (let i = 1; i <= 9; i++) {
+      html += `
+        <div class="dom-ponto ${ativos.includes(i) ? "ativo" : ""}"></div>
+      `;
+    }
+
+    return `
+      <div class="dom-grade">
+        ${html}
+      </div>
+    `;
+  }
+  
+  function renderizarPeca(a, b) {
+    return `
+      <div class="peca-dom">
+        <div class="dom-metade">${gerarPontos(a)}</div>
+        <div class="dom-separador"></div>
+        <div class="dom-metade">${gerarPontos(b)}</div>
+      </div>
+    `;
   }
 
   function pecaJogavel(peca) {
@@ -1030,15 +1064,46 @@ function jogoDomino() {
     arenaConteudo.innerHTML = `
       <div class="dom-wrap">
         <div class="dom-info">
-          <span>🐱 Hanna: <b>${maoHanna.length}</b> peças</span>
-          <span>📦 Estoque: <b>${estoque.length}</b></span>
+          <span>Hanna: <b>${maoHanna.length}</b> peças</span>
+          <span>Estoque: <b>${estoque.length}</b></span>
+        </div>
+
+        <div class="dom-hanna-box">
+          <img
+            src="${
+              vezJogador
+              ? "assets/sprites/hanna/curiosa.png"
+              : "assets/sprites/hanna/vergonha.png"
+            }"
+            class="dom-hanna-sprite"
+          >
+
+          <div class="dom-hanna-fala">
+            ${
+              vezJogador
+              ? "Sua vez!"
+              : "Estou pensando..."
+            }
+          </div>
         </div>
 
         <div class="dom-mesa-wrap">
           <div class="dom-mesa" id="domMesa">
             ${mesa.length === 0
-              ? '<span class="dom-vazia">Jogue a primeira peça</span>'
-              : mesa.map(p => renderizarPeca(p[0], p[1], true)).join("")}
+              ? '<span class="dom-vazia">Jogue a primeira peça 🎯</span>'
+              : (() => {
+                  const porLinha = 5;
+                  const linhas = [];
+                  for (let i = 0; i < mesa.length; i += porLinha) {
+                    linhas.push(mesa.slice(i, i + porLinha));
+                  }
+                  return linhas.map((linha, li) => {
+                    const inv = li % 2 === 1;
+                    const pecasHtml = linha.map(p => renderizarPeca(p[0], p[1])).join("");
+                    return `<div class="dom-linha ${inv ? "dom-linha-inv" : ""}">${pecasHtml}</div>`;
+                  }).join("");
+                })()
+            }
           </div>
         </div>
 
@@ -1051,8 +1116,20 @@ function jogoDomino() {
           <div class="dom-pecas" id="domPecas">
             ${maoJogador.map((p, i) => {
               const jogavel = pecaJogavel(p) && vezJogador;
-              return `<div class="peca-dom ${jogavel ? "peca-jogavel" : "peca-bloqueada"}" data-i="${i}">
-                <span>${p[0]}</span><span class="dom-div">·</span><span>${p[1]}</span>
+              return `
+              <div
+                class="peca-dom ${jogavel ? "peca-jogavel" : "peca-bloqueada"}"
+                data-i="${i}"
+              >
+                <div class="dom-metade">
+                  ${gerarPontos(p[0])}
+                </div>
+
+                <div class="dom-separador"></div>
+
+                <div class="dom-metade">
+                  ${gerarPontos(p[1])}
+                </div>
               </div>`;
             }).join("")}
           </div>

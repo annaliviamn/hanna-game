@@ -1759,7 +1759,6 @@ body.dark-mode .bottomNav {
 .memoria-btn[data-cor="verde"]  { background: linear-gradient(135deg,#a8f0c0,#6acf88); }
 .memoria-btn[data-cor="amarelo"]{ background: linear-gradient(135deg,#ffe99a,#ffcc44); }
 
-/* JOGO 2: PEGA PEIXE */
 /* JOGO 2: DOMINÓ */
 .dom-wrap {
   display: flex; flex-direction: column; gap: 10px; width: 100%;
@@ -1771,46 +1770,165 @@ body.dark-mode .bottomNav {
   border-radius: 20px; padding: 6px 14px;
 }
 .dom-mesa-wrap {
-  width: 100%; min-height: 64px; max-height: 120px;
-  background: #1a1a2e; border-radius: var(--radius-md);
-  border: 2px solid var(--pink-mid);
-  overflow-x: auto; overflow-y: hidden;
-  display: flex; align-items: center;
-  padding: 8px;
+  width: 100%;
+  height: 280px;
+  background: linear-gradient(180deg, #2b2b45, #1a1a2e);
+  border-radius: 24px;
+  border: 3px solid var(--pink-main);
+  padding: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
 }
 .dom-mesa {
-  display: flex; flex-direction: row; gap: 4px;
-  align-items: center; flex-wrap: nowrap;
-  min-width: max-content;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+.dom-linha {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+  align-items: center;
+}
+.dom-linha-inv {
+  flex-direction: row-reverse;
 }
 .dom-vazia {
   color: #888; font-size: 12px; font-weight: 700;
-  white-space: nowrap; padding: 0 8px;
+  padding: 8px; width: 100%; text-align: center;
 }
 .dom-pontas {
   display: flex; justify-content: space-between;
   font-size: 12px; font-weight: 800; color: var(--accent);
   padding: 0 4px;
 }
+/* Peça horizontal — igual dominó real */
 .peca-dom {
-  display: inline-flex; align-items: center; gap: 3px;
-  background: #fff; border: 2px solid #ccc; border-radius: 8px;
-  padding: 5px 8px; font-size: 15px; font-weight: 900;
-  cursor: pointer; user-select: none; transition: transform .1s, box-shadow .1s;
-  white-space: nowrap; color: #222;
+  width: 52px;
+  height: 28px;
+  background: #fffaf5;
+  border: 2px solid #ffb8d8;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  transition: transform .15s, box-shadow .15s;
+  flex-shrink: 0;
+}
+.dom-metade {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.dom-separador {
+  width: 2px;
+  height: 80%;
+  background: #ffb8d8;
+  flex-shrink: 0;
+}
+/* Grade de pontos menor pra caber na peça horizontal */
+.dom-grade {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  justify-items: center;
+  align-items: center;
+}
+.dom-ponto {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: transparent;
+  opacity: 0;
+}
+.dom-ponto.ativo {
+  width: 4px;
+  height: 4px;
+  background: #4a3140;
+  opacity: 1;
 }
 .peca-dom-p {
   display: inline-flex; align-items: center; gap: 2px;
-  background: #fff; border: 1.5px solid #bbb; border-radius: 6px;
-  padding: 3px 5px; font-size: 12px; font-weight: 900;
+  background: #fff; border: 1.5px solid #bbb; border-radius: 10px;
+  padding: 8px 10px; font-size: 18px; font-weight: 900;
   user-select: none; color: #222;
 }
 .dom-div { color: #aaa; font-size: 10px; }
 .peca-jogavel {
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 8px rgba(255,100,160,0.5);
-  cursor: pointer;
+  border-color: #ff8fc2 !important;
+
+  animation: brilhoPeca 3s ease-in-out infinite;
 }
+
+@keyframes brilhoPeca {
+
+  0%,100% {
+    box-shadow:
+      0 0 8px rgba(255,143,194,.4);
+  }
+
+  50% {
+    box-shadow:
+      0 0 18px rgba(255,143,194,.8);
+  }
+
+}
+
+.dom-hanna-box {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 10px;
+
+  background: #fff8fc;
+
+  border: 2px solid var(--pink-mid);
+
+  border-radius: 18px;
+
+}
+
+.dom-hanna-sprite {
+
+  width: 70px;
+
+  image-rendering: pixelated;
+
+  flex-shrink: 0;
+
+}
+
+.dom-hanna-fala {
+
+  flex: 1;
+
+  background: white;
+
+  border-radius: 14px;
+
+  padding: 10px;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  color: var(--text-mid);
+
+}
+
 .peca-jogavel:active { transform: scale(1.08); }
 .peca-bloqueada { opacity: 0.45; cursor: not-allowed; }
 .dom-label {
@@ -1824,14 +1942,62 @@ body.dark-mode .bottomNav {
   display: flex; flex-wrap: wrap; gap: 7px;
   justify-content: center;
 }
+
+.dom-metade {
+
+  flex: 1;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  width: 100%;
+
+  height: 100%;
+
+  padding: 4px;
+
+}
+
+.dom-separador {
+
+  height: 3px;
+
+  background: #ffb8d8;
+
+}
+
+.dom-numero-pontos {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 3px;
+
+  font-size: 12px;
+
+  color: #4a3140;
+
+  max-width: 40px;
+
+}
+
 .dom-acoes {
   display: flex; justify-content: center; margin-top: 4px;
 }
 .dom-btn {
   background: var(--accent); color: #fff;
   border: none; border-radius: 20px;
-  padding: 9px 20px; font-size: 13px; font-weight: 800;
+  padding: 14px 28px; font-size: 17px; font-weight: 800;
   cursor: pointer; transition: opacity .15s;
+  min-height: 52px;
 }
 .dom-btn:active { opacity: 0.8; }
 
