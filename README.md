@@ -8,7 +8,7 @@ A cozy virtual pet experience built with HTML, CSS and Vanilla JavaScript.
 
 ## Sobre
 
-**Hanna** é um jogo mobile de gatinha virtual no estilo *cozy*, inspirado em Tamagotchi e Stardew Valley. O jogador cuida da Hanna — alimentando, dando carinho, colocando pra dormir, dando banho, e vai construindo um vínculo ao longo do tempo.
+**Hanna** é um jogo mobile de gatinha virtual no estilo *cozy*, inspirado em Tamagotchi e Stardew Valley. O jogador cuida da Hanna — alimentando, dando carinho, colocando pra dormir, dando banho — e vai construindo um vínculo ao longo do tempo.
 
 Foi um projeto desenvolvido inteiramente do zero como presente especial, com foco em uma experiência mobile-first, instalável como PWA.
 
@@ -18,10 +18,12 @@ Foi um projeto desenvolvido inteiramente do zero como presente especial, com foc
 
 - **Gatinha virtual** com sprites animados e expressões variadas
 - **Sistema de status** — Fome, Felicidade, Energia, Higiene e Vínculo
-- **Fazenda** — plante sementes, cuide e colha plantas pra ganhar moedas
-- **Lojinha** — gaste moedas em itens que melhoram o status da Hanna
-- **6 minigames** — Memória das Patas, Pega Peixe, Adivinhe o Humor, Reflexo Felino, Cartinhas da Hanna e Operação Sardinha
-- **Gatinha parceira** desbloqueável com momentos especiais conjuntos
+- **Eventos aleatórios** — a Hanna reage ao tempo, humor e ao dia com eventos visuais únicos
+- **Fazenda** — plante sementes, cuide e colha plantas pra ganhar moedas. O girassol é raro e vale mais!
+- **Lojinha** — gaste moedas em comidas, brinquedos e mimos que melhoram os status da Hanna, além de um pack de sementes
+- **6 minigames** — Memória das Patas, Dominó com a Hanna, Adivinhe o Humor, Reflexo Felino, Cartinhas da Hanna e Operação Sardinha
+- **Gatinha parceira** desbloqueável com sistema de vínculo, momentos especiais conjuntos e risco de ir embora se negligenciada
+- **Sistema de conquistas** — troféus desbloqueáveis por ações e marcos do jogo
 - **Lembretes** com notificações push via Service Worker
 - **Ciclo de dia/noite** com overlays visuais e eventos especiais
 - **Chuva aleatória** com som ambiente
@@ -40,7 +42,7 @@ Foi um projeto desenvolvido inteiramente do zero como presente especial, com foc
 - HTML5
 - CSS3
 - Vanilla JavaScript
-- Service Workers
+- Service Workers + IndexedDB
 - Web Audio API
 - LocalStorage
 - Progressive Web App (PWA)
@@ -58,6 +60,8 @@ Foi um projeto desenvolvido inteiramente do zero como presente especial, com foc
 1. Abra o link no Safari
 2. Toque no botão de compartilhar (quadrado com seta)
 3. Selecione "Adicionar à Tela de Início"
+
+> ⚠️ No iOS, notificações push só funcionam com o app em foreground ou minimizado — é uma limitação do sistema operacional da Apple para PWAs.
 
 ---
 
@@ -103,11 +107,12 @@ Este projeto foi um grande laboratório prático. Alguns dos conceitos aplicados
 
 - Arquitetura de um jogo em JS puro sem game engine
 - Gerenciamento de estado global com variáveis e LocalStorage
-- Service Workers e notificações push
+- Service Workers, IndexedDB e notificações push
 - PWA com manifest e instalação nativa
 - Sistema de trilhas sonoras com fade entre telas
 - Animações CSS complexas (float, shake, bounce, pulse)
 - Design mobile-first com foco em UX tátil
+- Depuração de bugs em contexto PWA no iOS
 
 ---
 
