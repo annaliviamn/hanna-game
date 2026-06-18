@@ -4686,3 +4686,193 @@ button {
     manipulation;
 
 }
+/* ══════════════════════════════════════════════
+   JOGO 7 — MATCH-3 FELINO
+══════════════════════════════════════════════ */
+.m3-wrap { display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center; }
+.m3-info { display: flex; justify-content: space-between; width: 100%;
+  font-size: 13px; font-weight: 800; color: var(--text-mid);
+  background: var(--pink-light); border: 1.5px solid var(--pink-mid);
+  border-radius: 20px; padding: 6px 14px; }
+.m3-grade { display: grid; grid-template-columns: repeat(6, 1fr);
+  gap: 6px; width: 100%; }
+.m3-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; cursor: pointer;
+  background: rgba(255,255,255,0.06); border: 2px solid transparent;
+  transition: transform .1s, border-color .1s; user-select: none; }
+.m3-cell:active { transform: scale(0.9); }
+.m3-sel { border-color: var(--accent) !important; background: rgba(255,143,194,0.2) !important;
+  transform: scale(1.1); }
+.m3-item { width: 38px; height: 38px; object-fit: contain; image-rendering: pixelated; pointer-events: none; user-select: none;}
+.m3-dica { font-size: 11px; color: var(--text-light); font-weight: 700; text-align: center; }
+.m3-sel {
+  border-color: var(--accent) !important;
+  background: rgba(255,143,194,0.2) !important;
+  transform: scale(1.1);
+}
+.m3-sel .m3-item {
+  transform: scale(1.15);
+}
+
+/* ══════════════════════════════════════════════
+   JOGO 8 — PALAVRAS DA HANNA
+══════════════════════════════════════════════ */
+.pw-wrap { display: flex; flex-direction: column; gap: 10px; align-items: center; width: 100%; }
+.pw-info { font-size: 12px; font-weight: 800; color: var(--text-mid); }
+.pw-grade { display: flex; flex-direction: column; gap: 4px; }
+.pw-linha { display: flex; gap: 4px; }
+.pw-cel { width: 40px; height: 40px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 900; color: #fff; text-transform: uppercase; }
+.pw-verde  { background: #538d4e; border-color: #538d4e; }
+.pw-amarelo { background: #b59f3b; border-color: #b59f3b; }
+.pw-cinza  { background: #3a3a3c; border-color: #3a3a3c; }
+.pw-atual  { border-color: var(--accent); background: rgba(255,143,194,0.1); }
+.pw-vazia  { background: rgba(255,255,255,0.04); }
+.pw-teclado { display: flex; flex-direction: column; gap: 5px; width: 100%; }
+.pw-linha-teclado { display: flex; gap: 4px; justify-content: center; }
+.pw-tecla { min-width: 28px; height: 36px; border-radius: 6px; border: none;
+  background: rgba(255,255,255,0.12); color: #fff; font-size: 12px; font-weight: 800;
+  cursor: pointer; padding: 0 4px; transition: background .1s; }
+.pw-tecla:active { background: var(--accent); }
+.pw-enter { min-width: 54px; font-size: 10px; background: var(--accent); }
+.pw-del   { min-width: 40px; background: rgba(255,80,80,0.3); }
+.pw-resposta { font-size: 13px; font-weight: 800; color: var(--accent); text-align: center; }
+
+/* ══════════════════════════════════════════════
+   JOGO 9 — BOLINHA DE LÃ
+══════════════════════════════════════════════ */
+.bl-wrap { display: flex; flex-direction: column; gap: 8px; align-items: center; width: 100%; }
+.bl-info { display: flex; justify-content: space-between; width: 100%;
+  font-size: 13px; font-weight: 800; color: var(--text-mid);
+  background: var(--pink-light); border: 1.5px solid var(--pink-mid);
+  border-radius: 20px; padding: 6px 14px; }
+.bl-canvas { width: 100%; height: 340px; border-radius: 16px;
+  border: 2px solid var(--pink-mid); display: block; cursor: none; touch-action: none; }
+.bl-dica { font-size: 11px; color: var(--text-light); font-weight: 700; text-align: center; }
+
+/* ══════════════════════════════════════════════
+   JOGO 10 — CAÇA-PALAVRAS
+══════════════════════════════════════════════ */
+.cp-wrap { display: flex; flex-direction: column; gap: 10px; align-items: center; width: 100%; }
+.cp-palavras { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; }
+.cp-palavra { font-size: 12px; font-weight: 800; color: var(--text-mid);
+  background: var(--pink-light); border: 1.5px solid var(--pink-mid);
+  border-radius: 20px; padding: 4px 10px; transition: all .2s; }
+.cp-encontrada { text-decoration: line-through; opacity: 0.45; background: #2a2a3e; }
+.cp-grade { display: grid; grid-template-columns: repeat(10, 1fr);
+  gap: 2px; width: 100%; user-select: none; touch-action: none; }
+.cp-cel { aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 900; border-radius: 5px;
+  background: rgba(255,255,255,0.05); color: #fff;
+  cursor: pointer; transition: background .1s; }
+.cp-marcada     { background: rgba(255,143,194,0.35) !important; color: var(--accent); }
+.cp-selecionando { background: rgba(255,220,80,0.35) !important; color: #ffe066; }
+.cp-dica { font-size: 11px; color: var(--text-light); font-weight: 700; text-align: center; }
+.cp-parabens { font-size: 14px; font-weight: 900; color: var(--accent); text-align: center; }
+
+/* ══════════════════════════════════════════════
+   JOGO STEVE — MISSÃO FURTIVA
+══════════════════════════════════════════════ */
+.steve-wrap { display:flex; flex-direction:column; gap:12px; align-items:center; width:100%; }
+.steve-info { display:flex; justify-content:space-between; width:100%;
+  font-size:13px; font-weight:800; color:var(--text-mid);
+  background:var(--pink-light); border:1.5px solid var(--pink-mid);
+  border-radius:20px; padding:6px 14px; }
+.steve-cenario { display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; }
+.steve-sprite { width:100px; image-rendering:pixelated; }
+.steve-desc { font-size:13px; font-weight:800; color:var(--text-mid); text-align:center; }
+.steve-btn { background:var(--accent); color:#fff; border:none; border-radius:20px;
+  padding:12px 32px; font-size:15px; font-weight:900; cursor:pointer; }
+.steve-btn:active { opacity:0.8; transform:scale(0.96); }
+.steve-dica { font-size:11px; color:var(--text-light); font-weight:700; text-align:center; }
+
+/* ══════════════════════════════════════════════
+   JOGO JAMES — DESPENSA
+══════════════════════════════════════════════ */
+.james-wrap { display:flex; flex-direction:column; gap:10px; align-items:center; width:100%; }
+.james-info { display:flex; justify-content:space-between; width:100%;
+  font-size:12px; font-weight:800; color:var(--text-mid);
+  background:var(--pink-light); border:1.5px solid var(--pink-mid);
+  border-radius:20px; padding:6px 14px; }
+.james-sprite { width:80px; image-rendering:pixelated; margin:0 auto; display:block; }
+.james-arena { width:100%; min-height:200px; position:relative;
+  background:#1a1a2e; border-radius:16px; border:2px solid var(--pink-mid); }
+.james-item { position:absolute; font-size:28px; cursor:pointer;
+  user-select:none; transition:transform .1s; }
+.james-item:active { transform:scale(1.3); }
+.james-dica { font-size:11px; color:var(--text-light); font-weight:700; text-align:center; }
+
+/* ══════════════════════════════════════════════
+   JOGO JOÃO — PRATELEIRAS
+══════════════════════════════════════════════ */
+.joao-wrap { display:flex; flex-direction:column; gap:10px; align-items:center; width:100%; }
+.joao-info { display:flex; justify-content:space-between; width:100%;
+  font-size:13px; font-weight:800; color:var(--text-mid);
+  background:var(--pink-light); border:1.5px solid var(--pink-mid);
+  border-radius:20px; padding:6px 14px; }
+.joao-sprite { width:80px; image-rendering:pixelated; margin:0 auto; display:block; }
+.joao-prateleira { display:flex; flex-wrap:wrap; gap:12px; justify-content:center;
+  width:100%; min-height:160px; background:#1a1a2e;
+  border-radius:16px; border:2px solid var(--pink-mid); padding:16px; }
+.joao-objeto { font-size:32px; cursor:pointer; user-select:none;
+  transition:transform .1s; animation:aparecer .2s ease; }
+.joao-objeto:active { transform:scale(1.2); }
+.joao-caindo { animation:cair-objeto 0.4s forwards; }
+@keyframes aparecer { from { opacity:0; transform:scale(0.5); } to { opacity:1; transform:scale(1); } }
+@keyframes cair-objeto { to { transform:translateY(60px) rotate(45deg); opacity:0; } }
+.joao-dica { font-size:11px; color:var(--text-light); font-weight:700; text-align:center; }
+
+/* ══════════════════════════════════════════════
+   QUEBRA-CABEÇA
+══════════════════════════════════════════════ */
+.pz-wrap { display:flex; flex-direction:column; gap:10px; align-items:center; width:100%; }
+.pz-info { display:flex; justify-content:space-between; width:100%;
+  font-size:12px; font-weight:800; color:var(--text-mid);
+  background:var(--pink-light); border:1.5px solid var(--pink-mid);
+  border-radius:20px; padding:6px 14px; }
+.pz-label { font-size:13px; font-weight:900; color:var(--accent); text-align:center; }
+.pz-grade { display:grid; gap:3px; width:100%; max-width:360px; }
+.pz-peca { aspect-ratio:1; border-radius:6px; border:2px solid transparent;
+  cursor:pointer; transition:transform .1s, border-color .1s;
+  background-repeat:no-repeat; }
+.pz-peca:active { transform:scale(0.95); }
+.pz-sel { border-color:var(--accent) !important; transform:scale(1.05); box-shadow:0 0 10px rgba(255,143,194,0.6); }
+.pz-dica { font-size:11px; color:var(--text-light); font-weight:700; text-align:center; }
+.pz-niveis { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; width:100%; }
+.pz-nivel-card { border-radius:12px; overflow:hidden; border:2px solid var(--pink-mid);
+  cursor:pointer; position:relative; transition:transform .1s; }
+.pz-nivel-card:active { transform:scale(0.97); }
+.pz-nivel-img { width:100%; aspect-ratio:1; object-fit:cover; display:block; }
+.pz-nivel-nome { font-size:11px; font-weight:800; color:#fff;
+  background:rgba(0,0,0,0.6); padding:4px 6px; text-align:center; }
+.pz-nivel-grade { font-size:10px; color:var(--accent); font-weight:700; text-align:center;
+  background:rgba(0,0,0,0.4); padding:2px; }
+.pz-bloqueado { opacity:0.4; cursor:not-allowed; }
+.pz-lock { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-size:28px; }
+
+/* Balão de fala das visitas dos pets */
+#visitaFala {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(30, 10, 50, 0.92);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 18px;
+  border: 2px solid var(--pink-mid);
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  max-width: 85%;
+  text-align: center;
+  white-space: normal;
+}
+#visitaFala.visivel {
+  opacity: 1;
+}

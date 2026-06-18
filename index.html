@@ -26,6 +26,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <!-- Firebase -->
+  <script type="module" src="firebase.js"></script>
+
 </head>
 <body>
 
@@ -64,6 +67,9 @@
     <!-- Cenário -->
     <div id="cenarioHanna">
 
+      <!-- Balão de fala das visitas dos pets -->
+      <div id="visitaFala"></div>
+
       <div id="overlayPeriodo"></div>
 
         <p id="mensagem"></p>
@@ -87,9 +93,8 @@
         </div>
         
       <div class="personagens-wrap">
-
             <div id="hannaContainer">
-                <div id="hannaFala"></div>
+              <div id="hannaFala"></div>
                 <img src="assets/sprites/hanna/neutra.png"
                 alt="Hanna"
                 id="hannaSprite">
@@ -212,11 +217,11 @@
 
         </button>
 
-        <button class="btn-acao btn-verde" id="btnAbrirFazenda">
+        <button class="btn-acao btn-verde" id="btnPetisco">
 
-            <img src="assets/ui/icons/icon-fazenda.png" class="iconeBotao">
+            <img src="assets/ui/icons/icon-petisco.png" class="iconeBotao">
 
-            <span class="btn-text">Plantar</span>
+            <span class="btn-text">Petisco</span>
 
         </button>
 
@@ -228,11 +233,11 @@
 
         </button>
 
-        <button class="btn-acao btn-games" id="btnMinigames">
+        <button class="btn-acao btn-games" id="btnCocarBarriga">
 
-            <img src="assets/ui/icons/icon-minigames.png" class="iconeBotao">
+            <img src="assets/ui/icons/carinho-barriga.png" class="iconeBotao">
 
-            <span class="btn-text">Mini Games</span>
+            <span class="btn-text">Coçar Barriga</span>
 
         </button>
      
@@ -469,7 +474,7 @@
           <img src="assets/sprites/hanna/brincando.png" class="tutorial-sprite" />
           <h3>Minigames</h3>
         </div>
-        <p>Existem seis minigames pra jogar: Memória das Patas, Dominó com a Hanna, Adivinhe o Humor, Reflexo Felino, Cartinhas da Hanna e Operação Sardinha.</p>
+        <p>Existem dez minigames pra jogar: Memória das Patas, Dominó com a Hanna, Adivinhe o Humor, Reflexo Felino, Cartinhas da Hanna, Operação Sardinha, Match-3 Felino, Palavras da Hanna, Bolinha de Lã e Caça-Palavras.</p>
         <p>Cada um dá moedas ao vencer e alguns aumentam a felicidade da Hanna também.</p>
       </div>
 
@@ -556,32 +561,35 @@
 
       <div class="carta-texto">
 
-        <h2>Cozy Aprontamento</h2>
+        <h2>Criação da Hanna</h2>
 
         <p>
-          Como eu sempre ando aprontando, 
-          minha cabeça não para e em meio a
-          uma fala sua no nosso grupo sobre 
-          não querer mais jogar cod e queria
-          jogar outros tipos de jogos, veio a 
-          ideia de criar um jogo só pra você.
-          E assim...
+          A Hanna nasceu de uma ideia simples: criar algo especial para uma pessoa muito especial.
+          Cada detalhe deste projeto foi pensado com carinho, desde as cores até as pequenas animações,
+          transformando uma simples gatinha em uma companheira cheia de personalidade.
         </p>
 
         <p>
-          A Hanna nasceu! A partir de uma vontade de te 
-          presentear nesse dia dos namorados, fazer você 
-          ter um entretenimento, e colocar tudo o que 
-          amamos em um joguinho fofo.
-
-          Espero que você curta muito esse jogo,
-          pois ele foi pensado com muito carinho e
-          aprontamento (que não pode faltar hehe).
+          Durante o desenvolvimento, muitas ideias surgiram, outras mudaram de forma, e algumas nasceram
+          de conversas, risadas e momentos compartilhados. Aos poucos, a Hanna deixou de ser apenas um
+          projeto e se tornou uma pequena coleção de memórias, referências e coisas que fazem parte da nossa história.
         </p>
 
         <p>
-          Obrigada por me inspirar, cuidar de mim e me fazer feliz.
-          Eu te amo ♥️
+          Além da inspiração em jogos cozy e nos clássicos Tamagotchis da infância, este jogo também carrega
+          um pouco das coisas que você gosta: filmes, séries, músicas, curiosidades, desafios e pequenos detalhes
+          escondidos para serem descobertos ao longo da jornada.
+        </p>
+
+        <p>
+          Se você chegou até aqui, obrigada por dedicar um tempinho à Hanna.
+          Espero que ela consiga arrancar alguns sorrisos, trazer conforto nos dias difíceis e guardar boas lembranças,
+          assim como guardou as minhas durante sua criação.
+        </p>
+
+        <p>
+        Com carinho,<br>
+        Anna ♥️
         </p>
 
       </div>
@@ -598,83 +606,6 @@
 </div>
 
 <!-- Fecha Carta -->
-
-<div id="telaPedido" class="telaEspecial">
-
-      <div class="pedidoCard">
-
-        <div class="pedidoSpriteBox">
-
-          <img
-          src="assets/sprites/hanna-gatinha/pedido.png"
-          id="spritePedido">
-
-        </div>
-
-        <div id="textoPedido">
-
-        </div>
-
-        <div
-        class="pedidoBtns"
-        id="pedidoBtns">
-
-          <button id="btnSimPedido">
-
-            SIM
-
-          </button>
-
-          <button id="btnNaoPedido">
-
-            NÃO
-
-          </button>
-
-        </div>
-
-      </div>
-
-</div>
-
-<div id="telaPedidoReal"
-class="telaEspecial">
-
-  <div class="pedidoCard">
-
-    <div class="pedidoSpriteBox">
-
-      <img
-      src="assets/sprites/hanna-gatinha/felizes.png"
-      id="spritePedidoReal">
-
-    </div>
-
-    <div id="textoPedidoReal">
-
-    </div>
-
-    <div class="pedidoBtns">
-
-      <button
-      id="btnSimReal"
-      style="display:none;"
-      >
-        SIM
-      </button>
-
-      <button
-      id="btnNaoReal"
-      style="display:none;"
-      >
-          NÃO
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
 
 <div id="telaLoja" style="display:none;">
 
@@ -704,7 +635,7 @@ class="telaEspecial">
           <p class="item-desc">Um mimo especial pra deixar a Hanna se sentindo linda.</p>
           <p>+10 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 50</span>
+            <span class="preco-chip">🪙 1.250</span>
             <button id="btnUrsinho" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -718,7 +649,7 @@ class="telaEspecial">
           <p class="item-desc">O petisco favorito da Hanna. Ela vai devorar em segundos.</p>
           <p>+30 fome</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 80</span>
+            <span class="preco-chip">🪙 400</span>
             <button id="btnMorango" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -732,7 +663,7 @@ class="telaEspecial">
           <p class="item-desc">Horas de entretenimento garantidas. A Hanna adora uma bagunça.</p>
           <p>+20 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 120</span>
+            <span class="preco-chip">🪙 600</span>
             <button id="btnNovelo" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -746,7 +677,7 @@ class="telaEspecial">
           <p class="item-desc">Uma iguaria felina. Fome? Que fome?</p>
           <p>+50 fome</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 180</span>
+            <span class="preco-chip">🪙 900</span>
             <button id="btnSashimi" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -760,7 +691,7 @@ class="telaEspecial">
           <p class="item-desc">O brinquedo perfeito pra uma tarde cheia de energia.</p>
           <p>+25 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 180</span>
+            <span class="preco-chip">🪙 900</span>
             <button id="btnRatinho" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -774,7 +705,7 @@ class="telaEspecial">
           <p class="item-desc">Um snack que agrada fome e coração ao mesmo tempo.</p>
           <p>+25 fome • +25 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 200</span>
+            <span class="preco-chip">🪙 1.000</span>
             <button id="btnBiscoito" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -788,7 +719,7 @@ class="telaEspecial">
           <p class="item-desc">Um cantinho macio e quentinho pra Hanna repor as energias.</p>
           <p>+20 energia</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 220</span>
+            <span class="preco-chip">🪙 1.100</span>
             <button id="btnAlmofada" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -802,7 +733,7 @@ class="telaEspecial">
           <p class="item-desc">Doce, fofo e irresistível. Exatamente como a Hanna.</p>
           <p>+45 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 250</span>
+            <span class="preco-chip">🪙 1.250</span>
             <button id="btnDonut" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -816,7 +747,7 @@ class="telaEspecial">
           <p class="item-desc">O melhor do mercado. A Hanna merece o premium.</p>
           <p>+70 fome</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 300</span>
+            <span class="preco-chip">🪙 1.500</span>
             <button id="btnAtum" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -830,7 +761,7 @@ class="telaEspecial">
           <p class="item-desc">Magia de verdade. A Hanna fica completamente hipnotizada.</p>
           <p>+40 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 350</span>
+            <span class="preco-chip">🪙 1.750</span>
             <button id="btnVarinha" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -844,13 +775,13 @@ class="telaEspecial">
           <p class="item-desc">Tecnologia felina de ponta. O brinquedo mais sofisticado da loja.</p>
           <p>+50 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 500</span>
+            <span class="preco-chip">🪙 1.2500</span>
             <button id="btnRobo" class="btn-comprar">Comprar</button>
           </div>
         </div>
       </div>
 
-      <!-- Pack de Sementes — 800 -->
+      <!-- Pack de Sementes — 4.000 -->
       <div class="item-loja">
         <div class="item-loja-icon-wrap"><img src="assets/shop/pacote-sementes.png" class="iconeLoja"></div>
         <div class="item-loja-info">
@@ -858,60 +789,87 @@ class="telaEspecial">
           <p class="item-desc">10 sementes pra encher a fazenda de uma vez. Pra quem não quer esperar!</p>
           <p>+10 sementes</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 800</span>
+            <span class="preco-chip">🪙 4000</span>
             <button id="btnPackSementes" class="btn-comprar">Comprar</button>
           </div>
         </div>
       </div>
 
-      <!-- Gatinha — 5.000 -->
+    </div>
+
+    <!-- SEÇÃO ESPECIAIS -->
+    <div class="categoriaLoja">✨ Especiais</div>
+
+    <div class="loja-grid">
+
+      <!-- Gatinha Pretinha — 50.000 -->
       <div class="item-loja item-premium">
         <div class="item-loja-icon-wrap"><img src="assets/shop/gatinha-preta.png" class="iconeLoja"></div>
         <div class="item-loja-info">
           <h3>Gatinha Pretinha</h3>
-          <p class="item-desc">Uma companheira pra vida toda. Com vínculo alto, momentos especiais acontecem.</p>
+          <p class="item-desc">Um(a) companheiro(a) pra vida toda. Com vínculo alto, momentos especiais acontecem.</p>
           <p>Uma companheira para a Hanna 💖</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 5.000</span>
+            <span class="preco-chip">🪙 50.000</span>
             <button id="btnGatinha" class="btn-comprar">Adotar</button>
           </div>
         </div>
       </div>
 
-      <div class="categoriaLoja">
-
-        ✨ Especiais
-
+      <!-- Steve Rogers — 100.000 -->
+      <div class="item-loja item-premium">
+        <div class="item-loja-icon-wrap"><img src="assets/shop/steve.png" class="iconeLoja"></div>
+        <div class="item-loja-info">
+          <h3>Steve Rogers</h3>
+          <p class="item-desc">Fofoqueiro, aprontão mas extremamente fiel. Aparece de visita com novidades quentinhas!</p>
+          <p>Visitas surpresa na casa</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">🪙 100.000</span>
+            <button id="btnSteve" class="btn-comprar">Receber Visita</button>
+          </div>
+        </div>
       </div>
 
-      <div class="itemLoja especial">
-
-        <img
-        src="assets/ui/buque-anel.png"
-        class="itemEspecialImg">
-
-        <div class="itemEspecialInfo">
-
-          <h3>
-            Pedido Especial
-          </h3>
-
-          <p>
-            Upgrade de Relacionamento Felino
-          </p>
-
-          <span class="precoEspecial">
-            🪙 10.000
-          </span>
-
-          <button id="btnPedidoEspecial">
-
-            Comprar
-
-          </button>
-
+      <!-- João Antônio — 100.000 -->
+      <div class="item-loja item-premium">
+        <div class="item-loja-icon-wrap"><img src="assets/shop/joao-antonio.png" class="iconeLoja"></div>
+        <div class="item-loja-info">
+          <h3>João Antônio</h3>
+          <p class="item-desc">O aprontão oficial. Ama derrubar as coisas e não deita pro Cook de jeito nenhum!</p>
+          <p>Visitas surpresa na casa</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">🪙 100.000</span>
+            <button id="btnJoao" class="btn-comprar">Receber Visita</button>
+          </div>
         </div>
+      </div>
 
+      <!-- James Cook — 100.000 -->
+      <div class="item-loja item-premium">
+        <div class="item-loja-icon-wrap"><img src="assets/shop/james-cook.png" class="iconeLoja"></div>
+        <div class="item-loja-info">
+          <h3>James Cook</h3>
+          <p class="item-desc">O gordinho mais fofo do pedaço. Ama roubar comida e encrencar com o irmão!</p>
+          <p>Visitas surpresa na casa</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">🪙 100.000</span>
+            <button id="btnJames" class="btn-comprar">Receber Visita</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pedido da Hanna — 250.000 -->
+      <div class="item-loja item-premium">
+        <div class="item-loja-icon-wrap"><img src="assets/ui/buque-anel.png" class="iconeLoja"></div>
+        <div class="item-loja-info">
+          <h3>Pedido da Hanna 💍</h3>
+          <p class="item-desc">Um momento muito especial. Só pra quem cuidou bem da Hanna e tem vínculo verdadeiro.</p>
+          <p>Vínculo 80% + 250.000 moedas</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">🪙 250.000</span>
+            <button id="btnPedidoEspecial" class="btn-comprar">Comprar</button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -920,6 +878,29 @@ class="telaEspecial">
 
 </div>
       
+
+<!-- Tela do Pedido da Hanna -->
+<div id="telaPedido" class="tela-pedido-wrap" style="display:none;">
+  <div class="pedido-card">
+    <img src="assets/sprites/hanna-gatinha/pedido.png" class="pedido-sprite" id="pedidoSprite">
+    <div id="textoPedido" class="pedido-texto"></div>
+    <div id="pedidoBtns" class="pedido-btns" style="display:none;">
+      <button id="btnSimPedido" class="pedido-btn pedido-btn-sim">💖 Sim!</button>
+      <button id="btnNaoPedido" class="pedido-btn pedido-btn-nao">😾 Ainda não</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tela Pós-Pedido (comemoração) -->
+<div id="telaPedidoReal" class="tela-pedido-wrap" style="display:none;">
+  <div class="pedido-card">
+    <img src="assets/sprites/hanna-gatinha/gatinhas-abraco.png" class="pedido-sprite">
+    <div class="pedido-texto" style="font-size:18px;">Agora vocês são namoradas! 💍🖤</div>
+    <button id="btnVoltarPedido" class="pedido-btn pedido-btn-sim" style="margin-top:16px;">
+      Continuar 💖
+    </button>
+  </div>
+</div>
 
 <!-- Tela de Lembretes -->
 <div id="telaLembretes" style="display:none;">
@@ -1130,7 +1111,7 @@ class="telaEspecial">
         </div>
         <div class="mg-card-info">
           <div class="mg-card-titulo">Adivinhe o Humor</div>
-          <div class="mg-card-desc">A Hanna mostra uma expressão — você adivinhe o estado dela antes do tempo acabar!</div>
+          <div class="mg-card-desc">A Hanna mostra uma expressão você adivinhe o estado dela antes do tempo acabar!</div>
           <div class="mg-card-recompensa">🪙 8–20 moedas</div>
         </div>
         <button class="mg-btn-jogar" data-jogo="humor">Jogar</button>
@@ -1195,6 +1176,110 @@ class="telaEspecial">
             <button class="mg-btn-jogar" data-jogo="sardinha">Jogar</button>
         </div>
 
+        <!-- Jogo 7: Match-3 -->
+        <div class="mg-card" id="mgCardMatch3">
+          <div class="mg-card-icon">
+            <img src="assets/ui/icons/icon-hanna-crush.png" alt="">
+          </div>
+          <div class="mg-card-info">
+            <div class="mg-card-titulo">Hanna Crush ✨</div>
+            <div class="mg-card-desc">Combine 3 ou mais ícones iguais pra pontuar! Quanto mais combos, mais moedas!</div>
+            <div class="mg-card-recompensa">🪙 10–100 moedas</div>
+          </div>
+          <button class="mg-btn-jogar" data-jogo="match3">Jogar</button>
+        </div>
+
+        <!-- Jogo 8: Palavras da Hanna -->
+        <div class="mg-card" id="mgCardPalavras">
+          <div class="mg-card-icon">
+            <img src="assets/ui/icons/icon-caca-palavra.png" alt="">
+          </div>
+          <div class="mg-card-info">
+            <div class="mg-card-titulo">Palavras da Hanna</div>
+            <div class="mg-card-desc">Adivinhe a palavra secreta em até 6 tentativas. Verde, amarelo ou cinza use as dicas!</div>
+            <div class="mg-card-recompensa">🪙 10–60 moedas</div>
+          </div>
+          <button class="mg-btn-jogar" data-jogo="palavras">Jogar</button>
+        </div>
+
+        <!-- Jogo 9: Bolinha de Lã -->
+        <div class="mg-card" id="mgCardBolinha">
+          <div class="mg-card-icon">
+            <img src="assets/ui/icons/icon-novelo.png" alt="">
+          </div>
+          <div class="mg-card-info">
+            <div class="mg-card-titulo">Bolinha de Lã</div>
+            <div class="mg-card-desc">Rebata a bolinha com a raquete! Não deixe cair a bolinha acelera a cada rebatida!</div>
+            <div class="mg-card-recompensa">🪙 10–80 moedas</div>
+          </div>
+          <button class="mg-btn-jogar" data-jogo="bolinha">Jogar</button>
+        </div>
+
+        <!-- Jogo 10: Caça-Palavras -->
+        <div class="mg-card" id="mgCardCacaPalavras">
+          <div class="mg-card-icon">
+            <img src="assets/ui/icons/icon-cacando-palavras.png" alt="">
+          </div>
+          <div class="mg-card-info">
+            <div class="mg-card-titulo">Caça-Palavras</div>
+            <div class="mg-card-desc">Encontre todas as palavras escondidas na grade! Deslize sobre as letras pra marcar.</div>
+            <div class="mg-card-recompensa">🪙 15–70 moedas</div>
+          </div>
+          <button class="mg-btn-jogar" data-jogo="cacapalavras">Jogar</button>
+        </div>
+
+        <!-- Jogo 10: Missão do Steve -->
+        <div class="mg-card" id="mgCardSteve">
+          <div class="mg-card-icon">
+            <img src="assets/sprites/pets/steve-missao.png" alt="" style="width:40px;height:40px;object-fit:contain;">
+          </div>
+          <div class="mg-card-info">
+            <div class="mg-card-titulo">Missão do Steve</div>
+            <div class="mg-card-desc">Steve quer pegar o osso sem ser visto! Toque no momento certo pra ele avançar furtivamente.</div>
+            <div class="mg-card-recompensa">🪙 30–90 moedas</div>
+          </div>
+          <button class="mg-btn-jogar" data-jogo="steve">Jogar</button>
+        </div>
+
+        <!-- Jogo 11: James e a Despensa -->
+        <div class="mg-card" id="mgCardJames">
+          <div class="mg-card-icon">
+            <img src="assets/sprites/pets/james-espiando.png" alt="" style="width:40px;height:40px;object-fit:contain;">
+          </div>
+          <div class="mg-card-info">
+            <div class="mg-card-titulo">James e a Despensa</div>
+            <div class="mg-card-desc">James quer roubar comida! Toque nos petiscos antes que sumam e evite as armadilhas.</div>
+            <div class="mg-card-recompensa">🪙 20–80 moedas</div>
+          </div>
+          <button class="mg-btn-jogar" data-jogo="james">Jogar</button>
+        </div>
+
+        <!-- Jogo 12: João e as Prateleiras -->
+        <div class="mg-card" id="mgCardJoao">
+          <div class="mg-card-icon">
+            <img src="assets/sprites/pets/joao-prateleira.png" alt="" style="width:40px;height:40px;object-fit:contain;">
+          </div>
+          <div class="mg-card-info">
+            <div class="mg-card-titulo">João e as Prateleiras</div>
+            <div class="mg-card-desc">João ama derrubar tudo! Toque nos objetos antes que o tempo acabe e cause a maior destruição possível.</div>
+            <div class="mg-card-recompensa">🪙 15–80 moedas</div>
+          </div>
+          <button class="mg-btn-jogar" data-jogo="joao">Jogar</button>
+        </div>
+
+        <!-- Quebra-Cabeça -->
+        <div class="mg-card" id="mgCardPuzzle">
+          <div class="mg-card-icon">
+            <img src="assets/sprites/puzzle/puzzle-nivel1.png" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">
+          </div>
+          <div class="mg-card-info">
+            <div class="mg-card-titulo">Quebra-Cabeça 🧩</div>
+            <div class="mg-card-desc">Monte as peças e descubra a imagem! 6 níveis progressivos com uma surpresa especial no final.</div>
+            <div class="mg-card-recompensa">🪙 20–200 moedas</div>
+          </div>
+          <button class="mg-btn-jogar" data-jogo="quebracabeca">Jogar</button>
+        </div>
+
     </div>
   </div>
 </div>
@@ -1207,6 +1292,7 @@ class="telaEspecial">
   <div class="arena-header">
     <button class="btn-back" id="btnVoltarArena">‹</button>
     <span class="arena-titulo" id="arenaTitulo">Mini Game</span>
+    <img id="spriteArenaHeader" src="" style="display:none; width:36px; height:36px; object-fit:contain; image-rendering:pixelated;">
     <div class="arena-moedas-live">🪙 <span id="arenaScore">0</span></div>
   </div>
 

@@ -250,7 +250,8 @@ const btnDormir         = document.getElementById("btnDormir");
 const btnPlantar        = document.getElementById("btnPlantar");
 const balaoFazenda      = document.getElementById("balaoFazenda");
 const btnEntrar         = document.getElementById("btnEntrar");
-const btnMinigames      = document.getElementById("btnMinigames");
+const btnPetisco        = document.getElementById("btnPetisco");
+const btnCocarBarriga   = document.getElementById("btnCocarBarriga");
 const btnBanho          = document.getElementById("btnBanho");
 const navConfig         = document.getElementById("navConfig");
 const telaConfig        = document.getElementById("telaConfig");
@@ -277,6 +278,9 @@ const telaJogo          = document.getElementById("telaJogo");
 const telaBanho         = document.getElementById("telaBanho");
 const telaMinigames     = document.getElementById("telaMinigames");
 const telaArena         = document.getElementById("telaArena");
+const telaLoja          = document.getElementById("telaLoja");
+const telaLembretes     = document.getElementById("telaLembretes");
+const telaFazenda       = document.getElementById("telaFazenda");
 const arenaConteudo     = document.getElementById("arenaConteudo");
 const arenaTitulo       = document.getElementById("arenaTitulo");
 const arenaScore        = document.getElementById("arenaScore");
@@ -292,6 +296,8 @@ const telaPedidoReal = document.getElementById("telaPedidoReal");
 const textoPedidoReal = document.getElementById("textoPedidoReal");
 const btnSimReal = document.getElementById("btnSimReal");
 const btnNaoReal = document.getElementById("btnNaoReal");
+
+let resetandoProgresso = false;
 
 // Botão de Resetar o Game
 btnResetar.addEventListener("click", () => {
@@ -326,128 +332,6 @@ btnResetar.addEventListener("click", () => {
   location.reload();
 
 });
-
-// Pedido Hanna
-btnSimPedido.addEventListener("click", () => {
-
-    abrirPedidoReal();
-
-});
-
-// Pedido Real
-btnSimReal.addEventListener("click", () => {
-
-    btnSimReal.style.display = "none";
-
-    btnNaoReal.style.display = "none";
-
-    iniciarFinalRomantico();
-
-});
-
-btnNaoReal.addEventListener("click", () => {
-
-    textoPedidoReal.textContent +=
-
-    "\n\n😾 resposta errada, tente novamente.";
-
-});
-
-let intervaloPedidoReal;
-
-function escreverPedidoReal(
-texto,
-mostrarBotao = false
-) {
-
-    textoPedidoReal.textContent =
-    "";
-
-    let i = 0;
-
-    clearInterval(intervaloPedidoReal);
-
-    intervaloPedidoReal =
-    setInterval(() => {
-
-        textoPedidoReal.textContent +=
-        texto.charAt(i);
-
-        textoPedidoReal.scrollTop =
-        textoPedidoReal.scrollHeight;
-
-        i++;
-
-        if (i >= texto.length) {
-
-            clearInterval(intervaloPedidoReal);
-
-            if (mostrarBotao) {
-
-                btnSimReal.style.display =
-                "block";
-
-                btnNaoReal.style.display =
-                "block";
-
-            }
-
-        }
-
-    }, 45);
-
-}
-
-function abrirPedidoReal() {
-
-    telaPedido.style.display =
-    "none";
-
-    telaPedidoReal.style.display =
-    "flex";
-
-    btnSimReal.style.display = "none";
-    btnNaoReal.style.display = "none";
-
-    // Esconde o botão de aceitar até o texto terminar
-    const btnAceitar =
-    document.getElementById("btnAceitarPedido");
-
-    if (btnAceitar) {
-
-        btnAceitar.style.display = "none";
-
-    }
-
-    escreverPedidoReal(
-
-`E na verdade...
-
-talvez esse pedido não fosse só delas...
-
-	  Kika Simplicio, este jogo foi inspirado em nós, e olha que coisa, tudo começou justamente porque alguém, com um belo par de olhos castanhos, me enviou um belo gatinho pretinho, e daí surgiu a “hAnna” que virou Hanna nesse game, que nada mais é do que uma celebração de tudo o que sentimos. E também vale ressaltar que a ideia do jogo veio de uma frase sua no nosso grupo, você dizia que estava querendo jogar algo novo, ou stardew valley comigo, e aí veio tudo na minha cabeça... “vou criar um jogo pra minha amada com tudo o que gostamos e eu que lute haha”.
-
-	  Desde o dia em que te revelei meus sentimentos, não teve um único dia que não pensei em você, em nós, e conforme as coisas foram avançando eu sentia uma energia e felicidade maravilhosa, talvez seja porque você exala essa energia, sério, é só eu falar com você que eu sinto minha “bateria” ser recarregada haha. Será que um belo sotaque recifense tenha esse poder?! Talvez sim hein! Já diria as Anavitoria e “meus males se vão com tua voz”, elas estavam muito certas nessa bela canção, que aliás combina demais com a gente, pois você me mandou ela e sinto que a letra é recíproca demais, pois como eu disse, só de te ouvir a minha bateria recarrega na hora e fico toda serelepe kkkk.
-
-	  Eu sei que sempre apronto coisas mirabolantes pra poder fazer você sorrir, às vezes até chorar (prendam essa criminosa!!!), mas é que tem algo em “kanna” que me desperta um lado aprontão nível 10, não acho que essa bela morena recifense mereça nada “básico”, ela merece tudo do melhor pra soltar um sorriso de canto a canto, como ela tá fazendo justamente agora lendo esse texto hehe (me diz que tá sorrindo, prfv).
-
-	  Bom, volto aqui a frisar o quanto eu gosto do seu jeito, do seu humor, do seu gosto musical extremamente variado kkkk, da sua voz, da sua amizade, que diga-se de passagem, desde o primeiro dia já tivemos uma conexão fora do comum, tanto que deu no que deu haha, do seu cuidado comigo e com minha família, e obviamente, eu amo o jeito que você demonstra seus sentimentos por mim,  é muito fofo, amo quando me chama de apelidinhos fofos, ou seja, no saldo geral, eu amo você por completo, não é mesmo?!
-
-	  Com tudo isso dito...
-
-    Kika Simplicio, queria aproveitar esse espaço e te perguntar uma coisa bem importante, momento de limpar as lágrimas hein haha. Mas Kika, meu bemzinho...
-
-
-...
-
-Você aceita namorar comigo? 💍`,
-
-true
-
-    );
-
-
-}
 
 let scoreAtual = 0;
 
@@ -677,12 +561,24 @@ const CONQUISTAS = {
   // Progressão
   jardineira:         { nome: "Jardineira",             desc: "Primeira planta colhida na fazenda.",            sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
   milionaria:         { nome: "Milionária",             desc: "10.000 moedas acumuladas.",                      sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  rica_demais:        { nome: "Rica Demais",             desc: "100.000 moedas acumuladas.",                     sprite: "assets/sprites/hanna/animada.png",    secao: "progressao" },
+  magnata_felina:     { nome: "Magnata Felina",          desc: "500.000 moedas acumuladas.",                     sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  bilionaria:         { nome: "Bilionária 💰",           desc: "1.000.000 de moedas acumuladas. Lendária!",      sprite: "assets/sprites/hanna/animada.png",    secao: "progressao" },
   bem_cuidada:        { nome: "Bem cuidada",            desc: "Todos os status acima de 95% ao mesmo tempo.",  sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
   nova_companheira:   { nome: "Nova companheira",       desc: "A gatinha pretinha chegou!",                    sprite: "assets/sprites/gatinha/gatinha-sorrindo.png", secao: "progressao" },
   inseparaveis:       { nome: "Inseparáveis",           desc: "Vínculo máximo com a gatinha pretinha.",        sprite: "assets/sprites/hanna-gatinha/felizes.png", secao: "progressao" },
   // Minigames
   mestre_memoria:     { nome: "Mestre da Memória",      desc: "Venceu o jogo Memória das Patas.",              sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
   domino_mestre:      { nome: "Mestre do Dominó",       desc: "Venceu a Hanna no dominó.",                       sprite: "assets/sprites/hanna/animada.png",   secao: "minigames" },
+  match3_mestre:      { nome: "Combo Felino",            desc: "Fez 300+ pontos no Match-3.",                      sprite: "assets/sprites/hanna/animada.png",   secao: "minigames" },
+  palavra_certa:      { nome: "Palavras da Hanna",       desc: "Acertou a palavra secreta.",                       sprite: "assets/sprites/hanna/curiosa.png",   secao: "minigames" },
+  bolinha_mestre:     { nome: "Bolinha Voadora",         desc: "Fez 20+ rebatidas na Bolinha de Lã.",              sprite: "assets/sprites/hanna/animada.png",   secao: "minigames" },
+  cocar_barriga:      { nome: "Coçadinha Especial",      desc: "Coçou a barriga da Hanna pela primeira vez.",      sprite: "assets/sprites/hanna/contente.png",  secao: "cuidados" },
+  caca_palavras:      { nome: "Detetive Felina",         desc: "Encontrou todas as palavras no Caça-Palavras.",    sprite: "assets/sprites/hanna/curiosa.png",   secao: "minigames" },
+  missao_steve:       { nome: "Missão Cumprida 🐕",      desc: "Completou a Missão do Steve Rogers.",             sprite: "assets/sprites/pets/steve-feliz.png", secao: "minigames" },
+  james_ladrao:       { nome: "Mestre Ladrão 😹",        desc: "James roubou 15+ petiscos na despensa.",          sprite: "assets/sprites/pets/james-espiando.png", secao: "minigames" },
+  joao_aprontando:    { nome: "Destruição Total 💥",     desc: "João derrubou 20+ objetos nas prateleiras.",      sprite: "assets/sprites/pets/joao-prateleira.png", secao: "minigames" },
+  puzzle_mestre:      { nome: "Mestre do Quebra-Cabeça 🧩", desc: "Completou todos os níveis do quebra-cabeça!", sprite: "assets/sprites/hanna/animada.png", secao: "minigames" },
   leitora_humores:    { nome: "Leitora de Humores",     desc: "Venceu o jogo Adivinhe o Humor.",               sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
   reflexos_felinos:   { nome: "Reflexos Felinos",       desc: "Venceu o jogo Reflexo Felino.",                 sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
   colecionadora:      { nome: "Colecionadora",          desc: "Venceu o jogo Cartinhas da Hanna.",             sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
@@ -1549,7 +1445,6 @@ const navGames = document.getElementById("navGames");
 
 // LOJA
 const btnLoja = null; // navegação feita via navLoja.onclick abaixo
-const telaLoja  = document.getElementById("telaLoja");
 const btnVoltar = document.getElementById("btnVoltar");
 const btnUrsinho = document.getElementById("btnUrsinho");
 const btnMorango = document.getElementById("btnMorango");
@@ -1557,7 +1452,6 @@ const btnGatinha = document.getElementById("btnGatinha");
 
 // LEMBRETES
 const btnLembretes = null; // navegação feita via navLembretes.onclick abaixo
-const telaLembretes      = document.getElementById("telaLembretes");
 const btnVoltarLembretes = document.getElementById("btnVoltarLembretes");
 const btnSalvarLembrete  = document.getElementById("btnSalvarLembrete");
 const inputLembrete      = document.getElementById("inputLembrete");
@@ -1565,9 +1459,8 @@ const listaLembretes     = document.getElementById("listaLembretes");
 const tipoLembrete       = document.getElementById("tipoLembrete");
 const dataLembrete       = document.getElementById("dataLembrete");
 const horaLembrete       = document.getElementById("horaLembrete");
-const btnAbrirFazenda = document.getElementById("btnAbrirFazenda");
-const telaFazenda = document.getElementById("telaFazenda");
-const btnVoltarFazenda = document.getElementById("btnVoltarFazenda");
+const btnAbrirFazenda    = document.getElementById("btnAbrirFazenda");
+const btnVoltarFazenda   = document.getElementById("btnVoltarFazenda");
 
 // SONS (silencia erro se arquivo ausente)
 function criarAudio(src) {
@@ -1677,6 +1570,7 @@ let gatinhaFalaTimer;
 function mostrarFalaGatinha(texto) {
   if (!gatinhaFalaEl) return;
   if (telaJogo.style.display !== "block") return;
+  if (dormindo) return;
   clearTimeout(gatinhaFalaTimer);
   gatinhaFalaEl.textContent = texto;
   gatinhaFalaEl.classList.add("visivel");
@@ -1704,6 +1598,7 @@ const falasHanna = [
 function mostrarFalaHanna(texto) {
   if (!hannaFalaEl) return;
   if (telaJogo.style.display !== "block") return;
+  if (dormindo) return;
   clearTimeout(hannaFalaTimer);
   hannaFalaEl.textContent = texto;
   hannaFalaEl.classList.add("visivel");
@@ -1747,6 +1642,7 @@ document.getElementById("hannaContainer").addEventListener("click", () => {
   amizade    = Math.min(5, amizade + 0.05);
 });
   gatinhaSprite.addEventListener("click", () => {
+    if (dormindo) return;
     tocarMeow();
     gatinhaSprite.classList.remove("gatinha-pulse");
     void gatinhaSprite.offsetWidth;
@@ -1911,8 +1807,6 @@ let nomeGatinha = localStorage.getItem("nomeGatinha") || "";
 let dormindo =
 localStorage.getItem("dormindo") === "true";
 
-let resetandoProgresso = false;
-
 let lembretes =
 JSON.parse(localStorage.getItem("lembretes")) || [];
 
@@ -1932,7 +1826,13 @@ btnSalvarNomeGatinha.onclick = () => {
     // Cobrar 2.000 moedas só se já tem nome (renomeando)
     if (nomeGatinha) {
         if (moedas < 2000) {
-            mostrarMensagem("⚠️ Você precisa de 2.000 moedas pra trocar o nome.");
+            inputNomeGatinha.style.border = "2px solid #ff5fa2";
+            inputNomeGatinha.placeholder = "⚠️ Precisa de 2.000 moedas!";
+            inputNomeGatinha.value = "";
+            setTimeout(() => {
+                inputNomeGatinha.style.border = "";
+                inputNomeGatinha.placeholder = nomeGatinha || "Digite um nome...";
+            }, 2500);
             return;
         }
         moedas -= 2000;
@@ -2331,7 +2231,10 @@ function atualizarStatus() {
   saldoLoja.textContent = moedas;
 
   // Conquistas automáticas
-  if (moedas >= 10000) desbloquearConquista("milionaria");
+  if (moedas >= 10000)   desbloquearConquista("milionaria");
+  if (moedas >= 100000)  desbloquearConquista("rica_demais");
+  if (moedas >= 500000)  desbloquearConquista("magnata_felina");
+  if (moedas >= 1000000) desbloquearConquista("bilionaria");
   if (fome >= 95 && felicidade >= 95 && energia >= 95 && higiene >= 95) desbloquearConquista("bem_cuidada");
   if (vinculoGatinhas >= 100 && gatinhaDesbloqueada) desbloquearConquista("inseparaveis");
 
@@ -2368,6 +2271,8 @@ function atualizarStatus() {
   _salvar();
 }
 
+let _ultimoSaveNuvem = 0;
+
 function _salvar() {
   localStorage.setItem("fome",                    fome);
   localStorage.setItem("felicidade",              felicidade);
@@ -2381,7 +2286,25 @@ function _salvar() {
   localStorage.setItem("gatinhaDesbloqueada",     gatinhaDesbloqueada ? "true" : "false");
   localStorage.setItem("nomeGatinha",             nomeGatinha);
   localStorage.setItem("ultimaInteracaoGatinha",  ultimaInteracaoGatinha);
+  localStorage.setItem("steveDesbloqueado",       steveDesbloqueado ? "true" : "false");
+  localStorage.setItem("joaoDesbloqueado",        joaoDesbloqueado  ? "true" : "false");
+  localStorage.setItem("jamesDesbloqueado",       jamesDesbloqueado ? "true" : "false");
   salvarFazenda();
+
+  // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
+  const agora = Date.now();
+  if (agora - _ultimoSaveNuvem > 2 * 60 * 1000) {
+    _ultimoSaveNuvem = agora;
+    import("./firebase.js").then(({ salvarProgressoNuvem }) => {
+      salvarProgressoNuvem({
+        fome, felicidade, energia, higiene, sementes, moedas,
+        amizade, vinculoGatinhas, dormindo,
+        gatinhaDesbloqueada, nomeGatinha,
+        steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
+        conquistas: JSON.stringify(conquistasDesbloqueadas),
+      });
+    }).catch(() => {});
+  }
 }
 
 // ── SISTEMA DE VÍNCULO DA GATINHA ────────────────────────────
@@ -2719,6 +2642,8 @@ function iniciarSono() {
     zzzContainer.style.display = "flex";
 
     localStorage.setItem("dormindo", "true");
+
+    atualizarGatinha();
 
     if (gatinhaDesbloqueada && vinculoGatinhas >= 70) {
       // Vínculo alto — dormem juntas via renderizarGatinhas
@@ -3320,8 +3245,8 @@ if (btnLembretes) {
 }
 
 btnUrsinho.addEventListener("click", () => {
-  if (moedas < 50) { mostrarAlertaLoja("⚠️ Moedas insuficientes"); return; }
-  moedas -= 50;
+  if (moedas < 1250) { mostrarAlertaLoja("⚠️ Moedas insuficientes"); return; }
+  moedas -= 1250;
   somCompra.currentTime = 0; 
   somCompra.volume =
   parseFloat(
@@ -3337,8 +3262,8 @@ somCompra.play().catch(()=>{});
 });
 
 btnMorango.addEventListener("click", () => {
-  if (moedas < 80) { mostrarAlertaLoja("⚠️ Moedas insuficientes"); return; }
-  moedas -= 80;
+  if (moedas < 400) { mostrarAlertaLoja("⚠️ Moedas insuficientes"); return; }
+  moedas -= 400;
   somCompra.currentTime = 0; 
   
   somCompra.volume =
@@ -3363,15 +3288,14 @@ const btnDonut = document.getElementById("btnDonut");
 const btnVarinha = document.getElementById("btnVarinha");
 const btnRobo = document.getElementById("btnRobo");
 const btnAlmofada = document.getElementById("btnAlmofada");
-const btnPedidoEspecial = document.getElementById("btnPedidoEspecial");
-
+// Cinza o botão de adotar se já tem gatinha
 btnSashimi.addEventListener("click", () => {
-  if (moedas < 180) {
+  if (moedas < 900) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 180;
+  moedas -= 900;
   fome = Math.min(100, fome + 50);
   mostrarFeedbackBarra("barraFome", 50);
 
@@ -3388,12 +3312,12 @@ somCompra.play().catch(()=>{});
 });
 
 btnNovelo.addEventListener("click", () => {
-  if (moedas < 120) {
+  if (moedas < 600) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 120;
+  moedas -= 600;
   felicidade = Math.min(100, felicidade + 20);
 
   somCompra.currentTime = 0;
@@ -3409,12 +3333,12 @@ somCompra.play().catch(()=>{});
 });
 
 btnRatinho.addEventListener("click", () => {
-  if (moedas < 180) {
+  if (moedas < 900) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 180;
+  moedas -= 900;
   felicidade = Math.min(100, felicidade + 25);
 
   somCompra.currentTime = 0;
@@ -3430,12 +3354,12 @@ btnRatinho.addEventListener("click", () => {
 });
 
 btnAtum.addEventListener("click", () => {
-  if (moedas < 300) {
+  if (moedas < 1500) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 300;
+  moedas -= 1500;
   fome = Math.min(100, fome + 70);
   mostrarFeedbackBarra("barraFome", 70);
 
@@ -3452,12 +3376,12 @@ btnAtum.addEventListener("click", () => {
 });
 
 btnBiscoito.addEventListener("click", () => {
-  if (moedas < 200) {
+  if (moedas < 1000) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 200;
+  moedas -= 1000;
   fome = Math.min(100, fome + 25);
   felicidade = Math.min(100, felicidade + 25);
   mostrarFeedbackBarra("barraFome", 25);
@@ -3476,12 +3400,12 @@ btnBiscoito.addEventListener("click", () => {
 });
 
 btnDonut.addEventListener("click", () => {
-  if (moedas < 250) {
+  if (moedas < 1250) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 250;
+  moedas -= 1250;
   felicidade = Math.min(100, felicidade + 45);
   mostrarFeedbackBarra("barraFelicidade", 45);
 
@@ -3499,12 +3423,12 @@ btnDonut.addEventListener("click", () => {
 
 // PACK DE SEMENTES
 document.getElementById("btnPackSementes").addEventListener("click", () => {
-  if (moedas < 800) {
+  if (moedas < 4000) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 800;
+  moedas -= 4000;
   sementes += 10;
 
   somCompra.currentTime = 0;
@@ -3515,13 +3439,31 @@ document.getElementById("btnPackSementes").addEventListener("click", () => {
   atualizarStatus();
 });
 
+// PEDIDO ESPECIAL
+document.getElementById("btnPedidoEspecial")?.addEventListener("click", () => {
+  if (vinculoGatinhas < 80) {
+    mostrarAlertaLoja("⚠️ A Hanna precisa de 80% de vínculo primeiro 💖");
+    return;
+  }
+  if (moedas < 250000) {
+    mostrarAlertaLoja("⚠️ Você precisa de 250.000 moedas!");
+    return;
+  }
+  moedas -= 250000;
+  atualizarStatus();
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+  abrirTelaPedido();
+});
+
 btnVarinha.addEventListener("click", () => {
-  if (moedas < 350) {
+  if (moedas < 1750) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 350;
+  moedas -= 1750;
   felicidade = Math.min(100, felicidade + 40);
 
   somCompra.currentTime = 0;
@@ -3537,12 +3479,12 @@ btnVarinha.addEventListener("click", () => {
 });
 
 btnRobo.addEventListener("click", () => {
-  if (moedas < 500) {
+  if (moedas < 12500) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 500;
+  moedas -= 12500;
   felicidade = Math.min(100, felicidade + 50);
 
   somCompra.currentTime = 0;
@@ -3558,12 +3500,12 @@ btnRobo.addEventListener("click", () => {
 });
 
 btnAlmofada.addEventListener("click", () => {
-  if (moedas < 220) {
+  if (moedas < 1100) {
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
     return;
   }
 
-  moedas -= 220;
+  moedas -= 1100;
   energia = Math.min(100, energia + 20);
 
   somCompra.currentTime = 0;
@@ -3578,47 +3520,6 @@ btnAlmofada.addEventListener("click", () => {
   atualizarStatus();
 });
 
-btnPedidoEspecial.addEventListener(
-"click", () => {
-
-    if (vinculoGatinhas < 80) {
-
-    mostrarMensagem(
-      "Elas precisam criar um vínculo maior antes disso",
-      "loja"
-    );
-
-    return;
-
-    }
-
-    if (moedas < 10000) {
-
-        mostrarAlertaLoja(
-        "⚠️ Moedas insuficientes"
-        );
-
-        return;
-
-    }
-
-    moedas -= 10000;
-
-    atualizarStatus();
-
-    somCompra.currentTime = 0;
-
-    somCompra.volume =
-    parseFloat(
-        volumeEfeitos.value
-    );
-
-    somCompra.play().catch(()=>{});
-
-    abrirTelaPedido();
-
-});
-
 // Cinza o botão de adotar se já tem gatinha
 if (gatinhaDesbloqueada) {
   btnGatinha.dataset.adotado = "true";
@@ -3627,6 +3528,51 @@ if (gatinhaDesbloqueada) {
   btnGatinha.style.opacity = "0.5";
   btnGatinha.style.cursor = "not-allowed";
 }
+
+// ── PETS VISITANTES ──────────────────────────────────────────
+let steveDesbloqueado = localStorage.getItem("steveDesbloqueado") === "true";
+let joaoDesbloqueado  = localStorage.getItem("joaoDesbloqueado")  === "true";
+let jamesDesbloqueado = localStorage.getItem("jamesDesbloqueado") === "true";
+
+const btnSteve = document.getElementById("btnSteve");
+const btnJoao  = document.getElementById("btnJoao");
+const btnJames = document.getElementById("btnJames");
+
+function cinzarPetBtn(btn, nome) {
+  if (!btn) return;
+  btn.textContent = `${nome} já visita! 🐾`;
+  btn.classList.add("btn-adotado");
+  btn.style.opacity = "0.5";
+  btn.style.cursor  = "not-allowed";
+}
+
+if (steveDesbloqueado) cinzarPetBtn(btnSteve, "Steve");
+if (joaoDesbloqueado)  cinzarPetBtn(btnJoao,  "João");
+if (jamesDesbloqueado) cinzarPetBtn(btnJames, "James");
+
+function comprarPet(btn, chave, nome, callback) {
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    if (localStorage.getItem(chave) === "true") {
+      mostrarAlertaLoja(`${nome} já visita vocês! 🐾`);
+      return;
+    }
+    if (moedas < 100000) {
+      mostrarAlertaLoja("⚠️ Moedas insuficientes");
+      return;
+    }
+    moedas -= 100000;
+    localStorage.setItem(chave, "true");
+    cinzarPetBtn(btn, nome);
+    callback();
+    mostrarMensagem(`${nome} vai aparecer de visita! 🐾`);
+    atualizarStatus();
+  });
+}
+
+comprarPet(btnSteve, "steveDesbloqueado", "Steve", () => { steveDesbloqueado = true; iniciarVisitasSteve(); });
+comprarPet(btnJoao,  "joaoDesbloqueado",  "João",  () => { joaoDesbloqueado  = true; iniciarVisitasJoao();  });
+comprarPet(btnJames, "jamesDesbloqueado", "James", () => { jamesDesbloqueado = true; iniciarVisitasJames(); });
 
 btnGatinha.addEventListener("click", () => {
 
@@ -3653,7 +3599,7 @@ btnGatinha.addEventListener("click", () => {
 
   }
 
-  if (moedas < 5000) {
+  if (moedas < 125000) {
 
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
 
@@ -3674,7 +3620,7 @@ btnGatinha.addEventListener("click", () => {
     return;
   }
 
-  moedas -= 5000;
+  moedas -= 125000;
 
   gatinhaDesbloqueada = true;
   desbloquearConquista("nova_companheira");
@@ -4131,11 +4077,63 @@ if (dormindo) {
 // LISTENERS DE NAVEGAÇÃO
 
 // Botão de minigames na tela principal
-document.getElementById("btnMinigames").addEventListener("click", () => {
-  abrirTela(telaMinigames);
-  document.querySelector(".bottomNav").style.display = "none";
-  tocarTrilha("minigames");
-  window.scrollTo(0, 0);
+// Petisco
+btnPetisco.addEventListener("click", () => {
+  if (dormindo || momentoConjuntoAtivo) {
+    mostrarFalaHanna("Zzz... 💤");
+    return;
+  }
+
+  felicidade  = Math.min(100, felicidade + 15);
+  fome        = Math.min(100, fome + 5);
+
+  if (Math.random() < 0.35) {
+    sementes += 1;
+    mostrarMensagem("A Hanna adorou o petisco!");
+  } else {
+    mostrarMensagem("A Hanna ficou satisfeita.");
+  }
+
+  mostrarFeedbackBarra("barraFelicidade", 15);
+  mostrarFeedbackBarra("barraFome", 5);
+
+  // Seta sprite de petisco e restaura após 2.5s
+  hannaSprite.src = "assets/sprites/hanna/petisco.png";
+  trocarAnimacao("felizBounce 2.5s ease-in-out infinite");
+
+  if (gatinhaDesbloqueada) registrarInteracaoGatinha();
+  if (gatinhaDesbloqueada) gatinhaSpriteTemp("gatinha-animada", 2500);
+
+  setTimeout(() => atualizarStatus(), 2500);
+  _salvar();
+});
+
+// COÇAR BARRIGA
+btnCocarBarriga.addEventListener("click", () => {
+  if (dormindo || momentoConjuntoAtivo) {
+    mostrarFalaHanna("Zzz... 💤");
+    return;
+  }
+
+  felicidade = Math.min(100, felicidade + 20);
+  energia    = Math.min(100, energia + 10);
+
+  mostrarMensagem("A Hanna ronronou de felicidade! 🐾");
+  mostrarFalaHanna("Purrr... 💗");
+  mostrarFeedbackBarra("barraFelicidade", 20);
+  mostrarFeedbackBarra("barraEnergia", 10);
+
+  // Seta sprite e restaura após 2.5s
+  hannaSprite.src = "assets/sprites/hanna/carinho-barriga.png";
+  trocarAnimacao("apaixonadaFloat 5s ease-in-out infinite");
+
+  if (gatinhaDesbloqueada) registrarInteracaoGatinha();
+  if (gatinhaDesbloqueada) gatinhaSpriteTemp("gatinha-animada", 2500);
+
+  desbloquearConquista("cocar_barriga");
+
+  setTimeout(() => atualizarStatus(), 2500);
+  _salvar();
 });
 
 let telaAnteriorConfig = "casa";
@@ -4321,6 +4319,14 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
     else if (jogo === "reflexo")   jogoReflexo();
     else if (jogo === "cartinhas") jogoCartinhas();
     else if (jogo === "sardinha")  jogoSardinha();
+    else if (jogo === "match3")    jogoMatch3();
+    else if (jogo === "palavras")  jogoPalavras();
+    else if (jogo === "bolinha")   jogoBolinha();
+    else if (jogo === "cacapalavras") jogoCacaPalavras();
+    else if (jogo === "steve")        jogoSteve();
+    else if (jogo === "james")        jogoJames();
+    else if (jogo === "joao")         jogoJoao();
+    else if (jogo === "quebracabeca") jogoQuebracabeca();
   });
 });
 
@@ -4614,41 +4620,28 @@ btnBanho.addEventListener("click", () => {
 });
 
 
-// REPLAY DO PEDIDO
-const btnReplayPedido = document.getElementById("btnReplayPedido");
-const cardReplayPedido = document.getElementById("cardReplayPedido");
-
-// Mostra o card se o pedido já foi feito
-if (localStorage.getItem("pedidoFeito") === "true") {
-    if (cardReplayPedido) cardReplayPedido.style.display = "block";
-}
-
-if (btnReplayPedido) {
-    btnReplayPedido.addEventListener("click", () => {
-        abrirTela(telaPedido);
-        abrirTelaPedido();
-    });
-}
 
 // ABRIR FAZENDA
 
-btnAbrirFazenda.onclick = () => {
+//if (btnAbrirFazenda) {
+    //btnAbrirFazenda.onclick = () => {
 
-    abrirTela(telaFazenda);
+        //abrirTela(telaFazenda);
 
-    animarTela(telaFazenda);
+        //animarTela(telaFazenda);
 
-    tocarTrilha("fazenda");
+        //tocarTrilha("fazenda");
 
-    balaoFazenda.classList.remove("fade-out-balao");
+        //balaoFazenda.classList.remove("fade-out-balao");
 
-    void balaoFazenda.offsetWidth;
+        //void balaoFazenda.offsetWidth;
 
-    setTimeout(() => {
-        balaoFazenda.classList.add("fade-out-balao");
-    }, 4000);
+        //setTimeout(() => {
+            //balaoFazenda.classList.add("fade-out-balao");
+        //}, //4000);
 
-};
+    //};
+//}
 
 
 // NAVBAR
@@ -4874,89 +4867,6 @@ function escreverPedido(texto, aoTerminar) {
 
 }
 
-function abrirTelaPedido() {
-
-    telaPedido.style.display =
-    "flex";
-
-    btnSimPedido.style.display = "none";
-    btnNaoPedido.style.display = "none";
-
-    tocarTrilha("pedido");
-
-    const texto =
-`Hanna olha timidamente para ${nomeGatinha} se ajoelha e diz...
-
-Depois de tantos momentos juntas,
-tantos carinhos,
-tantas aventuras e tantas noites felizes...
-
-ela queria fazer uma perguntinha muito importante...
-
-Você quer namorar comigo?`;
-
-    escreverPedido(texto, () => {
-        btnSimPedido.style.display = "block";
-        btnNaoPedido.style.display = "block";
-    });
-
-}
-
-// LISTENERS DOS BOTÕES DO PEDIDO
-btnSimPedido.addEventListener("click", () => {
-    abrirPedidoReal();
-});
-
-let naoPedidoCliques = 0;
-const frasesNao = [
-    "Tem certeza? 🥺",
-    "Pensa melhor...",
-    "Não me deixa assim 😿",
-    "Só mais uma chance? 💖",
-    "Vai lá, aperta o SIM!",
-];
-
-btnNaoPedido.addEventListener("click", () => {
-    naoPedidoCliques++;
-    if (naoPedidoCliques >= frasesNao.length) {
-        // Depois de muitas recusas, redireciona pra tela principal
-        telaPedido.style.display = "none";
-        // Reseta posição do botão pra próxima vez
-        btnNaoPedido.style.position = "";
-        btnNaoPedido.style.left = "";
-        btnNaoPedido.style.top = "";
-        btnNaoPedido.style.zIndex = "";
-        btnNaoPedido.textContent = "NÃO";
-        naoPedidoCliques = 0;
-        tocarTrilha("casa");
-        mostrarMensagem("A Hanna ficou triste...");
-        return;
-    }
-    // Move o botão pra um lugar aleatório pra ficar difícil clicar
-    const maxX = window.innerWidth - 120;
-    const maxY = window.innerHeight - 60;
-    btnNaoPedido.style.position = "fixed";
-    btnNaoPedido.style.left = Math.random() * maxX + "px";
-    btnNaoPedido.style.top  = Math.random() * maxY + "px";
-    btnNaoPedido.style.zIndex = "10001";
-    btnNaoPedido.textContent = frasesNao[naoPedidoCliques - 1];
-});
-
-// Botão de aceitar na telaPedidoReal
-const btnAceitarPedidoEl = document.getElementById("btnAceitarPedido");
-if (btnAceitarPedidoEl) {
-    btnAceitarPedidoEl.addEventListener("click", () => {
-        tocarTrilha("casa");
-        // Partículas de celebração
-        for (let i = 0; i < 3; i++) {
-            setTimeout(() => criarParticulas("💖", 10), i * 300);
-            setTimeout(() => criarParticulas("🌟", 8), i * 300 + 150);
-        }
-        mostrarMensagem("Que momento especial.");
-    });
-}
-
-// JOGO 6
 
 function jogoSardinha() {
   abrirArena("Operação Sardinha");
@@ -5237,97 +5147,6 @@ function iniciarSardinha(agente) {
   atualizarHUD();
 }
 
-function iniciarFinalRomantico() {
-
-    const overlay =
-    document.getElementById("overlayFinal");
-
-    const emojis = [
-        "💖",
-        "🌸",
-        "✨",
-        "💕"
-    ];
-
-    const intervalo =
-    setInterval(() => {
-
-        const p =
-        document.createElement("div");
-
-        p.className =
-        "particula-final";
-
-        p.textContent =
-
-        emojis[
-            Math.floor(
-                Math.random() *
-                emojis.length
-            )
-        ];
-
-        p.style.left =
-        Math.random() * 100 + "vw";
-
-        p.style.animationDuration =
-        (6 + Math.random() * 5)
-        + "s";
-
-        p.style.fontSize =
-        (20 + Math.random() * 22)
-        + "px";
-
-        overlay.appendChild(p);
-
-        setTimeout(() => {
-
-            p.remove();
-
-        }, 12000);
-
-    }, 250);
-
-    // FINALIZA DEPOIS DE 10 SEGUNDOS
-
-    setTimeout(() => {
-
-        clearInterval(intervalo);
-
-        telaPedidoReal.style.display = "none";
-
-        telaJogo.style.display = "block";
-
-        document.querySelector(".bottomNav").style.display = "flex";
-
-        tocarTrilha("casa");
-
-        // Gatinhas comemoram juntas!
-        if (gatinhaDesbloqueada) {
-            momentoConjuntoAtivo = true;
-            estadoVisual.momentoConjunto = true;
-            estadoVisual.spriteConjunta = "assets/sprites/hanna-gatinha/gatinhas-abraco.png";
-            renderizarGatinhas();
-
-            setTimeout(() => {
-                momentoConjuntoAtivo = false;
-                estadoVisual.momentoConjunto = false;
-                estadoVisual.spriteConjunta = null;
-                renderizarGatinhas();
-                atualizarStatus();
-            }, 6000);
-        }
-
-        mostrarFalaHanna("Agora somos namoradas 💖");
-        mostrarMensagem("Agora vocês namoram oficialmente 💖");
-
-        // Salva flag e mostra botão de replay nas configs
-        localStorage.setItem("pedidoFeito", "true");
-        if (cardReplayPedido) cardReplayPedido.style.display = "block";
-
-    }, 10000);
-
-}
 
 function mensagemHorario() {
 
@@ -5451,6 +5270,492 @@ function iniciarMomentosEspeciais() {
 
 }
 
+// ══════════════════════════════════════════════
+//   VISITAS DOS PETS
+// ══════════════════════════════════════════════
+
+function mostrarVisitaPet(sprite, fala, duracao = 8000) {
+  if (telaJogo.style.display !== "block") return;
+  if (dormindo || momentoConjuntoAtivo) return;
+
+  const spriteConjunta = document.getElementById("spriteConjunta");
+  if (!spriteConjunta) return;
+
+  momentoConjuntoAtivo = true;
+  estadoVisual.momentoConjunto = true;
+  estadoVisual.spriteConjunta  = sprite;
+  renderizarGatinhas();
+
+  // Balão dedicado pra visitas (fora do hannaContainer)
+  const visitaFalaEl = document.getElementById("visitaFala");
+  if (visitaFalaEl) {
+    visitaFalaEl.textContent = fala;
+    visitaFalaEl.classList.add("visivel");
+    setTimeout(() => visitaFalaEl.classList.remove("visivel"), duracao);
+  }
+
+  setTimeout(() => {
+    momentoConjuntoAtivo = false;
+    estadoVisual.momentoConjunto = false;
+    estadoVisual.spriteConjunta  = null;
+    renderizarGatinhas();
+    atualizarStatus();
+  }, duracao);
+}
+
+function iniciarVisitasSteve() {
+  const falas = [
+    "Steve apareceu com uma fofoca 🐕",
+    "Steve trouxe novidades do bairro! 🐾",
+    "Steve veio fazer companhia 🐕",
+    "Psiu... Steve ouviu algo interessante! 🐾",
+  ];
+  const intervalo = setInterval(() => {
+    if (!steveDesbloqueado) { clearInterval(intervalo); return; }
+    if (Math.random() > 0.3) return;
+    const fala = falas[Math.floor(Math.random() * falas.length)];
+    mostrarVisitaPet("assets/sprites/pets/steve-visita.png", fala);
+  }, 8 * 60 * 1000); // a cada 8 minutos com 30% de chance
+}
+
+function iniciarVisitasJoao() {
+  const falas = [
+    "João Antônio derrubou alguma coisa! 😹",
+    "João Antônio veio aprontar por aqui 🐱",
+    "João chegou fazendo bagunça! 🐾",
+    "João Antônio não quer nem saber do James hoje 😼",
+  ];
+  const intervalo = setInterval(() => {
+    if (!joaoDesbloqueado) { clearInterval(intervalo); return; }
+    if (Math.random() > 0.3) return;
+    const fala = falas[Math.floor(Math.random() * falas.length)];
+    mostrarVisitaPet("assets/sprites/pets/joao-visita.png", fala);
+  }, 8 * 60 * 1000);
+}
+
+function iniciarVisitasJames() {
+  const falas = [
+    "James Cook veio conferir a despensa 😂",
+    "James apareceu com cara de fome! 🐱",
+    "James Cook farejando comida por aqui 🐾",
+    "James tentou roubar o petisco da Hanna! 😹",
+  ];
+  const intervalo = setInterval(() => {
+    if (!jamesDesbloqueado) { clearInterval(intervalo); return; }
+    if (Math.random() > 0.3) return;
+    const fala = falas[Math.floor(Math.random() * falas.length)];
+    mostrarVisitaPet("assets/sprites/pets/james-visita.png", fala);
+  }, 8 * 60 * 1000);
+}
+
+// Inicia visitas se já desbloqueados
+if (steveDesbloqueado) iniciarVisitasSteve();
+if (joaoDesbloqueado)  iniciarVisitasJoao();
+if (jamesDesbloqueado) iniciarVisitasJames();
+
+// ══════════════════════════════════════════════
+//   JOGO 7 — MISSÃO DO STEVE (Stealth)
+//   Steve tenta chegar ao osso sem ser visto.
+//   Clique nos momentos certos pra avançar.
+// ══════════════════════════════════════════════
+
+function jogoSteve() {
+  abrirArena("Missão do Steve 🐕");
+
+  let fase    = 0;
+  let pontos  = 0;
+  let rodando = true;
+
+  const FASES = [
+    { desc: "Steve quer pegar o osso sem a Hanna ver!", emoji: "🦴", obstaculos: 3, janela: 1200 },
+    { desc: "Mais difícil agora! Hanna está mais atenta.", emoji: "🦴🦴", obstaculos: 4, janela: 900 },
+    { desc: "Nível máximo! Steve precisa ser ninja!", emoji: "🦴🦴🦴", obstaculos: 5, janela: 700 },
+  ];
+
+  function render() {
+    const f = FASES[Math.min(fase, FASES.length - 1)];
+    arenaConteudo.innerHTML = `
+      <div class="steve-wrap">
+        <div class="steve-info">
+          <span>🐕 Fase ${fase + 1}/${FASES.length}</span>
+          <span>⭐ ${pontos} pts</span>
+        </div>
+        <div class="steve-cenario">
+          <img src="assets/sprites/pets/steve-missao.png" class="steve-sprite" id="steveSprite">
+          <div class="steve-desc">${f.desc}</div>
+          <div class="steve-botao-wrap">
+            <button class="steve-btn" id="steveAvançar">AGORA! 🐾</button>
+          </div>
+        </div>
+        <div class="steve-dica">Toque no momento certo pra Steve avançar sem ser visto!</div>
+      </div>`;
+
+    let cliques   = 0;
+    let esperando = false;
+
+    document.getElementById("steveAvançar")?.addEventListener("click", () => {
+      if (!rodando || esperando) return;
+      esperando = true;
+
+      // Janela aleatória de sucesso
+      const sucesso = Math.random() < 0.6;
+      cliques++;
+
+      const sprite = document.getElementById("steveSprite");
+      if (sprite) sprite.src = sucesso
+        ? "assets/sprites/pets/steve-feliz.png"
+        : "assets/sprites/pets/steve-pego.png";
+
+      if (sucesso) {
+        pontos += 10;
+        mostrarFalaHanna(["Vai Steve! 🐾", "Isso aí! 🐕", "Passou! ⭐"][Math.floor(Math.random()*3)]);
+      } else {
+        mostrarFalaHanna(["Hanna viu! 😹", "Ops! 😼", "Busted! 😂"][Math.floor(Math.random()*3)]);
+      }
+
+      jogoAtivo.timers.push(setTimeout(() => {
+        if (cliques >= f.obstaculos) {
+          fase++;
+          if (fase >= FASES.length) {
+            terminar();
+          } else {
+            render();
+          }
+        } else {
+          esperando = false;
+          if (sprite) sprite.src = "assets/sprites/pets/steve-missao.png";
+        }
+      }, 800));
+    });
+  }
+
+  function terminar() {
+    rodando = false;
+    const recomp = pontos >= 40 ? 90 : pontos >= 25 ? 60 : 30;
+    ganharMoedas(recomp);
+    desbloquearConquista("missao_steve");
+    jogoAtivo.timers.push(setTimeout(() => {
+      mostrarResultado("Missão cumprida! 🐕", "🦴", recomp,
+        `Steve conseguiu! ${pontos} pontos no total.`, jogoSteve);
+    }, 600));
+  }
+
+  render();
+}
+
+// ══════════════════════════════════════════════
+//   JOGO 8 — JAMES E A DESPENSA (Stealth/Timing)
+//   James tenta roubar comida sem ser pego.
+// ══════════════════════════════════════════════
+
+function jogoJames() {
+  abrirArena("James e a Despensa 🐱");
+
+  let pontos  = 0;
+  let vidas   = 3;
+  let tempo   = 45;
+  let rodando = true;
+
+  const comidas = ["🐟","🍣","🥩","🍗","🧀","🥚"];
+  const armadilhas = ["🚫","👀","🔔"];
+
+  arenaConteudo.innerHTML = `
+    <div class="james-wrap">
+      <div class="james-info">
+        <span>😺 <b id="jamesPontos">0</b> petiscos</span>
+        <span>❤️ <span id="jamesVidas">❤️❤️❤️</span></span>
+        <span>⏱️ <b id="jamesTimer">45</b>s</span>
+      </div>
+      <div class="james-arena" id="jamesArena">
+        <img src="assets/sprites/pets/james-espiando.png" class="james-sprite">
+      </div>
+      <div class="james-dica">Toque nas comidas! Evite as armadilhas 🚫</div>
+    </div>`;
+
+  const arena = document.getElementById("jamesArena");
+
+  function criarItem() {
+    if (!rodando) return;
+    const isTrap = Math.random() < 0.3;
+    const emoji  = isTrap
+      ? armadilhas[Math.floor(Math.random() * armadilhas.length)]
+      : comidas[Math.floor(Math.random() * comidas.length)];
+
+    const el  = document.createElement("div");
+    el.className = "james-item";
+    el.textContent = emoji;
+    el.style.left  = Math.random() * 75 + "%" ;
+    el.style.top   = Math.random() * 70 + 10 + "%";
+    arena.appendChild(el);
+
+    el.addEventListener("click", () => {
+      if (!rodando) return;
+      el.remove();
+      if (isTrap) {
+        vidas--;
+        document.getElementById("jamesVidas").textContent = "❤️".repeat(Math.max(0, vidas));
+        mostrarFalaHanna("James foi pego! 😹");
+        if (vidas <= 0) terminar();
+      } else {
+        pontos++;
+        document.getElementById("jamesPontos").textContent = pontos;
+        mostrarFalaHanna(["Delícia! 😸", "Roubado! 🐾", "Nham! 😹"][Math.floor(Math.random()*3)]);
+      }
+    });
+
+    jogoAtivo.timers.push(setTimeout(() => el.parentNode && el.remove(), 2500));
+  }
+
+  const spawn = setInterval(() => { if (!rodando) { clearInterval(spawn); return; } criarItem(); }, 1000);
+  jogoAtivo.intervals.push(spawn);
+
+  const count = setInterval(() => {
+    if (!rodando) { clearInterval(count); return; }
+    tempo--;
+    const el = document.getElementById("jamesTimer");
+    if (el) el.textContent = tempo;
+    if (tempo <= 0) terminar();
+  }, 1000);
+  jogoAtivo.intervals.push(count);
+
+  function terminar() {
+    rodando = false;
+    const recomp = pontos >= 20 ? 80 : pontos >= 10 ? 50 : 20;
+    ganharMoedas(recomp);
+    desbloquearConquista("james_ladrao");
+    jogoAtivo.timers.push(setTimeout(() => {
+      mostrarResultado(
+        pontos >= 15 ? "Mestre ladrão! 😹" : "Quase lá!",
+        "🐱", recomp,
+        `James roubou ${pontos} petiscos!`, jogoJames);
+    }, 600));
+  }
+}
+
+// ══════════════════════════════════════════════
+//   JOGO 9 — JOÃO E AS PRATELEIRAS (Tap)
+//   Derrube o máximo de objetos possível!
+// ══════════════════════════════════════════════
+
+function jogoJoao() {
+  abrirArena("João e as Prateleiras 😼");
+
+  let derrubados = 0;
+  let tempo      = 30;
+  let rodando    = true;
+
+  const objetos = ["📱","📚","🖥️","🏺","🪴","📷","🎮","🕯️","🧸","📦"];
+
+  arenaConteudo.innerHTML = `
+    <div class="joao-wrap">
+      <div class="joao-info">
+        <span>💥 <b id="joaoPontos">0</b> derrubados</span>
+        <span>⏱️ <b id="joaoTimer">30</b>s</span>
+      </div>
+      <img src="assets/sprites/pets/joao-prateleira.png" class="joao-sprite">
+      <div class="joao-prateleira" id="joaoArena"></div>
+      <div class="joao-dica">Toque nos objetos pra João derrubar! 😼</div>
+    </div>`;
+
+  const arena = document.getElementById("joaoArena");
+
+  function spawnObjeto() {
+    if (!rodando || arena.children.length >= 6) return;
+    const el = document.createElement("div");
+    el.className = "joao-objeto";
+    el.textContent = objetos[Math.floor(Math.random() * objetos.length)];
+    arena.appendChild(el);
+
+    el.addEventListener("click", () => {
+      if (!rodando) return;
+      el.classList.add("joao-caindo");
+      derrubados++;
+      document.getElementById("joaoPontos").textContent = derrubados;
+      mostrarFalaHanna(["CRASH! 💥", "Vai abaixo! 😼", "João apronta! 🐾"][Math.floor(Math.random()*3)]);
+      jogoAtivo.timers.push(setTimeout(() => el.remove(), 400));
+    });
+  }
+
+  const spawn = setInterval(() => { if (!rodando) { clearInterval(spawn); return; } spawnObjeto(); }, 700);
+  jogoAtivo.intervals.push(spawn);
+
+  const count = setInterval(() => {
+    if (!rodando) { clearInterval(count); return; }
+    tempo--;
+    const el = document.getElementById("joaoTimer");
+    if (el) el.textContent = tempo;
+    if (tempo <= 0) terminar();
+  }, 1000);
+  jogoAtivo.intervals.push(count);
+
+  function terminar() {
+    rodando = false;
+    const recomp = derrubados >= 25 ? 80 : derrubados >= 15 ? 55 : derrubados >= 8 ? 30 : 15;
+    ganharMoedas(recomp);
+    desbloquearConquista("joao_aprontando");
+    jogoAtivo.timers.push(setTimeout(() => {
+      mostrarResultado(
+        derrubados >= 20 ? "Destruição total! 💥" : "Bagunça feita!",
+        "😼", recomp,
+        `João derrubou ${derrubados} objetos!`, jogoJoao);
+    }, 600));
+  }
+}
+
+// ══════════════════════════════════════════════
+//   QUEBRA-CABEÇA — 6 NÍVEIS PROGRESSIVOS
+// ══════════════════════════════════════════════
+
+function jogoQuebracabeca() {
+  abrirArena("Quebra-Cabeça 🧩");
+
+  const NIVEIS = [
+    { sprite: "assets/sprites/puzzle/puzzle-nivel1.png", grade: 3, nome: "Hanna brincando" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel2.png", grade: 4, nome: "Hanna e a Gatinha" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel3.png", grade: 4, nome: "João Antônio o aprontão" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel4.png", grade: 5, nome: "James Cook roubando presunto" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel5.png", grade: 5, nome: "Steve Rogers o fofoqueiro" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel6.png", grade: 6, nome: "Uma família Completa" },
+  ];
+
+  let nivelAtual = parseInt(localStorage.getItem("puzzleNivel") || "0");
+  let movimentos = 0;
+
+  function iniciarNivel(idx) {
+    const nivel = NIVEIS[idx];
+    const N     = nivel.grade;
+    const total = N * N;
+
+    // Cria peças embaralhadas
+    let pecas = Array.from({length: total}, (_, i) => i);
+    // Embaralha garantindo solução
+    do {
+      for (let i = pecas.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pecas[i], pecas[j]] = [pecas[j], pecas[i]];
+      }
+    } while (!resolucaoValida(pecas, N) || pecasNoLugar(pecas));
+
+    let selecionada = null;
+
+    function resolucaoValida(arr, n) {
+      let inv = 0;
+      for (let i = 0; i < arr.length; i++)
+        for (let j = i + 1; j < arr.length; j++)
+          if (arr[i] > arr[j]) inv++;
+      return inv % 2 === 0;
+    }
+
+    function pecasNoLugar(arr) {
+      return arr.every((v, i) => v === i);
+    }
+
+    function render() {
+      const porcento = Math.round((pecas.filter((v, i) => v === i).length / total) * 100);
+      arenaConteudo.innerHTML = `
+        <div class="pz-wrap">
+          <div class="pz-info">
+            <span>🧩 Nível ${idx + 1}/${NIVEIS.length}</span>
+            <span>👣 ${movimentos} mov</span>
+            <span>✅ ${porcento}%</span>
+          </div>
+          <div class="pz-label">${nivel.nome}</div>
+          <div class="pz-grade" id="pzGrade" style="grid-template-columns: repeat(${N}, 1fr);">
+            ${pecas.map((peca, pos) => {
+              const row = Math.floor(peca / N);
+              const col = peca % N;
+              const sel = selecionada === pos;
+              return `<div class="pz-peca ${sel ? "pz-sel" : ""}" data-pos="${pos}"
+                style="background-image:url('${nivel.sprite}');
+                       background-size:${N * 100}%;
+                       background-position:${col * 100/(N-1)}% ${row * 100/(N-1)}%;">
+              </div>`;
+            }).join("")}
+          </div>
+          <div class="pz-dica">Toque em duas peças para trocá-las de lugar</div>
+        </div>`;
+
+      document.querySelectorAll(".pz-peca").forEach(el => {
+        el.addEventListener("click", () => {
+          const pos = parseInt(el.dataset.pos);
+          if (selecionada === null) {
+            selecionada = pos;
+            render();
+          } else if (selecionada === pos) {
+            selecionada = null;
+            render();
+          } else {
+            [pecas[selecionada], pecas[pos]] = [pecas[pos], pecas[selecionada]];
+            movimentos++;
+            selecionada = null;
+            render();
+            if (pecasNoLugar(pecas)) {
+              jogoAtivo.timers.push(setTimeout(() => completarNivel(), 400));
+            }
+          }
+        });
+      });
+    }
+
+    function completarNivel() {
+      mostrarFalaHanna(idx === 5 ? "Que surpresa! 🥹" : "Uau! Resolveu! 🎉");
+      const proximo = idx + 1;
+      localStorage.setItem("puzzleNivel", Math.max(nivelAtual, proximo).toString());
+
+      if (proximo >= NIVEIS.length) {
+        // Completou todos!
+        const recomp = 200;
+        ganharMoedas(recomp);
+        desbloquearConquista("puzzle_mestre");
+        jogoAtivo.timers.push(setTimeout(() => {
+          mostrarResultado("Quebra-cabeça completo! 🧩", "🥹", recomp,
+            "Você montou todos os níveis! Incrível!", jogoQuebracabeca);
+        }, 800));
+      } else {
+        const recomp = (idx + 1) * 20;
+        ganharMoedas(recomp);
+        jogoAtivo.timers.push(setTimeout(() => {
+          arenaConteudo.innerHTML = `
+            <div class="pz-wrap" style="align-items:center;gap:20px;">
+              <div style="font-size:48px;">🎉</div>
+              <div style="font-weight:900;font-size:16px;color:var(--accent);">Nível ${idx+1} completo!</div>
+              <div style="font-size:13px;color:var(--text-mid);">+${recomp} moedas</div>
+              <button class="steve-btn" id="pzProximo">Próximo nível →</button>
+            </div>`;
+          document.getElementById("pzProximo")?.addEventListener("click", () => {
+            iniciarNivel(proximo);
+          });
+        }, 600));
+      }
+    }
+
+    render();
+  }
+
+  // Menu de seleção de nível
+  arenaConteudo.innerHTML = `
+    <div class="pz-wrap">
+      <div class="pz-label" style="font-size:14px;">Escolha um nível</div>
+      <div class="pz-niveis">
+        ${NIVEIS.map((n, i) => {
+          const desbloqueado = i <= nivelAtual;
+          return `<div class="pz-nivel-card ${desbloqueado ? "" : "pz-bloqueado"}" data-idx="${i}">
+            <img src="${n.sprite}" class="pz-nivel-img">
+            <div class="pz-nivel-nome">${i + 1}. ${n.nome}</div>
+            <div class="pz-nivel-grade">${n.grade}×${n.grade}</div>
+            ${desbloqueado ? "" : '<div class="pz-lock">🔒</div>'}
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+
+  document.querySelectorAll(".pz-nivel-card:not(.pz-bloqueado)").forEach(el => {
+    el.addEventListener("click", () => {
+      iniciarNivel(parseInt(el.dataset.idx));
+    });
+  });
+}
+
 function animarTela(tela) {
 
     tela.classList.remove("fadeTela");
@@ -5459,4 +5764,646 @@ function animarTela(tela) {
 
     tela.classList.add("fadeTela");
 
+}
+
+// ══════════════════════════════════════════════
+//   JOGO 10 — CAÇA-PALAVRAS
+//   Encontre todas as palavras na grade 10x10.
+//   Deslize sobre as letras pra marcar.
+//   Recompensa por palavras encontradas.
+// ══════════════════════════════════════════════
+
+async function jogoCacaPalavras() {
+  abrirArena("Caça-Palavras");
+
+  arenaConteudo.innerHTML = `<div style="text-align:center;padding:40px;color:#fff;font-weight:800;">Carregando... 🔍</div>`;
+
+  let LISTAS;
+  try {
+    const { carregarBancoPalavras } = await import("./firebase.js");
+    const banco = await carregarBancoPalavras();
+    LISTAS = banco.cacapalavras;
+  } catch(e) {
+    LISTAS = [
+      ["HANNA","GATO","AMOR","PATA","MIAU","FOME","SONO","LOJA"],
+      ["FAZENDA","BANHO","FELIZ","CARINHO","MOEDA","FLOR","ROSA","PURR"],
+      ["GATINHA","SEMENTE","VINCULO","PETISCO","NOVELO","FESTA","CHUVA","LACO"],
+    ];
+  }
+
+  const PALAVRAS_DISPLAY = LISTAS[Math.floor(Math.random() * LISTAS.length)];
+  const TAMANHO = 10;
+  const DIRS = [[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+
+  let grade = Array.from({length: TAMANHO}, () => Array(TAMANHO).fill(""));
+
+  function semAcento(p) {
+    return p.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+  }
+
+  const PALAVRAS = PALAVRAS_DISPLAY.map(semAcento);
+
+  function caber(palavra, r, c, dr, dc) {
+    for (let i = 0; i < palavra.length; i++) {
+      const nr = r + dr*i, nc = c + dc*i;
+      if (nr < 0 || nr >= TAMANHO || nc < 0 || nc >= TAMANHO) return false;
+      if (grade[nr][nc] !== "" && grade[nr][nc] !== palavra[i]) return false;
+    }
+    return true;
+  }
+
+  function colocar(palavra) {
+    for (let t = 0; t < 200; t++) {
+      const [dr, dc] = DIRS[Math.floor(Math.random() * DIRS.length)];
+      const r = Math.floor(Math.random() * TAMANHO);
+      const c = Math.floor(Math.random() * TAMANHO);
+      if (caber(palavra, r, c, dr, dc)) {
+        for (let i = 0; i < palavra.length; i++) grade[r + dr*i][c + dc*i] = palavra[i];
+        return true;
+      }
+    }
+    return false;
+  }
+
+  const ALFA = "ABCDEFGHIJKLMNOPRSTUVZ";
+  PALAVRAS.forEach(p => colocar(p));
+  for (let r = 0; r < TAMANHO; r++)
+    for (let c = 0; c < TAMANHO; c++)
+      if (!grade[r][c]) grade[r][c] = ALFA[Math.floor(Math.random() * ALFA.length)];
+
+  let selecionando = false;
+  let selInicio    = null;
+  let selAtual     = [];
+  let encontradas  = new Set();
+  let celsMarcadas = new Set();
+
+  function celulasDe(r1, c1, r2, c2) {
+    const dr = Math.sign(r2 - r1), dc = Math.sign(c2 - c1);
+    if (dr !== 0 && dc !== 0 && Math.abs(r2-r1) !== Math.abs(c2-c1)) return [];
+    const cels = [];
+    let r = r1, c = c1;
+    while (true) {
+      cels.push([r, c]);
+      if (r === r2 && c === c2) break;
+      r += dr; c += dc;
+      if (cels.length > TAMANHO * 2) break;
+    }
+    return cels;
+  }
+
+  function getCelFromPoint(x, y) {
+    const grade = document.getElementById("cpGrade");
+    if (!grade) return null;
+    const els = grade.querySelectorAll(".cp-cel");
+    for (const el of els) {
+      const rect = el.getBoundingClientRect();
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+        return [parseInt(el.dataset.r), parseInt(el.dataset.c)];
+      }
+    }
+    return null;
+  }
+
+  function confirmarSelecao() {
+    if (!selecionando || selAtual.length === 0) return;
+    const sel = [...selAtual];
+    selecionando = false;
+    selInicio    = null;
+    selAtual     = [];
+
+    const texto    = sel.map(([r,c]) => grade[r][c]).join("");
+    const textoRev = [...texto].reverse().join("");
+
+    let achou = false;
+    PALAVRAS.forEach((palavra, i) => {
+      if ((texto === palavra || textoRev === palavra) && !encontradas.has(i)) {
+        achou = true;
+        encontradas.add(i);
+        sel.forEach(([r,c]) => celsMarcadas.add(`${r},${c}`));
+        mostrarFalaHanna(`"${PALAVRAS_DISPLAY[i]}" encontrada! 🌸`);
+        if (encontradas.size === PALAVRAS.length) {
+          render();
+          ganharMoedas(70);
+          desbloquearConquista("caca_palavras");
+          jogoAtivo.timers.push(setTimeout(() => {
+            mostrarResultado("Detetive Felina! 🔍", "🌸", 70,
+              "Encontrou todas as palavras! Incrível!", jogoCacaPalavras);
+          }, 800));
+          return;
+        }
+      }
+    });
+
+    render();
+  }
+
+  function render() {
+    arenaConteudo.innerHTML = `
+      <div class="cp-wrap">
+        <div class="cp-palavras">
+          ${PALAVRAS_DISPLAY.map((p, i) =>
+            `<span class="cp-palavra ${encontradas.has(i) ? "cp-encontrada" : ""}">${p}</span>`
+          ).join("")}
+        </div>
+        <div class="cp-grade" id="cpGrade" style="touch-action:none; user-select:none;">
+          ${grade.map((row, r) =>
+            row.map((letra, c) => {
+              const key     = `${r},${c}`;
+              const marcada = celsMarcadas.has(key);
+              const sel     = selAtual.some(([sr,sc]) => sr===r && sc===c);
+              return `<div class="cp-cel ${marcada ? "cp-marcada" : ""} ${sel ? "cp-selecionando" : ""}"
+                data-r="${r}" data-c="${c}">${letra}</div>`;
+            }).join("")
+          ).join("")}
+        </div>
+        ${encontradas.size === PALAVRAS.length
+          ? `<div class="cp-parabens">Encontrou tudo! 🎉</div>`
+          : `<div class="cp-dica">Deslize sobre as letras pra marcar palavras</div>`}
+      </div>`;
+
+    const gradeEl = document.getElementById("cpGrade");
+    if (!gradeEl) return;
+
+    // TOUCH
+    gradeEl.addEventListener("touchstart", e => {
+      e.preventDefault();
+      const t = e.touches[0];
+      const cel = getCelFromPoint(t.clientX, t.clientY);
+      if (!cel) return;
+      selecionando = true;
+      selInicio    = cel;
+      selAtual     = [cel];
+      render();
+    }, { passive: false });
+
+    gradeEl.addEventListener("touchmove", e => {
+      e.preventDefault();
+      if (!selecionando || !selInicio) return;
+      const t = e.touches[0];
+      const cel = getCelFromPoint(t.clientX, t.clientY);
+      if (!cel) return;
+      selAtual = celulasDe(selInicio[0], selInicio[1], cel[0], cel[1]);
+      render();
+    }, { passive: false });
+
+    gradeEl.addEventListener("touchend", e => {
+      e.preventDefault();
+      confirmarSelecao();
+    }, { passive: false });
+
+    // MOUSE (desktop)
+    gradeEl.addEventListener("mousedown", e => {
+      const cel = getCelFromPoint(e.clientX, e.clientY);
+      if (!cel) return;
+      selecionando = true;
+      selInicio    = cel;
+      selAtual     = [cel];
+      render();
+    });
+
+    gradeEl.addEventListener("mousemove", e => {
+      if (!selecionando || !selInicio) return;
+      const cel = getCelFromPoint(e.clientX, e.clientY);
+      if (!cel) return;
+      selAtual = celulasDe(selInicio[0], selInicio[1], cel[0], cel[1]);
+      render();
+    });
+
+    gradeEl.addEventListener("mouseup", () => {
+      confirmarSelecao();
+    });
+  }
+
+  render();
+}
+
+// ══════════════════════════════════════════════
+//   JOGO 7 — MATCH-3 FELINO
+//   Combine 3 ou mais ícones iguais em linha/coluna.
+//   Cada combo ganha pontos. 60 segundos.
+//   Recompensa proporcional aos pontos.
+// ══════════════════════════════════════════════
+
+function jogoMatch3() {
+  abrirArena("Match-3 Felino");
+
+  const COLS   = 6;
+  const ROWS   = 7;
+  const ICONES = ["novelo","peixe","ratinho","coleira","donut","varinha"];
+  const MAX_JOGADAS = 20;
+
+  let board    = [];
+  let selected = null;
+  let pontos   = 0;
+  let jogadas  = 0;
+  let rodando  = true;
+
+  function novaGrade() {
+    board = [];
+    for (let r = 0; r < ROWS; r++) {
+      board.push([]);
+      for (let c = 0; c < COLS; c++) {
+        board[r].push(ICONES[Math.floor(Math.random() * ICONES.length)]);
+      }
+    }
+    let mudou = true;
+    while (mudou) { mudou = removerCombos(false); }
+  }
+
+  function removerCombos(contar = true) {
+    const marcar = Array.from({length: ROWS}, () => Array(COLS).fill(false));
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS - 2; c++) {
+        if (board[r][c] && board[r][c] === board[r][c+1] && board[r][c] === board[r][c+2]) {
+          marcar[r][c] = marcar[r][c+1] = marcar[r][c+2] = true;
+        }
+      }
+    }
+    for (let r = 0; r < ROWS - 2; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (board[r][c] && board[r][c] === board[r+1][c] && board[r][c] === board[r+2][c]) {
+          marcar[r][c] = marcar[r+1][c] = marcar[r+2][c] = true;
+        }
+      }
+    }
+    let qtd = 0;
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++)
+        if (marcar[r][c]) qtd++;
+
+    if (qtd === 0) return false;
+    if (contar) pontos += qtd * 10;
+
+    for (let c = 0; c < COLS; c++) {
+      let novaCol = board.map(r => r[c]).filter((_, i) => !marcar[i][c]);
+      while (novaCol.length < ROWS) {
+        novaCol.unshift(ICONES[Math.floor(Math.random() * ICONES.length)]);
+      }
+      for (let r = 0; r < ROWS; r++) board[r][c] = novaCol[r];
+    }
+    return true;
+  }
+
+  function trocar(r1, c1, r2, c2) {
+    [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+    if (!removerCombos()) {
+      [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+    } else {
+      jogadas++;
+      let mudou = true;
+      while (mudou) mudou = removerCombos();
+      if (jogadas >= MAX_JOGADAS) {
+        render();
+        jogoAtivo.timers.push(setTimeout(terminar, 400));
+        return;
+      }
+    }
+    render();
+  }
+
+  function render() {
+    const restam = MAX_JOGADAS - jogadas;
+    arenaConteudo.innerHTML = `
+      <div class="m3-wrap">
+        <div class="m3-info">
+          <span>⭐ <b id="m3Pontos">${pontos}</b></span>
+          <span>🎯 <b>${restam}</b> jogadas</span>
+        </div>
+        <div class="m3-grade" id="m3Grade">
+          ${board.map((row, r) =>
+            row.map((icone, c) =>
+              `<div class="m3-cell ${selected && selected[0]===r && selected[1]===c ? 'm3-sel' : ''}"
+              data-r="${r}" data-c="${c}">
+                <img src="assets/shop/${icone}.png" class="m3-item" draggable="false">
+              </div>`
+            ).join("")
+          ).join("")}
+        </div>
+        <div class="m3-dica">Toque numa peça e depois numa adjacente pra trocar!</div>
+      </div>`;
+
+    document.querySelectorAll(".m3-cell").forEach(el => {
+      el.addEventListener("click", () => {
+        if (!rodando) return;
+        const r = parseInt(el.dataset.r);
+        const c = parseInt(el.dataset.c);
+        if (!selected) {
+          selected = [r, c];
+          render();
+        } else {
+          const [sr, sc] = selected;
+          selected = null;
+          const adj = (Math.abs(r-sr) + Math.abs(c-sc)) === 1;
+          if (adj) trocar(sr, sc, r, c);
+          else render();
+        }
+      });
+    });
+  }
+
+  function terminar() {
+    rodando = false;
+    const recomp = pontos >= 500 ? 100 : pontos >= 300 ? 70 : pontos >= 150 ? 45 : pontos >= 50 ? 25 : 10;
+    ganharMoedas(recomp);
+    if (pontos >= 300) desbloquearConquista("match3_mestre");
+    jogoAtivo.timers.push(setTimeout(() => {
+      mostrarResultado(
+        pontos >= 300 ? "Combinação perfeita! ✨" : "Jogadas esgotadas!",
+        pontos >= 300 ? "✨" : "😿",
+        recomp,
+        `Você fez ${pontos} pontos em ${MAX_JOGADAS} jogadas!`,
+        jogoMatch3
+      );
+    }, 600));
+  }
+
+  novaGrade();
+  render();
+}
+
+// ══════════════════════════════════════════════
+//   JOGO 8 — PALAVRAS DA HANNA (Wordle)
+//   Adivinhe a palavra secreta em 6 tentativas.
+//   Verde = certa no lugar, Amarelo = certa fora, Cinza = errada.
+//   Recompensa: menos tentativas = mais moedas.
+// ══════════════════════════════════════════════
+
+async function jogoPalavras() {
+  abrirArena("Palavras da Hanna");
+
+  // Mostra loading enquanto busca
+  arenaConteudo.innerHTML = `<div style="text-align:center;padding:40px;color:#fff;font-weight:800;">Carregando... 🌸</div>`;
+
+  // Tenta buscar do Firebase, usa local como fallback
+  let bancoPalavras;
+  try {
+    const { carregarBancoPalavras, palavraAleatoria } = await import("./firebase.js");
+    const banco = await carregarBancoPalavras();
+    bancoPalavras = banco.wordle;
+  } catch(e) {
+    bancoPalavras = [
+      "FOME","SONO","MIAU","GATO","PATA","AMOR","DOCE","HANNA",
+      "BANHO","LOJA","SEMENTE","FAZENDA","MOEDA","CARINHO","FELIZ",
+      "GATINHA","PETISCO","NOVELO","COLEIRA","SASHIMI","VARINHA",
+      "PURR","FOFO","MIMO","JAMES","STEVE","FESTA","NOITE","CHUVA",
+      "FLOR","ROSA","MORANGO","LAVANDA","GIRASSOL","CENOURA",
+    ];
+  }
+
+  const PALAVRAS = bancoPalavras.filter(p => {
+    const sem = p.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return sem.length >= 4 && sem.length <= 6;
+  });
+
+  const palavra = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)];
+  const letras  = palavra.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+  const MAX     = 6;
+  let tentativas = [];
+  let atual      = "";
+  let ganhou     = false;
+
+  function avaliar(tentativa) {
+    const t   = tentativa.toUpperCase();
+    const res = Array(letras.length).fill("cinza");
+    const restantes = letras.split("");
+
+    // Verde
+    for (let i = 0; i < letras.length; i++) {
+      if (t[i] === letras[i]) { res[i] = "verde"; restantes[i] = null; }
+    }
+    // Amarelo
+    for (let i = 0; i < letras.length; i++) {
+      if (res[i] === "verde") continue;
+      const idx = restantes.indexOf(t[i]);
+      if (idx !== -1) { res[i] = "amarelo"; restantes[idx] = null; }
+    }
+    return res;
+  }
+
+  function render() {
+    arenaConteudo.innerHTML = `
+      <div class="pw-wrap">
+        <div class="pw-info">Adivinhe a palavra de <b>${letras.length}</b> letras!</div>
+        <div class="pw-grade">
+          ${Array.from({length: MAX}, (_, ti) => {
+            const tent = tentativas[ti];
+            if (tent) {
+              const av = avaliar(tent);
+              return `<div class="pw-linha">
+                ${tent.toUpperCase().split("").map((l, i) =>
+                  `<div class="pw-cel pw-${av[i]}">${l}</div>`
+                ).join("")}
+              </div>`;
+            }
+            if (ti === tentativas.length) {
+              const cells = atual.toUpperCase().padEnd(letras.length).split("").slice(0, letras.length);
+              return `<div class="pw-linha">
+                ${cells.map(l => `<div class="pw-cel pw-atual">${l.trim() || ""}</div>`).join("")}
+              </div>`;
+            }
+            return `<div class="pw-linha">
+              ${Array(letras.length).fill('<div class="pw-cel pw-vazia"></div>').join("")}
+            </div>`;
+          }).join("")}
+        </div>
+        <div class="pw-teclado">
+          ${["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"].map(linha =>
+            `<div class="pw-linha-teclado">
+              ${linha.split("").map(l =>
+                `<button class="pw-tecla" data-l="${l}">${l}</button>`
+              ).join("")}
+            </div>`
+          ).join("")}
+          <div class="pw-linha-teclado">
+            <button class="pw-tecla pw-enter" id="pwEnter">ENTER</button>
+            <button class="pw-tecla pw-del" id="pwDel">⌫</button>
+          </div>
+        </div>
+        ${ganhou || tentativas.length >= MAX ? `<div class="pw-resposta">A palavra era: <b>${palavra}</b></div>` : ""}
+      </div>`;
+
+    document.querySelectorAll(".pw-tecla[data-l]").forEach(el => {
+      el.addEventListener("click", () => {
+        if (ganhou || tentativas.length >= MAX) return;
+        if (atual.length < letras.length) { atual += el.dataset.l; render(); }
+      });
+    });
+
+    document.getElementById("pwDel")?.addEventListener("click", () => {
+      atual = atual.slice(0, -1); render();
+    });
+
+    document.getElementById("pwEnter")?.addEventListener("click", () => {
+      if (atual.length !== letras.length) return;
+      tentativas.push(atual);
+      const av = avaliar(atual);
+      if (av.every(a => a === "verde")) {
+        ganhou = true;
+        render();
+        const recomp = [60, 50, 40, 30, 20, 10][tentativas.length - 1] || 10;
+        ganharMoedas(recomp);
+        desbloquearConquista("palavra_certa");
+        jogoAtivo.timers.push(setTimeout(() => {
+          mostrarResultado("Acertou! 🎉", "🌸", recomp,
+            `"${palavra}" em ${tentativas.length} tentativa${tentativas.length > 1 ? "s" : ""}!`,
+            jogoPalavras);
+        }, 800));
+      } else if (tentativas.length >= MAX) {
+        render();
+        ganharMoedas(5);
+        jogoAtivo.timers.push(setTimeout(() => {
+          mostrarResultado("Quase lá! 😿", "😿", 5,
+            `A palavra era "${palavra}". Tente de novo!`, jogoPalavras);
+        }, 800));
+      } else {
+        atual = "";
+        render();
+      }
+    });
+  }
+
+  render();
+}
+
+// ══════════════════════════════════════════════
+//   JOGO 9 — BOLINHA DE LÃ (Pong)
+//   Rebata a bolinha com a raquete.
+//   Não deixe cair! Cada rebatida = 1 ponto.
+//   A bolinha acelera com o tempo.
+// ══════════════════════════════════════════════
+
+function jogoBolinha() {
+  abrirArena("Bolinha de Lã");
+
+  arenaConteudo.innerHTML = `
+    <div class="bl-wrap">
+      <div class="bl-info">
+        <span>🧶 <b id="blPontos">0</b> rebatidas</span>
+        <span id="blStatus">Toque pra começar!</span>
+      </div>
+      <canvas id="blCanvas" class="bl-canvas"></canvas>
+      <div class="bl-dica">Arraste ou toque pra mover a raquete</div>
+    </div>`;
+
+  const canvas = document.getElementById("blCanvas");
+  const ctx    = canvas.getContext("2d");
+  const W      = canvas.offsetWidth  || 320;
+  const H      = canvas.offsetHeight || 400;
+  canvas.width  = W;
+  canvas.height = H;
+
+  const RAQ_W = 80, RAQ_H = 12, BOLA_R = 12;
+  let raqX    = W / 2 - RAQ_W / 2;
+  let bX      = W / 2, bY = H / 2;
+  let bVX     = 3, bVY = -4;
+  let pontos  = 0;
+  let rodando = false;
+  let animId  = null;
+  let bonus10Recebido = false;
+
+  function desenhar() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Fundo
+    ctx.fillStyle = "#1a1a2e";
+    ctx.fillRect(0, 0, W, H);
+
+    // Raquete
+    ctx.fillStyle = "#ff8fc2";
+    ctx.beginPath();
+    ctx.roundRect(raqX, H - 40, RAQ_W, RAQ_H, 6);
+    ctx.fill();
+
+    // Bolinha
+    ctx.font = `${BOLA_R * 2}px serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("🧶", bX, bY);
+  }
+
+  function loop() {
+    if (!rodando) return;
+    bX += bVX;
+    bY += bVY;
+
+    // Paredes laterais
+    if (bX - BOLA_R < 0)  { bX = BOLA_R;     bVX = Math.abs(bVX); }
+    if (bX + BOLA_R > W)  { bX = W - BOLA_R; bVX = -Math.abs(bVX); }
+    // Teto
+    if (bY - BOLA_R < 0)  { bY = BOLA_R;     bVY = Math.abs(bVY); }
+
+    // Raquete
+    if (bY + BOLA_R >= H - 40 && bY + BOLA_R <= H - 28 &&
+        bX >= raqX - 5 && bX <= raqX + RAQ_W + 5) {
+      bVY = -Math.abs(bVY);
+      bY  = H - 40 - BOLA_R;
+      pontos++;
+      const el = document.getElementById("blPontos");
+      if (el) el.textContent = pontos;
+      if (pontos >= 10 && !bonus10Recebido) {
+        bonus10Recebido = true;
+
+        ganharMoedas(10);
+
+        mostrarMensagem(
+          "🏆 Bônus de habilidade! +10 moedas por 10 rebatidas!"
+        );
+      }
+      // Acelera levemente
+      const spd = Math.sqrt(bVX*bVX + bVY*bVY);
+      const fator = Math.min(1 + pontos * 0.02, 2.2);
+      bVX = (bVX / spd) * 4 * fator;
+      bVY = (bVY / spd) * 4 * fator;
+    }
+
+    // Chão = perdeu
+    if (bY - BOLA_R > H) {
+      rodando = false;
+      const recomp = pontos >= 30 ? 80 : pontos >= 15 ? 50 : pontos >= 7 ? 30 : 10;
+      ganharMoedas(recomp);
+      if (pontos >= 20) desbloquearConquista("bolinha_mestre");
+      cancelAnimationFrame(animId);
+      jogoAtivo.timers.push(setTimeout(() => {
+        mostrarResultado(
+          pontos >= 15 ? "Incrível! 🧶" : "Fim de jogo!",
+          pontos >= 15 ? "🧶" : "😿",
+          recomp,
+          `Você fez ${pontos} rebatidas! ${pontos >= 15 ? "A Hanna ficou impressionada!" : "Tente não deixar cair!"}`,
+          jogoBolinha
+        );
+      }, 600));
+      return;
+    }
+
+    desenhar();
+    animId = requestAnimationFrame(loop);
+  }
+
+  // Controle por toque e mouse
+  function moverRaquete(clientX) {
+    const rect = canvas.getBoundingClientRect();
+    const x    = clientX - rect.left;
+    raqX = Math.max(0, Math.min(W - RAQ_W, x - RAQ_W / 2));
+  }
+
+  canvas.addEventListener("mousemove", e => moverRaquete(e.clientX));
+  canvas.addEventListener("touchmove", e => {
+    e.preventDefault();
+    moverRaquete(e.touches[0].clientX);
+  }, { passive: false });
+
+  canvas.addEventListener("click", () => {
+    if (!rodando) {
+      rodando = true;
+      const el = document.getElementById("blStatus");
+      if (el) el.textContent = "Não deixe cair! 🧶";
+      loop();
+    }
+  });
+
+  jogoAtivo.timers.push(setTimeout(() => {
+    if (!rodando) return;
+  }, 0));
+
+  desenhar();
 }
