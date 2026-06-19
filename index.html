@@ -7,7 +7,7 @@
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="color-scheme" content="only light">
+  <meta name="color-scheme" content="light dark">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -795,6 +795,67 @@
         </div>
       </div>
 
+      <!-- Caixa Misteriosa 5.000 -->
+      <div class="item-loja">
+        <div class="item-loja-icon-wrap">
+          <img src="assets/shop/caixa.png" class="iconeLoja">
+        </div>
+        <div class="item-loja-info">
+          <h3>Caixa Misteriosa</h3>
+          <p class="item-desc">
+            Quem sabe o que tem aqui dentro?
+            Receba de 3 a 4 recompensas aleatórias ou tenha a sorte de encontrar uma rara Semente Dourada!
+          </p>
+          <p>🎲 3–4 recompensas • 🌱 Chance rara</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">🪙 5000</span>
+            <button id="btnCaixa" class="btn-comprar">Comprar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tela da Caixa Misteriosa -->
+      <div id="telaCaixa" class="telaCaixaWrap" style="display:none;">
+        <div class="caixaCard">
+
+          <img
+            src="assets/shop/caixa.png"
+            class="caixaSprite"
+            id="caixaSprite"
+            alt="Caixa Misteriosa"
+          >
+
+          <div id="textoCaixa" class="caixaTexto">
+            O que será que tem aqui dentro?
+          </div>
+
+          <div
+            id="resultadoCaixa"
+            class="caixaTexto"
+            style="display:none;"
+          ></div>
+
+          <button
+            id="btnAbrirCaixa"
+            class="caixaBtn"
+            type="button"
+          >
+            Abrir
+          </button>
+
+          <button
+            id="btnFecharCaixa"
+            class="caixaBtn"
+            type="button"
+            style="display:none;"
+          >
+            Fechar
+          </button>
+
+        </div>
+      </div>
+
+
     </div>
 
     <!-- SEÇÃO ESPECIAIS -->
@@ -802,7 +863,7 @@
 
     <div class="loja-grid">
 
-      <!-- Gatinha Pretinha — 50.000 -->
+      <!-- Gatinha Pretinha — 25.000 -->
       <div class="item-loja item-premium">
         <div class="item-loja-icon-wrap"><img src="assets/shop/gatinha-preta.png" class="iconeLoja"></div>
         <div class="item-loja-info">
@@ -810,13 +871,13 @@
           <p class="item-desc">Um(a) companheiro(a) pra vida toda. Com vínculo alto, momentos especiais acontecem.</p>
           <p>Uma companheira para a Hanna 💖</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 50.000</span>
+            <span class="preco-chip">🪙 25.000</span>
             <button id="btnGatinha" class="btn-comprar">Adotar</button>
           </div>
         </div>
       </div>
 
-      <!-- Steve Rogers — 100.000 -->
+      <!-- Steve Rogers — 50.000 -->
       <div class="item-loja item-premium">
         <div class="item-loja-icon-wrap"><img src="assets/shop/steve.png" class="iconeLoja"></div>
         <div class="item-loja-info">
@@ -824,13 +885,13 @@
           <p class="item-desc">Fofoqueiro, aprontão mas extremamente fiel. Aparece de visita com novidades quentinhas!</p>
           <p>Visitas surpresa na casa</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 100.000</span>
+            <span class="preco-chip">🪙 50.000</span>
             <button id="btnSteve" class="btn-comprar">Receber Visita</button>
           </div>
         </div>
       </div>
 
-      <!-- João Antônio — 100.000 -->
+      <!-- João Antônio — 50.000 -->
       <div class="item-loja item-premium">
         <div class="item-loja-icon-wrap"><img src="assets/shop/joao-antonio.png" class="iconeLoja"></div>
         <div class="item-loja-info">
@@ -838,13 +899,13 @@
           <p class="item-desc">O aprontão oficial. Ama derrubar as coisas e não deita pro Cook de jeito nenhum!</p>
           <p>Visitas surpresa na casa</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 100.000</span>
+            <span class="preco-chip">🪙 50.000</span>
             <button id="btnJoao" class="btn-comprar">Receber Visita</button>
           </div>
         </div>
       </div>
 
-      <!-- James Cook — 100.000 -->
+      <!-- James Cook — 50.000 -->
       <div class="item-loja item-premium">
         <div class="item-loja-icon-wrap"><img src="assets/shop/james-cook.png" class="iconeLoja"></div>
         <div class="item-loja-info">
@@ -852,13 +913,13 @@
           <p class="item-desc">O gordinho mais fofo do pedaço. Ama roubar comida e encrencar com o irmão!</p>
           <p>Visitas surpresa na casa</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 100.000</span>
+            <span class="preco-chip">🪙 50.000</span>
             <button id="btnJames" class="btn-comprar">Receber Visita</button>
           </div>
         </div>
       </div>
 
-      <!-- Pedido da Hanna — 250.000 -->
+      <!-- Pedido da Hanna — 70.000 -->
       <div class="item-loja item-premium">
         <div class="item-loja-icon-wrap"><img src="assets/ui/buque-anel.png" class="iconeLoja"></div>
         <div class="item-loja-info">
@@ -866,7 +927,7 @@
           <p class="item-desc">Um momento muito especial. Só pra quem cuidou bem da Hanna e tem vínculo verdadeiro.</p>
           <p>Vínculo 80% + 250.000 moedas</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 250.000</span>
+            <span class="preco-chip">🪙 70.000</span>
             <button id="btnPedidoEspecial" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -951,113 +1012,123 @@
 
   </div>
 </div>
-
+<!-- Tela Fazenda -->
 <div id="telaFazenda" class="tela-secundaria" style="display:none;">
 
   <div class="topo-fazenda">
 
     <h1 class="fazenda-titulo">
-        Fazendinha
+      Fazendinha
     </h1>
 
-    <div class="sementes-chip">
+    <div class="sementes-container">
 
+      <div class="sementes-chip">
         🌱
+        <span id="sementesFazenda">0</span>
+      </div>
 
-        <span id="sementesFazenda">
-            0
-        </span>
+      <div class="sementes-chip sementes-douradas-chip">
+        🌱
+        <span id="sementesDouradasFazenda">0</span>
+      </div>
 
     </div>
 
     <div class="botoes-fazenda">
 
-        <button id="btnPlantar">
-            Plantar
-        </button>
+      <button id="btnPlantar">
+        Plantar
+      </button>
 
-        <button id="btnVoltarFazenda">
-            Voltar
-        </button>
+      <button id="btnPlantarDourada">
+        Rara
+      </button>
 
-    </div>
-
-</div>
-
-<!-- Fazenda Cozy -->
-
-<div class="fazenda-area">
-
-    <!-- Card da Hanna -->
-
-    <div class="fazenda-card fazenda-card-grande">
-
-        <div class="fazenda-topo-cozy">
-
-            <div class="fazenda-balao" id="balaoFazenda">
-
-                Vamos cuidar da hortinha! 🌱
-
-            </div>
-
-        </div>
+      <button id="btnVoltarFazenda">
+        Voltar
+      </button>
 
     </div>
 
-    <!-- Card da Plantação -->
-
-    <div class="fazenda-plantacao-card">
-
-        <div class="titulo-plantacao">
-            🌱 Hortinha da Hanna
-        </div>
-
-        <div id="fazenda">
-
-            <div class="slotPlantacao" data-slot="0">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-            <div class="slotPlantacao" data-slot="1">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-            <div class="slotPlantacao" data-slot="2">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-            <div class="slotPlantacao" data-slot="3">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-            <div class="slotPlantacao" data-slot="4">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-            <div class="slotPlantacao" data-slot="5">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-            <div class="slotPlantacao" data-slot="6">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-            <div class="slotPlantacao" data-slot="7">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-            <div class="slotPlantacao" data-slot="8">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-            <div class="slotPlantacao" data-slot="9">
-                <img src="assets/farm/vazio.png" class="spritePlantacao">
-            </div>
-
-        </div>
-
-    </div>
   </div>
+
+
+
+  <!-- Fazenda Cozy -->
+
+  <div class="fazenda-area">
+
+      <!-- Card da Hanna -->
+
+      <div class="fazenda-card fazenda-card-grande">
+
+          <div class="fazenda-topo-cozy">
+
+              <div class="fazenda-balao" id="balaoFazenda">
+
+                  Vamos cuidar da hortinha! 🌱
+
+              </div>
+
+          </div>
+
+      </div>
+
+      <!-- Card da Plantação -->
+
+      <div class="fazenda-plantacao-card">
+
+          <div class="titulo-plantacao">
+              🌱 Hortinha da Hanna
+          </div>
+
+          <div id="fazenda">
+
+              <div class="slotPlantacao" data-slot="0">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="1">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="2">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="3">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="4">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="5">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="6">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="7">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="8">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="9">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+          </div>
+
+      </div>
+    </div>
 </div>  
 
 <!-- Tela Minigames (Menu) -->

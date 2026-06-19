@@ -1,7 +1,7 @@
 /* HANNA — CSS MOBILE-FIRST COZY PIXEL */
 
 :root {
-  color-scheme: only light;
+  color-scheme: light;
   --pink-light:   #fff0f6;
   --pink-mid:     #ffd6ea;
   --pink-main:    #ff8fc2;
@@ -3233,6 +3233,8 @@ body.dark-mode .tutorial-card {
 
 body.dark-mode {
 
+  color-scheme: dark;
+
   --bg-main: #1f1b2e;
   --bg-card: #2a243d;
 
@@ -3744,6 +3746,17 @@ body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
 
 }
 
+.sementes-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.sementes-douradas-chip {
+  color: #ffd86b;
+}
+
 /* BOTÕES */
 
 .botoes-fazenda {
@@ -3815,6 +3828,24 @@ body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
 
     box-shadow:
     0 6px 0 #d96ca0;
+
+}
+
+#btnPlantarDourada {
+
+  background: #e7c15c;
+
+  box-shadow:
+    inset 0 -5px 0 rgba(150, 110, 0, .20),
+    0 4px 10px rgba(0,0,0,.15);
+
+  color: #4a3500;
+
+}
+
+#btnPlantarDourada:hover {
+
+  transform: translateY(-2px);
 
 }
 
@@ -4219,6 +4250,135 @@ body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
 #btnAceitarPedido:hover {
   transform: translateY(-3px) scale(1.05);
 }
+
+/* CAIXA MISTERIOSA */
+
+.telaCaixaWrap {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 9999;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(40,30,70,.92) 0%,
+    rgba(10,10,20,.97) 100%
+  );
+  backdrop-filter: blur(10px);
+}
+
+.caixaCard {
+  width: 100%;
+  max-width: 480px;
+  background: linear-gradient(
+    160deg,
+    #2b2445 0%,
+    #1c1730 50%,
+    #161226 100%
+  );
+  border-radius: 28px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Estilo Caixa Misteriosa*/
+.telaCaixaWrap {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 9999;
+
+  background: rgba(10, 5, 20, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+.caixaCard {
+  width: 100%;
+  max-width: 480px;
+
+  background: linear-gradient(
+    160deg,
+    #2d1445 0%,
+    #1e0d30 100%
+  );
+
+  border-radius: 28px;
+  padding: 28px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  border: 2px solid rgba(255,180,220,.3);
+}
+
+.caixaSprite {
+  width: 220px;
+  image-rendering: pixelated;
+}
+
+.caixaTexto {
+  color: #f0d4e8;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.caixaBtn {
+  border: none;
+  border-radius: 16px;
+  padding: 12px 24px;
+
+  background: linear-gradient(
+    145deg,
+    #ff6fc0,
+    #e0419a
+  );
+
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@keyframes tremerCaixa {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-8px); }
+  80% { transform: translateX(8px); }
+  100% { transform: translateX(0); }
+}
+
+.caixaTremendo {
+  animation: tremerCaixa .5s ease;
+}
+
+/* Prêmio Caixa */
+.premioCaixa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  margin: 6px 0;
+}
+
+.premioCaixaSprite {
+  width: 28px;
+  height: 28px;
+
+  image-rendering: pixelated;
+}
+
 /* 🔫 OPERAÇÃO SARDINHA */
 
 /* TELA DE ESCOLHA DE AGENTE */
@@ -4719,6 +4879,7 @@ button {
 ══════════════════════════════════════════════ */
 .pw-wrap { display: flex; flex-direction: column; gap: 10px; align-items: center; width: 100%; }
 .pw-info { font-size: 12px; font-weight: 800; color: var(--text-mid); }
+.pw-tema { font-size: 12px; font-weight: 700; color: var(--accent); background: rgba(255,143,194,0.12); padding: 4px 12px; border-radius: 14px; }
 .pw-grade { display: flex; flex-direction: column; gap: 4px; }
 .pw-linha { display: flex; gap: 4px; }
 .pw-cel { width: 40px; height: 40px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.15);

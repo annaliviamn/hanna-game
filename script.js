@@ -248,6 +248,7 @@ const btnCarinho        = document.getElementById("btnCarinho");
 const btnComida         = document.getElementById("btnComida");
 const btnDormir         = document.getElementById("btnDormir");
 const btnPlantar        = document.getElementById("btnPlantar");
+const btnPlantarDourada = document.getElementById("btnPlantarDourada");
 const balaoFazenda      = document.getElementById("balaoFazenda");
 const btnEntrar         = document.getElementById("btnEntrar");
 const btnPetisco        = document.getElementById("btnPetisco");
@@ -261,6 +262,14 @@ const inputNomeGatinha  = document.getElementById("inputNomeGatinha");
 const btnSalvarNomeGatinha = document.getElementById("btnSalvarNomeGatinha");
 const btnModoNoturno    = document.getElementById("btnModoNoturno");
 const btnResetar = document.getElementById("btnResetar");
+// Caixa Misteriosa
+const btnCaixa = document.getElementById("btnCaixa");
+const telaCaixa = document.getElementById("telaCaixa");
+const btnAbrirCaixa = document.getElementById("btnAbrirCaixa");
+const btnFecharCaixa = document.getElementById("btnFecharCaixa");
+const caixaSprite = document.getElementById("caixaSprite");
+const textoCaixa = document.getElementById("textoCaixa");
+const resultadoCaixa = document.getElementById("resultadoCaixa");
 // Volume fixo — sliders removidos, valores padrão constantes
 const volumeMusica  = { value: "0.4" };
 const volumeEfeitos = { value: "0.7" };
@@ -290,12 +299,6 @@ const textoPedido = document.getElementById("textoPedido");
 const btnSimPedido = document.getElementById("btnSimPedido");
 const btnNaoPedido = document.getElementById("btnNaoPedido");
 const telaPedido = document.getElementById("telaPedido");
-
-// Pedido Real
-const telaPedidoReal = document.getElementById("telaPedidoReal");
-const textoPedidoReal = document.getElementById("textoPedidoReal");
-const btnSimReal = document.getElementById("btnSimReal");
-const btnNaoReal = document.getElementById("btnNaoReal");
 
 let resetandoProgresso = false;
 
@@ -561,9 +564,9 @@ const CONQUISTAS = {
   // Progressão
   jardineira:         { nome: "Jardineira",             desc: "Primeira planta colhida na fazenda.",            sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
   milionaria:         { nome: "Milionária",             desc: "10.000 moedas acumuladas.",                      sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
-  rica_demais:        { nome: "Rica Demais",             desc: "100.000 moedas acumuladas.",                     sprite: "assets/sprites/hanna/animada.png",    secao: "progressao" },
-  magnata_felina:     { nome: "Magnata Felina",          desc: "500.000 moedas acumuladas.",                     sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
-  bilionaria:         { nome: "Bilionária 💰",           desc: "1.000.000 de moedas acumuladas. Lendária!",      sprite: "assets/sprites/hanna/animada.png",    secao: "progressao" },
+  rica_demais:        { nome: "Rica Demais",             desc: "50.000 moedas acumuladas.",                     sprite: "assets/sprites/hanna/animada.png",    secao: "progressao" },
+  magnata_felina:     { nome: "Magnata Felina",          desc: "100.000 moedas acumuladas.",                     sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
+  bilionaria:         { nome: "Bilionária 💰",           desc: "500.000 de moedas acumuladas. Lendária!",      sprite: "assets/sprites/hanna/animada.png",    secao: "progressao" },
   bem_cuidada:        { nome: "Bem cuidada",            desc: "Todos os status acima de 95% ao mesmo tempo.",  sprite: "assets/sprites/hanna/apaixonada.png", secao: "progressao" },
   nova_companheira:   { nome: "Nova companheira",       desc: "A gatinha pretinha chegou!",                    sprite: "assets/sprites/gatinha/gatinha-sorrindo.png", secao: "progressao" },
   inseparaveis:       { nome: "Inseparáveis",           desc: "Vínculo máximo com a gatinha pretinha.",        sprite: "assets/sprites/hanna-gatinha/felizes.png", secao: "progressao" },
@@ -1797,6 +1800,7 @@ let felicidade  = Number(localStorage.getItem("felicidade"))  || 35;
 let energia     = Number(localStorage.getItem("energia"))     || 50;
 let higiene     = Number(localStorage.getItem("higiene"))     || 30;
 let sementes    = Number(localStorage.getItem("sementes"))    || 0;
+let sementesDouradas = Number(localStorage.getItem("sementesDouradas")) || 0;
 let moedas      = Number(localStorage.getItem("moedas"))      || 0;
 let amizade     = Number(localStorage.getItem("amizade"))     || 0;
 let vinculoGatinhas = Number(localStorage.getItem("vinculoGatinhas")) || 0;
@@ -2222,6 +2226,14 @@ function atualizarStatus() {
   const sementesFazendaEl = document.getElementById("sementesFazenda");
   if (sementesFazendaEl) sementesFazendaEl.textContent = sementes;
 
+  const sementesDouradasEl =
+  document.getElementById("sementesDouradasFazenda");
+
+  if (sementesDouradasEl) {
+    sementesDouradasEl.textContent =
+    sementesDouradas;
+  }
+
   if (gatinhaDesbloqueada) {
     nomeDaGatinhaTexto.textContent = nomeGatinha;
     const vinculoContainer = document.getElementById("vinculoContainer");
@@ -2232,9 +2244,9 @@ function atualizarStatus() {
 
   // Conquistas automáticas
   if (moedas >= 10000)   desbloquearConquista("milionaria");
-  if (moedas >= 100000)  desbloquearConquista("rica_demais");
-  if (moedas >= 500000)  desbloquearConquista("magnata_felina");
-  if (moedas >= 1000000) desbloquearConquista("bilionaria");
+  if (moedas >= 50000)  desbloquearConquista("rica_demais");
+  if (moedas >= 100000)  desbloquearConquista("magnata_felina");
+  if (moedas >= 500000) desbloquearConquista("bilionaria");
   if (fome >= 95 && felicidade >= 95 && energia >= 95 && higiene >= 95) desbloquearConquista("bem_cuidada");
   if (vinculoGatinhas >= 100 && gatinhaDesbloqueada) desbloquearConquista("inseparaveis");
 
@@ -2279,6 +2291,7 @@ function _salvar() {
   localStorage.setItem("energia",                 energia);
   localStorage.setItem("higiene",                 higiene);
   localStorage.setItem("sementes",                sementes);
+  localStorage.setItem("sementesDouradas", sementesDouradas);
   localStorage.setItem("moedas",                  moedas);
   localStorage.setItem("amizade",                 amizade);
   localStorage.setItem("vinculoGatinhas",         vinculoGatinhas);
@@ -2838,7 +2851,9 @@ const valorPlantas = {
 
     margarida: 350,
 
-    girassol: 3500
+    girassol: 3500,
+
+    florAurora: 100000
 
 };
 const fazenda = (() => {
@@ -3018,39 +3033,41 @@ btnPlantar.addEventListener("click", () => {
 
   slot.plantada = true;
 
-  const plantas = [
+const plantas = [
 
-    "rosa",
-    "rosa",
-    "rosa",
+  "rosa",
+  "rosa",
+  "rosa",
 
-    "flor",
-    "flor",
-    "flor",
+  "flor",
+  "flor",
+  "flor",
 
-    "morango",
-    "morango",
+  "morango",
+  "morango",
 
-    "cenoura",
-    "cenoura",
+  "cenoura",
+  "cenoura",
 
-    "abobora",
-    "abobora",
+  "abobora",
+  "abobora",
 
-    "lavanda",
-    "lavanda",
+  "lavanda",
+  "lavanda",
 
-    "margarida",
-    "margarida",
+  "margarida",
+  "margarida",
 
-    // ULTRA rara — 1 em 20
-    "girassol"
+  "girassol"
 
+];
+
+slot.flor =
+  plantas[
+    Math.floor(Math.random() * plantas.length)
   ];
 
-    slot.flor = plantas[
-    Math.floor(Math.random() * plantas.length)
-    ];
+  
 
   const tempoMaturacao = 300000; // 5 minutos
   slot.tempoFim = Date.now() + tempoMaturacao;
@@ -3107,6 +3124,69 @@ btnPlantar.addEventListener("click", () => {
 
     mostrarMensagem("Uma flor cresceu.");
     falarFazenda("Cresceu! Toca pra colher.", "assets/sprites/hanna/animada.png");
+
+  }, tempoRestante);
+
+});
+
+btnPlantarDourada.addEventListener("click", () => {
+
+  const slotLivre = fazenda.findIndex(s => !s.plantada);
+
+  if (slotLivre === -1) {
+
+    mostrarMensagem("Todos os canteiros estão ocupados.", "fazenda");
+    falarFazenda("Todos os canteiros cheios.", "assets/sprites/hanna/curiosa.png");
+
+    return;
+
+  }
+
+  if (sementesDouradas <= 0) {
+
+    mostrarMensagem("Você não possui sementes douradas.", "fazenda");
+    falarFazenda("Cadê minhas sementes raras?", "assets/sprites/hanna/triste.png");
+
+    return;
+
+  }
+
+  sementesDouradas--;
+
+  atualizarStatus();
+
+  const slot = fazenda[slotLivre];
+  const sprite = slotsPlantacao[slotLivre].querySelector("img");
+
+  slot.plantada = true;
+  slot.flor = "flor-aurora";
+
+  const tempoMaturacao = 300000; // 5 minutos
+  slot.tempoFim = Date.now() + tempoMaturacao;
+
+  salvarFazenda();
+
+  sprite.src = "assets/farm/semente-dourada.png";
+
+  mostrarMensagem("Você plantou uma Semente Dourada.");
+  falarFazenda("Essa vai valer uma fortuna!", "assets/sprites/hanna/animada.png");
+
+  setTimeout(() => {
+
+    sprite.src = "assets/farm/brotinho.png";
+
+  }, 5000);
+
+  const tempoRestante =
+    Math.max(0, slot.tempoFim - Date.now());
+
+  setTimeout(() => {
+
+    slot.pronta = true;
+
+    salvarFazenda();
+
+    sprite.src = "assets/farm/flor-aurora.png";
 
   }, tempoRestante);
 
@@ -3520,6 +3600,182 @@ btnAlmofada.addEventListener("click", () => {
   atualizarStatus();
 });
 
+// CAIXA MISTERIOSA
+btnCaixa.addEventListener("click", () => {
+
+  if (moedas < 5000) {
+    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    return;
+  }
+
+  moedas -= 5000;
+
+  // VOLTA AO ESTADO INICIAL
+  caixaSprite.src = "assets/shop/caixa.png";
+  textoCaixa.textContent = "O que será que tem aqui dentro?";
+
+  btnAbrirCaixa.style.display = "block";
+  btnAbrirCaixa.disabled = false;
+
+  btnFecharCaixa.style.display = "none";
+
+  resultadoCaixa.style.display = "none";
+  resultadoCaixa.innerHTML = "";
+
+  telaCaixa.style.display = "flex";
+
+  atualizarStatus();
+
+});
+
+btnAbrirCaixa.addEventListener("click", () => {
+
+  btnAbrirCaixa.disabled = true;
+
+  caixaSprite.classList.add("caixaTremendo");
+
+  setTimeout(() => {
+    caixaSprite.classList.remove("caixaTremendo");
+
+  caixaSprite.src = "assets/shop/caixa-aberta.png";
+
+  const quantidadePremios =
+    Math.random() < 0.5 ? 3 : 4;
+
+  const premiosDisponiveis =
+    [...premiosCaixa];
+
+  const premiosRecebidos = [];
+
+  for (let i = 0; i < quantidadePremios; i++) {
+
+    const indice =
+      Math.floor(
+        Math.random() *
+        premiosDisponiveis.length
+      );
+
+    const premio =
+      premiosDisponiveis.splice(indice, 1)[0];
+
+    premio.aplicar();
+
+    premiosRecebidos.push(
+      premio
+    );
+  }
+
+  textoCaixa.textContent =
+    "Você encontrou:";
+
+  resultadoCaixa.style.display =
+    "block";
+
+  resultadoCaixa.innerHTML =
+  premiosRecebidos.map(premio => `
+    <div class="premioCaixa">
+      <img
+        src="${premio.sprite}"
+        class="premioCaixaSprite"
+        alt="${premio.nome}"
+      >
+      <span>${premio.nome}</span>
+    </div>
+  `).join("");
+
+  btnAbrirCaixa.style.display =
+    "none";
+
+  btnFecharCaixa.style.display =
+    "block";
+
+  atualizarStatus();
+
+  }, 500);
+
+});
+
+btnFecharCaixa.addEventListener("click", () => {
+
+  telaCaixa.style.display = "none";
+
+});
+
+// Sorteio Caixa Misteriosa - Comum
+const premiosCaixa = [
+  {
+    nome: "Sashimi",
+    sprite: "assets/shop/sashimi.png",
+    aplicar: () => {
+      fome = Math.min(100, fome + 40);
+    }
+  },
+
+  {
+    nome: "Novelo",
+    sprite: "assets/shop/novelo.png",
+    aplicar: () => {
+      felicidade = Math.min(100, felicidade + 15);
+    }
+  },
+
+  {
+    nome: "Ratinho",
+    sprite: "assets/shop/ratinho.png",
+    aplicar: () => {
+      felicidade = Math.min(100, felicidade + 30);
+    }
+  },
+
+  {
+    nome: "Atum",
+    sprite: "assets/shop/atum.png",
+    aplicar: () => {
+      fome = Math.min(100, fome + 20);
+    }
+  },
+
+  {
+    nome: "Biscoito",
+    sprite: "assets/shop/biscoito.png",
+    aplicar: () => {
+      fome = Math.min(100, fome + 15);
+    }
+  },
+
+  {
+    nome: "Donut",
+    sprite: "assets/shop/donut.png",
+    aplicar: () => {
+      felicidade = Math.min(100, felicidade + 20);
+    }
+  },
+
+  {
+    nome: "Varinha",
+    sprite: "assets/shop/varinha.png",
+    aplicar: () => {
+      felicidade = Math.min(100, felicidade + 40);
+    }
+  },
+
+  {
+    nome: "Almofada",
+    sprite: "assets/shop/almofada.png",
+    aplicar: () => {
+      energia = Math.min(100, energia + 20);
+    }
+  },
+
+  {
+    nome: "10 sementes",
+    sprite: "assets/shop/pacote-sementes.png",
+    aplicar: () => {
+      sementes += 10;
+    }
+  }
+];
+
 // Cinza o botão de adotar se já tem gatinha
 if (gatinhaDesbloqueada) {
   btnGatinha.dataset.adotado = "true";
@@ -3557,7 +3813,7 @@ function comprarPet(btn, chave, nome, callback) {
       mostrarAlertaLoja(`${nome} já visita vocês! 🐾`);
       return;
     }
-    if (moedas < 100000) {
+    if (moedas < 70000) {
       mostrarAlertaLoja("⚠️ Moedas insuficientes");
       return;
     }
@@ -3599,7 +3855,7 @@ btnGatinha.addEventListener("click", () => {
 
   }
 
-  if (moedas < 125000) {
+  if (moedas < 25000) {
 
     mostrarAlertaLoja("⚠️ Moedas insuficientes");
 
@@ -3620,7 +3876,7 @@ btnGatinha.addEventListener("click", () => {
     return;
   }
 
-  moedas -= 125000;
+  moedas -= 25000;
 
   gatinhaDesbloqueada = true;
   desbloquearConquista("nova_companheira");
@@ -5782,7 +6038,9 @@ async function jogoCacaPalavras() {
   try {
     const { carregarBancoPalavras } = await import("./firebase.js");
     const banco = await carregarBancoPalavras();
-    LISTAS = banco.cacapalavras;
+    LISTAS = banco.cacapalavras.map(item =>
+      typeof item === "string" ? item.split(",") : item
+    );
   } catch(e) {
     LISTAS = [
       ["HANNA","GATO","AMOR","PATA","MIAU","FOME","SONO","LOJA"],
@@ -6008,6 +6266,44 @@ function jogoMatch3() {
     }
     let mudou = true;
     while (mudou) { mudou = removerCombos(false); }
+
+    if (!existeJogadaPossivel()) {
+      novaGrade();
+    }
+  }
+
+  function existeJogadaPossivel() {
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (c < COLS - 1) {
+          [board[r][c], board[r][c+1]] = [board[r][c+1], board[r][c]];
+          const formouCombo = testarCombo();
+          [board[r][c], board[r][c+1]] = [board[r][c+1], board[r][c]];
+          if (formouCombo) return true;
+        }
+        if (r < ROWS - 1) {
+          [board[r][c], board[r+1][c]] = [board[r+1][c], board[r][c]];
+          const formouCombo = testarCombo();
+          [board[r][c], board[r+1][c]] = [board[r+1][c], board[r][c]];
+          if (formouCombo) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function testarCombo() {
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS - 2; c++) {
+        if (board[r][c] && board[r][c] === board[r][c+1] && board[r][c] === board[r][c+2]) return true;
+      }
+    }
+    for (let r = 0; r < ROWS - 2; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (board[r][c] && board[r][c] === board[r+1][c] && board[r][c] === board[r+2][c]) return true;
+      }
+    }
+    return false;
   }
 
   function removerCombos(contar = true) {
@@ -6056,6 +6352,10 @@ function jogoMatch3() {
         render();
         jogoAtivo.timers.push(setTimeout(terminar, 400));
         return;
+      }
+      if (!existeJogadaPossivel()) {
+        novaGrade();
+        mostrarMensagem("Sem jogadas! Embaralhando... 🔄");
       }
     }
     render();
@@ -6135,27 +6435,27 @@ async function jogoPalavras() {
   arenaConteudo.innerHTML = `<div style="text-align:center;padding:40px;color:#fff;font-weight:800;">Carregando... 🌸</div>`;
 
   // Tenta buscar do Firebase, usa local como fallback
-  let bancoPalavras;
+  let palavraEscolhida;
   try {
     const { carregarBancoPalavras, palavraAleatoria } = await import("./firebase.js");
     const banco = await carregarBancoPalavras();
-    bancoPalavras = banco.wordle;
+    palavraEscolhida = palavraAleatoria(banco);
   } catch(e) {
-    bancoPalavras = [
-      "FOME","SONO","MIAU","GATO","PATA","AMOR","DOCE","HANNA",
-      "BANHO","LOJA","SEMENTE","FAZENDA","MOEDA","CARINHO","FELIZ",
-      "GATINHA","PETISCO","NOVELO","COLEIRA","SASHIMI","VARINHA",
-      "PURR","FOFO","MIMO","JAMES","STEVE","FESTA","NOITE","CHUVA",
-      "FLOR","ROSA","MORANGO","LAVANDA","GIRASSOL","CENOURA",
+    const fallback = [
+      { palavra: "FOME", tema: "Universo Hanna" },
+      { palavra: "SONO", tema: "Universo Hanna" },
+      { palavra: "MIAU", tema: "Universo Hanna" },
+      { palavra: "GATO", tema: "Universo Hanna" },
+      { palavra: "BANHO", tema: "Universo Hanna" },
+      { palavra: "FELIZ", tema: "Universo Hanna" },
+      { palavra: "ROSA", tema: "Flores" },
+      { palavra: "LAVANDA", tema: "Flores" },
     ];
+    palavraEscolhida = fallback[Math.floor(Math.random() * fallback.length)];
   }
 
-  const PALAVRAS = bancoPalavras.filter(p => {
-    const sem = p.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    return sem.length >= 4 && sem.length <= 6;
-  });
-
-  const palavra = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)];
+  const palavra = palavraEscolhida.palavra;
+  const tema    = palavraEscolhida.tema;
   const letras  = palavra.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
   const MAX     = 6;
   let tentativas = [];
@@ -6184,6 +6484,7 @@ async function jogoPalavras() {
     arenaConteudo.innerHTML = `
       <div class="pw-wrap">
         <div class="pw-info">Adivinhe a palavra de <b>${letras.length}</b> letras!</div>
+        <div class="pw-tema">💡 Tema: <b>${tema}</b></div>
         <div class="pw-grade">
           ${Array.from({length: MAX}, (_, ti) => {
             const tent = tentativas[ti];

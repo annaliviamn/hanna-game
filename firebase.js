@@ -49,105 +49,217 @@ const db  = getFirestore(app);
 
 // ── BANCO DE PALAVRAS ────────────────────────────────────────
 // Regras: Wordle = 4-6 letras | Caça-palavras = máx 10 letras por palavra
+// Wordle agora guarda {palavra, tema} pra exibir dica de tema no jogo
 const BANCO_LOCAL = {
 
   wordle: [
-    // 🎮 Universo Hanna (4-6 letras)
-    "HANNA","GATO","AMOR","PATA","MIAU","FOME","SONO","LOJA",
-    "BANHO","FELIZ","FLOR","ROSA","PURR","FESTA","CHUVA",
-    "MOEDA","JAMES","STEVE","JOAO","NOVELO","PETISCO",
-    "SASHIMI","VARINHA","COLEIRA","CARINHO",
+    // 🎮 Universo Hanna
+    { palavra: "HANNA",   tema: "Universo Hanna" },
+    { palavra: "GATO",    tema: "Universo Hanna" },
+    { palavra: "AMOR",    tema: "Universo Hanna" },
+    { palavra: "PATA",    tema: "Universo Hanna" },
+    { palavra: "MIAU",    tema: "Universo Hanna" },
+    { palavra: "FOME",    tema: "Universo Hanna" },
+    { palavra: "SONO",    tema: "Universo Hanna" },
+    { palavra: "LOJA",    tema: "Universo Hanna" },
+    { palavra: "BANHO",   tema: "Universo Hanna" },
+    { palavra: "FELIZ",   tema: "Universo Hanna" },
+    { palavra: "FLOR",    tema: "Universo Hanna" },
+    { palavra: "ROSA",    tema: "Universo Hanna" },
+    { palavra: "PURR",    tema: "Universo Hanna" },
+    { palavra: "FESTA",   tema: "Universo Hanna" },
+    { palavra: "CHUVA",   tema: "Universo Hanna" },
+    { palavra: "MOEDA",   tema: "Universo Hanna" },
+    { palavra: "JAMES",   tema: "Universo Hanna" },
+    { palavra: "STEVE",   tema: "Universo Hanna" },
+    { palavra: "JOAO",    tema: "Universo Hanna" },
+    { palavra: "NOVELO",  tema: "Universo Hanna" },
+    { palavra: "PETISCO", tema: "Universo Hanna" },
+    { palavra: "SASHIMI", tema: "Universo Hanna" },
+    { palavra: "VARINHA", tema: "Universo Hanna" },
+    { palavra: "COLEIRA", tema: "Universo Hanna" },
+    { palavra: "CARINHO", tema: "Universo Hanna" },
 
-    // 🎵 Música (4-6 letras)
-    "PAGODE","SAMBA","METAL","KPOP","TRAP","MPB","POP",
-    "PABLO","ALCEU","LETRA","RITMO","VOCAL","BANDA","VERSO",
-    "FORRÓ","BREGA","SERTAO","BAILE","SHOW","CORAL",
+    // 🎵 Música
+    { palavra: "PAGODE", tema: "Música" },
+    { palavra: "SAMBA",  tema: "Música" },
+    { palavra: "METAL",  tema: "Música" },
+    { palavra: "KPOP",   tema: "Música" },
+    { palavra: "TRAP",   tema: "Música" },
+    { palavra: "MPB",    tema: "Música" },
+    { palavra: "POP",    tema: "Música" },
+    { palavra: "PABLO",  tema: "Música" },
+    { palavra: "ALCEU",  tema: "Música" },
+    { palavra: "LETRA",  tema: "Música" },
+    { palavra: "RITMO",  tema: "Música" },
+    { palavra: "VOCAL",  tema: "Música" },
+    { palavra: "BANDA",  tema: "Música" },
+    { palavra: "VERSO",  tema: "Música" },
+    { palavra: "FORRÓ",  tema: "Música" },
+    { palavra: "BREGA",  tema: "Música" },
+    { palavra: "SERTAO", tema: "Música" },
+    { palavra: "BAILE",  tema: "Música" },
+    { palavra: "SHOW",   tema: "Música" },
+    { palavra: "CORAL",  tema: "Música" },
 
-    // 🎮 Games (4-6 letras)
-    "LEVEL","BOSS","ARENA","PIXEL","QUEST","CRAFT","FASE",
-    "VIDA","ARMA","MAPA","PAUSA","TURNO","COMBO","RANK",
+    // 🎮 Games
+    { palavra: "LEVEL", tema: "Games" },
+    { palavra: "BOSS",  tema: "Games" },
+    { palavra: "ARENA", tema: "Games" },
+    { palavra: "PIXEL", tema: "Games" },
+    { palavra: "QUEST", tema: "Games" },
+    { palavra: "CRAFT", tema: "Games" },
+    { palavra: "FASE",  tema: "Games" },
+    { palavra: "VIDA",  tema: "Games" },
+    { palavra: "ARMA",  tema: "Games" },
+    { palavra: "MAPA",  tema: "Games" },
+    { palavra: "PAUSA", tema: "Games" },
+    { palavra: "TURNO", tema: "Games" },
+    { palavra: "COMBO", tema: "Games" },
+    { palavra: "RANK",  tema: "Games" },
 
-    // 🐾 Pets (4-6 letras)
-    "GATO","PEIXE","CAUDA","PELO","LATIDO","RONROM","RACAO",
-    "MIMO","ADOTAR","FOCINHO","PATINHA",
+    // 🐾 Pets
+    { palavra: "GATO",     tema: "Pets" },
+    { palavra: "PEIXE",    tema: "Pets" },
+    { palavra: "CAUDA",    tema: "Pets" },
+    { palavra: "PELO",     tema: "Pets" },
+    { palavra: "LATIDO",   tema: "Pets" },
+    { palavra: "RONROM",   tema: "Pets" },
+    { palavra: "RACAO",    tema: "Pets" },
+    { palavra: "MIMO",     tema: "Pets" },
+    { palavra: "ADOTAR",   tema: "Pets" },
+    { palavra: "FOCINHO",  tema: "Pets" },
+    { palavra: "PATINHA",  tema: "Pets" },
 
-    // 🌸 Flores (4-6 letras)
-    "ROSA","TULIPA","LIRIO","DALIA","JASMIM","PETALA","AROMA",
-    "VASO","JARDIM","FLORAL","CRAVO","CAULE","HASTE",
+    // 🌸 Flores
+    { palavra: "ROSA",   tema: "Flores" },
+    { palavra: "TULIPA", tema: "Flores" },
+    { palavra: "LIRIO",  tema: "Flores" },
+    { palavra: "DALIA",  tema: "Flores" },
+    { palavra: "JASMIM", tema: "Flores" },
+    { palavra: "PETALA", tema: "Flores" },
+    { palavra: "AROMA",  tema: "Flores" },
+    { palavra: "VASO",   tema: "Flores" },
+    { palavra: "JARDIM", tema: "Flores" },
+    { palavra: "FLORAL", tema: "Flores" },
+    { palavra: "CRAVO",  tema: "Flores" },
+    { palavra: "CAULE",  tema: "Flores" },
+    { palavra: "HASTE",  tema: "Flores" },
 
-    // 🎬 Filmes e Séries (4-6 letras)
-    "TERROR","DRAMA","CENAS","OSCAR","TELA","ELENCO","ATRIZ",
-    "ATOR","ROTEIRO","SERIE","SKINS","LOST","TRONO","ZUMBI",
-    "ROSS","RACHEL","MONICA","ELEVEN","WALTER",
+    // 🎬 Filmes e Séries
+    { palavra: "TERROR",  tema: "Filmes e Séries" },
+    { palavra: "DRAMA",   tema: "Filmes e Séries" },
+    { palavra: "CENAS",   tema: "Filmes e Séries" },
+    { palavra: "OSCAR",   tema: "Filmes e Séries" },
+    { palavra: "TELA",    tema: "Filmes e Séries" },
+    { palavra: "ELENCO",  tema: "Filmes e Séries" },
+    { palavra: "ATRIZ",   tema: "Filmes e Séries" },
+    { palavra: "ATOR",    tema: "Filmes e Séries" },
+    { palavra: "ROTEIRO", tema: "Filmes e Séries" },
+    { palavra: "SERIE",   tema: "Filmes e Séries" },
+    { palavra: "SKINS",   tema: "Filmes e Séries" },
+    { palavra: "LOST",    tema: "Filmes e Séries" },
+    { palavra: "TRONO",   tema: "Filmes e Séries" },
+    { palavra: "ZUMBI",   tema: "Filmes e Séries" },
+    { palavra: "ROSS",    tema: "Filmes e Séries" },
+    { palavra: "RACHEL",  tema: "Filmes e Séries" },
+    { palavra: "MONICA",  tema: "Filmes e Séries" },
+    { palavra: "ELEVEN",  tema: "Filmes e Séries" },
+    { palavra: "WALTER",  tema: "Filmes e Séries" },
 
-    // 🔭 Ciências (4-6 letras)
-    "ATOMO","CELULA","GENE","DNA","ORBITA","LUA","SOL","MARTE",
-    "VENUS","COMETA","ACIDO","ENERGIA","MASSA","CALOR","ONDA",
+    // 🔭 Ciências
+    { palavra: "ATOMO",   tema: "Ciências" },
+    { palavra: "CELULA",  tema: "Ciências" },
+    { palavra: "GENE",    tema: "Ciências" },
+    { palavra: "DNA",     tema: "Ciências" },
+    { palavra: "ORBITA",  tema: "Ciências" },
+    { palavra: "LUA",     tema: "Ciências" },
+    { palavra: "SOL",     tema: "Ciências" },
+    { palavra: "MARTE",   tema: "Ciências" },
+    { palavra: "VENUS",   tema: "Ciências" },
+    { palavra: "COMETA",  tema: "Ciências" },
+    { palavra: "ACIDO",   tema: "Ciências" },
+    { palavra: "ENERGIA", tema: "Ciências" },
+    { palavra: "MASSA",   tema: "Ciências" },
+    { palavra: "CALOR",   tema: "Ciências" },
+    { palavra: "ONDA",    tema: "Ciências" },
 
-    // 📼 Anos 2000 (4-6 letras)
-    "ORKUT","MSN","CD","DVD","MTV","IPOD","CLIPE","BANDA",
-    "ANIME","NOKIA","FLASH","VIRAL","NICK","BLOG",
+    // 📼 Anos 2000
+    { palavra: "ORKUT", tema: "Anos 2000" },
+    { palavra: "MSN",   tema: "Anos 2000" },
+    { palavra: "CD",    tema: "Anos 2000" },
+    { palavra: "DVD",   tema: "Anos 2000" },
+    { palavra: "MTV",   tema: "Anos 2000" },
+    { palavra: "IPOD",  tema: "Anos 2000" },
+    { palavra: "CLIPE", tema: "Anos 2000" },
+    { palavra: "BANDA", tema: "Anos 2000" },
+    { palavra: "ANIME", tema: "Anos 2000" },
+    { palavra: "NOKIA", tema: "Anos 2000" },
+    { palavra: "FLASH", tema: "Anos 2000" },
+    { palavra: "VIRAL", tema: "Anos 2000" },
+    { palavra: "NICK",  tema: "Anos 2000" },
+    { palavra: "BLOG",  tema: "Anos 2000" },
   ],
 
   cacapalavras: [
     // Tema: Universo Hanna
-    ["HANNA","GATO","AMOR","PATA","MIAU","FOME","SONO","LOJA"],
-    ["FAZENDA","BANHO","FELIZ","CARINHO","MOEDA","FLOR","ROSA","PURR"],
-    ["GATINHA","SEMENTE","VINCULO","PETISCO","NOVELO","FESTA","CHUVA","LACO"],
-    ["JAMES","STEVE","JOAO","HANNA","GATO","AMOR","PATA","MIAU"],
-    ["COLEIRA","NOVELO","RATINHO","SASHIMI","VARINHA","DONUT","ATUM","BISCOITO"],
+    "HANNA,GATO,AMOR,PATA,MIAU,FOME,SONO,LOJA",
+    "FAZENDA,BANHO,FELIZ,CARINHO,MOEDA,FLOR,ROSA,PURR",
+    "GATINHA,SEMENTE,VINCULO,PETISCO,NOVELO,FESTA,CHUVA,LACO",
+    "JAMES,STEVE,JOAO,HANNA,GATO,AMOR,PATA,MIAU",
+    "COLEIRA,NOVELO,RATINHO,SASHIMI,VARINHA,DONUT,ATUM,BISCOITO",
 
     // Tema: Música geral
-    ["PAGODE","SAMBA","METAL","KPOP","TRAP","MPB","POP","FORRO"],
-    ["BREGA","PISADA","NUMETAL","SERTAO","BAILE","VOCAL","BANDA","CORAL"],
+    "PAGODE,SAMBA,METAL,KPOP,TRAP,MPB,POP,FORRO",
+    "BREGA,PISADA,NUMETAL,SERTAO,BAILE,VOCAL,BANDA,CORAL",
 
     // Tema: Artistas (máx 10 letras)
-    ["ALCIONE","ANAVITO","PABLO","LEGIAO","ALCEU","VITTAR","SABRINA","GONZAGA"],
-    ["PARAMORE","DEMI","RIHANNA","MILEY","BRITNEY","SZA","ARIANA","SELENA"],
-    ["BIEBER","CALCINHA","JOAOGOMES","PITTY","GALCOSTA","KATSEYE","OLIVIADEAN","LINKIN"],
+    "ALCIONE,ANAVITO,PABLO,LEGIAO,ALCEU,VITTAR,SABRINA,GONZAGA",
+    "PARAMORE,DEMI,RIHANNA,MILEY,BRITNEY,SZA,ARIANA,SELENA",
+    "BIEBER,CALCINHA,JOAOGOMES,PITTY,GALCOSTA,KATSEYE,OLIVIADEAN,LINKIN",
 
     // Tema: Games (máx 10 letras)
-    ["COD","SURVIVAL","CRAFT","QUEST","LEVEL","BOSS","ARENA","PIXEL"],
-    ["HELLOKITTY","LASTOFUS","STARDEW","HOLLOW","RESIDENT","ASSASSIN","WALKING","CANDY"],
+    "COD,SURVIVAL,CRAFT,QUEST,LEVEL,BOSS,ARENA,PIXEL",
+    "HELLOKITTY,LASTOFUS,STARDEW,HOLLOW,RESIDENT,ASSASSIN,WALKING,CANDY",
 
     // Tema: Pets
-    ["GATO","CAO","PEIXE","HAMSTER","PAPAGAIO","CAUDA","RONROM","LATIDO"],
-    ["ADOTAR","RACAO","COLEIRA","BANHO","CARINHO","MIMO","FOCINHO","PATINHA"],
+    "GATO,CAO,PEIXE,HAMSTER,PAPAGAIO,CAUDA,RONROM,LATIDO",
+    "ADOTAR,RACAO,COLEIRA,BANHO,CARINHO,MIMO,FOCINHO,PATINHA",
 
     // Tema: Flores
-    ["ROSA","GIRASSOL","TULIPA","ORQUIDEA","MARGARIDA","LAVANDA","LIRIO","DALIA"],
-    ["VIOLETA","JASMIM","PEONIA","CAMELIA","PETALA","AROMA","JARDIM","FLORAL"],
+    "ROSA,GIRASSOL,TULIPA,ORQUIDEA,MARGARIDA,LAVANDA,LIRIO,DALIA",
+    "VIOLETA,JASMIM,PEONIA,CAMELIA,PETALA,AROMA,JARDIM,FLORAL",
 
     // Tema: Séries
-    ["FRIENDS","SKINS","LOST","EUPHORIA","HANNA","BREAKING","WALKING","STRANGER"],
-    ["HAWKINS","CORDELIA","WESTEROS","JACKSON","ROSS","RACHEL","MONICA","CHANDLER"],
-    ["JOEY","PHOEBE","WALTER","JESSE","ELEVEN","BILLY","STEVE","SHANE"],
+    "FRIENDS,SKINS,LOST,EUPHORIA,HANNA,BREAKING,WALKING,STRANGER",
+    "HAWKINS,CORDELIA,WESTEROS,JACKSON,ROSS,RACHEL,MONICA,CHANDLER",
+    "JOEY,PHOEBE,WALTER,JESSE,ELEVEN,BILLY,STEVE,SHANE",
 
     // Tema: Filmes
-    ["TERROR","SUSPENSE","COMEDIA","ROMANCE","CULT","ROTEIRO","ELENCO","OSCAR"],
-    ["ACAO","DRAMA","MISTERIO","THRILLER","FANTASIA","ANIMACAO","MUSICAL","FICCAO"],
+    "TERROR,SUSPENSE,COMEDIA,ROMANCE,CULT,ROTEIRO,ELENCO,OSCAR",
+    "ACAO,DRAMA,MISTERIO,THRILLER,FANTASIA,ANIMACAO,MUSICAL,FICCAO",
 
     // Tema: Astronomia
-    ["PLANETA","ESTRELA","COMETA","GALAXIA","SATELITE","ORBITA","LUA","SOL"],
-    ["MARTE","VENUS","MERCURIO","JUPITER","SATURNO","URANO","NETUNO","PLUTAO"],
+    "PLANETA,ESTRELA,COMETA,GALAXIA,SATELITE,ORBITA,LUA,SOL",
+    "MARTE,VENUS,MERCURIO,JUPITER,SATURNO,URANO,NETUNO,PLUTAO",
 
     // Tema: Química
-    ["ATOMO","MOLECULA","ENERGIA","MISTURA","ELEMENTO","OXIGENIO","CARBONO","ACIDO"],
-    ["REACAO","SOLUCAO","CALCIO","SODIO","FERRO","OURO","PRATA","COBRE"],
+    "ATOMO,MOLECULA,ENERGIA,MISTURA,ELEMENTO,OXIGENIO,CARBONO,ACIDO",
+    "REACAO,SOLUCAO,CALCIO,SODIO,FERRO,OURO,PRATA,COBRE",
 
     // Tema: Biologia
-    ["CELULA","GENE","TECIDO","ORGAO","ESPECIE","ANIMAL","PLANTA","DNA"],
-    ["EVOLUCAO","BACTERIA","VIRUS","FUNGO","ALGA","MUSGO","RAIZ","FOLHA"],
+    "CELULA,GENE,TECIDO,ORGAO,ESPECIE,ANIMAL,PLANTA,DNA",
+    "EVOLUCAO,BACTERIA,VIRUS,FUNGO,ALGA,MUSGO,RAIZ,FOLHA",
 
     // Tema: Anos 2000
-    ["ORKUT","MSN","FLOGAO","WEBCAM","EMOTICON","NICK","LANHOUSE","DOWNLOAD"],
-    ["MP3","IPOD","CD","DVD","CLIPE","MTV","BANDA","RADIO"],
-    ["NOVELA","SERIADO","DISNEY","NICKEL","REALITY","ANIME","POKEMON","YUGIOH"],
-    ["CELULAR","GAMEBOY","CAMERA","CONTROLE","NINTENDO","PENDRIVE","TECLADO","DISCMAN"],
+    "ORKUT,MSN,FLOGAO,WEBCAM,EMOTICON,NICK,LANHOUSE,DOWNLOAD",
+    "MP3,IPOD,CD,DVD,CLIPE,MTV,BANDA,RADIO",
+    "NOVELA,SERIADO,DISNEY,NICKEL,REALITY,ANIME,POKEMON,YUGIOH",
+    "CELULAR,GAMEBOY,CAMERA,CONTROLE,NINTENDO,PENDRIVE,TECLADO,DISCMAN",
 
     // Tema: Divas Pop
-    ["BEYONCE","RIHANNA","MADONNA","MARIAH","WHITNEY","BRITNEY","GAGA","ARIANA"],
-    ["TAYLOR","KATY","SELENA","MILEY","DEMI","CAMILA","LIZZO","ADELE"],
+    "BEYONCE,RIHANNA,MADONNA,MARIAH,WHITNEY,BRITNEY,GAGA,ARIANA",
+    "TAYLOR,KATY,SELENA,MILEY,DEMI,CAMILA,LIZZO,ADELE",
   ],
 };
 
@@ -177,12 +289,24 @@ export async function carregarBancoPalavras() {
   }
 }
 
+// Retorna { palavra, tema } — filtra por tamanho 4-6 e funciona
+// tanto com o formato novo (objeto) quanto com listas antigas de string,
+// caso o Firestore ainda tenha o formato velho salvo.
 export function palavraAleatoria(banco) {
   const lista = banco.wordle || BANCO_LOCAL.wordle;
-  const filtradas = lista.filter(p => {
-    const sem = p.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+
+  const normalizadas = lista.map(item => {
+    if (typeof item === "string") {
+      return { palavra: item, tema: "Universo Hanna" };
+    }
+    return item;
+  });
+
+  const filtradas = normalizadas.filter(({ palavra }) => {
+    const sem = palavra.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
     return sem.length >= 4 && sem.length <= 6;
   });
+
   return filtradas[Math.floor(Math.random() * filtradas.length)];
 }
 
