@@ -4774,6 +4774,7 @@ btnRecuperarSave?.addEventListener("click", async () => {
       localStorage.removeItem("hannaDeviceId");
     }
   } catch(e) {
+    console.log("Erro:", e);
     mostrarMensagem("Erro ao recuperar save.");
   }
 });

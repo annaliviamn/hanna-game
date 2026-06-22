@@ -22,7 +22,7 @@ export async function getDeviceId() {
 // SALVAR PROGRESSO NA NUVEM
 export async function salvarProgressoNuvem(dados) {
   try {
-    const id = getDeviceId();
+    const id = await getDeviceId(); // await aqui
     await setDoc(doc(db, "saves", id), {
       ...dados,
       updatedAt: Date.now()
@@ -33,7 +33,7 @@ export async function salvarProgressoNuvem(dados) {
 // CARREGAR PROGRESSO DA NUVEM
 export async function carregarProgressoNuvem() {
   try {
-    const id   = getDeviceId();
+    const id   = await getDeviceId(); // await aqui
     const snap = await getDoc(doc(db, "saves", id));
     if (snap.exists()) return snap.data();
     return null;
