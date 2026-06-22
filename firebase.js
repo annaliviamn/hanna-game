@@ -1,18 +1,25 @@
-// ── FIREBASE CONFIG ──────────────────────────────────────────
+// FIREBASE CONFIG
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-// ── ID ANÔNIMO POR DISPOSITIVO ───────────────────────────────
-function getDeviceId() {
+// ID POR NOME DA JOGADORA
+export async function getDeviceId() {
   let id = localStorage.getItem("hannaDeviceId");
   if (!id) {
-    id = "device_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
+    let nome = "";
+    while (!nome || nome.trim() === "") {
+      nome = prompt("Qual é o seu nome? (vai ser usado pra salvar seu progresso)");
+      if (nome === null) nome = "hanna_jogadora";
+    }
+    id = "jogadora_" + nome.trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_");
     localStorage.setItem("hannaDeviceId", id);
   }
   return id;
 }
 
-// ── SALVAR PROGRESSO NA NUVEM ────────────────────────────────
+// SALVAR PROGRESSO NA NUVEM
 export async function salvarProgressoNuvem(dados) {
   try {
     const id = getDeviceId();
@@ -23,7 +30,7 @@ export async function salvarProgressoNuvem(dados) {
   } catch (e) {}
 }
 
-// ── CARREGAR PROGRESSO DA NUVEM ──────────────────────────────
+// CARREGAR PROGRESSO DA NUVEM
 export async function carregarProgressoNuvem() {
   try {
     const id   = getDeviceId();
@@ -266,7 +273,7 @@ const BANCO_LOCAL = {
 // Cache em memória
 let _cache = null;
 
-// ── BUSCAR DO FIRESTORE ──────────────────────────────────────
+// BUSCAR DO FIRESTORE
 export async function carregarBancoPalavras() {
   if (_cache) return _cache;
 

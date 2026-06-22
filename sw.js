@@ -7,7 +7,7 @@ const ASSETS = [
   "./script.js"
 ];
 
-// ── INSTALL ──────────────────────────────────────────────────
+// INSTALL
 self.addEventListener("install", (e) => {
   self.skipWaiting();
   e.waitUntil(
@@ -15,7 +15,7 @@ self.addEventListener("install", (e) => {
   );
 });
 
-// ── ACTIVATE ─────────────────────────────────────────────────
+// ACTIVATE
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -26,14 +26,14 @@ self.addEventListener("activate", (e) => {
   );
 });
 
-// ── CACHE FIRST ───────────────────────────────────────────────
+// CACHE FIRST
 self.addEventListener("fetch", (e) => {
   e.respondWith(
     caches.match(e.request).then(r => r || fetch(e.request))
   );
 });
 
-// ── INDEXEDDB ────────────────────────────────────────────────
+// INDEXEDDB
 function abrirDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open("hanna-lembretes", 1);
@@ -69,7 +69,7 @@ async function listarLembretes() {
   });
 }
 
-// ── VERIFICAR E DISPARAR LEMBRETES PENDENTES ─────────────────
+// VERIFICAR E DISPARAR LEMBRETES PENDENTES
 // Chamada tanto pelo periodicsync quanto pelo alarm (quando disponível)
 // e também ao receber mensagem CHECK_LEMBRETES do app
 async function verificarLembretes() {
@@ -92,7 +92,7 @@ async function verificarLembretes() {
   }
 }
 
-// ── ALARME INTERNO: verifica a cada 1 min enquanto SW vivo ───
+// ALARME INTERNO: verifica a cada 1 min enquanto SW vivo 
 // (funciona enquanto o app está em foreground ou SW não foi morto)
 let _alarmeInterval = null;
 
@@ -108,12 +108,12 @@ self.addEventListener("activate", () => {
   iniciarAlarmeInterno();
 });
 
-// ── PERIODIC SYNC (background, Android) ──────────────────────
+// PERIODIC SYNC (background, Android)
 self.addEventListener("periodicsync", e => {
   if (e.tag === "hanna-lembretes") e.waitUntil(verificarLembretes());
 });
 
-// ── MENSAGENS DO APP ──────────────────────────────────────────
+// MENSAGENS DO APP
 self.addEventListener("message", async (event) => {
   const { tipo, id, texto, timestamp } = event.data || {};
 
@@ -149,7 +149,7 @@ self.addEventListener("message", async (event) => {
   }
 });
 
-// ── CLIQUE NA NOTIFICAÇÃO ─────────────────────────────────────
+// CLIQUE NA NOTIFICAÇÃO
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   event.waitUntil(

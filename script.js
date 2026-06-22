@@ -2239,6 +2239,57 @@ function verificarRecompensaSementeDourada() {
 
 }
 
+// ÍCONE RESUMO DE STATUS (perto das moedas/sementes)
+function atualizarIconeStatusHanna() {
+  const sprite = document.getElementById("spriteStatusHanna");
+  const texto  = document.getElementById("textoStatusHanna");
+  if (!sprite || !texto) return;
+
+  const status   = [fome, felicidade, energia, higiene];
+  const media    = status.reduce((a, b) => a + b, 0) / status.length;
+  const criticos = status.filter(s => s <= 25).length;
+  const menor    = Math.min(...status);
+
+  const falas = {
+    feliz:    ["tô me sentindo ótima hoje!", "que dia gostoso!", "tô feliz demais!", "que vida boa, que vida boa..."],
+    fome:     ["tô morrendo de fome aqui...", "meu estômago tá roncando...", "me dá alguma coisa pra comer!", "pensei em comida o dia todo..."],
+    triste:   ["queria um carinho agora...", "tô me sentindo sozinha...", "será que alguém pensa em mim?", "tô carecendo de atenção..."],
+    cansada:  ["ai que soninho bom...", "tô caindo de sono...", "preciso deitar um pouquinho...", "meus olhos tão pesando..."],
+    suja:     ["tô precisando de um banho...", "acho que tô cheirando mal...", "me sinto toda bagunçada...", "quero tomar um banho quentinho..."],
+    alerta:   ["tô me sentindo um lixo...", "preciso de cuidados urgente...", "alguém me ajuda por favor...", "tô no limite aqui..."],
+  };
+
+  let estado;
+
+  if (criticos >= 2) {
+    estado = "alerta";
+  } else if (menor <= 40) {
+    if (menor === fome)            estado = "fome";
+    else if (menor === felicidade) estado = "triste";
+    else if (menor === energia)    estado = "cansada";
+    else                           estado = "suja";
+  } else if (media >= 70) {
+    estado = "feliz";
+  } else {
+    estado = "feliz";
+  }
+
+  const novoSrc = `assets/status/hanna-status-${estado}.png`;
+
+  if (sprite.getAttribute("src") !== novoSrc) {
+    sprite.src = novoSrc;
+    const lista = falas[estado];
+    texto.textContent = lista[Math.floor(Math.random() * lista.length)];
+  }
+
+  // Garante que o texto apareça na primeira carga
+  if (!texto.textContent) {
+    const lista = falas[estado];
+    texto.textContent = lista[Math.floor(Math.random() * lista.length)];
+  }
+}
+
+
 // ATUALIZAR STATUS
 function atualizarStatus() {
 
@@ -2274,41 +2325,7 @@ function atualizarStatus() {
   energiaPorcentagem.textContent    = Math.floor(energia) + "%";
   higienePorcentagem.textContent    = Math.floor(higiene) + "%";
 
-  // ÍCONE RESUMO DE STATUS (perto das moedas/sementes)
-  function atualizarIconeStatusHanna() {
-    const sprite = document.getElementById("spriteStatusHanna");
-    if (!sprite) return;
-
-    const status = [fome, felicidade, energia, higiene];
-    const media  = status.reduce((a, b) => a + b, 0) / status.length;
-    const criticos = status.filter(s => s <= 25).length;
-
-    let novoSrc;
-
-    if (criticos >= 2) {
-      novoSrc = "assets/status/hanna-status-alerta.png";
-    } else if (media >= 70) {
-      novoSrc = "assets/status/hanna-status-feliz.png";
-    } else {
-      const menor = Math.min(...status);
-
-      if (menor > 40) {
-        novoSrc = "assets/status/hanna-status-feliz.png";
-      } else if (menor === fome) {
-        novoSrc = "assets/status/hanna-status-fome.png";
-      } else if (menor === felicidade) {
-        novoSrc = "assets/status/hanna-status-triste.png";
-      } else if (menor === energia) {
-        novoSrc = "assets/status/hanna-status-cansada.png";
-      } else {
-        novoSrc = "assets/status/hanna-status-suja.png";
-      }
-    }
-
-    if (sprite.getAttribute("src") !== novoSrc) {
-      sprite.src = novoSrc;
-    }
-  }
+  atualizarIconeStatusHanna();
 
   sementesTexto.textContent = sementes;
   moedasTexto.textContent   = moedas;
@@ -2403,8 +2420,10 @@ function _salvar() {
         fome, felicidade, energia, higiene, sementes, moedas,
         amizade, vinculoGatinhas, dormindo,
         gatinhaDesbloqueada, nomeGatinha,
+        sementesDouradas, ultimaSementeDourada,
         steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
         conquistas: JSON.stringify(conquistasDesbloqueadas),
+        lembretes: JSON.stringify(lembretes),
       });
     }).catch(() => {});
   }
@@ -2863,65 +2882,78 @@ setInterval(() => {
   }
 }, 60000);                // 1 min
 
+// Carregar dados do Jogo
+function carregarDadosNoJogo(dados) {
+  fome                 = Number(dados.fome)                || 40;
+  felicidade           = Number(dados.felicidade)          || 35;
+  energia              = Number(dados.energia)             || 50;
+  higiene              = Number(dados.higiene)             || 30;
+  sementes             = Number(dados.sementes)            || 0;
+  sementesDouradas     = Number(dados.sementesDouradas)    || 0;
+  ultimaSementeDourada = Number(dados.ultimaSementeDourada)|| 0;
+  moedas               = Number(dados.moedas)              || 0;
+  amizade              = Number(dados.amizade)             || 0;
+  vinculoGatinhas      = Number(dados.vinculoGatinhas)     || 0;
+
+  gatinhaDesbloqueada  = dados.gatinhaDesbloqueada === true || dados.gatinhaDesbloqueada === "true";
+  nomeGatinha          = dados.nomeGatinha || "";
+  dormindo             = dados.dormindo === true || dados.dormindo === "true";
+
+  steveDesbloqueado    = dados.steveDesbloqueado === true || dados.steveDesbloqueado === "true";
+  joaoDesbloqueado     = dados.joaoDesbloqueado === true || dados.joaoDesbloqueado === "true";
+  jamesDesbloqueado    = dados.jamesDesbloqueado === true || dados.jamesDesbloqueado === "true";
+
+  if (dados.conquistas) {
+    try { conquistasDesbloqueadas = JSON.parse(dados.conquistas); } catch(e) {}
+  }
+
+  if (dados.lembretes) {
+    try { lembretes = JSON.parse(dados.lembretes); } catch(e) {}
+  }
+}
+
 // ENTRAR
-btnEntrar.addEventListener("click", () => {
+btnEntrar.addEventListener("click", async () => {
 
-    document.querySelector(".bottomNav")
-    .style.display = "flex";
+  document.querySelector(".bottomNav").style.display = "flex";
 
-    somBotao.volume =
-    parseFloat(
-        volumeEfeitos.value
-    );
-
-  somBotao.play().catch(()=>{});
-
+  somBotao.volume = parseFloat(volumeEfeitos.value);
+  somBotao.play().catch(() => {});
   vibrar(15);
+
+  // Tenta carregar save da nuvem antes de abrir o jogo
+  try {
+    const dadosNuvem = await carregarProgressoNuvem();
+    if (dadosNuvem) {
+      carregarDadosNoJogo(dadosNuvem);
+    }
+  } catch (e) {}
 
   telaInicial.classList.add("fadeOut");
 
   setTimeout(() => {
+    telaInicial.style.display = "none";
+    abrirTela(telaJogo);
+    telaJogo.classList.add("fadeIn");
+    tocarTrilha("casa");
+    mensagemHorario();
+    iniciarFalasIdle();
+    iniciarMomentosEspeciais();
 
-      telaInicial.style.display = "none";
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ tipo: "CHECK_LEMBRETES" });
+    }
 
-      abrirTela(telaJogo);
+    if (gatinhaDesbloqueada) {
+      gatinhaContainer.style.display = "flex";
+      if (nomeGatinha) nomeDaGatinhaTexto.textContent = nomeGatinha;
+    }
 
-      telaJogo.classList.add("fadeIn");
+    momentoConjuntoAtivo = false;
+    atualizarStatus();
 
-      tocarTrilha("casa");
-
-      mensagemHorario();
-
-      iniciarFalasIdle();
-
-      iniciarMomentosEspeciais();
-
-      // Verifica lembretes vencidos ao entrar no jogo
-      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({ tipo: "CHECK_LEMBRETES" });
-      }
-
-      // Mostra a gatinha imediatamente se já foi adotada
-      if (gatinhaDesbloqueada) {
-          gatinhaContainer.style.display = "flex";
-          if (nomeGatinha) nomeDaGatinhaTexto.textContent = nomeGatinha;
-      }
-
-      // Restaura estado visual de sono se o jogo recarregou dormindo
-      // renderizarGatinhas (chamada por atualizarStatus abaixo) cuida de tudo
-      momentoConjuntoAtivo = false;
-
-      atualizarStatus();
-
-    }, 500);
-  });
-
-  // Música do menu inicial — começa ao carregar a página
-  // (browsers modernos bloqueiam autoplay; a música inicia na 1ª interação)
-  document.addEventListener("click", function iniciarMenuMusic() {
-    if (!trilhaAtual) tocarTrilha("menu");
-    document.removeEventListener("click", iniciarMenuMusic);
-  }, { once: true });
+  }, 500);
+});
 
 // FAZENDA
 const slotsPlantacao = document.querySelectorAll(".slotPlantacao");
@@ -3609,49 +3641,56 @@ document.getElementById("btnPackSementes").addEventListener("click", () => {
   atualizarStatus();
 });
 
+function digitarTexto(elemento, texto, velocidade = 35, aoTerminar = null) {
+  elemento.textContent = "";
+  let i = 0;
+  const intervalo = setInterval(() => {
+    elemento.textContent += texto[i];
+    i++;
+    if (i >= texto.length) {
+      clearInterval(intervalo);
+      if (aoTerminar) aoTerminar();
+    }
+  }, velocidade);
+}
+
 function abrirTelaPedido() {
+  const telaPedido  = document.getElementById("telaPedido");
+  const textoPedido = document.getElementById("textoPedido");
+  const pedidoBtns  = document.getElementById("pedidoBtns");
+  const pedidoSprite = document.getElementById("pedidoSprite");
 
-  const telaPedido =
-    document.getElementById("telaPedido");
-
-  const textoPedido =
-    document.getElementById("textoPedido");
-
-  const pedidoBtns =
-    document.getElementById("pedidoBtns");
-
-  const pedidoSprite =
-    document.getElementById("pedidoSprite");
-
-  pedidoSprite.src =
-    "assets/sprites/hanna-gatinha/pedido.png";
-
-  textoPedido.textContent =
-    "E-eu estou um pouquinho nervosa... Desde que nos conhecemos, você se tornou muito importante para mim. Meu coração bate mais forte quando estamos juntas e eu adoro passar o tempo ao seu lado. Eu queria te fazer uma pergunta... Você aceita namorar comigo?";
-
-  pedidoBtns.style.display = "flex";
-
+  pedidoSprite.src = "assets/sprites/hanna-gatinha/pedido.png";
+  pedidoBtns.style.display = "none";
   telaPedido.style.display = "flex";
 
+  const mensagem = "E-eu estou um pouquinho nervosa... Desde que nos conhecemos, você se tornou muito importante para mim. Meu coração bate mais forte quando estamos juntas e eu adoro passar o tempo ao seu lado. Eu queria te fazer uma pergunta... Você aceita namorar comigo?";
+
+  // Botões só aparecem depois que terminar de digitar
+  digitarTexto(textoPedido, mensagem, 35, () => {
+    pedidoBtns.style.display = "flex";
+  });
 }
 
 btnSimPedido.addEventListener("click", () => {
+  const textoPedido  = document.getElementById("textoPedido");
+  const pedidoBtns   = document.getElementById("pedidoBtns");
+  const pedidoSprite = document.getElementById("pedidoSprite");
 
-  textoPedido.textContent =
-    "Sério?! Eu sou a gatinha mais feliz do mundo! Prometo continuar ao seu lado em todas as nossas aventuras!";
+  pedidoBtns.style.display = "none";
+  pedidoSprite.src = "assets/sprites/hanna-gatinha/felizes.png";
 
-  document.getElementById("pedidoSprite").src =
-    "assets/sprites/hanna-gatinha/felizes.png";
+  const resposta = "Sério?! Eu sou a gatinha mais feliz do mundo! Prometo continuar ao seu lado em todas as nossas aventuras!";
 
-  document.getElementById("pedidoBtns").style.display =
-    "none";
+  digitarTexto(textoPedido, resposta, 35, () => {
+    setTimeout(() => {
+      telaPedido.style.display = "none";
+    }, 3000);
+  });
+});
 
-  setTimeout(() => {
-
-    telaPedido.style.display = "none";
-
-  }, 4000);
-
+btnNaoPedido.addEventListener("click", () => {
+  telaPedido.style.display = "none";
 });
 
 btnNaoPedido.addEventListener("click", () => {
@@ -3964,7 +4003,7 @@ function comprarPet(btn, chave, nome, callback) {
     localStorage.setItem(chave, "true");
     cinzarPetBtn(btn, nome);
     callback();
-    mostrarMensagem(`${nome} vai aparecer de visita! 🐾`);
+    mostrarMensagem(`${nome} vai aparecer de visita!`);
     atualizarStatus();
   });
 }
@@ -5711,10 +5750,10 @@ function iniciarVisitasSteve() {
   ];
   const intervalo = setInterval(() => {
     if (!steveDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.3) return;
+    if (Math.random() > 0.6) return; // 60% de chance
     const fala = falas[Math.floor(Math.random() * falas.length)];
     mostrarVisitaPet("assets/sprites/pets/steve-visita.png", fala);
-  }, 8 * 60 * 1000); // a cada 8 minutos com 30% de chance
+  }, 8 * 60 * 1000); // a cada 8 minutos
 }
 
 function iniciarVisitasJoao() {
@@ -5726,7 +5765,7 @@ function iniciarVisitasJoao() {
   ];
   const intervalo = setInterval(() => {
     if (!joaoDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.3) return;
+    if (Math.random() > 0.6) return; // 60% de chance
     const fala = falas[Math.floor(Math.random() * falas.length)];
     mostrarVisitaPet("assets/sprites/pets/joao-visita.png", fala);
   }, 8 * 60 * 1000);
@@ -5741,7 +5780,7 @@ function iniciarVisitasJames() {
   ];
   const intervalo = setInterval(() => {
     if (!jamesDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.3) return;
+    if (Math.random() > 0.6) return; // 60% de chance
     const fala = falas[Math.floor(Math.random() * falas.length)];
     mostrarVisitaPet("assets/sprites/pets/james-visita.png", fala);
   }, 8 * 60 * 1000);
