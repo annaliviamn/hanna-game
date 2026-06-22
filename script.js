@@ -2926,6 +2926,17 @@ btnEntrar.addEventListener("click", async () => {
     const dadosNuvem = await carregarProgressoNuvem();
     if (dadosNuvem) {
       carregarDadosNoJogo(dadosNuvem);
+    } else {
+      // Primeira vez com esse ID — salva imediatamente
+      await salvarProgressoNuvem({
+        fome, felicidade, energia, higiene, sementes, moedas,
+        amizade, vinculoGatinhas, dormindo,
+        gatinhaDesbloqueada, nomeGatinha,
+        sementesDouradas, ultimaSementeDourada,
+        steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
+        conquistas: JSON.stringify(conquistasDesbloqueadas),
+        lembretes: JSON.stringify(lembretes),
+      });
     }
   } catch (e) {}
 
