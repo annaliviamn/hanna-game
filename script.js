@@ -4743,6 +4743,41 @@ btnModoNoturno.onclick = () => {
 
 };
 
+// SAVE NA NUVEM — exibir e recuperar ID
+const textoIdSave = document.getElementById("textoIdSave");
+const inputIdSave = document.getElementById("inputIdSave");
+const btnRecuperarSave = document.getElementById("btnRecuperarSave");
+
+// Mostra o ID atual assim que a tela de config abre
+const idAtual = localStorage.getItem("hannaDeviceId") || "não encontrado";
+if (textoIdSave) textoIdSave.textContent = idAtual;
+
+btnRecuperarSave?.addEventListener("click", async () => {
+  const novoId = inputIdSave.value.trim();
+  if (!novoId) {
+    mostrarMensagem("Digite um ID válido.");
+    return;
+  }
+
+  localStorage.setItem("hannaDeviceId", novoId);
+
+  try {
+    const { carregarProgressoNuvem } = await import("./firebase.js");
+    const dados = await carregarProgressoNuvem();
+    if (dados) {
+      carregarDadosNoJogo(dados);
+      atualizarStatus();
+      mostrarMensagem("Save recuperado com sucesso!");
+      if (textoIdSave) textoIdSave.textContent = novoId;
+    } else {
+      mostrarMensagem("Nenhum save encontrado com esse ID.");
+      localStorage.removeItem("hannaDeviceId");
+    }
+  } catch(e) {
+    mostrarMensagem("Erro ao recuperar save.");
+  }
+});
+
 // Voltar do menu de minigames
 document.getElementById("btnVoltarMinigames").addEventListener("click", () => {
 
