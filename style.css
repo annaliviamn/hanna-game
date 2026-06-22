@@ -323,6 +323,26 @@ textarea {
   color: var(--pink-deep);
 }
 
+.icone-status-hanna {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: auto; /* empurra pra direita, separado dos chips */
+  background: var(--pink-light);
+  border: 1.5px solid var(--pink-mid);
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.icone-status-hanna img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .barraContainer { margin: 10px 0; }
 .barraTitulo {
   display: flex; justify-content: space-between;
@@ -3211,6 +3231,7 @@ body.dark-mode .tutorial-card {
   padding: 22px;
   border: 2px solid var(--pink-mid);
   box-shadow: var(--shadow-card);
+  text-align: justify;
 }
 
 .carta-texto h2 {
@@ -4093,163 +4114,6 @@ body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
   to   { opacity: 1; }
 }
 
-/* PARTÍCULAS DE CORAÇÃO FLUTUANDO NO FUNDO DA TELA ESPECIAL */
-.telaEspecial::before {
-  content: "💖 🌸 ✨ 💕 🌸 💖 ✨ 💕";
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  font-size: 22px;
-  opacity: 0.12;
-  pointer-events: none;
-  letter-spacing: 30px;
-  padding-bottom: 8px;
-}
-
-.pedidoCard {
-  width: 100%;
-  max-width: 480px;
-  background: linear-gradient(160deg, #2d1445 0%, #1e0d30 50%, #170828 100%);
-  border-radius: 28px;
-  border: 2px solid rgba(255,180,220,.5);
-  padding: 28px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  box-shadow:
-    0 0 0 1px rgba(255,140,200,.15),
-    0 0 40px rgba(200,80,180,.35),
-    0 0 80px rgba(150,50,150,.2),
-    inset 0 1px 0 rgba(255,200,240,.12);
-  animation: cardEntrar .6s cubic-bezier(.22,.68,0,1.4) both;
-  position: relative;
-  overflow: hidden;
-}
-
-@keyframes cardEntrar {
-  from { transform: scale(.88) translateY(30px); opacity: 0; }
-  to   { transform: scale(1)   translateY(0);    opacity: 1; }
-}
-
-/* BRTLHO SUPERIOR DO CARD */
-.pedidoCard::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 10%; right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,200,230,.6), transparent);
-}
-
-.pedidoSpriteBox {
-  width: 200px;
-  height: 200px;
-  border-radius: 20px;
-  background: radial-gradient(circle, rgba(255,130,200,.1) 0%, rgba(255,80,160,.04) 100%);
-  border: 1.5px solid rgba(255,140,200,.18);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: spriteGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes spriteGlow {
-  from { box-shadow: 0 0 12px rgba(255,100,180,.2); }
-  to   { box-shadow: 0 0 28px rgba(255,100,180,.45), 0 0 50px rgba(200,80,160,.2); }
-}
-
-#spritePedido,
-#spritePedidoReal {
-  width: 170px;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 4px 12px rgba(255,100,180,.4));
-}
-
-#textoPedido,
-#textoPedidoReal {
-  min-height: 80px;
-  max-height: 340px;
-  overflow-y: auto;
-  text-align: center;
-  color: #f0d4e8;
-  font-size: 13px;
-  line-height: 1.75;
-  font-family: var(--font-body);
-  font-weight: 600;
-  padding: 0 4px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,140,200,.3) transparent;
-}
-
-#textoPedidoReal {
-  text-align: left;
-  font-size: 12.5px;
-  padding: 4px 8px;
-}
-
-.pedidoBtns {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.pedidoBtns button {
-  border: none;
-  padding: 13px 26px;
-  border-radius: 16px;
-  font-weight: 800;
-  font-size: 15px;
-  cursor: pointer;
-  transition: transform .15s, box-shadow .15s;
-  font-family: var(--font-body);
-  letter-spacing: .5px;
-}
-
-.pedidoBtns button:active {
-  transform: scale(.94) !important;
-}
-
-#btnSimPedido {
-  background: linear-gradient(145deg, #ff6fc0, #e0419a);
-  color: white;
-  box-shadow: 0 4px 18px rgba(255,80,160,.55), 0 0 0 2px rgba(255,140,200,.3);
-  animation: btnSimPulse 2s ease-in-out infinite;
-}
-
-@keyframes btnSimPulse {
-  0%,100% { box-shadow: 0 4px 18px rgba(255,80,160,.55), 0 0 0 2px rgba(255,140,200,.3); }
-  50%     { box-shadow: 0 6px 28px rgba(255,80,160,.8),  0 0 0 4px rgba(255,160,220,.45); }
-}
-
-#btnSimPedido:hover {
-  transform: translateY(-3px) scale(1.05);
-}
-
-#btnNaoPedido {
-  background: rgba(60,40,80,.7);
-  color: rgba(255,200,230,.6);
-  border: 1.5px solid rgba(180,100,160,.25);
-  font-size: 13px;
-  padding: 13px 18px;
-  transition: left .3s cubic-bezier(.34,1.56,.64,1), top .3s cubic-bezier(.34,1.56,.64,1), transform .15s;
-}
-
-#btnAceitarPedido {
-  background: linear-gradient(145deg, #ff6fc0, #c040a0);
-  color: white;
-  box-shadow: 0 4px 20px rgba(255,80,160,.6);
-  padding: 14px 32px;
-  font-size: 14px;
-  border-radius: 18px;
-  animation: btnSimPulse 2s ease-in-out infinite;
-}
-
-#btnAceitarPedido:hover {
-  transform: translateY(-3px) scale(1.05);
-}
 
 /* CAIXA MISTERIOSA */
 
@@ -5036,4 +4900,86 @@ button {
 }
 #visitaFala.visivel {
   opacity: 1;
+}
+
+/* PEDIDO DA HANNA */
+
+.tela-pedido-wrap {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(15, 10, 25, 0.92);
+  backdrop-filter: blur(8px);
+
+  z-index: 99999;
+  padding: 20px;
+}
+
+.pedido-card {
+  width: 100%;
+  max-width: 420px;
+
+  background: linear-gradient(
+    180deg,
+    #2e214d 0%,
+    #24183d 100%
+  );
+
+  border: 3px solid #8d6aff;
+  border-radius: 28px;
+
+  padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+
+  box-shadow:
+    0 0 30px rgba(141,106,255,.35);
+}
+
+.pedido-sprite {
+  width: 180px;
+  image-rendering: pixelated;
+}
+
+.pedido-texto {
+  color: #fff;
+
+  text-align: center;
+
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.pedido-btns {
+  display: flex;
+  gap: 12px;
+}
+
+.pedido-btn {
+  border: none;
+
+  padding: 12px 22px;
+
+  border-radius: 16px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.pedido-btn-sim {
+  background: #ff79c6;
+  color: white;
+}
+
+.pedido-btn-nao {
+  background: #4a3b6e;
+  color: white;
 }

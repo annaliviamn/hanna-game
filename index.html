@@ -128,6 +128,11 @@
       <div class="recursos-row">
         <div class="recurso-chip"><span>🌱</span><span id="sementes">0</span></div>
         <div class="recurso-chip"><span>🪙</span><span id="moedas">0</span></div>
+
+        <!-- NOVO: ícone da Hanna refletindo o status -->
+        <div class="icone-status-hanna">
+          <img id="spriteStatusHanna" src="assets/status/hanna-status-feliz.png" alt="Status da Hanna">
+        </div>
       </div>
 
       <div class="barraContainer">
@@ -146,48 +151,23 @@
       </div>
 
       <div class="barraContainer">
-
         <div class="barraTitulo">
-
-        <span>Higiene</span>
-
-        <span id="higienePorcentagem">100%</span>
-
+          <span>Higiene</span>
+          <span id="higienePorcentagem">100%</span>
         </div>
+        <div class="barra"><div id="barraHigiene"></div></div>
+      </div>
 
-        <div class="barra">
-
-            <div id="barraHigiene"></div>
-
-                </div>
-
+      <div class="barraContainer" id="vinculoContainer" style="display:none;">
+        <div class="barraTitulo">
+          <span>
+            Vínculo
+            <span id="vinculoTexto">Desconhecidas 🤍</span>
+          </span>
+          <span id="vinculoPorcentagem">0%</span>
         </div>
-
-        <div class="barraContainer" id="vinculoContainer" style="display:none;">
-
-          <div class="barraTitulo">
-
-            <span>
-                Vínculo
-              <span id="vinculoTexto">
-                Desconhecidas 🤍
-              </span>
-            </span>
-
-            <span id="vinculoPorcentagem">
-              0%
-            </span>
-
-          </div>
-
-          <div class="barra">
-
-            <div id="barraVinculo"></div>
-
-          </div>
-
-        </div>
-
+        <div class="barra"><div id="barraVinculo"></div></div>
+      </div>
     </div>
 
     <!-- Ações rápidas -->
@@ -374,7 +354,7 @@
         <h3>Momento especial</h3>
 
         <button class="config-btn" id="btnReplayPedido">
-          Rever o pedido 💖
+          Rever o pedido
         </button>
 
       </div>
@@ -923,9 +903,9 @@
       <div class="item-loja item-premium">
         <div class="item-loja-icon-wrap"><img src="assets/ui/buque-anel.png" class="iconeLoja"></div>
         <div class="item-loja-info">
-          <h3>Pedido da Hanna 💍</h3>
+          <h3>Pedido da Hanna</h3>
           <p class="item-desc">Um momento muito especial. Só pra quem cuidou bem da Hanna e tem vínculo verdadeiro.</p>
-          <p>Vínculo 80% + 250.000 moedas</p>
+          <p>Vínculo 80% + 70.000 moedas</p>
           <div class="item-loja-footer">
             <span class="preco-chip">🪙 70.000</span>
             <button id="btnPedidoEspecial" class="btn-comprar">Comprar</button>
@@ -946,8 +926,8 @@
     <img src="assets/sprites/hanna-gatinha/pedido.png" class="pedido-sprite" id="pedidoSprite">
     <div id="textoPedido" class="pedido-texto"></div>
     <div id="pedidoBtns" class="pedido-btns" style="display:none;">
-      <button id="btnSimPedido" class="pedido-btn pedido-btn-sim">💖 Sim!</button>
-      <button id="btnNaoPedido" class="pedido-btn pedido-btn-nao">😾 Ainda não</button>
+      <button id="btnSimPedido" class="pedido-btn pedido-btn-sim">Sim!</button>
+      <button id="btnNaoPedido" class="pedido-btn pedido-btn-nao">Ainda não</button>
     </div>
   </div>
 </div>
@@ -956,9 +936,9 @@
 <div id="telaPedidoReal" class="tela-pedido-wrap" style="display:none;">
   <div class="pedido-card">
     <img src="assets/sprites/hanna-gatinha/gatinhas-abraco.png" class="pedido-sprite">
-    <div class="pedido-texto" style="font-size:18px;">Agora vocês são namoradas! 💍🖤</div>
+    <div class="pedido-texto" style="font-size:18px;">Agora vocês estão namorando!</div>
     <button id="btnVoltarPedido" class="pedido-btn pedido-btn-sim" style="margin-top:16px;">
-      Continuar 💖
+      Continuar
     </button>
   </div>
 </div>
@@ -1052,8 +1032,6 @@
     </div>
 
   </div>
-
-
 
   <!-- Fazenda Cozy -->
 
@@ -1238,7 +1216,7 @@
 
           </div>
             <div class="mg-card-info">
-                <div class="mg-card-titulo">Operação Sardinha 🔫</div>
+                <div class="mg-card-titulo">Operação Sardinha</div>
                 <div class="mg-card-desc">
                     Ratos invasores estão atacando a despensa! Escolha sua agente e elimine as ondas antes que roubem todas as sardinhas!
                 </div>
@@ -1253,7 +1231,7 @@
             <img src="assets/ui/icons/icon-hanna-crush.png" alt="">
           </div>
           <div class="mg-card-info">
-            <div class="mg-card-titulo">Hanna Crush ✨</div>
+            <div class="mg-card-titulo">Hanna Crush</div>
             <div class="mg-card-desc">Combine 3 ou mais ícones iguais pra pontuar! Quanto mais combos, mais moedas!</div>
             <div class="mg-card-recompensa">🪙 10–100 moedas</div>
           </div>
