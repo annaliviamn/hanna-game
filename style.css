@@ -5003,3 +5003,140 @@ button {
   background: #4a3b6e;
   color: white;
 }
+
+/* ══════════════════════════════════════════
+   TROCA DE RECADOS
+══════════════════════════════════════════ */
+
+.recados-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  height: 100%;
+}
+
+.recados-progresso {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pink-deep);
+}
+
+.recados-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  border: 1.5px solid var(--pink-mid);
+}
+
+.recados-balao-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.recados-resposta-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.recados-avatar-chat {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--pink-mid);
+  flex-shrink: 0;
+}
+
+.recados-avatar-direita {
+  order: 2;
+}
+
+.recados-balao {
+  background: var(--pink-light);
+  border: 1.5px solid var(--pink-mid);
+  border-radius: 16px 16px 16px 4px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--pink-deep);
+  max-width: 75%;
+  line-height: 1.4;
+}
+
+.recados-preview {
+  background: var(--bg-card);
+  border: 1.5px dashed var(--pink-mid);
+  border-radius: 16px 16px 4px 16px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--pink-deep);
+  max-width: 75%;
+  line-height: 1.4;
+  order: 1;
+  font-style: italic;
+  min-height: 36px;
+}
+
+.recados-timer-barra {
+  background: var(--pink-light);
+  border-radius: 20px;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid var(--pink-mid);
+}
+
+.recados-timer-progresso {
+  height: 100%;
+  width: 100%;
+  background: var(--pink-deep);
+  border-radius: 20px;
+  transition: width 1s linear;
+}
+
+.recados-palavras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.recados-palavra-btn {
+  background: var(--pink-light);
+  border: 1.5px solid var(--pink-mid);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pink-deep);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.recados-palavra-btn.usada {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.recados-palavra-btn.correta {
+  background: #d4edda;
+  border-color: #4caf50;
+  color: #2e7d32;
+  opacity: 1;
+}
+
+.recados-palavra-btn.errada {
+  background: #fde8e8;
+  border-color: var(--pink-deep);
+  color: var(--pink-deep);
+  opacity: 1;
+}
