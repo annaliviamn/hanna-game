@@ -3041,7 +3041,15 @@ function entrarNoJogo() {
   }, 500);
 }
 
-// ── LOGIN NA TELA INICIAL ────────────────────
+// Se já tem conta salva, entra direto no jogo
+const _idSalvo = localStorage.getItem("hannaDeviceId");
+const _senhaSalva = localStorage.getItem("hannaSenhaHash");
+if (_idSalvo && _senhaSalva) {
+  _senhaHash = _senhaSalva;
+  entrarNoJogo();
+}
+
+// LOGIN NA TELA INICIAL
 function mostrarFeedbackLogin(msg, erro = false) {
   const el = document.getElementById("textoFeedbackLogin");
   if (!el) return;
@@ -4912,7 +4920,7 @@ const btnRecuperarSave = document.getElementById("btnRecuperarSave");
 const idAtual = localStorage.getItem("hannaDeviceId") || "não encontrado";
 if (textoIdSave) textoIdSave.textContent = idAtual;
 
-// ── SISTEMA DE CONTA ─────────────────────────
+// SISTEMA DE CONTA
 const contaComConta     = document.getElementById("contaComConta");
 const contaTrocarSenha  = document.getElementById("contaTrocarSenha");
 const textoNickname     = document.getElementById("textoNickname");
