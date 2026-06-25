@@ -2263,6 +2263,7 @@ const falasSementeDourada = [
 ];
 
 function verificarRecompensaSementeDourada() {
+  if (dormindo) return; // não entrega semente dormindo
 
   const todosAltos =
     fome >= 85 &&
@@ -2469,6 +2470,7 @@ function _salvar() {
   localStorage.setItem("amizade",                 amizade);
   localStorage.setItem("vinculoGatinhas",         vinculoGatinhas);
   localStorage.setItem("dormindo",                dormindo);
+  localStorage.setItem("updatedAt", Date.now());
   localStorage.setItem("gatinhaDesbloqueada",     gatinhaDesbloqueada ? "true" : "false");
   localStorage.setItem("nomeGatinha",             nomeGatinha);
   localStorage.setItem("ultimaInteracaoGatinha",  ultimaInteracaoGatinha);
@@ -4061,11 +4063,11 @@ function comprarPet(btn, chave, nome, callback) {
       mostrarAlertaLoja(`${nome} já visita vocês!`);
       return;
     }
-    if (moedas < 70000) {
+    if (moedas < 50000) {
       mostrarAlertaLoja("⚠️ Moedas insuficientes");
       return;
     }
-    moedas -= 100000;
+    moedas -= 50000;
     localStorage.setItem(chave, "true");
     cinzarPetBtn(btn, nome);
     callback();
@@ -4902,9 +4904,14 @@ document.getElementById("btnEntrarConta")?.addEventListener("click", async () =>
     return;
   }
 
-  carregarDadosNoJogo(resultado.dados);
-  atualizarStatus();
-  mostrarFeedbackConta("Save recuperado com sucesso!");
+  if (resultado.carregarNuvem) {
+    carregarDadosNoJogo(resultado.dados);
+    atualizarStatus();
+    mostrarFeedbackConta("Save da nuvem carregado!");
+  } else {
+    mostrarFeedbackConta("Save local mais recente mantido!");
+  }
+
   atualizarEstadoConta();
 });
 
