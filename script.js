@@ -4913,7 +4913,6 @@ const idAtual = localStorage.getItem("hannaDeviceId") || "não encontrado";
 if (textoIdSave) textoIdSave.textContent = idAtual;
 
 // ── SISTEMA DE CONTA ─────────────────────────
-const contaSemConta     = document.getElementById("contaSemConta");
 const contaComConta     = document.getElementById("contaComConta");
 const contaTrocarSenha  = document.getElementById("contaTrocarSenha");
 const textoNickname     = document.getElementById("textoNickname");
@@ -4928,16 +4927,9 @@ function mostrarFeedbackConta(msg, erro = false) {
 
 function atualizarEstadoConta() {
   const id = localStorage.getItem("hannaDeviceId");
-  if (id) {
-    contaSemConta.style.display    = "none";
-    contaComConta.style.display    = "block";
-    contaTrocarSenha.style.display = "none";
-    textoNickname.textContent      = id;
-  } else {
-    contaSemConta.style.display    = "block";
-    contaComConta.style.display    = "none";
-    contaTrocarSenha.style.display = "none";
-  }
+  if (contaComConta) contaComConta.style.display = id ? "block" : "none";
+  if (contaTrocarSenha) contaTrocarSenha.style.display = "none";
+  if (textoNickname && id) textoNickname.textContent = id;
 }
 
 // Atualiza estado ao carregar
