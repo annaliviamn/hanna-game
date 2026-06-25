@@ -2456,6 +2456,7 @@ function atualizarStatus() {
 }
 
 let _ultimoSaveNuvem = 0;
+let _senhaHash = localStorage.getItem("hannaSenhaHash") || null;
 
 function _salvar() {
   localStorage.setItem("fome",                    fome);
@@ -2484,6 +2485,7 @@ function _salvar() {
       _ultimoSaveNuvem = agora;
       import("./firebase.js").then(({ salvarProgressoNuvem }) => {
         salvarProgressoNuvem({
+          ...(  _senhaHash ? { senha: _senhaHash } : {}),
           fome, felicidade, energia, higiene, sementes, moedas,
           amizade, vinculoGatinhas, dormindo,
           gatinhaDesbloqueada, nomeGatinha,
@@ -4861,6 +4863,8 @@ document.getElementById("btnCriarConta")?.addEventListener("click", async () => 
 
   // Salva o progresso atual na nuvem com a senha
   const senhaHash = await hashSenha(senha);
+  _senhaHash = senhaHash;
+  localStorage.setItem("hannaSenhaHash", senhaHash);
   await salvarProgressoNuvem({
     senha: senhaHash,
     fome, felicidade, energia, higiene, sementes, moedas,
