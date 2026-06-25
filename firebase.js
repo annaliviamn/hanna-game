@@ -284,6 +284,21 @@ export async function carregarBancoPalavras() {
   }
 }
 
+// Busca senha
+export async function buscarSenhaDoSave() {
+  try {
+    const id = localStorage.getItem("hannaDeviceId");
+    if (!id) return null;
+    const snap = await getDoc(doc(db, "saves", id));
+    if (snap.exists() && snap.data().senha) {
+      return snap.data().senha;
+    }
+    return null;
+  } catch(e) {
+    return null;
+  }
+}
+
 // Retorna { palavra, tema } — filtra por tamanho 4-6 e funciona
 // tanto com o formato novo (objeto) quanto com listas antigas de string,
 // caso o Firestore ainda tenha o formato velho salvo.
@@ -395,3 +410,4 @@ export async function trocarSenha(nickname, senhaAtual, senhaNova) {
     return { ok: false, erro: "Erro ao trocar senha." };
   }
 }
+

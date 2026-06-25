@@ -2264,6 +2264,7 @@ const falasSementeDourada = [
 
 function verificarRecompensaSementeDourada() {
   if (dormindo) return; // não entrega semente dormindo
+
   const todosAltos =
     fome >= 85 &&
     felicidade >= 85 &&
@@ -3003,6 +3004,15 @@ function carregarDadosNoJogo(dados) {
     try { lembretes = JSON.parse(dados.lembretes); } catch(e) {}
   }
 }
+
+// Restaura o hash da senha ao carregar
+import("./firebase.js").then(async ({ buscarSenhaDoSave }) => {
+  const hash = await buscarSenhaDoSave();
+  if (hash) {
+    _senhaHash = hash;
+    localStorage.setItem("hannaSenhaHash", hash);
+  }
+});
 
 // ENTRAR
 btnEntrar.addEventListener("click", () => {
