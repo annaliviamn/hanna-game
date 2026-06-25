@@ -4905,13 +4905,17 @@ document.getElementById("btnEntrarConta")?.addEventListener("click", async () =>
 
   mostrarFeedbackConta("Entrando...");
 
-  const { entrarComConta } = await import("./firebase.js");
+  const { entrarComConta, hashSenha } = await import("./firebase.js");
   const resultado = await entrarComConta(nickname, senha);
 
   if (!resultado.ok) {
     mostrarFeedbackConta(resultado.erro, true);
     return;
   }
+
+  // Restaura o hash da senha em memória
+  _senhaHash = await hashSenha(senha);
+  localStorage.setItem("hannaSenhaHash", _senhaHash);
 
   if (resultado.carregarNuvem) {
     carregarDadosNoJogo(resultado.dados);
