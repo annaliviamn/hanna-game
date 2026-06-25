@@ -40,9 +40,29 @@
       <div class="title-pixel">HANNA</div>
       <div class="subtitle-pixel">Bem-vinda</div>
       <img src="assets/sprites/hanna/hanna.png" alt="Hanna" id="hannaInicial">
-      <button id="btnEntrar" class="btn-principal">
-        <span>✦ Começar ✦</span>
-      </button>
+
+      <!-- Login -->
+      <div id="telaLogin">
+        <input type="text" id="inputLoginNickname" class="input-cozy" placeholder="Nickname" maxlength="20">
+        <input type="password" id="inputLoginSenha" class="input-cozy" placeholder="Senha" maxlength="30" style="margin-top:8px;">
+        <p id="textoFeedbackLogin" style="font-size:12px; color:#ff5555; margin-top:6px; display:none;"></p>
+        <div class="btn-wrap">
+          <button id="btnEntrar" class="btn-principal"><span>Entrar</span></button>
+          <button id="btnIrCriarConta" class="btn-secundario"><span>Criar conta</span></button>
+        </div>
+      </div>
+
+      <!-- Criar conta -->
+      <div id="telaCriarConta" style="display:none;">
+        <input type="text" id="inputCriarNickname" class="input-cozy" placeholder="Nickname" maxlength="20">
+        <input type="password" id="inputCriarSenha" class="input-cozy" placeholder="Senha" maxlength="30" style="margin-top:8px;">
+        <p id="textoFeedbackCriar" style="font-size:12px; color:#ff5555; margin-top:6px; display:none;"></p>
+        <div class="btn-wrap">
+          <button id="btnCriarContaInicial" class="btn-principal"><span>Criar conta</span></button>
+          <button id="btnVoltarLogin" class="btn-secundario"><span>Voltar</span></button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -397,28 +417,12 @@
         <div class="config-card">
           <h3>Conta</h3>
 
-          <!-- Estado: sem conta -->
-          <div id="contaSemConta">
-            <p style="font-size:12px; color: var(--pink-deep); margin-bottom:8px;">
-              Crie uma conta para salvar seu progresso na nuvem e recuperar de qualquer dispositivo!
-            </p>
-
-            <input type="text" id="inputNickname" class="input-cozy" placeholder="Nickname" maxlength="20">
-            <input type="password" id="inputSenha" class="input-cozy" placeholder="Senha" maxlength="30" style="margin-top:8px;">
-
-            <div style="display:flex; gap:8px; margin-top:8px;">
-              <button class="config-btn" id="btnCriarConta">Criar conta</button>
-              <button class="config-btn" id="btnEntrarConta">Já tenho conta</button>
-            </div>
-          </div>
-
-          <!-- Estado: com conta -->
-          <div id="contaComConta" style="display:none;">
+          <!-- Conectada -->
+          <div id="contaComConta">
             <p style="font-size:12px; color: var(--pink-deep); margin-bottom:8px;">
               Conectada como <strong id="textoNickname"></strong>
             </p>
             <button class="config-btn" id="btnTrocarSenha">Trocar senha</button>
-            <button class="config-btn config-danger" id="btnSairConta" style="margin-top:8px;">Sair da conta</button>
           </div>
 
           <!-- Trocar senha (oculto por padrão) -->

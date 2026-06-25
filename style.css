@@ -106,13 +106,13 @@ textarea {
 .initial-card {
   display: flex; flex-direction: column;
   align-items: center; gap: 10px;
-  padding: 32px 28px 36px;
+  padding: 32px 36px 36px;
   background: rgba(255,255,255,0.55);
   backdrop-filter: blur(12px);
   border-radius: var(--radius-xl);
   border: 2px solid rgba(255,143,194,0.35);
   box-shadow: 0 8px 40px rgba(200,80,150,0.15);
-  max-width: 320px; width: 90%;
+  max-width: 360px; width: 92%;
 }
 
 .title-pixel {
@@ -157,6 +157,55 @@ textarea {
 .btn-principal:active {
   transform: translateY(4px);
   box-shadow: 0 2px 0 var(--pink-darker);
+}
+
+.btn-secundario {
+  margin-top: 8px;
+  padding: 0 36px;
+  height: 48px;
+  background: white;
+  border: 2px solid var(--pink-main);
+  border-radius: 26px;
+  color: var(--pink-deep);
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: transform .12s, background .12s;
+  width: 100%;
+  box-shadow: 0 4px 0 var(--pink-mid);
+}
+
+.btn-secundario:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--pink-mid);
+}
+
+#telaLogin, #telaCriarConta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.btn-wrap {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.btn-wrap .btn-principal,
+.btn-wrap .btn-secundario {
+  flex: 1;
+  padding: 0;
+  margin: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* JOGO HEADER */

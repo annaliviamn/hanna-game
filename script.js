@@ -3015,16 +3015,12 @@ import("./firebase.js").then(async ({ buscarSenhaDoSave }) => {
 });
 
 // ENTRAR
-btnEntrar.addEventListener("click", () => {
-
+function entrarNoJogo() {
   document.querySelector(".bottomNav").style.display = "flex";
-
   somBotao.volume = parseFloat(volumeEfeitos.value);
   somBotao.play().catch(() => {});
   vibrar(15);
-
   telaInicial.classList.add("fadeOut");
-
   setTimeout(() => {
     telaInicial.style.display = "none";
     abrirTela(telaJogo);
@@ -3033,20 +3029,119 @@ btnEntrar.addEventListener("click", () => {
     mensagemHorario();
     iniciarFalasIdle();
     iniciarMomentosEspeciais();
-
     if (navigator.serviceWorker && navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage({ tipo: "CHECK_LEMBRETES" });
     }
-
     if (gatinhaDesbloqueada) {
       gatinhaContainer.style.display = "flex";
       if (nomeGatinha) nomeDaGatinhaTexto.textContent = nomeGatinha;
     }
-
     momentoConjuntoAtivo = false;
     atualizarStatus();
-
   }, 500);
+}
+
+// ── LOGIN NA TELA INICIAL ────────────────────
+function mostrarFeedbackLogin(msg, erro = false) {
+  const el = document.getElementById("textoFeedbackLogin");
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = erro ? "#ff5555" : "var(--pink-deep)";
+  el.style.display = "block";
+}
+
+function mostrarFeedbackCriar(msg, erro = false) {
+  const el = document.getElementById("textoFeedbackCriar");
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = erro ? "#ff5555" : "var(--pink-deep)";
+  el.style.display = "block";
+}
+
+// Botão Entrar
+document.getElementById("btnEntrar")?.addEventListener("click", async () => {
+  const nickname = document.getElementById("inputLoginNickname").value.trim();
+  const senha    = document.getElementById("inputLoginSenha").value.trim();
+
+  if (!nickname || !senha) {
+    mostrarFeedbackLogin("Preencha nickname e senha.", true);
+    return;
+  }
+
+  mostrarFeedbackLogin("Entrando...");
+
+  const { entrarComConta, hashSenha } = await import("./firebase.js");
+  const resultado = await entrarComConta(nickname, senha);
+
+  if (!resultado.ok) {
+    mostrarFeedbackLogin(resultado.erro, true);
+    return;
+  }
+
+  // Restaura hash da senha em memória
+  _senhaHash = await hashSenha(senha);
+  localStorage.setItem("hannaSenhaHash", _senhaHash);
+
+  // Sempre carrega da nuvem ao fazer login
+  carregarDadosNoJogo(resultado.dados);
+  entrarNoJogo();
+});
+
+// Botão Ir pra Criar Conta
+document.getElementById("btnIrCriarConta")?.addEventListener("click", () => {
+  document.getElementById("telaLogin").style.display    = "none";
+  document.getElementById("telaCriarConta").style.display = "block";
+});
+
+// Botão Voltar pro Login
+document.getElementById("btnVoltarLogin")?.addEventListener("click", () => {
+  document.getElementById("telaCriarConta").style.display = "none";
+  document.getElementById("telaLogin").style.display      = "block";
+});
+
+// Botão Criar Conta na tela inicial
+document.getElementById("btnCriarContaInicial")?.addEventListener("click", async () => {
+  const nickname = document.getElementById("inputCriarNickname").value.trim();
+  const senha    = document.getElementById("inputCriarSenha").value.trim();
+
+  if (!nickname || !senha) {
+    mostrarFeedbackCriar("Preencha nickname e senha.", true);
+    return;
+  }
+  if (senha.length < 4) {
+    mostrarFeedbackCriar("Senha precisa ter pelo menos 4 caracteres.", true);
+    return;
+  }
+
+  mostrarFeedbackCriar("Criando conta...");
+
+  const { criarConta, salvarProgressoNuvem, hashSenha } = await import("./firebase.js");
+  const resultado = await criarConta(nickname, senha);
+
+  if (!resultado.ok) {
+    mostrarFeedbackCriar(resultado.erro, true);
+    return;
+  }
+
+  // Salva hash e entra no jogo
+  _senhaHash = await hashSenha(senha);
+  localStorage.setItem("hannaSenhaHash", _senhaHash);
+
+  await salvarProgressoNuvem({
+    senha: _senhaHash,
+    fome, felicidade, energia, higiene, sementes, moedas,
+    amizade, vinculoGatinhas, dormindo,
+    gatinhaDesbloqueada, nomeGatinha,
+    sementesDouradas, ultimaSementeDourada,
+    steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
+    ultimaInteracaoGatinha,
+    fazenda: JSON.stringify(fazenda),
+    conquistas: JSON.stringify(conquistasDesbloqueadas),
+    lembretes: JSON.stringify(lembretes),
+  });
+
+  mostrarFeedbackCriar("Conta criada!");
+  setTimeout(() => entrarNoJogo(), 1000);
 });
 
 // FAZENDA
