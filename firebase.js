@@ -2,21 +2,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-// ID POR NOME DA JOGADORA
-export async function getDeviceId() {
-  let id = localStorage.getItem("hannaDeviceId");
-  if (!id) {
-    let nome = "";
-    while (!nome || nome.trim() === "") {
-      nome = prompt("Qual é o seu nome? (vai ser usado pra salvar seu progresso)");
-      if (nome === null) nome = "hanna_jogadora";
-    }
-    id = "jogadora_" + nome.trim().toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "_");
-    localStorage.setItem("hannaDeviceId", id);
-  }
-  return id;
+// ID POR NICKNAME E SENHA DA JOGADORA
+export function getDeviceId() {
+  return localStorage.getItem("hannaDeviceId") || null;
 }
 
 // SALVAR PROGRESSO NA NUVEM
@@ -320,4 +308,79 @@ export function palavraAleatoria(banco) {
 export function listaAleatoriaCaca(banco) {
   const listas = banco.cacapalavras || BANCO_LOCAL.cacapalavras;
   return listas[Math.floor(Math.random() * listas.length)];
+}
+
+// HASH DE SENHA
+export async function hashSenha(senha) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(senha);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// CRIAR CONTA
+export async function criarConta(nickname, senha) {
+  try {
+    const id = nickname.trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_");
+
+    const snap = await getDoc(doc(db, "saves", id));
+    if (snap.exists()) return { ok: false, erro: "Esse nickname já existe!" };
+
+    const senhaHash = await hashSenha(senha);
+    localStorage.setItem("hannaDeviceId", id);
+
+    return { ok: true, id };
+  } catch(e) {
+    return { ok: false, erro: "Erro ao criar conta." };
+  }
+}
+
+// ENTRAR COM CONTA
+export async function entrarComConta(nickname, senha) {
+  try {
+    const id = nickname.trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_");
+
+    const snap = await getDoc(doc(db, "saves", id));
+    if (!snap.exists()) return { ok: false, erro: "Nickname não encontrado." };
+
+    const dados = snap.data();
+    const senhaHash = await hashSenha(senha);
+
+    if (dados.senha !== senhaHash) return { ok: false, erro: "Senha incorreta." };
+
+    localStorage.setItem("hannaDeviceId", id);
+    return { ok: true, dados };
+  } catch(e) {
+    return { ok: false, erro: "Erro ao entrar." };
+  }
+}
+
+// TROCAR SENHA
+export async function trocarSenha(nickname, senhaAtual, senhaNova) {
+  try {
+    const id = nickname.trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_");
+
+    const snap = await getDoc(doc(db, "saves", id));
+    if (!snap.exists()) return { ok: false, erro: "Nickname não encontrado." };
+
+    const dados = snap.data();
+    const hashAtual = await hashSenha(senhaAtual);
+
+    if (dados.senha !== hashAtual) return { ok: false, erro: "Senha atual incorreta." };
+
+    const hashNova = await hashSenha(senhaNova);
+    await setDoc(doc(db, "saves", id), { ...dados, senha: hashNova });
+
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, erro: "Erro ao trocar senha." };
+  }
 }

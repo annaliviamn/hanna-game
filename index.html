@@ -393,21 +393,42 @@
           </button>
 
         </div>
-        <!-- Save na Nuvem -->
+        <!-- Conta -->
         <div class="config-card">
-          <h3>Save na Nuvem</h3>
-          <p style="font-size:12px; color: var(--pink-deep); margin-bottom:8px;">
-            Seu ID de save: <strong id="textoIdSave">carregando...</strong>
-          </p>
-          <input
-            type="text"
-            id="inputIdSave"
-            class="input-cozy"
-            placeholder="Cole seu ID aqui para recuperar..."
-          >
-          <button class="config-btn" id="btnRecuperarSave">
-            Recuperar save
-          </button>
+          <h3>Conta</h3>
+
+          <!-- Estado: sem conta -->
+          <div id="contaSemConta">
+            <p style="font-size:12px; color: var(--pink-deep); margin-bottom:8px;">
+              Crie uma conta para salvar seu progresso na nuvem e recuperar de qualquer dispositivo!
+            </p>
+
+            <input type="text" id="inputNickname" class="input-cozy" placeholder="Nickname" maxlength="20">
+            <input type="password" id="inputSenha" class="input-cozy" placeholder="Senha" maxlength="30" style="margin-top:8px;">
+
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button class="config-btn" id="btnCriarConta">Criar conta</button>
+              <button class="config-btn" id="btnEntrarConta">Já tenho conta</button>
+            </div>
+          </div>
+
+          <!-- Estado: com conta -->
+          <div id="contaComConta" style="display:none;">
+            <p style="font-size:12px; color: var(--pink-deep); margin-bottom:8px;">
+              Conectada como <strong id="textoNickname"></strong>
+            </p>
+            <button class="config-btn" id="btnTrocarSenha">Trocar senha</button>
+            <button class="config-btn config-danger" id="btnSairConta" style="margin-top:8px;">Sair da conta</button>
+          </div>
+
+          <!-- Trocar senha (oculto por padrão) -->
+          <div id="contaTrocarSenha" style="display:none; margin-top:8px;">
+            <input type="password" id="inputSenhaAtual" class="input-cozy" placeholder="Senha atual" maxlength="30">
+            <input type="password" id="inputSenhaNova" class="input-cozy" placeholder="Senha nova" maxlength="30" style="margin-top:8px;">
+            <button class="config-btn" id="btnConfirmarTrocarSenha" style="margin-top:8px;">Confirmar</button>
+          </div>
+
+          <p id="textoFeedbackConta" style="font-size:12px; color: var(--pink-deep); margin-top:8px; display:none;"></p>
         </div>
       </div>
     </div>
@@ -866,7 +887,7 @@
         <div class="item-loja-info">
           <h3>Florzinha Especial</h3>
           <p class="item-desc">Uma florzinha fofa da Hanna pra gatinha pretinha. Simples, mas cheio de carinho.</p>
-          <p>+10% vínculo • 1 vez por dia</p>
+          <p>+10% vínculo • 1 vez a cada 8 horas</p>
           <div class="item-loja-footer">
             <span class="preco-chip">🪙 10.000</span>
             <button id="btnPresenteFlor" class="btn-comprar">Presentear</button>
@@ -880,7 +901,7 @@
         <div class="item-loja-info">
           <h3>Caixinha de Chocolate</h3>
           <p class="item-desc">Um presente mais elaborado. A gatinha vai ficar com o coração quentinho.</p>
-          <p>+20% vínculo • 1 vez por dia</p>
+          <p>+20% vínculo • 1 vez a cada 8 horas</p>
           <div class="item-loja-footer">
             <span class="preco-chip">🪙 20.000</span>
             <button id="btnPresenteChocolate" class="btn-comprar">Presentear</button>
@@ -894,7 +915,7 @@
         <div class="item-loja-info">
           <h3>Cesta Especial</h3>
           <p class="item-desc">Uma cesta cheia de flores, mimos e surpresas. O presente mais especial da loja.</p>
-          <p>+40% vínculo • 1 vez por dia</p>
+          <p>+40% vínculo • 1 vez a cada 8 horas</p>
           <div class="item-loja-footer">
             <span class="preco-chip">🪙 40.000</span>
             <button id="btnPresenteCesta" class="btn-comprar">Presentear</button>

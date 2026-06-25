@@ -747,6 +747,7 @@ function mostrarResultado(titulo, emoji, ganhou, desc, jogoFn) {
   document.getElementById("btnSairJogo").onclick = voltarParaMenu;
 }
 
+// JOGO 1: MEMÓRIA
 function jogoMemoria() {
   abrirArena("Memória das Patas");
 
@@ -757,10 +758,10 @@ function jogoMemoria() {
       <img src="assets/sprites/hanna/curiosa.png" id="memHanna">
     </div>
     <div class="memoria-grid">
-      <button class="memoria-btn" data-cor="rosa">🐾</button>
-      <button class="memoria-btn" data-cor="roxo">⭐</button>
-      <button class="memoria-btn" data-cor="verde">🌸</button>
-      <button class="memoria-btn" data-cor="amarelo">🐟</button>
+      <button class="memoria-btn" data-cor="rosa"><img src="assets/shop/almofada.png" style="width:40px;height:40px;object-fit:contain;image-rendering:pixelated;"></button>
+      <button class="memoria-btn" data-cor="roxo"><img src="assets/shop/novelo.png" style="width:40px;height:40px;object-fit:contain;image-rendering:pixelated;"></button>
+      <button class="memoria-btn" data-cor="verde"><img src="assets/shop/ratinho.png" style="width:40px;height:40px;object-fit:contain;image-rendering:pixelated;"></button>
+      <button class="memoria-btn" data-cor="amarelo"><img src="assets/shop/sashimi.png" style="width:40px;height:40px;object-fit:contain;image-rendering:pixelated;"></button>
     </div>
     <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--text-light);font-weight:700;" id="memStatus">Preparando...</div>`;
 
@@ -843,7 +844,7 @@ function jogoMemoria() {
         jogoAtivo.timers.push(setTimeout(() => {
           mostrarResultado(
             "Fim de jogo!",
-            nivelAtual >= 5 ? "😺" : "😿",
+            nivelAtual >= 5 ? "" : "",
             total,
             nivelAtual >= 5
               ? `Incrível! Você chegou ao nível ${nivelAtual}!`
@@ -1471,7 +1472,7 @@ let ultimoPresenteChocolate = Number(localStorage.getItem("ultimoPresenteChocola
 let ultimoPresenteCesta     = Number(localStorage.getItem("ultimoPresenteCesta"))     || 0;
 
 function podeDarPresente(ultimaVez) {
-  return (Date.now() - ultimaVez) >= 24 * 60 * 60 * 1000;
+  return (Date.now() - ultimaVez) >= 8 * 60 * 60 * 1000;
 }
 
 function darPresente(custo, bonus, chaveUltima, nomePresente) {
@@ -2478,20 +2479,26 @@ function _salvar() {
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
   const agora = Date.now();
   if (agora - _ultimoSaveNuvem > 2 * 60 * 1000) {
-    _ultimoSaveNuvem = agora;
-    import("./firebase.js").then(({ salvarProgressoNuvem }) => {
-      salvarProgressoNuvem({
-        fome, felicidade, energia, higiene, sementes, moedas,
-        amizade, vinculoGatinhas, dormindo,
-        gatinhaDesbloqueada, nomeGatinha,
-        sementesDouradas, ultimaSementeDourada,
-        steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
-        conquistas: JSON.stringify(conquistasDesbloqueadas),
-        lembretes: JSON.stringify(lembretes),
-      });
-    }).catch(() => {});
+    const id = localStorage.getItem("hannaDeviceId");
+    if (id) { // só salva na nuvem se tiver conta criada
+      _ultimoSaveNuvem = agora;
+      import("./firebase.js").then(({ salvarProgressoNuvem }) => {
+        salvarProgressoNuvem({
+          fome, felicidade, energia, higiene, sementes, moedas,
+          amizade, vinculoGatinhas, dormindo,
+          gatinhaDesbloqueada, nomeGatinha,
+          sementesDouradas, ultimaSementeDourada,
+          steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
+          ultimaInteracaoGatinha,
+          fazenda: JSON.stringify(fazenda),
+          conquistas: JSON.stringify(conquistasDesbloqueadas),
+          lembretes: JSON.stringify(lembretes),
+        });
+      }).catch(() => {});
+    }
   }
 }
+
 
 // ── SISTEMA DE VÍNCULO DA GATINHA ────────────────────────────
 // - Cai 2% por hora sem interação
@@ -2509,6 +2516,8 @@ function registrarInteracaoGatinha() {
 
 function calcularDecayVinculo() {
   if (!gatinhaDesbloqueada) return;
+  if (dormindo) return; // vínculo não cai enquanto a Hanna dorme
+  
   const agora = Date.now();
   const horasOff = (agora - ultimaInteracaoGatinha) / 3600000;
   if (horasOff >= 1) {
@@ -2971,38 +2980,35 @@ function carregarDadosNoJogo(dados) {
     try { conquistasDesbloqueadas = JSON.parse(dados.conquistas); } catch(e) {}
   }
 
+  ultimaInteracaoGatinha = Number(dados.ultimaInteracaoGatinha) || Date.now();
+
+  if (dados.fazenda) {
+    try {
+      const fazendaSalva = JSON.parse(dados.fazenda);
+      fazendaSalva.forEach((slot, idx) => {
+        if (fazenda[idx]) {
+          fazenda[idx].plantada  = slot.plantada  || false;
+          fazenda[idx].pronta    = slot.pronta    || false;
+          fazenda[idx].flor      = slot.flor      || "";
+          fazenda[idx].tempoFim  = slot.tempoFim  || 0;
+        }
+      });
+    } catch(e) {}
+  }
+
   if (dados.lembretes) {
     try { lembretes = JSON.parse(dados.lembretes); } catch(e) {}
   }
 }
 
 // ENTRAR
-btnEntrar.addEventListener("click", async () => {
+btnEntrar.addEventListener("click", () => {
 
   document.querySelector(".bottomNav").style.display = "flex";
 
   somBotao.volume = parseFloat(volumeEfeitos.value);
   somBotao.play().catch(() => {});
   vibrar(15);
-
-  // Tenta carregar save da nuvem antes de abrir o jogo
-  try {
-    const dadosNuvem = await carregarProgressoNuvem();
-    if (dadosNuvem) {
-      carregarDadosNoJogo(dadosNuvem);
-    } else {
-      // Primeira vez com esse ID — salva imediatamente
-      await salvarProgressoNuvem({
-        fome, felicidade, energia, higiene, sementes, moedas,
-        amizade, vinculoGatinhas, dormindo,
-        gatinhaDesbloqueada, nomeGatinha,
-        sementesDouradas, ultimaSementeDourada,
-        steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
-        conquistas: JSON.stringify(conquistasDesbloqueadas),
-        lembretes: JSON.stringify(lembretes),
-      });
-    }
-  } catch (e) {}
 
   telaInicial.classList.add("fadeOut");
 
@@ -3893,69 +3899,52 @@ btnAbrirCaixa.addEventListener("click", () => {
 
   setTimeout(() => {
     caixaSprite.classList.remove("caixaTremendo");
+    caixaSprite.src = "assets/shop/caixa-aberta.png";
 
-  caixaSprite.src = "assets/shop/caixa-aberta.png";
+    const temSementeDourada = Math.random() < 0.05; // 5% de chance
+    const quantidadePremios = temSementeDourada ? 3 : (Math.random() < 0.5 ? 3 : 4);
 
-  const quantidadePremios =
-    Math.random() < 0.5 ? 3 : 4;
+    const premiosDisponiveis = [...premiosCaixa];
+    const premiosRecebidos = [];
 
-  const premiosDisponiveis =
-    [...premiosCaixa];
+    for (let i = 0; i < quantidadePremios; i++) {
+      const indice = Math.floor(Math.random() * premiosDisponiveis.length);
+      const premio = premiosDisponiveis.splice(indice, 1)[0];
+      premio.aplicar();
+      premiosRecebidos.push(premio);
+    }
 
-  const premiosRecebidos = [];
+    // Adiciona semente dourada se sorteou
+    if (temSementeDourada) {
+      sementesDouradas++;
+      localStorage.setItem("sementesDouradas", sementesDouradas);
+      premiosRecebidos.unshift({
+        nome: "Semente Dourada",
+        sprite: "assets/farm/semente-dourada.png",
+      });
+    }
 
-  for (let i = 0; i < quantidadePremios; i++) {
+    textoCaixa.textContent = "Você encontrou:";
 
-    const indice =
-      Math.floor(
-        Math.random() *
-        premiosDisponiveis.length
-      );
+    resultadoCaixa.style.display = "block";
+    resultadoCaixa.innerHTML = premiosRecebidos.map(premio => `
+      <div class="premioCaixa">
+        <img src="${premio.sprite}" class="premioCaixaSprite" alt="${premio.nome}">
+        <span>${premio.nome}</span>
+      </div>
+    `).join("");
 
-    const premio =
-      premiosDisponiveis.splice(indice, 1)[0];
+    btnAbrirCaixa.style.display = "none";
+    btnFecharCaixa.style.display = "block";
 
-    premio.aplicar();
-
-    premiosRecebidos.push(
-      premio
-    );
-  }
-
-  textoCaixa.textContent =
-    "Você encontrou:";
-
-  resultadoCaixa.style.display =
-    "block";
-
-  resultadoCaixa.innerHTML =
-  premiosRecebidos.map(premio => `
-    <div class="premioCaixa">
-      <img
-        src="${premio.sprite}"
-        class="premioCaixaSprite"
-        alt="${premio.nome}"
-      >
-      <span>${premio.nome}</span>
-    </div>
-  `).join("");
-
-  btnAbrirCaixa.style.display =
-    "none";
-
-  btnFecharCaixa.style.display =
-    "block";
-
-  atualizarStatus();
+    atualizarStatus();
 
   }, 500);
 
 });
 
 btnFecharCaixa.addEventListener("click", () => {
-
   telaCaixa.style.display = "none";
-
 });
 
 // Sorteio Caixa Misteriosa - Comum
@@ -4658,27 +4647,27 @@ const textMute   = document.getElementById("textMute");
 
 function aplicarMute() {
 
-  // Trilhas
+  // Só muta as trilhas
   Object.values(trilhas).forEach(audio => {
     if (!audio) return;
     audio.muted = isMuted;
   });
 
-  // Efeitos sonoros
+  // Efeitos gerais (botão, compra, banho, etc) — também mutados
   const efeitos = [
-    somBotao, somCompra, somBanho, somPurr,
+    somBotao, somCompra, somBanho,
     somCarinho, somComida, somDormir, somAcordar,
     document.getElementById("somMoeda"),
     document.getElementById("somChuva"),
-    document.getElementById("somMeow1"),
-    document.getElementById("somMeow2"),
-    document.getElementById("somMeow3"),
-    document.getElementById("somMeowAdocao"),
   ];
   efeitos.forEach(audio => {
     if (!audio) return;
     audio.muted = isMuted;
   });
+
+  // Reações dos pets — NUNCA mutadas
+  // somPurr, somMeow1, somMeow2, somMeow3, somMeowAdocao
+  // ficam fora propositalmente
 
   if (iconeMute) {
     iconeMute.textContent = isMuted ? "🔇" : "🔊";
@@ -4689,7 +4678,6 @@ function aplicarMute() {
   }
 
   localStorage.setItem("muted", isMuted);
-
 }
 
 if (btnMute) {
@@ -4816,31 +4804,145 @@ const btnRecuperarSave = document.getElementById("btnRecuperarSave");
 const idAtual = localStorage.getItem("hannaDeviceId") || "não encontrado";
 if (textoIdSave) textoIdSave.textContent = idAtual;
 
-btnRecuperarSave?.addEventListener("click", async () => {
-  const novoId = inputIdSave.value.trim();
-  if (!novoId) {
-    mostrarMensagem("Digite um ID válido.");
+// ── SISTEMA DE CONTA ─────────────────────────
+const contaSemConta     = document.getElementById("contaSemConta");
+const contaComConta     = document.getElementById("contaComConta");
+const contaTrocarSenha  = document.getElementById("contaTrocarSenha");
+const textoNickname     = document.getElementById("textoNickname");
+const textoFeedback     = document.getElementById("textoFeedbackConta");
+
+function mostrarFeedbackConta(msg, erro = false) {
+  textoFeedback.textContent = msg;
+  textoFeedback.style.color = erro ? "#ff5555" : "var(--pink-deep)";
+  textoFeedback.style.display = "block";
+  setTimeout(() => textoFeedback.style.display = "none", 3000);
+}
+
+function atualizarEstadoConta() {
+  const id = localStorage.getItem("hannaDeviceId");
+  if (id) {
+    contaSemConta.style.display    = "none";
+    contaComConta.style.display    = "block";
+    contaTrocarSenha.style.display = "none";
+    textoNickname.textContent      = id;
+  } else {
+    contaSemConta.style.display    = "block";
+    contaComConta.style.display    = "none";
+    contaTrocarSenha.style.display = "none";
+  }
+}
+
+// Atualiza estado ao carregar
+atualizarEstadoConta();
+
+// CRIAR CONTA
+document.getElementById("btnCriarConta")?.addEventListener("click", async () => {
+  const nickname = document.getElementById("inputNickname").value.trim();
+  const senha    = document.getElementById("inputSenha").value.trim();
+
+  if (!nickname || !senha) {
+    mostrarFeedbackConta("Preencha nickname e senha.", true);
+    return;
+  }
+  if (senha.length < 4) {
+    mostrarFeedbackConta("Senha precisa ter pelo menos 4 caracteres.", true);
     return;
   }
 
-  localStorage.setItem("hannaDeviceId", novoId);
+  mostrarFeedbackConta("Criando conta...");
 
-  try {
-    const { carregarProgressoNuvem } = await import("./firebase.js");
-    const dados = await carregarProgressoNuvem();
-    if (dados) {
-      carregarDadosNoJogo(dados);
-      atualizarStatus();
-      mostrarMensagem("Save recuperado com sucesso!");
-      if (textoIdSave) textoIdSave.textContent = novoId;
-    } else {
-      mostrarMensagem("Nenhum save encontrado com esse ID.");
-      localStorage.removeItem("hannaDeviceId");
-    }
-  } catch(e) {
-    console.log("Erro:", e);
-    mostrarMensagem("Erro ao recuperar save.");
+  const { criarConta, salvarProgressoNuvem, hashSenha } = await import("./firebase.js");
+  const resultado = await criarConta(nickname, senha);
+
+  if (!resultado.ok) {
+    mostrarFeedbackConta(resultado.erro, true);
+    return;
   }
+
+  // Salva o progresso atual na nuvem com a senha
+  const senhaHash = await hashSenha(senha);
+  await salvarProgressoNuvem({
+    senha: senhaHash,
+    fome, felicidade, energia, higiene, sementes, moedas,
+    amizade, vinculoGatinhas, dormindo,
+    gatinhaDesbloqueada, nomeGatinha,
+    sementesDouradas, ultimaSementeDourada,
+    steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
+    ultimaInteracaoGatinha,
+    fazenda: JSON.stringify(fazenda),
+    conquistas: JSON.stringify(conquistasDesbloqueadas),
+    lembretes: JSON.stringify(lembretes),
+  });
+
+  mostrarFeedbackConta("Conta criada com sucesso!");
+  atualizarEstadoConta();
+});
+
+// ENTRAR COM CONTA
+document.getElementById("btnEntrarConta")?.addEventListener("click", async () => {
+  const nickname = document.getElementById("inputNickname").value.trim();
+  const senha    = document.getElementById("inputSenha").value.trim();
+
+  if (!nickname || !senha) {
+    mostrarFeedbackConta("Preencha nickname e senha.", true);
+    return;
+  }
+
+  mostrarFeedbackConta("Entrando...");
+
+  const { entrarComConta } = await import("./firebase.js");
+  const resultado = await entrarComConta(nickname, senha);
+
+  if (!resultado.ok) {
+    mostrarFeedbackConta(resultado.erro, true);
+    return;
+  }
+
+  carregarDadosNoJogo(resultado.dados);
+  atualizarStatus();
+  mostrarFeedbackConta("Save recuperado com sucesso!");
+  atualizarEstadoConta();
+});
+
+// TROCAR SENHA
+document.getElementById("btnTrocarSenha")?.addEventListener("click", () => {
+  contaTrocarSenha.style.display =
+    contaTrocarSenha.style.display === "none" ? "block" : "none";
+});
+
+document.getElementById("btnConfirmarTrocarSenha")?.addEventListener("click", async () => {
+  const id         = localStorage.getItem("hannaDeviceId");
+  const senhaAtual = document.getElementById("inputSenhaAtual").value.trim();
+  const senhaNova  = document.getElementById("inputSenhaNova").value.trim();
+
+  if (!senhaAtual || !senhaNova) {
+    mostrarFeedbackConta("Preencha os dois campos.", true);
+    return;
+  }
+  if (senhaNova.length < 4) {
+    mostrarFeedbackConta("Senha nova precisa ter pelo menos 4 caracteres.", true);
+    return;
+  }
+
+  mostrarFeedbackConta("Alterando senha...");
+
+  const { trocarSenha } = await import("./firebase.js");
+  const resultado = await trocarSenha(id, senhaAtual, senhaNova);
+
+  if (!resultado.ok) {
+    mostrarFeedbackConta(resultado.erro, true);
+    return;
+  }
+
+  mostrarFeedbackConta("Senha alterada com sucesso!");
+  contaTrocarSenha.style.display = "none";
+});
+
+// SAIR DA CONTA
+document.getElementById("btnSairConta")?.addEventListener("click", () => {
+  localStorage.removeItem("hannaDeviceId");
+  mostrarFeedbackConta("Saiu da conta.");
+  atualizarEstadoConta();
 });
 
 // Voltar do menu de minigames
@@ -4886,64 +4988,63 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
 function jogoCartinhas() {
   abrirArena("Cartinhas da Hanna");
 
-  // DIFICULDADE
-  // Fácil  = 6 pares (12 cartas)  | grid 4×3
-  // Médio  = 10 pares (20 cartas) | grid 4×5
-  // Difícil= 14 pares (28 cartas) | grid 4×7
-  // A dificuldade é escolhida antes de iniciar
-
   const SPRITES = [
-    { id: "animada",   src: "assets/sprites/hanna/animada.png",   nome: "Animada"   },
-    { id: "apaixonada",src: "assets/sprites/hanna/apaixonada.png",nome: "Apaixonada"},
-    { id: "assustada", src: "assets/sprites/hanna/assustada.png", nome: "Assustada" },
-    { id: "brava",     src: "assets/sprites/hanna/brava.png",     nome: "Brava"     },
-    { id: "carinho",   src: "assets/sprites/hanna/carinho.png",   nome: "Carinho"   },
-    { id: "comendo",   src: "assets/sprites/hanna/comendo.png",   nome: "Comendo"   },
-    { id: "contente",  src: "assets/sprites/hanna/contente.png",  nome: "Contente"  },
-    { id: "curiosa",   src: "assets/sprites/hanna/curiosa.png",   nome: "Curiosa"   },
-    { id: "dormindo",  src: "assets/sprites/hanna/dormindo.png",  nome: "Dormindo"  },
-    { id: "feliz",     src: "assets/sprites/hanna/feliz.png",     nome: "Feliz"     },
-    { id: "hanna",     src: "assets/sprites/hanna/hanna.png",     nome: "Hanna"     },
-    { id: "neutra",    src: "assets/sprites/hanna/neutra.png",    nome: "Neutra"    },
-    { id: "sonolenta", src: "assets/sprites/hanna/sonolenta.png", nome: "Sonolenta" },
-    { id: "triste",    src: "assets/sprites/hanna/triste.png",    nome: "Triste"    },
+    { id: "animada",           src: "assets/sprites/hanna/animada.png",             nome: "Animada"           },
+    { id: "apaixonada",        src: "assets/sprites/hanna/apaixonada.png",          nome: "Apaixonada"        },
+    { id: "aprontona",         src: "assets/sprites/hanna/aprontona.png",           nome: "Aprontona"         },
+    { id: "assustada",         src: "assets/sprites/hanna/assustada.png",           nome: "Assustada"         },
+    { id: "banho",             src: "assets/sprites/hanna/banho.png",               nome: "Banho"             },
+    { id: "banho-tomado",      src: "assets/sprites/hanna/banho-tomado.png",        nome: "Banho Tomado"      },
+    { id: "brava",             src: "assets/sprites/hanna/brava.png",               nome: "Brava"             },
+    { id: "brincando",         src: "assets/sprites/hanna/brincando.png",           nome: "Brincando"         },
+    { id: "brincando-novelo",  src: "assets/sprites/hanna/brincando-novelo.png",    nome: "Brincando de Novelo" },
+    { id: "carinho",           src: "assets/sprites/hanna/carinho.png",             nome: "Carinho"           },
+    { id: "carinho-barriga",   src: "assets/sprites/hanna/carinho-barriga.png",     nome: "Carinho na Barriga"},
+    { id: "chorando-felicidade", src: "assets/sprites/hanna/chorando-felicidade.png", nome: "Chorando de Felicidade" },
+    { id: "comendo",           src: "assets/sprites/hanna/comendo.png",             nome: "Comendo"           },
+    { id: "contente",          src: "assets/sprites/hanna/contente.png",            nome: "Contente"          },
+    { id: "curiosa",           src: "assets/sprites/hanna/curiosa.png",             nome: "Curiosa"           },
+    { id: "doidinha",          src: "assets/sprites/hanna/doidinha.png",            nome: "Doidinha"          },
+    { id: "dormindo",          src: "assets/sprites/hanna/dormindo.png",            nome: "Dormindo"          },
+    { id: "feliz",             src: "assets/sprites/hanna/feliz.png",               nome: "Feliz"             },
+    { id: "hanna",             src: "assets/sprites/hanna/hanna.png",               nome: "Hanna"             },
+    { id: "medo",              src: "assets/sprites/hanna/medo.png",                nome: "Com Medo"          },
+    { id: "metida",            src: "assets/sprites/hanna/metida.png",              nome: "Metida"            },
+    { id: "neutra",            src: "assets/sprites/hanna/neutra.png",              nome: "Neutra"            },
+    { id: "sonolenta",         src: "assets/sprites/hanna/sonolenta.png",           nome: "Sonolenta"         },
+    { id: "triste",            src: "assets/sprites/hanna/triste.png",              nome: "Triste"            },
+    { id: "vergonha",          src: "assets/sprites/hanna/vergonha.png",            nome: "Vergonha"          },
   ];
 
-  // TELA DE SELEÇÃO DE DIFICULDADE
   arenaConteudo.innerHTML = `
     <div class="cartinha-dif-wrap">
-
       <div class="cartinha-hanna-topo">
         <img src="assets/sprites/hanna/animada.png" id="cartinhaDifHanna">
-        <div class="cartinha-fala">Escolha a dificuldade! 🃏</div>
+        <div class="cartinha-fala">Escolha a dificuldade!</div>
       </div>
-
       <div class="cartinha-dif-lista">
 
         <button class="cartinha-dif-btn" data-dif="facil">
-          <span class="cartinha-dif-emoji">🌸</span>
           <div class="cartinha-dif-info">
-            <div class="cartinha-dif-titulo">Fácil</div>
+            <div class="cartinha-dif-titulo">Facil</div>
             <div class="cartinha-dif-desc">6 pares · 12 cartas</div>
-            <div class="cartinha-dif-recomp">🪙 até 15 moedas</div>
+            <div class="cartinha-dif-recomp">ate 15 moedas</div>
           </div>
         </button>
 
         <button class="cartinha-dif-btn" data-dif="medio">
-          <span class="cartinha-dif-emoji">🐾</span>
           <div class="cartinha-dif-info">
-            <div class="cartinha-dif-titulo">Médio</div>
+            <div class="cartinha-dif-titulo">Medio</div>
             <div class="cartinha-dif-desc">10 pares · 20 cartas</div>
-            <div class="cartinha-dif-recomp">🪙 até 30 moedas</div>
+            <div class="cartinha-dif-recomp">ate 30 moedas</div>
           </div>
         </button>
 
         <button class="cartinha-dif-btn" data-dif="dificil">
-          <span class="cartinha-dif-emoji">⚡</span>
           <div class="cartinha-dif-info">
-            <div class="cartinha-dif-titulo">Difícil</div>
+            <div class="cartinha-dif-titulo">Dificil</div>
             <div class="cartinha-dif-desc">14 pares · 28 cartas</div>
-            <div class="cartinha-dif-recomp">🪙 até 50 moedas</div>
+            <div class="cartinha-dif-recomp">ate 50 moedas</div>
           </div>
         </button>
 
@@ -4954,7 +5055,6 @@ function jogoCartinhas() {
     btn.addEventListener("click", () => iniciarCartinhas(btn.dataset.dif));
   });
 
-  // JOGO 5
   function iniciarCartinhas(dificuldade) {
     pararJogoAtivo();
 
@@ -4964,31 +5064,27 @@ function jogoCartinhas() {
       dificil: { pares: 14, colunas: 4, moedaBase: 260, tempoBase: 210 },
     }[dificuldade];
 
-    // Embaralha e pega os sprites necessários
     const spritesEscolhidos = [...SPRITES]
       .sort(() => Math.random() - .5)
       .slice(0, config.pares);
 
-    // Duplica e embaralha para formar pares
     const cartas = [...spritesEscolhidos, ...spritesEscolhidos]
       .sort(() => Math.random() - .5)
       .map((s, i) => ({ ...s, uid: i, virada: false, encontrada: false }));
 
     let tempo        = config.tempoBase;
-    let viradas      = [];   // máx 2 cartas viradas
+    let viradas      = [];
     let bloqueado    = false;
     let paresAcertos = 0;
     let erros        = 0;
     let movimentos   = 0;
 
-    // RENDER
     arenaConteudo.innerHTML = `
       <div class="cartinha-hud">
-        <div class="cartinha-hud-item">⏱️ <span id="ctTimer">${tempo}</span>s</div>
-        <div class="cartinha-hud-item">🃏 <span id="ctPares">0</span>/${config.pares}</div>
-        <div class="cartinha-hud-item">👆 <span id="ctMovs">0</span></div>
+        <div class="cartinha-hud-item">Tempo: <span id="ctTimer">${tempo}</span>s</div>
+        <div class="cartinha-hud-item">Pares: <span id="ctPares">0</span>/${config.pares}</div>
+        <div class="cartinha-hud-item">Mov: <span id="ctMovs">0</span></div>
       </div>
-
       <div class="cartinha-grid" id="ctGrid"
         style="grid-template-columns: repeat(${config.colunas}, 1fr);">
       </div>`;
@@ -4998,7 +5094,6 @@ function jogoCartinhas() {
     const paresEl = document.getElementById("ctPares");
     const movsEl  = document.getElementById("ctMovs");
 
-    // Cria as cartas no DOM
     cartas.forEach(carta => {
       const el = document.createElement("div");
       el.className   = "cartinha";
@@ -5016,7 +5111,6 @@ function jogoCartinhas() {
       grid.appendChild(el);
     });
 
-    // LÓGICA
     function clicarCarta(carta, el) {
       if (bloqueado) return;
       if (carta.virada || carta.encontrada) return;
@@ -5033,7 +5127,6 @@ function jogoCartinhas() {
         const [a, b] = viradas;
 
         if (a.carta.id === b.carta.id) {
-          // PAR ENCONTRADO
           paresAcertos++;
           paresEl.textContent = paresAcertos;
           a.el.classList.add("encontrada");
@@ -5041,15 +5134,11 @@ function jogoCartinhas() {
           a.carta.encontrada = b.carta.encontrada = true;
           viradas = [];
           bloqueado = false;
-
           if (paresAcertos === config.pares) terminar(true);
-
         } else {
-          // ERROU — vira de volta
           erros++;
           a.el.classList.add("errada");
           b.el.classList.add("errada");
-
           jogoAtivo.timers.push(setTimeout(() => {
             a.carta.virada = b.carta.virada = false;
             a.el.classList.remove("virada","errada");
@@ -5061,7 +5150,6 @@ function jogoCartinhas() {
       }
     }
 
-    // TIMER
     const countdown = setInterval(() => {
       tempo--;
       timerEl.textContent = tempo;
@@ -5070,38 +5158,31 @@ function jogoCartinhas() {
     }, 1000);
     jogoAtivo.intervals.push(countdown);
 
-    // RESULTADO
     function terminar(venceu) {
       pararJogoAtivo();
 
       let moedas_ganhas = 0;
-
       if (venceu) {
-        // Recompensa baseada em tempo restante e erros
-        const bonusTempo  = Math.floor(tempo / config.tempoBase * config.moedaBase * 0.4);
-        const bonusErros  = Math.max(0, config.moedaBase * 0.6 - erros * 2);
+        const bonusTempo = Math.floor(tempo / config.tempoBase * config.moedaBase * 0.4);
+        const bonusErros = Math.max(0, config.moedaBase * 0.6 - erros * 2);
         moedas_ganhas = Math.min(config.moedaBase, Math.max(5, Math.round(bonusTempo + bonusErros)));
       } else {
-        // Perdeu: ganha proporcional aos pares encontrados
         moedas_ganhas = Math.floor(paresAcertos / config.pares * config.moedaBase * 0.4);
       }
 
       ganharMoedas(moedas_ganhas);
-
-      const emoji = venceu
-        ? (erros <= 5 ? "🏆" : "🎉")
-        : (paresAcertos >= config.pares * 0.6 ? "😺" : "😿");
+      desbloquearConquista("colecionadora");
 
       const titulo = venceu
-        ? (erros <= 3 ? "Perfeito! Memória incrível!" : "Você completou!")
+        ? (erros <= 3 ? "Perfeito! Memoria incrivel!" : "Voce completou!")
         : "Tempo esgotado!";
 
       const desc = venceu
         ? `${movimentos} movimentos · ${erros} erros · ${tempo}s restantes`
-        : `Você encontrou ${paresAcertos} de ${config.pares} pares.`;
+        : `Voce encontrou ${paresAcertos} de ${config.pares} pares.`;
 
       jogoAtivo.timers.push(setTimeout(() => {
-        mostrarResultado(titulo, emoji, moedas_ganhas, desc, jogoCartinhas);
+        mostrarResultado(titulo, "", moedas_ganhas, desc, jogoCartinhas);
       }, 600));
     }
   }
@@ -5864,10 +5945,10 @@ function iniciarVisitasSteve() {
   ];
   const intervalo = setInterval(() => {
     if (!steveDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.6) return; // 60% de chance
+    if (Math.random() > 0.6) return;
     const fala = falas[Math.floor(Math.random() * falas.length)];
-    mostrarVisitaPet("assets/sprites/pets/steve-visita.png", fala, 8000, "steve");
-  }, 8 * 60 * 1000); // a cada 8 minutos
+    mostrarVisitaPet("assets/sprites/pets/steve-visita.png", fala, 15000, "steve");
+  }, 5 * 60 * 1000);
 }
 
 function iniciarVisitasJoao() {
@@ -5879,10 +5960,10 @@ function iniciarVisitasJoao() {
   ];
   const intervalo = setInterval(() => {
     if (!joaoDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.6) return; // 60% de chance
+    if (Math.random() > 0.6) return;
     const fala = falas[Math.floor(Math.random() * falas.length)];
-    mostrarVisitaPet("assets/sprites/pets/joao-visita.png", fala, 8000, "joao");
-  }, 8 * 60 * 1000);
+    mostrarVisitaPet("assets/sprites/pets/joao-visita.png", fala, 15000, "joao");
+  }, 5 * 60 * 1000);
 }
 
 function iniciarVisitasJames() {
@@ -5894,10 +5975,10 @@ function iniciarVisitasJames() {
   ];
   const intervalo = setInterval(() => {
     if (!jamesDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.6) return; // 60% de chance
+    if (Math.random() > 0.6) return;
     const fala = falas[Math.floor(Math.random() * falas.length)];
-    mostrarVisitaPet("assets/sprites/pets/james-visita.png", fala, 8000, "james");
-  }, 8 * 60 * 1000);
+    mostrarVisitaPet("assets/sprites/pets/james-visita.png", fala, 15000, "james");
+  }, 5 * 60 * 1000);
 }
 
 // Inicia visitas se já desbloqueados
@@ -6372,17 +6453,17 @@ function jogoRecados() {
 //   QUEBRA-CABEÇA — 8 NÍVEIS PROGRESSIVOS
 
 function jogoQuebracabeca() {
-  abrirArena("Quebra-Cabeça 🧩");
+  abrirArena("Quebra-Cabeca");
 
   const NIVEIS = [
     { sprite: "assets/sprites/puzzle/puzzle-nivel1.png", grade: 3, nome: "Hanna brincando" },
     { sprite: "assets/sprites/puzzle/puzzle-nivel2.png", grade: 4, nome: "Hanna e a Gatinha" },
-    { sprite: "assets/sprites/puzzle/puzzle-nivel3.png", grade: 4, nome: "João Antônio o aprontão" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel3.png", grade: 4, nome: "Joao Antonio o aprontao" },
     { sprite: "assets/sprites/puzzle/puzzle-nivel4.png", grade: 5, nome: "James Cook roubando presunto" },
     { sprite: "assets/sprites/puzzle/puzzle-nivel5.png", grade: 5, nome: "Steve Rogers o fofoqueiro" },
-    { sprite: "assets/sprites/puzzle/puzzle-nivel6.png", grade: 6, nome: "Uma família Completa" },
-    { sprite: "assets/sprites/puzzle/puzzle-nivel7.png", grade: 6, nome: "Manhã de Caos em Casa" },
-    { sprite: "assets/sprites/puzzle/puzzle-nivel8.png", grade: 6, nome: "Noite de Cinema em Família" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel6.png", grade: 6, nome: "Uma familia Completa" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel7.png", grade: 6, nome: "Manha de Caos em Casa" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel8.png", grade: 6, nome: "Noite de Cinema em Familia" },
   ];
 
   let nivelAtual = parseInt(localStorage.getItem("puzzleNivel") || "0");
@@ -6393,9 +6474,7 @@ function jogoQuebracabeca() {
     const N     = nivel.grade;
     const total = N * N;
 
-    // Cria peças embaralhadas
     let pecas = Array.from({length: total}, (_, i) => i);
-    // Embaralha garantindo solução
     do {
       for (let i = pecas.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -6422,9 +6501,9 @@ function jogoQuebracabeca() {
       arenaConteudo.innerHTML = `
         <div class="pz-wrap">
           <div class="pz-info">
-            <span>🧩 Nível ${idx + 1}/${NIVEIS.length}</span>
-            <span>👣 ${movimentos} mov</span>
-            <span>✅ ${porcento}%</span>
+            <span>Nivel ${idx + 1}/${NIVEIS.length}</span>
+            <span>${movimentos} mov</span>
+            <span>${porcento}%</span>
           </div>
           <div class="pz-label">${nivel.nome}</div>
           <div class="pz-grade" id="pzGrade" style="grid-template-columns: repeat(${N}, 1fr);">
@@ -6439,7 +6518,7 @@ function jogoQuebracabeca() {
               </div>`;
             }).join("")}
           </div>
-          <div class="pz-dica">Toque em duas peças para trocá-las de lugar</div>
+          <div class="pz-dica">Toque em duas pecas para troca-las de lugar</div>
         </div>`;
 
       document.querySelectorAll(".pz-peca").forEach(el => {
@@ -6470,13 +6549,12 @@ function jogoQuebracabeca() {
       localStorage.setItem("puzzleNivel", Math.max(nivelAtual, proximo).toString());
 
       if (proximo >= NIVEIS.length) {
-        // Completou todos!
         const recomp = 200;
         ganharMoedas(recomp);
         desbloquearConquista("puzzle_mestre");
         jogoAtivo.timers.push(setTimeout(() => {
-          mostrarResultado("Quebra-cabeça completo!", "🥹", recomp,
-            "Você montou todos os níveis! Incrível!", jogoQuebracabeca);
+          mostrarResultado("Quebra-cabeca completo!", "", recomp,
+            "Voce montou todos os niveis! Incrivel!", jogoQuebracabeca);
         }, 800));
       } else {
         const recomp = (idx + 1) * 20;
@@ -6484,10 +6562,9 @@ function jogoQuebracabeca() {
         jogoAtivo.timers.push(setTimeout(() => {
           arenaConteudo.innerHTML = `
             <div class="pz-wrap" style="align-items:center;gap:20px;">
-              <div style="font-size:48px;">🎉</div>
-              <div style="font-weight:900;font-size:16px;color:var(--accent);">Nível ${idx+1} completo!</div>
+              <div style="font-size:32px; color:var(--accent);">Nivel ${idx+1} completo!</div>
               <div style="font-size:13px;color:var(--text-mid);">+${recomp} moedas</div>
-              <button class="steve-btn" id="pzProximo">Próximo nível →</button>
+              <button class="steve-btn" id="pzProximo">Proximo nivel</button>
             </div>`;
           document.getElementById("pzProximo")?.addEventListener("click", () => {
             iniciarNivel(proximo);
@@ -6499,18 +6576,17 @@ function jogoQuebracabeca() {
     render();
   }
 
-  // Menu de seleção de nível
   arenaConteudo.innerHTML = `
     <div class="pz-wrap">
-      <div class="pz-label" style="font-size:14px;">Escolha um nível</div>
+      <div class="pz-label" style="font-size:14px; color:var(--text-dark);">Escolha um nivel</div>
       <div class="pz-niveis">
         ${NIVEIS.map((n, i) => {
           const desbloqueado = i <= nivelAtual;
           return `<div class="pz-nivel-card ${desbloqueado ? "" : "pz-bloqueado"}" data-idx="${i}">
             <img src="${n.sprite}" class="pz-nivel-img">
             <div class="pz-nivel-nome">${i + 1}. ${n.nome}</div>
-            <div class="pz-nivel-grade">${n.grade}×${n.grade}</div>
-            ${desbloqueado ? "" : '<div class="pz-lock">🔒</div>'}
+            <div class="pz-nivel-grade">${n.grade}x${n.grade}</div>
+            ${desbloqueado ? "" : '<div class="pz-lock">bloqueado</div>'}
           </div>`;
         }).join("")}
       </div>
