@@ -4061,11 +4061,11 @@ function comprarPet(btn, chave, nome, callback) {
       mostrarAlertaLoja(`${nome} já visita vocês!`);
       return;
     }
-    if (moedas < 70000) {
+    if (moedas < 50000) {
       mostrarAlertaLoja("⚠️ Moedas insuficientes");
       return;
     }
-    moedas -= 100000;
+    moedas -= 50000;
     localStorage.setItem(chave, "true");
     cinzarPetBtn(btn, nome);
     callback();
