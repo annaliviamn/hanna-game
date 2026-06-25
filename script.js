@@ -2263,7 +2263,7 @@ const falasSementeDourada = [
 ];
 
 function verificarRecompensaSementeDourada() {
-
+  if (dormindo) return; // não entrega semente dormindo
   const todosAltos =
     fome >= 85 &&
     felicidade >= 85 &&
