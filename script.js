@@ -2458,6 +2458,7 @@ function atualizarStatus() {
 
 let _ultimoSaveNuvem = 0;
 let _senhaHash = localStorage.getItem("hannaSenhaHash") || null;
+let _bloqueioSaveNuvem = false;
 
 function _salvar() {
   localStorage.setItem("fome",                    fome);
@@ -2483,7 +2484,7 @@ function _salvar() {
   const agora = Date.now();
   if (agora - _ultimoSaveNuvem > 2 * 60 * 1000) {
     const id = localStorage.getItem("hannaDeviceId");
-    if (id) { // só salva na nuvem se tiver conta criada
+    if (id && !_bloqueioSaveNuvem) { // só salva na nuvem se tiver conta e não estiver bloqueado
       _ultimoSaveNuvem = agora;
       import("./firebase.js").then(({ salvarProgressoNuvem }) => {
         salvarProgressoNuvem({
@@ -3090,20 +3091,16 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   localStorage.setItem("hannaSenhaTexto", senha);
 
   // Sempre carrega da nuvem ao fazer login
-  localStorage.clear(); // limpa tudo antes de carregar da nuvem
+  localStorage.clear();
   carregarDadosNoJogo(resultado.dados);
+  _salvar();
 
-  // Debug — remove depois de confirmar
-  console.log("após carregar — conquistas:", JSON.stringify(conquistasDesbloqueadas));
-  console.log("após carregar — sementesDouradas:", sementesDouradas);
-  
-  localStorage.setItem("updatedAt", resultado.dados.updatedAt || Date.now());
-  
-  // Restaura as infos de conta depois do clear
-  localStorage.setItem("hannaDeviceId", resultado.dados ? nickname.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_") : "");
+  localStorage.setItem("hannaDeviceId", nickname.trim().toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "_"));
   localStorage.setItem("hannaSenhaHash", _senhaHash);
   localStorage.setItem("hannaSenhaTexto", senha);
-  
+
   somBotao.volume = parseFloat(volumeEfeitos.value);
   somBotao.play().catch(() => {});
   vibrar(15);

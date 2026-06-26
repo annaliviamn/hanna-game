@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanna-cache-v45";
+const CACHE_NAME = "hanna-cache-v46";
 
 const ASSETS = [
   "./",
