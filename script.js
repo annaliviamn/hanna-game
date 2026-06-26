@@ -3090,8 +3090,14 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   localStorage.setItem("hannaSenhaTexto", senha);
 
   // Sempre carrega da nuvem ao fazer login
+  localStorage.clear(); // limpa tudo antes de carregar da nuvem
   carregarDadosNoJogo(resultado.dados);
   localStorage.setItem("updatedAt", resultado.dados.updatedAt || Date.now());
+  
+  // Restaura as infos de conta depois do clear
+  localStorage.setItem("hannaDeviceId", resultado.dados ? nickname.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_") : "");
+  localStorage.setItem("hannaSenhaHash", _senhaHash);
+  localStorage.setItem("hannaSenhaTexto", senha);
   
   somBotao.volume = parseFloat(volumeEfeitos.value);
   somBotao.play().catch(() => {});
