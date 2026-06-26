@@ -43,19 +43,22 @@
 
       <!-- Login -->
       <div id="telaLogin">
-        <input type="text" id="inputLoginNickname" class="input-cozy" placeholder="Nickname" maxlength="20">
+        <input type="email" id="inputLoginEmail" class="input-cozy" placeholder="Email" maxlength="50">
         <input type="password" id="inputLoginSenha" class="input-cozy" placeholder="Senha" maxlength="30" style="margin-top:8px;">
         <p id="textoFeedbackLogin" style="font-size:12px; color:#ff5555; margin-top:6px; display:none;"></p>
         <div class="btn-wrap">
           <button id="btnEntrar" class="btn-principal"><span>Entrar</span></button>
           <button id="btnIrCriarConta" class="btn-secundario"><span>Criar conta</span></button>
         </div>
+        <button id="btnEsqueciSenha" style="background:none; border:none; color:var(--pink-deep); font-size:11px; margin-top:8px; cursor:pointer; text-decoration:underline;">
+          Esqueci minha senha
+        </button>
       </div>
 
       <!-- Criar conta -->
       <div id="telaCriarConta" style="display:none;">
-        <input type="text" id="inputCriarNickname" class="input-cozy" placeholder="Nickname" maxlength="20">
-        <input type="password" id="inputCriarSenha" class="input-cozy" placeholder="Senha" maxlength="30" style="margin-top:8px;">
+        <input type="email" id="inputCriarEmail" class="input-cozy" placeholder="Email" maxlength="50">
+        <input type="password" id="inputCriarSenha" class="input-cozy" placeholder="Senha (mín. 6 caracteres)" maxlength="30" style="margin-top:8px;">
         <p id="textoFeedbackCriar" style="font-size:12px; color:#ff5555; margin-top:6px; display:none;"></p>
         <div class="btn-wrap">
           <button id="btnCriarContaInicial" class="btn-principal"><span>Criar conta</span></button>

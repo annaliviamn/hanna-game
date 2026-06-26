@@ -2483,12 +2483,11 @@ function _salvar() {
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
   const agora = Date.now();
   if (agora - _ultimoSaveNuvem > 2 * 60 * 1000) {
-    const id = localStorage.getItem("hannaDeviceId");
-    if (id && !_bloqueioSaveNuvem) { // só salva na nuvem se tiver conta e não estiver bloqueado
+    const uid = localStorage.getItem("hannaUid");
+    if (uid && !_bloqueioSaveNuvem) {
       _ultimoSaveNuvem = agora;
       import("./firebase.js").then(({ salvarProgressoNuvem }) => {
         salvarProgressoNuvem({
-          ...(  _senhaHash ? { senha: _senhaHash } : {}),
           fome, felicidade, energia, higiene, sementes, moedas,
           amizade, vinculoGatinhas, dormindo,
           gatinhaDesbloqueada, nomeGatinha,
@@ -2503,7 +2502,6 @@ function _salvar() {
     }
   }
 }
-
 
 // ── SISTEMA DE VÍNCULO DA GATINHA ────────────────────────────
 // - Cai 2% por hora sem interação
@@ -3060,62 +3058,6 @@ function entrarNoJogo() {
   }, 500);
 }
 
-// ── LOGIN NA TELA INICIAL ────────────────────
-document.getElementById("btnEntrar")?.addEventListener("click", async () => {
-  const nickname = document.getElementById("inputLoginNickname").value.trim();
-  const senha    = document.getElementById("inputLoginSenha").value.trim();
-
-  if (!nickname || !senha) {
-    mostrarFeedbackLogin("Preencha nickname e senha.", true);
-    return;
-  }
-
-  // Mostra loading enquanto busca o save
-  mostrarLoading();
-
-  const { entrarComConta, hashSenha } = await import("./firebase.js");
-  const resultado = await entrarComConta(nickname, senha);
-
-  if (!resultado.ok) {
-    // Esconde loading e mostra erro
-    document.getElementById("telaLoading").style.display = "none";
-    telaInicial.style.display = "block";
-    telaInicial.classList.remove("fadeOut");
-    mostrarFeedbackLogin(resultado.erro, true);
-    return;
-  }
-
-  // Restaura hash da senha em memória
-  _senhaHash = await hashSenha(senha);
-  localStorage.setItem("hannaSenhaHash", _senhaHash);
-  localStorage.setItem("hannaSenhaTexto", senha);
-
-  // Sempre carrega da nuvem ao fazer login
-  localStorage.clear();
-  carregarDadosNoJogo(resultado.dados);
-  _salvar();
-
-  localStorage.setItem("hannaDeviceId", nickname.trim().toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "_"));
-  localStorage.setItem("hannaSenhaHash", _senhaHash);
-  localStorage.setItem("hannaSenhaTexto", senha);
-
-  somBotao.volume = parseFloat(volumeEfeitos.value);
-  somBotao.play().catch(() => {});
-  vibrar(15);
-
-  entrarNoJogo();
-});
-
-// Se já tem conta salva, preenche os campos automaticamente
-const _idSalvo = localStorage.getItem("hannaDeviceId");
-const _senhaTexto = localStorage.getItem("hannaSenhaTexto");
-if (_idSalvo && _senhaTexto) {
-  document.getElementById("inputLoginNickname").value = _idSalvo;
-  document.getElementById("inputLoginSenha").value = _senhaTexto;
-}
-
 // LOGIN NA TELA INICIAL
 function mostrarFeedbackLogin(msg, erro = false) {
   const el = document.getElementById("textoFeedbackLogin");
@@ -3133,49 +3075,104 @@ function mostrarFeedbackCriar(msg, erro = false) {
   el.style.display = "block";
 }
 
+// Botão Entrar
+document.getElementById("btnEntrar")?.addEventListener("click", async () => {
+  const email = document.getElementById("inputLoginEmail").value.trim();
+  const senha = document.getElementById("inputLoginSenha").value.trim();
+
+  if (!email || !senha) {
+    mostrarFeedbackLogin("Preencha email e senha.", true);
+    return;
+  }
+
+  mostrarLoading();
+
+  const { entrarComConta } = await import("./firebase.js");
+  const resultado = await entrarComConta(email, senha);
+
+  if (!resultado.ok) {
+    document.getElementById("telaLoading").style.display = "none";
+    telaInicial.style.display = "block";
+    telaInicial.classList.remove("fadeOut");
+    mostrarFeedbackLogin(resultado.erro, true);
+    return;
+  }
+
+  localStorage.setItem("hannaEmail", email);
+  localStorage.setItem("hannaSenhaTexto", senha);
+
+  localStorage.clear();
+  if (resultado.dados) carregarDadosNoJogo(resultado.dados);
+  _salvar();
+
+  localStorage.setItem("hannaUid", resultado.uid);
+  localStorage.setItem("hannaEmail", email);
+  localStorage.setItem("hannaSenhaTexto", senha);
+
+  somBotao.volume = parseFloat(volumeEfeitos.value);
+  somBotao.play().catch(() => {});
+  vibrar(15);
+
+  entrarNoJogo();
+});
+
+// Botão Esqueci minha senha
+document.getElementById("btnEsqueciSenha")?.addEventListener("click", async () => {
+  const email = document.getElementById("inputLoginEmail").value.trim();
+  if (!email) {
+    mostrarFeedbackLogin("Digite seu email primeiro.", true);
+    return;
+  }
+  const { recuperarSenha } = await import("./firebase.js");
+  const resultado = await recuperarSenha(email);
+  if (resultado.ok) {
+    mostrarFeedbackLogin("Email de recuperação enviado!", false);
+  } else {
+    mostrarFeedbackLogin(resultado.erro, true);
+  }
+});
+
 // Botão Ir pra Criar Conta
 document.getElementById("btnIrCriarConta")?.addEventListener("click", () => {
-  document.getElementById("telaLogin").style.display    = "none";
+  document.getElementById("telaLogin").style.display = "none";
   document.getElementById("telaCriarConta").style.display = "block";
 });
 
 // Botão Voltar pro Login
 document.getElementById("btnVoltarLogin")?.addEventListener("click", () => {
   document.getElementById("telaCriarConta").style.display = "none";
-  document.getElementById("telaLogin").style.display      = "block";
+  document.getElementById("telaLogin").style.display = "block";
 });
 
-// Botão Criar Conta na tela inicial
+// Botão Criar Conta
 document.getElementById("btnCriarContaInicial")?.addEventListener("click", async () => {
-  const nickname = document.getElementById("inputCriarNickname").value.trim();
-  const senha    = document.getElementById("inputCriarSenha").value.trim();
+  const email = document.getElementById("inputCriarEmail").value.trim();
+  const senha = document.getElementById("inputCriarSenha").value.trim();
 
-  if (!nickname || !senha) {
-    mostrarFeedbackCriar("Preencha nickname e senha.", true);
+  if (!email || !senha) {
+    mostrarFeedbackCriar("Preencha email e senha.", true);
     return;
   }
-  if (senha.length < 4) {
-    mostrarFeedbackCriar("Senha precisa ter pelo menos 4 caracteres.", true);
+  if (senha.length < 6) {
+    mostrarFeedbackCriar("Senha precisa ter pelo menos 6 caracteres.", true);
     return;
   }
 
   mostrarFeedbackCriar("Criando conta...");
 
-  const { criarConta, salvarProgressoNuvem, hashSenha } = await import("./firebase.js");
-  const resultado = await criarConta(nickname, senha);
+  const { criarConta, salvarProgressoNuvem } = await import("./firebase.js");
+  const resultado = await criarConta(email, senha);
 
   if (!resultado.ok) {
     mostrarFeedbackCriar(resultado.erro, true);
     return;
   }
 
-  // Salva hash e entra no jogo
-  _senhaHash = await hashSenha(senha);
-  localStorage.setItem("hannaSenhaHash", _senhaHash);
+  localStorage.setItem("hannaUid", resultado.uid);
+  localStorage.setItem("hannaEmail", email);
   localStorage.setItem("hannaSenhaTexto", senha);
 
   await salvarProgressoNuvem({
-    senha: _senhaHash,
     fome, felicidade, energia, higiene, sementes, moedas,
     amizade, vinculoGatinhas, dormindo,
     gatinhaDesbloqueada, nomeGatinha,
@@ -3190,6 +3187,14 @@ document.getElementById("btnCriarContaInicial")?.addEventListener("click", async
   mostrarFeedbackCriar("Conta criada!");
   setTimeout(() => entrarNoJogo(), 1000);
 });
+
+// Auto-preenchimento se já tem email salvo
+const _emailSalvo = localStorage.getItem("hannaEmail");
+const _senhaSalva = localStorage.getItem("hannaSenhaTexto");
+if (_emailSalvo && _senhaSalva) {
+  document.getElementById("inputLoginEmail").value = _emailSalvo;
+  document.getElementById("inputLoginSenha").value = _senhaSalva;
+}
 
 // FAZENDA
 const slotsPlantacao = document.querySelectorAll(".slotPlantacao");
