@@ -3090,7 +3090,19 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   localStorage.setItem("hannaSenhaTexto", senha);
 
   // Sempre carrega da nuvem ao fazer login
+  localStorage.clear(); // limpa tudo antes de carregar da nuvem
   carregarDadosNoJogo(resultado.dados);
+
+  // Debug — remove depois de confirmar
+  console.log("após carregar — conquistas:", JSON.stringify(conquistasDesbloqueadas));
+  console.log("após carregar — sementesDouradas:", sementesDouradas);
+  
+  localStorage.setItem("updatedAt", resultado.dados.updatedAt || Date.now());
+  
+  // Restaura as infos de conta depois do clear
+  localStorage.setItem("hannaDeviceId", resultado.dados ? nickname.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_") : "");
+  localStorage.setItem("hannaSenhaHash", _senhaHash);
+  localStorage.setItem("hannaSenhaTexto", senha);
   
   somBotao.volume = parseFloat(volumeEfeitos.value);
   somBotao.play().catch(() => {});
@@ -5016,37 +5028,6 @@ document.getElementById("btnCriarConta")?.addEventListener("click", async () => 
 
   mostrarFeedbackConta("Conta criada com sucesso!");
   atualizarEstadoConta();
-});
-
-// ENTRAR COM CONTA
-document.getElementById("btnEntrarConta")?.addEventListener("click", async () => {
-  const nickname = document.getElementById("inputNickname").value.trim();
-  const senha    = document.getElementById("inputSenha").value.trim();
-
-  if (!nickname || !senha) {
-    mostrarFeedbackConta("Preencha nickname e senha.", true);
-    return;
-  }
-
-  mostrarFeedbackConta("Entrando...");
-
-  const { entrarComConta, hashSenha } = await import("./firebase.js");
-  const resultado = await entrarComConta(nickname, senha);
-
-  if (!resultado.ok) {
-    mostrarFeedbackConta(resultado.erro, true);
-    return;
-  }
-
-  // Restaura o hash da senha em memória
-  _senhaHash = await hashSenha(senha);
-  localStorage.setItem("hannaSenhaHash", _senhaHash);
-
-  carregarDadosNoJogo(resultado.dados);
-  atualizarStatus();
-  mostrarFeedbackConta("Save carregado!");
-  atualizarEstadoConta();
-
 });
 
 // TROCAR SENHA
