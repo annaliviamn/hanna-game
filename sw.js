@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanna-cache-v46";
+const CACHE_NAME = "hanna-cache-v47";
 
 const ASSETS = [
   "./",
@@ -78,7 +78,7 @@ async function verificarLembretes() {
 
   for (const l of lembretes) {
     if (l.timestamp <= agora) {
-      await self.registration.showNotification("Hanna lembrou você! 🐾", {
+      await self.registration.showNotification("Hanna lembrou você!", {
         body:     l.texto,
         icon:     "assets/sprites/hanna/contente.png",
         badge:    "assets/sprites/hanna/contente.png",

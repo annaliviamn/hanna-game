@@ -2503,6 +2503,13 @@ function _salvar() {
   }
 }
 
+// Save automático garantido a cada 30 segundos
+setInterval(() => {
+  if (localStorage.getItem("hannaUid")) {
+    _salvar();
+  }
+}, 30 * 1000);
+
 // ── SISTEMA DE VÍNCULO DA GATINHA ────────────────────────────
 // - Cai 2% por hora sem interação
 // - Qualquer interação registra o timestamp
@@ -3158,7 +3165,11 @@ document.getElementById("btnCriarContaInicial")?.addEventListener("click", async
     return;
   }
 
-  mostrarFeedbackCriar("Criando conta...");
+  mostrarFeedbackCriar("Conta criada!");
+  setTimeout(() => {
+    mostrarLoading();
+    setTimeout(() => entrarNoJogo(), 500);
+  }, 1000);
 
   const { criarConta, salvarProgressoNuvem } = await import("./firebase.js");
   const resultado = await criarConta(email, senha);
@@ -3292,9 +3303,10 @@ slotsPlantacao.forEach((slotHTML, idx) => {
     if (!slot.pronta) return;
 
     // GUARDA O VALOR ANTES DE LIMPAR
-    const valorColheita = valorPlantas[slot.flor];
+    const valorColheita = valorPlantas[slot.flor] || 0;
 
     moedas += valorColheita;
+    if (isNaN(moedas)) moedas = 0;
     amizade = Math.min(5, amizade + 0.08);
 
     slot.plantada = false;
