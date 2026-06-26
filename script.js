@@ -1860,6 +1860,11 @@ function atualizarGatinha() {
   else if (felicidade >= 80) gatinhaSpritePor("gatinha-animada");
   else                       gatinhaSpritePor("gatinha-neutra");
 }
+
+if (!localStorage.getItem("hannaUid")) {
+  localStorage.clear();
+}
+
 let fome        = Number(localStorage.getItem("fome"))        || 40;
 let felicidade  = Number(localStorage.getItem("felicidade"))  || 35;
 let energia     = Number(localStorage.getItem("energia"))     || 50;
@@ -3110,7 +3115,11 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
 
   localStorage.clear();
   if (resultado.dados) carregarDadosNoJogo(resultado.dados);
+  _bloqueioSaveNuvem = true;
   _salvar();
+  setTimeout(() => { 
+    _bloqueioSaveNuvem = false; 
+  }, 60000);
 
   localStorage.setItem("hannaUid", resultado.uid);
   localStorage.setItem("hannaEmail", email);
