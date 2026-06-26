@@ -342,15 +342,23 @@
   };
 
   window.buscarJogadora = async () => {
-    const nickname = document.getElementById("inputNickname").value.trim().toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "_");
+    const input = document.getElementById("inputNickname").value.trim();
 
-    if (!nickname) return;
+    if (!input) return;
 
     mostrarFeedback("feedbackGeral", "Buscando...", false);
 
-    const snap = await getDoc(doc(db, "saves", nickname));
+    // Tenta buscar direto pelo ID (UID ou nickname)
+    let snap = await getDoc(doc(db, "saves", input));
+
+    // Se não achou, tenta normalizar como nickname
+    if (!snap.exists()) {
+      const nickname = input.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "_");
+      snap = await getDoc(doc(db, "saves", nickname));
+    }
+
     if (!snap.exists()) {
       mostrarFeedback("feedbackGeral", "Jogadora não encontrada.", true);
       return;
@@ -359,7 +367,7 @@
     dadosAtuais = snap.data();
     preencherFormulario();
     document.getElementById("dadosJogadora").style.display = "block";
-    mostrarFeedback("feedbackGeral", `Jogadora encontrada!`, false);
+    mostrarFeedback("feedbackGeral", "Jogadora encontrada!", false);
   };
 
   window.recarregarJogadora = () => window.buscarJogadora();
@@ -425,11 +433,20 @@
   }
 
   window.salvarJogadora = async () => {
-    const nickname = document.getElementById("inputNickname").value.trim().toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "_");
+    const input = document.getElementById("inputNickname").value.trim();
+    
+    // Usa o ID exato que foi buscado (UID ou nickname normalizado)
+    let idParaSalvar = input;
+    
+    // Verifica se é um UID (não tem espaços e não precisa normalizar)
+    // ou normaliza como nickname
+    const snapDireto = await getDoc(doc(db, "saves", input));
+    if (!snapDireto.exists()) {
+      idParaSalvar = input.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "_");
+    }
 
-    // Conquistas
     const conquistas = {};
     Object.keys(CONQUISTAS).forEach(id => {
       const cb = document.getElementById(`c-${id}`);
@@ -454,13 +471,13 @@
       joaoDesbloqueado:    booleans.joaoDesbloqueado,
       jamesDesbloqueado:   booleans.jamesDesbloqueado,
       conquistas:          JSON.stringify(conquistas),
-      updatedAt: Date.now() + (999999 * 999999), // garante que nuvem ganha do local
+      updatedAt:           Date.now() + (999999 * 999999),
     };
 
     mostrarFeedback("feedbackSalvar", "Salvando...", false);
 
     try {
-      await setDoc(doc(db, "saves", nickname), novosDados);
+      await setDoc(doc(db, "saves", idParaSalvar), novosDados);
       dadosAtuais = novosDados;
       mostrarFeedback("feedbackSalvar", "Salvo com sucesso!", false);
     } catch(e) {
