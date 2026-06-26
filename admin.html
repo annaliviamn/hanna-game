@@ -454,7 +454,7 @@
       joaoDesbloqueado:    booleans.joaoDesbloqueado,
       jamesDesbloqueado:   booleans.jamesDesbloqueado,
       conquistas:          JSON.stringify(conquistas),
-      updatedAt:           Date.now() + 999999, // garante que nuvem ganha do local
+      updatedAt: Date.now() + (999999 * 999999), // garante que nuvem ganha do local
     };
 
     mostrarFeedback("feedbackSalvar", "Salvando...", false);
