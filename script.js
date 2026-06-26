@@ -3091,6 +3091,7 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
 
   // Sempre carrega da nuvem ao fazer login
   carregarDadosNoJogo(resultado.dados);
+  localStorage.setItem("updatedAt", resultado.dados.updatedAt || Date.now());
   
   somBotao.volume = parseFloat(volumeEfeitos.value);
   somBotao.play().catch(() => {});
