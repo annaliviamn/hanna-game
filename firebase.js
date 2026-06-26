@@ -371,16 +371,8 @@ export async function entrarComConta(nickname, senha) {
 
     localStorage.setItem("hannaDeviceId", id);
 
-    // Compara updatedAt da nuvem com o local
-    const updatedAtLocal  = Number(localStorage.getItem("updatedAt")) || 0;
-    const updatedAtNuvem  = Number(dados.updatedAt) || 0;
-
-    // Só carrega da nuvem se for mais recente que o local
-    if (updatedAtNuvem > updatedAtLocal) {
-      return { ok: true, dados, carregarNuvem: true };
-    } else {
-      return { ok: true, dados, carregarNuvem: false };
-    }
+    // Sempre carrega da nuvem — sem comparação de updatedAt
+    return { ok: true, dados };
 
   } catch(e) {
     return { ok: false, erro: "Erro ao entrar." };

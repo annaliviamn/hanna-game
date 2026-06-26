@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Hanna</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a0a2e;
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 { color: #ff8fc2; margin-bottom: 20px; font-size: 24px; }
+    h2 { color: #ff8fc2; margin: 20px 0 10px; font-size: 18px; border-bottom: 1px solid #ff8fc255; padding-bottom: 6px; }
+    h3 { color: #d4aaff; margin: 14px 0 8px; font-size: 14px; }
+
+    .login-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 12px;
+    }
+
+    .login-wrap h1 { font-size: 32px; }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"] {
+      background: #2a1a3e;
+      border: 1.5px solid #ff8fc2;
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 14px;
+      width: 100%;
+      outline: none;
+    }
+
+    input[type="number"] { width: auto; min-width: 80px; }
+
+    button {
+      background: linear-gradient(135deg, #ff8fc2, #ff5fa2);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+
+    button:hover { opacity: 0.85; }
+
+    button.btn-danger {
+      background: linear-gradient(135deg, #ff5555, #cc0000);
+    }
+
+    button.btn-secondary {
+      background: transparent;
+      border: 1.5px solid #ff8fc2;
+      color: #ff8fc2;
+    }
+
+    .card {
+      background: #2a1a3e;
+      border: 1.5px solid #ff8fc255;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .field-row label {
+      min-width: 160px;
+      font-size: 13px;
+      color: #d4aaff;
+    }
+
+    .conquistas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+
+    .conquista-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      background: #1a0a2e;
+      border-radius: 6px;
+      padding: 6px 10px;
+    }
+
+    .conquista-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #ff8fc2;
+    }
+
+    .feedback {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .feedback.ok { background: #1a3a2e; border: 1px solid #6acf88; color: #6acf88; }
+    .feedback.erro { background: #3a1a1a; border: 1px solid #ff5555; color: #ff5555; }
+
+    .busca-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .busca-row input { flex: 1; }
+
+    #painelAdmin { display: none; }
+    #telaLogin { display: flex; }
+
+    .toggle-bool {
+      display: flex;
+      gap: 8px;
+    }
+
+    .toggle-bool button {
+      padding: 6px 14px;
+      font-size: 12px;
+    }
+
+    .toggle-bool button.ativo {
+      background: linear-gradient(135deg, #6acf88, #3aaf68);
+    }
+
+    .toggle-bool button.inativo {
+      background: transparent;
+      border: 1.5px solid #6acf88;
+      color: #6acf88;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TELA DE LOGIN -->
+<div id="telaLogin" class="login-wrap">
+  <h1>Admin Hanna</h1>
+  <div style="width:300px; display:flex; flex-direction:column; gap:10px;">
+    <input type="password" id="inputSenhaAdmin" placeholder="Senha de acesso">
+    <button onclick="fazerLoginAdmin()">Entrar</button>
+    <div id="feedbackLogin" class="feedback erro">Senha incorreta.</div>
+  </div>
+</div>
+
+<!-- PAINEL ADMIN -->
+<div id="painelAdmin">
+  <h1>Painel Admin — Hanna</h1>
+
+  <!-- BUSCA -->
+  <div class="busca-row">
+    <input type="text" id="inputNickname" placeholder="Nickname da jogadora (ex: annamaciel)">
+    <button onclick="buscarJogadora()">Buscar</button>
+  </div>
+
+  <div id="feedbackGeral" class="feedback"></div>
+
+  <!-- DADOS DA JOGADORA -->
+  <div id="dadosJogadora" style="display:none;">
+
+    <!-- STATS -->
+    <div class="card">
+      <h2>Status</h2>
+      <div class="field-row"><label>Fome</label><input type="number" id="ed-fome" min="0" max="100"></div>
+      <div class="field-row"><label>Felicidade</label><input type="number" id="ed-felicidade" min="0" max="100"></div>
+      <div class="field-row"><label>Energia</label><input type="number" id="ed-energia" min="0" max="100"></div>
+      <div class="field-row"><label>Higiene</label><input type="number" id="ed-higiene" min="0" max="100"></div>
+      <div class="field-row"><label>Amizade (0-5)</label><input type="number" id="ed-amizade" min="0" max="5" step="0.1"></div>
+      <div class="field-row">
+        <label>Dormindo</label>
+        <div class="toggle-bool">
+          <button id="btn-dormindo-sim" onclick="setarBool('dormindo', true)">Sim</button>
+          <button id="btn-dormindo-nao" onclick="setarBool('dormindo', false)">Não</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECURSOS -->
+    <div class="card">
+      <h2>Recursos</h2>
+      <div class="field-row"><label>Moedas</label><input type="number" id="ed-moedas" min="0"></div>
+      <div class="field-row"><label>Sementes</label><input type="number" id="ed-sementes" min="0"></div>
+      <div class="field-row"><label>Sementes Douradas</label><input type="number" id="ed-sementesDouradas" min="0"></div>
+    </div>
+
+    <!-- GATINHA -->
+    <div class="card">
+      <h2>Gatinha Pretinha</h2>
+      <div class="field-row">
+        <label>Desbloqueada</label>
+        <div class="toggle-bool">
+          <button id="btn-gatinha-sim" onclick="setarBool('gatinhaDesbloqueada', true)">Sim</button>
+          <button id="btn-gatinha-nao" onclick="setarBool('gatinhaDesbloqueada', false)">Não</button>
+        </div>
+      </div>
+      <div class="field-row"><label>Nome da Gatinha</label><input type="text" id="ed-nomeGatinha" maxlength="20"></div>
+      <div class="field-row"><label>Vínculo (0-100)</label><input type="number" id="ed-vinculoGatinhas" min="0" max="100"></div>
+    </div>
+
+    <!-- PETS VISITANTES -->
+    <div class="card">
+      <h2>Pets Visitantes</h2>
+      <div class="field-row">
+        <label>Steve Desbloqueado</label>
+        <div class="toggle-bool">
+          <button id="btn-steve-sim" onclick="setarBool('steveDesbloqueado', true)">Sim</button>
+          <button id="btn-steve-nao" onclick="setarBool('steveDesbloqueado', false)">Não</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>João Desbloqueado</label>
+        <div class="toggle-bool">
+          <button id="btn-joao-sim" onclick="setarBool('joaoDesbloqueado', true)">Sim</button>
+          <button id="btn-joao-nao" onclick="setarBool('joaoDesbloqueado', false)">Não</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>James Desbloqueado</label>
+        <div class="toggle-bool">
+          <button id="btn-james-sim" onclick="setarBool('jamesDesbloqueado', true)">Sim</button>
+          <button id="btn-james-nao" onclick="setarBool('jamesDesbloqueado', false)">Não</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONQUISTAS -->
+    <div class="card">
+      <h2>Conquistas</h2>
+      <div class="conquistas-grid" id="conquistasGrid"></div>
+    </div>
+
+    <!-- SALVAR -->
+    <div style="display:flex; gap:10px; margin-top:8px;">
+      <button onclick="salvarJogadora()">Salvar tudo</button>
+      <button class="btn-secondary" onclick="recarregarJogadora()">Recarregar</button>
+    </div>
+
+    <div id="feedbackSalvar" class="feedback"></div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDR0Dx0HCn1qGSoQB5iQENPwEfVbsUXHd0",
+    authDomain: "hanna-game.firebaseapp.com",
+    projectId: "hanna-game",
+    storageBucket: "hanna-game.firebasestorage.app",
+    messagingSenderId: "350753310505",
+    appId: "1:350753310505:web:357dec557ac9dcb2021938"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  const SENHA_ADMIN = "kanna";
+
+  const CONQUISTAS = {
+    primeiro_carinho: "Primeiro carinho",
+    bem_alimentada: "Bem alimentada",
+    hora_do_banho: "Hora do banho",
+    boa_noite: "Boa noite",
+    cocar_barriga: "Coçadinha Especial",
+    jardineira: "Jardineira",
+    milionaria: "Milionária",
+    rica_demais: "Rica Demais",
+    magnata_felina: "Magnata Felina",
+    bilionaria: "Bilionária",
+    bem_cuidada: "Bem cuidada",
+    nova_companheira: "Nova companheira",
+    inseparaveis: "Inseparáveis",
+    mestre_memoria: "Mestre da Memória",
+    domino_mestre: "Mestre do Dominó",
+    match3_mestre: "Combo Felino",
+    palavra_certa: "Palavras da Hanna",
+    bolinha_mestre: "Bolinha Voadora",
+    caca_palavras: "Detetive Felina",
+    missao_steve: "Missão Cumprida",
+    james_ladrao: "Mestre Ladrão",
+    joao_aprontando: "Destruição Total",
+    puzzle_mestre: "Mestre do Quebra-Cabeça",
+    leitora_humores: "Leitora de Humores",
+    reflexos_felinos: "Reflexos Felinos",
+    colecionadora: "Colecionadora",
+    cirurgia_felina: "Cirurgiã Felina",
+    visita_steve: "Visita Surpresa",
+    visita_joao: "Visita do Tonton",
+    visita_james: "Visita do Cook",
+    primeira_dourada: "Semente Rara",
+    recados_perfeito: "Sintonia Total",
+  };
+
+  let dadosAtuais = {};
+  let booleans = {
+    dormindo: false,
+    gatinhaDesbloqueada: false,
+    steveDesbloqueado: false,
+    joaoDesbloqueado: false,
+    jamesDesbloqueado: false,
+  };
+
+  // Expõe funções pro HTML
+  window.fazerLoginAdmin = () => {
+    const senha = document.getElementById("inputSenhaAdmin").value;
+    if (senha === SENHA_ADMIN) {
+      document.getElementById("telaLogin").style.display = "none";
+      document.getElementById("painelAdmin").style.display = "block";
+    } else {
+      const fb = document.getElementById("feedbackLogin");
+      fb.style.display = "block";
+    }
+  };
+
+  window.buscarJogadora = async () => {
+    const nickname = document.getElementById("inputNickname").value.trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_");
+
+    if (!nickname) return;
+
+    mostrarFeedback("feedbackGeral", "Buscando...", false);
+
+    const snap = await getDoc(doc(db, "saves", nickname));
+    if (!snap.exists()) {
+      mostrarFeedback("feedbackGeral", "Jogadora não encontrada.", true);
+      return;
+    }
+
+    dadosAtuais = snap.data();
+    preencherFormulario();
+    document.getElementById("dadosJogadora").style.display = "block";
+    mostrarFeedback("feedbackGeral", `Jogadora encontrada!`, false);
+  };
+
+  window.recarregarJogadora = () => window.buscarJogadora();
+
+  function preencherFormulario() {
+    const d = dadosAtuais;
+
+    document.getElementById("ed-fome").value            = d.fome || 0;
+    document.getElementById("ed-felicidade").value      = d.felicidade || 0;
+    document.getElementById("ed-energia").value         = d.energia || 0;
+    document.getElementById("ed-higiene").value         = d.higiene || 0;
+    document.getElementById("ed-amizade").value         = d.amizade || 0;
+    document.getElementById("ed-moedas").value          = d.moedas || 0;
+    document.getElementById("ed-sementes").value        = d.sementes || 0;
+    document.getElementById("ed-sementesDouradas").value = d.sementesDouradas || 0;
+    document.getElementById("ed-nomeGatinha").value     = d.nomeGatinha || "";
+    document.getElementById("ed-vinculoGatinhas").value = d.vinculoGatinhas || 0;
+
+    // Booleans
+    booleans.dormindo            = d.dormindo === true;
+    booleans.gatinhaDesbloqueada = d.gatinhaDesbloqueada === true;
+    booleans.steveDesbloqueado   = d.steveDesbloqueado === true;
+    booleans.joaoDesbloqueado    = d.joaoDesbloqueado === true;
+    booleans.jamesDesbloqueado   = d.jamesDesbloqueado === true;
+    atualizarBotoesBool();
+
+    // Conquistas
+    let conquistasSalvas = {};
+    try { conquistasSalvas = JSON.parse(d.conquistas || "{}"); } catch(e) {}
+
+    const grid = document.getElementById("conquistasGrid");
+    grid.innerHTML = "";
+    Object.entries(CONQUISTAS).forEach(([id, nome]) => {
+      const item = document.createElement("div");
+      item.className = "conquista-item";
+      item.innerHTML = `
+        <input type="checkbox" id="c-${id}" ${conquistasSalvas[id] ? "checked" : ""}>
+        <label for="c-${id}">${nome}</label>
+      `;
+      grid.appendChild(item);
+    });
+  }
+
+  window.setarBool = (campo, valor) => {
+    booleans[campo] = valor;
+    atualizarBotoesBool();
+  };
+
+  function atualizarBotoesBool() {
+    const mapa = {
+      dormindo:            ["btn-dormindo-sim", "btn-dormindo-nao"],
+      gatinhaDesbloqueada: ["btn-gatinha-sim",  "btn-gatinha-nao"],
+      steveDesbloqueado:   ["btn-steve-sim",    "btn-steve-nao"],
+      joaoDesbloqueado:    ["btn-joao-sim",     "btn-joao-nao"],
+      jamesDesbloqueado:   ["btn-james-sim",    "btn-james-nao"],
+    };
+
+    Object.entries(mapa).forEach(([campo, [simId, naoId]]) => {
+      const val = booleans[campo];
+      document.getElementById(simId).className = val ? "ativo" : "inativo";
+      document.getElementById(naoId).className = val ? "inativo" : "ativo";
+    });
+  }
+
+  window.salvarJogadora = async () => {
+    const nickname = document.getElementById("inputNickname").value.trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_");
+
+    // Conquistas
+    const conquistas = {};
+    Object.keys(CONQUISTAS).forEach(id => {
+      const cb = document.getElementById(`c-${id}`);
+      if (cb && cb.checked) conquistas[id] = true;
+    });
+
+    const novosDados = {
+      ...dadosAtuais,
+      fome:                Number(document.getElementById("ed-fome").value),
+      felicidade:          Number(document.getElementById("ed-felicidade").value),
+      energia:             Number(document.getElementById("ed-energia").value),
+      higiene:             Number(document.getElementById("ed-higiene").value),
+      amizade:             Number(document.getElementById("ed-amizade").value),
+      moedas:              Number(document.getElementById("ed-moedas").value),
+      sementes:            Number(document.getElementById("ed-sementes").value),
+      sementesDouradas:    Number(document.getElementById("ed-sementesDouradas").value),
+      nomeGatinha:         document.getElementById("ed-nomeGatinha").value.trim(),
+      vinculoGatinhas:     Number(document.getElementById("ed-vinculoGatinhas").value),
+      dormindo:            booleans.dormindo,
+      gatinhaDesbloqueada: booleans.gatinhaDesbloqueada,
+      steveDesbloqueado:   booleans.steveDesbloqueado,
+      joaoDesbloqueado:    booleans.joaoDesbloqueado,
+      jamesDesbloqueado:   booleans.jamesDesbloqueado,
+      conquistas:          JSON.stringify(conquistas),
+      updatedAt:           Date.now() + 999999, // garante que nuvem ganha do local
+    };
+
+    mostrarFeedback("feedbackSalvar", "Salvando...", false);
+
+    try {
+      await setDoc(doc(db, "saves", nickname), novosDados);
+      dadosAtuais = novosDados;
+      mostrarFeedback("feedbackSalvar", "Salvo com sucesso!", false);
+    } catch(e) {
+      mostrarFeedback("feedbackSalvar", "Erro ao salvar.", true);
+    }
+  };
+
+  function mostrarFeedback(id, msg, erro) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = `feedback ${erro ? "erro" : "ok"}`;
+    el.style.display = "block";
+    setTimeout(() => el.style.display = "none", 3000);
+  }
+
+  // Enter no campo de senha
+  document.getElementById("inputSenhaAdmin").addEventListener("keydown", e => {
+    if (e.key === "Enter") window.fazerLoginAdmin();
+  });
+
+  // Enter no campo de nickname
+  document.getElementById("inputNickname").addEventListener("keydown", e => {
+    if (e.key === "Enter") window.buscarJogadora();
+  });
+</script>
+</body>
+</html>

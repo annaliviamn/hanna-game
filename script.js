@@ -3014,15 +3014,33 @@ import("./firebase.js").then(async ({ buscarSenhaDoSave }) => {
   }
 });
 
-// ENTRAR
+// ── TELA DE LOADING ──────────────────────────
+function mostrarLoading() {
+  const hora = new Date().getHours();
+  const sprite = (hora >= 6 && hora < 18)
+    ? "assets/sprites/hanna/hanna-loading-dia.png"
+    : "assets/sprites/hanna/hanna-loading-noite.png";
+
+  document.getElementById("hannaLoading").src = sprite;
+  document.getElementById("telaLoading").style.display = "block";
+  telaInicial.classList.add("fadeOut");
+  setTimeout(() => telaInicial.style.display = "none", 500);
+}
+
+function esconderLoading() {
+  const telaLoad = document.getElementById("telaLoading");
+  telaLoad.classList.add("fadeOut");
+  setTimeout(() => {
+    telaLoad.style.display = "none";
+    telaLoad.classList.remove("fadeOut");
+  }, 500);
+}
+
+// ── ENTRAR NO JOGO ───────────────────────────
 function entrarNoJogo() {
   document.querySelector(".bottomNav").style.display = "flex";
-  somBotao.volume = parseFloat(volumeEfeitos.value);
-  somBotao.play().catch(() => {});
-  vibrar(15);
-  telaInicial.classList.add("fadeOut");
+  esconderLoading();
   setTimeout(() => {
-    telaInicial.style.display = "none";
     abrirTela(telaJogo);
     telaJogo.classList.add("fadeIn");
     tocarTrilha("casa");
@@ -3041,12 +3059,52 @@ function entrarNoJogo() {
   }, 500);
 }
 
-// Se já tem conta salva, entra direto no jogo
-const _idSalvo = localStorage.getItem("hannaDeviceId");
-const _senhaSalva = localStorage.getItem("hannaSenhaHash");
-if (_idSalvo && _senhaSalva) {
-  _senhaHash = _senhaSalva;
+// ── LOGIN NA TELA INICIAL ────────────────────
+document.getElementById("btnEntrar")?.addEventListener("click", async () => {
+  const nickname = document.getElementById("inputLoginNickname").value.trim();
+  const senha    = document.getElementById("inputLoginSenha").value.trim();
+
+  if (!nickname || !senha) {
+    mostrarFeedbackLogin("Preencha nickname e senha.", true);
+    return;
+  }
+
+  // Mostra loading enquanto busca o save
+  mostrarLoading();
+
+  const { entrarComConta, hashSenha } = await import("./firebase.js");
+  const resultado = await entrarComConta(nickname, senha);
+
+  if (!resultado.ok) {
+    // Esconde loading e mostra erro
+    document.getElementById("telaLoading").style.display = "none";
+    telaInicial.style.display = "block";
+    telaInicial.classList.remove("fadeOut");
+    mostrarFeedbackLogin(resultado.erro, true);
+    return;
+  }
+
+  // Restaura hash da senha em memória
+  _senhaHash = await hashSenha(senha);
+  localStorage.setItem("hannaSenhaHash", _senhaHash);
+  localStorage.setItem("hannaSenhaTexto", senha);
+
+  // Sempre carrega da nuvem ao fazer login
+  carregarDadosNoJogo(resultado.dados);
+  
+  somBotao.volume = parseFloat(volumeEfeitos.value);
+  somBotao.play().catch(() => {});
+  vibrar(15);
+
   entrarNoJogo();
+});
+
+// Se já tem conta salva, preenche os campos automaticamente
+const _idSalvo = localStorage.getItem("hannaDeviceId");
+const _senhaTexto = localStorage.getItem("hannaSenhaTexto");
+if (_idSalvo && _senhaTexto) {
+  document.getElementById("inputLoginNickname").value = _idSalvo;
+  document.getElementById("inputLoginSenha").value = _senhaTexto;
 }
 
 // LOGIN NA TELA INICIAL
@@ -3065,35 +3123,6 @@ function mostrarFeedbackCriar(msg, erro = false) {
   el.style.color = erro ? "#ff5555" : "var(--pink-deep)";
   el.style.display = "block";
 }
-
-// Botão Entrar
-document.getElementById("btnEntrar")?.addEventListener("click", async () => {
-  const nickname = document.getElementById("inputLoginNickname").value.trim();
-  const senha    = document.getElementById("inputLoginSenha").value.trim();
-
-  if (!nickname || !senha) {
-    mostrarFeedbackLogin("Preencha nickname e senha.", true);
-    return;
-  }
-
-  mostrarFeedbackLogin("Entrando...");
-
-  const { entrarComConta, hashSenha } = await import("./firebase.js");
-  const resultado = await entrarComConta(nickname, senha);
-
-  if (!resultado.ok) {
-    mostrarFeedbackLogin(resultado.erro, true);
-    return;
-  }
-
-  // Restaura hash da senha em memória
-  _senhaHash = await hashSenha(senha);
-  localStorage.setItem("hannaSenhaHash", _senhaHash);
-
-  // Sempre carrega da nuvem ao fazer login
-  carregarDadosNoJogo(resultado.dados);
-  entrarNoJogo();
-});
 
 // Botão Ir pra Criar Conta
 document.getElementById("btnIrCriarConta")?.addEventListener("click", () => {
@@ -3134,6 +3163,7 @@ document.getElementById("btnCriarContaInicial")?.addEventListener("click", async
   // Salva hash e entra no jogo
   _senhaHash = await hashSenha(senha);
   localStorage.setItem("hannaSenhaHash", _senhaHash);
+  localStorage.setItem("hannaSenhaTexto", senha);
 
   await salvarProgressoNuvem({
     senha: _senhaHash,
@@ -5012,15 +5042,11 @@ document.getElementById("btnEntrarConta")?.addEventListener("click", async () =>
   _senhaHash = await hashSenha(senha);
   localStorage.setItem("hannaSenhaHash", _senhaHash);
 
-  if (resultado.carregarNuvem) {
-    carregarDadosNoJogo(resultado.dados);
-    atualizarStatus();
-    mostrarFeedbackConta("Save da nuvem carregado!");
-  } else {
-    mostrarFeedbackConta("Save local mais recente mantido!");
-  }
-
+  carregarDadosNoJogo(resultado.dados);
+  atualizarStatus();
+  mostrarFeedbackConta("Save carregado!");
   atualizarEstadoConta();
+
 });
 
 // TROCAR SENHA
@@ -5060,8 +5086,11 @@ document.getElementById("btnConfirmarTrocarSenha")?.addEventListener("click", as
 // SAIR DA CONTA
 document.getElementById("btnSairConta")?.addEventListener("click", () => {
   localStorage.removeItem("hannaDeviceId");
+  localStorage.removeItem("hannaSenhaTexto");
+  localStorage.removeItem("hannaSenhaHash");
+  localStorage.removeItem("updatedAt");
   mostrarFeedbackConta("Saiu da conta.");
-  atualizarEstadoConta();
+  setTimeout(() => location.reload(), 1000);
 });
 
 // Voltar do menu de minigames
@@ -5617,12 +5646,11 @@ function escreverPedido(texto, aoTerminar) {
 
 }
 
-
+// Jogo: Operação Sardinha
 function jogoSardinha() {
   abrirArena("Operação Sardinha");
   const arena = document.getElementById("arenaConteudo");
 
-  // ESCOLHA DE AGENTE
   arena.innerHTML = `
     <div class="sardinha-escolha">
       <div class="sardinha-titulo-op">ESCOLHA SUA AGENTE</div>
@@ -5635,7 +5663,7 @@ function jogoSardinha() {
         </div>
         <div class="sardinha-agente ${gatinhaDesbloqueada ? '' : 'sardinha-agente-locked'}" data-agente="gatinha">
           <img src="assets/sprites/hanna-gatinha/gatinha-cod.png" class="sardinha-agente-img">
-          <div class="sardinha-agente-nome">Gatinha ${gatinhaDesbloqueada ? '' : '🔒'}</div>
+          <div class="sardinha-agente-nome">Gatinha ${gatinhaDesbloqueada ? '' : '(bloqueada)'}</div>
           <div class="sardinha-agente-desc">${gatinhaDesbloqueada ? 'Parceira<br>Dano duplo' : 'Desbloqueie na loja!'}</div>
         </div>
       </div>
@@ -5650,66 +5678,62 @@ function iniciarSardinha(agente) {
   const arena = document.getElementById("arenaConteudo");
 
   const AGENTES = {
-    hanna: { img: "assets/sprites/hanna/animada.png",         dano: 1, cadencia: 700 },
-    gatinha:  { img: "assets/sprites/gatinha/gatinha-animada.png", dano: 2, cadencia: 900 },
+    hanna:   { img: "assets/sprites/hanna/animada.png",            dano: 1, cadencia: 700 },
+    gatinha: { img: "assets/sprites/gatinha/gatinha-animada.png",  dano: 2, cadencia: 900 },
   };
   const cfg = AGENTES[agente];
 
-  // Estado do jogo
-  let vidas       = 3;
-  let onda        = 1;
-  let ratosOnda   = 5;
-  let ratosVivos  = 0;
-  let ratosPassaram = 0;
-  let score       = 0;
-  let gameOver    = false;
-  let atirando    = false;
+  let vidas         = 3;
+  let onda          = 1;
+  let ratosOnda     = 5;
+  let ratosVivos    = 0;
+  let score         = 0;
+  let gameOver      = false;
 
-  // HTML DA ARENA 
   arena.innerHTML = `
     <div class="sardinha-hud">
       <div class="sardinha-hud-esq">
         <span id="srd-onda">Onda 1</span>
-        <span id="srd-ratos">🐭 5</span>
+        <span id="srd-ratos"><img src="assets/shop/ratinho.png" style="width:16px;vertical-align:middle;"> 5</span>
       </div>
       <div class="sardinha-hud-dir">
-        <span id="srd-vidas">❤️❤️❤️</span>
+        <span id="srd-vidas"></span>
       </div>
     </div>
 
     <div class="sardinha-campo" id="srdCampo">
-      <!-- sardinha alvo no fundo -->
       <div class="sardinha-alvo" id="srdAlvo">
-        <span style="font-size:32px;">🐟</span>
+        <img src="assets/shop/peixe.png" style="width:32px;">
         <div class="sardinha-alvo-label">Despensa</div>
       </div>
 
-      <!-- agente jogador -->
       <div class="sardinha-player" id="srdPlayer">
         <img src="${cfg.img}" class="sardinha-player-img" id="srdPlayerImg">
-        <div class="sardinha-mira" id="srdMira">🎯</div>
       </div>
     </div>
 
     <div class="sardinha-instrucao" id="srdInstrucao">
-      Toque nos 🐭 para atirar!
+      Toque nos ratos para atirar!
     </div>`;
 
-  const campo       = document.getElementById("srdCampo");
-  const hudOnda     = document.getElementById("srd-onda");
-  const hudRatos    = document.getElementById("srd-ratos");
-  const hudVidas    = document.getElementById("srd-vidas");
-  const instrucao   = document.getElementById("srdInstrucao");
+  const campo    = document.getElementById("srdCampo");
+  const hudOnda  = document.getElementById("srd-onda");
+  const hudRatos = document.getElementById("srd-ratos");
+  const hudVidas = document.getElementById("srd-vidas");
+  const instrucao = document.getElementById("srdInstrucao");
 
   function atualizarHUD() {
-    hudOnda.textContent   = `Onda ${onda}`;
-    hudRatos.textContent  = `🐭 ${ratosVivos}`;
-    const coracoes = "❤️".repeat(vidas) + "🖤".repeat(Math.max(0, 3 - vidas));
-    hudVidas.textContent  = coracoes;
+    hudOnda.innerHTML  = `Onda ${onda}`;
+    hudRatos.innerHTML = `<img src="assets/shop/ratinho.png" style="width:16px;vertical-align:middle;image-rendering:pixelated;"> ${ratosVivos}`;
+    
+    let coracoes = "";
+    for (let i = 0; i < 3; i++) {
+      coracoes += `<img src="${i < vidas ? "assets/ui/coracao-5.png" : "assets/ui/coracao-1.png"}" style="width:18px;image-rendering:pixelated;">`;
+    }
+    hudVidas.innerHTML = coracoes;
     document.getElementById("arenaScore").textContent = score;
   }
 
-  // SPAWN DE RATO
   function spawnRato() {
     if (gameOver) return;
     ratosVivos++;
@@ -5717,9 +5741,8 @@ function iniciarSardinha(agente) {
 
     const rato = document.createElement("div");
     rato.className = "sardinha-rato";
-    rato.innerHTML = `<span class="srd-rato-emoji">🐭</span>`;
+    rato.innerHTML = `<img src="assets/shop/ratinho.png" style="width:36px;height:36px;object-fit:contain;image-rendering:pixelated;pointer-events:none;">`;
 
-    // Posição aleatória no topo/laterais
     const lado = Math.random();
     if (lado < 0.6) {
       rato.style.left = (10 + Math.random() * 80) + "%";
@@ -5734,24 +5757,20 @@ function iniciarSardinha(agente) {
 
     campo.appendChild(rato);
 
-    // Clique no rato = atirar
     rato.addEventListener("click", () => {
       if (gameOver || rato.dataset.morto) return;
       rato.dataset.morto = "1";
 
-      // Efeito de tiro
-      rato.innerHTML = `<span style="font-size:22px;">💥</span>`;
+      rato.innerHTML = `<img src="assets/ui/explosao.png" style="width:32px;pointer-events:none;">`;
       rato.style.transform = "scale(1.4)";
 
-      // Flash no player
       const playerImg = document.getElementById("srdPlayerImg");
       if (playerImg) {
         playerImg.style.filter = "brightness(2)";
         setTimeout(() => playerImg.style.filter = "", 150);
       }
 
-      const ganho = cfg.dano === 2 ? 3 : 2;
-      score += ganho;
+      score += cfg.dano === 2 ? 3 : 2;
       atualizarHUD();
 
       jogoAtivo.timers.push(setTimeout(() => {
@@ -5762,7 +5781,6 @@ function iniciarSardinha(agente) {
       }, 300));
     });
 
-    // Rato se move em direção à despensa
     const duracaoMs = Math.max(3500 - onda * 250, 1500);
     rato.style.transition = `top ${duracaoMs}ms linear, left ${duracaoMs}ms linear`;
 
@@ -5771,14 +5789,12 @@ function iniciarSardinha(agente) {
       rato.style.left = "45%";
     }, 50));
 
-    // Se chegar à despensa sem ser clicado
     jogoAtivo.timers.push(setTimeout(() => {
       if (rato.dataset.morto || gameOver) return;
       rato.dataset.morto = "1";
       rato.remove();
       ratosVivos--;
 
-      // Efeito de dano
       const alvo = document.getElementById("srdAlvo");
       if (alvo) {
         alvo.style.animation = "sardinhaDano .4s ease";
@@ -5796,12 +5812,11 @@ function iniciarSardinha(agente) {
     }, duracaoMs + 100));
   }
 
-  // ONDAS
   function iniciarOnda() {
     if (gameOver) return;
     ratosOnda  = 4 + onda * 2;
     ratosVivos = 0;
-    instrucao.textContent = `⚠️ Onda ${onda} — ${ratosOnda} ratos!`;
+    instrucao.textContent = `Onda ${onda} — ${ratosOnda} ratos!`;
     instrucao.style.opacity = "1";
 
     jogoAtivo.timers.push(setTimeout(() => {
@@ -5820,19 +5835,16 @@ function iniciarSardinha(agente) {
 
   function verificarFimOnda() {
     if (gameOver) return;
-    // Verifica se todos foram spawnados e não há mais ratos
     const ratosNoCampo = campo.querySelectorAll(".sardinha-rato:not([data-morto])").length;
     if (ratosNoCampo > 0) return;
 
-    // Pequena espera antes de checar (dá tempo dos últimos timers rodarem)
     jogoAtivo.timers.push(setTimeout(() => {
       if (gameOver) return;
       const ainda = campo.querySelectorAll(".sardinha-rato:not([data-morto])").length;
       if (ainda > 0) return;
 
-      // Próxima onda
       onda++;
-      score += onda * 3; // bonus de onda
+      score += onda * 3;
       atualizarHUD();
 
       if (onda > 5) {
@@ -5840,7 +5852,7 @@ function iniciarSardinha(agente) {
         return;
       }
 
-      instrucao.textContent = `✅ Onda ${onda - 1} concluída! +${onda * 3} 🪙`;
+      instrucao.textContent = `Onda ${onda - 1} concluida! +${onda * 3} moedas`;
       instrucao.style.opacity = "1";
       jogoAtivo.timers.push(setTimeout(() => {
         instrucao.style.opacity = "0";
@@ -5849,7 +5861,6 @@ function iniciarSardinha(agente) {
     }, 600));
   }
 
-  // FIM DE JOGO
   function encerrarSardinha(vitoria) {
     if (gameOver) return;
     gameOver = true;
@@ -5859,13 +5870,10 @@ function iniciarSardinha(agente) {
       : Math.max(20, Math.floor(score / 3));
 
     ganharMoedas(moedas);
-
     if (vitoria) desbloquearConquista("cirurgia_felina");
 
-    const titulo    = vitoria ? "🏆 MISSÃO CUMPRIDA!" : "GAME OVER";
-    const subtitulo = vitoria
-      ? `Todas as sardinhas estão salvas!`
-      : `Os ratos levaram as sardinhas...`;
+    const titulo    = vitoria ? "Missao cumprida!" : "Game Over";
+    const subtitulo = vitoria ? "Todas as sardinhas estao salvas!" : "Os ratos levaram as sardinhas...";
     const agenteImg = vitoria
       ? (agente === "hanna" ? "assets/sprites/hanna/feliz.png" : "assets/sprites/gatinha/gatinha-sorrindo.png")
       : (agente === "hanna" ? "assets/sprites/hanna/triste.png" : "assets/sprites/gatinha/gatinha-triste.png");
@@ -5876,28 +5884,25 @@ function iniciarSardinha(agente) {
         <img src="${agenteImg}" class="sardinha-fim-img">
         <div class="sardinha-fim-sub">${subtitulo}</div>
         <div class="sardinha-fim-stats">
-          <div>🐭 Ondas: <b>${onda - (vitoria ? 1 : 0)}/5</b></div>
-          <div>🎯 Score: <b>${score}</b></div>
-          <div>🪙 Moedas: <b>+${moedas}</b></div>
+          <div>Ondas: <b>${onda - (vitoria ? 1 : 0)}/5</b></div>
+          <div>Score: <b>${score}</b></div>
+          <div>Moedas: <b>+${moedas}</b></div>
         </div>
         <div class="sardinha-fim-btns">
-          <button class="sardinha-btn-acao" id="srdJogarNovamente">🔄 Jogar novamente</button>
-          <button class="sardinha-btn-acao sardinha-btn-sec" id="srdSair">🏠 Sair</button>
+          <button class="sardinha-btn-acao" id="srdJogarNovamente">Jogar novamente</button>
+          <button class="sardinha-btn-acao sardinha-btn-sec" id="srdSair">Sair</button>
         </div>
       </div>`;
 
-    document.getElementById("srdJogarNovamente")
-      .addEventListener("click", () => jogoSardinha());
-    document.getElementById("srdSair")
-      .addEventListener("click", () => voltarParaMenu());
+    document.getElementById("srdJogarNovamente").addEventListener("click", () => jogoSardinha());
+    document.getElementById("srdSair").addEventListener("click", () => voltarParaMenu());
   }
 
-  // Inicia primeira onda
   jogoAtivo.timers.push(setTimeout(iniciarOnda, 800));
   atualizarHUD();
 }
 
-
+// Mensagems de Horário
 function mensagemHorario() {
 
     const hora = new Date().getHours();
@@ -6062,11 +6067,17 @@ function iniciarVisitasSteve() {
     "Steve veio fazer companhia",
     "Psiu... Steve ouviu algo interessante!",
   ];
+  const sprites = [
+    "assets/sprites/pets/steve-visita.png",
+    "assets/sprites/pets/steve-visita-2.png",
+    "assets/sprites/pets/steve-visita-3.png",
+  ];
   const intervalo = setInterval(() => {
     if (!steveDesbloqueado) { clearInterval(intervalo); return; }
     if (Math.random() > 0.6) return;
-    const fala = falas[Math.floor(Math.random() * falas.length)];
-    mostrarVisitaPet("assets/sprites/pets/steve-visita.png", fala, 15000, "steve");
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    mostrarVisitaPet(sprite, fala, 15000, "steve");
   }, 5 * 60 * 1000);
 }
 
@@ -6077,11 +6088,17 @@ function iniciarVisitasJoao() {
     "João chegou fazendo bagunça!",
     "João Antônio não quer nem saber do James hoje",
   ];
+  const sprites = [
+    "assets/sprites/pets/joao-visita.png",
+    "assets/sprites/pets/joao-visita-2.png",
+    "assets/sprites/pets/joao-visita-3.png",
+  ];
   const intervalo = setInterval(() => {
     if (!joaoDesbloqueado) { clearInterval(intervalo); return; }
     if (Math.random() > 0.6) return;
-    const fala = falas[Math.floor(Math.random() * falas.length)];
-    mostrarVisitaPet("assets/sprites/pets/joao-visita.png", fala, 15000, "joao");
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    mostrarVisitaPet(sprite, fala, 15000, "joao");
   }, 5 * 60 * 1000);
 }
 
@@ -6092,11 +6109,17 @@ function iniciarVisitasJames() {
     "James Cook farejando comida por aqui",
     "James tentou roubar o petisco da Hanna!",
   ];
+  const sprites = [
+    "assets/sprites/pets/james-visita.png",
+    "assets/sprites/pets/james-visita-2.png",
+    "assets/sprites/pets/james-visita-3.png",
+  ];
   const intervalo = setInterval(() => {
     if (!jamesDesbloqueado) { clearInterval(intervalo); return; }
     if (Math.random() > 0.6) return;
-    const fala = falas[Math.floor(Math.random() * falas.length)];
-    mostrarVisitaPet("assets/sprites/pets/james-visita.png", fala, 15000, "james");
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    mostrarVisitaPet(sprite, fala, 15000, "james");
   }, 5 * 60 * 1000);
 }
 

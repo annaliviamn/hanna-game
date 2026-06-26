@@ -67,6 +67,21 @@
   </div>
 </div>
 
+<!-- Tela de Loading -->
+<div id="telaLoading" style="display:none;">
+  <div class="tela-inicial-bg">
+    <div class="loading-card">
+      <img src="" alt="Hanna carregando" id="hannaLoading">
+      <div class="loading-texto">Carregando seu save...</div>
+      <div class="loading-pontinhos">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Tela do Jogo -->
 <div id="telaJogo" style="display:none;">
 
@@ -423,6 +438,7 @@
               Conectada como <strong id="textoNickname"></strong>
             </p>
             <button class="config-btn" id="btnTrocarSenha">Trocar senha</button>
+            <button class="config-btn config-danger" id="btnSairConta" style="margin-top:8px;">Sair da conta</button>
           </div>
 
           <!-- Trocar senha (oculto por padrão) -->
