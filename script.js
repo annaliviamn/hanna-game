@@ -6062,11 +6062,17 @@ function iniciarVisitasSteve() {
     "Steve veio fazer companhia",
     "Psiu... Steve ouviu algo interessante!",
   ];
+  const sprites = [
+    "assets/sprites/pets/steve-visita.png",
+    "assets/sprites/pets/steve-visita-2.png",
+    "assets/sprites/pets/steve-visita-3.png",
+  ];
   const intervalo = setInterval(() => {
     if (!steveDesbloqueado) { clearInterval(intervalo); return; }
     if (Math.random() > 0.6) return;
-    const fala = falas[Math.floor(Math.random() * falas.length)];
-    mostrarVisitaPet("assets/sprites/pets/steve-visita.png", fala, 15000, "steve");
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    mostrarVisitaPet(sprite, fala, 15000, "steve");
   }, 5 * 60 * 1000);
 }
 
@@ -6077,11 +6083,17 @@ function iniciarVisitasJoao() {
     "João chegou fazendo bagunça!",
     "João Antônio não quer nem saber do James hoje",
   ];
+  const sprites = [
+    "assets/sprites/pets/joao-visita.png",
+    "assets/sprites/pets/joao-visita-2.png",
+    "assets/sprites/pets/joao-visita-3.png",
+  ];
   const intervalo = setInterval(() => {
     if (!joaoDesbloqueado) { clearInterval(intervalo); return; }
     if (Math.random() > 0.6) return;
-    const fala = falas[Math.floor(Math.random() * falas.length)];
-    mostrarVisitaPet("assets/sprites/pets/joao-visita.png", fala, 15000, "joao");
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    mostrarVisitaPet(sprite, fala, 15000, "joao");
   }, 5 * 60 * 1000);
 }
 
@@ -6092,11 +6104,17 @@ function iniciarVisitasJames() {
     "James Cook farejando comida por aqui",
     "James tentou roubar o petisco da Hanna!",
   ];
+  const sprites = [
+    "assets/sprites/pets/james-visita.png",
+    "assets/sprites/pets/james-visita-2.png",
+    "assets/sprites/pets/james-visita-3.png",
+  ];
   const intervalo = setInterval(() => {
     if (!jamesDesbloqueado) { clearInterval(intervalo); return; }
     if (Math.random() > 0.6) return;
-    const fala = falas[Math.floor(Math.random() * falas.length)];
-    mostrarVisitaPet("assets/sprites/pets/james-visita.png", fala, 15000, "james");
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    mostrarVisitaPet(sprite, fala, 15000, "james");
   }, 5 * 60 * 1000);
 }
 
