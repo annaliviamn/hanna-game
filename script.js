@@ -587,12 +587,14 @@ const CONQUISTAS = {
   reflexos_felinos:   { nome: "Reflexos Felinos",       desc: "Venceu o jogo Reflexo Felino.",                 sprite: "assets/sprites/hanna/doidinha.png",  secao: "minigames" },
   colecionadora:      { nome: "Colecionadora",          desc: "Venceu o jogo Cartinhas da Hanna.",             sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
   cirurgia_felina:    { nome: "Cirurgiã Felina",        desc: "Venceu a Operação Sardinha.",                   sprite: "assets/sprites/hanna-gatinha/hanna-cod.png",  secao: "minigames" },
+  recados_perfeito:   { nome: "Sintonia Total",         desc: "Acertou todas as respostas na Troca de Recados!",        sprite: "assets/ui/icons/icon-recados.png", secao: "minigames"  },
   // Visitas e semente
   visita_steve:       { nome: "Visita Surpresa",        desc: "Steve Rogers apareceu de visita pela primeira vez!",     sprite: "assets/sprites/pets/steve-feliz.png",       secao: "progressao" },
   visita_joao:        { nome: "Visita do Tonton",       desc: "João Antônio veio fazer bagunça pela primeira vez!",     sprite: "assets/sprites/pets/joao-feliz.png",   secao: "progressao" },
   visita_james:       { nome: "Visita do Cook",         desc: "James Cook apareceu farejar a despensa pela primeira vez!", sprite: "assets/sprites/pets/james-comendo.png", secao: "progressao" },
   primeira_dourada:   { nome: "Semente Rara",           desc: "A Hanna te deu a primeira semente dourada!",             sprite: "assets/sprites/hanna/hanna-semente-dourada.png",           secao: "progressao" },
-  recados_perfeito:   { nome: "Sintonia Total",         desc: "Acertou todas as respostas na Troca de Recados!",        sprite: "assets/ui/icons/icon-recados.png", secao: "minigames"  },
+  visita_anna: { nome: "Visita Especial", desc: "Anna apareceu de visita pela primeira vez!", sprite: "assets/sprites/personagens/anna-avatar.png", secao: "progressao" },
+  visita_kika: { nome: "Visita da Kika", desc: "Kika apareceu de visita pela primeira vez!", sprite: "assets/sprites/personagens/kika-avatar.png", secao: "progressao" },
 };
 
 const TOTAL_CONQUISTAS = Object.keys(CONQUISTAS).length;
@@ -2490,6 +2492,8 @@ function _salvar() {
   localStorage.setItem("steveDesbloqueado",       steveDesbloqueado ? "true" : "false");
   localStorage.setItem("joaoDesbloqueado",        joaoDesbloqueado  ? "true" : "false");
   localStorage.setItem("jamesDesbloqueado",       jamesDesbloqueado ? "true" : "false");
+  localStorage.setItem("annaDesbloqueada", annaDesbloqueada ? "true" : "false");
+  localStorage.setItem("kikaDesbloqueada", kikaDesbloqueada ? "true" : "false");
   localStorage.setItem("modoNoturno", document.body.classList.contains("dark-mode") ? "true" : "false");
   salvarFazenda();
 
@@ -2506,7 +2510,7 @@ function _salvar() {
           gatinhaDesbloqueada, nomeGatinha,
           sementesDouradas, ultimaSementeDourada,
           steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
-          ultimaInteracaoGatinha,
+          annaDesbloqueada, kikaDesbloqueada, ultimaInteracaoGatinha,
           ultimoAcesso: Date.now(),
           modoNoturno: document.body.classList.contains("dark-mode"),
           muted: isMuted,
@@ -3002,6 +3006,8 @@ function carregarDadosNoJogo(dados) {
   steveDesbloqueado    = dados.steveDesbloqueado === true || dados.steveDesbloqueado === "true";
   joaoDesbloqueado     = dados.joaoDesbloqueado === true || dados.joaoDesbloqueado === "true";
   jamesDesbloqueado    = dados.jamesDesbloqueado === true || dados.jamesDesbloqueado === "true";
+  annaDesbloqueada = dados.annaDesbloqueada === true || dados.annaDesbloqueada === "true";
+  kikaDesbloqueada = dados.kikaDesbloqueada === true || dados.kikaDesbloqueada === "true";
 
   if (dados.conquistas) {
     try { conquistasDesbloqueadas = JSON.parse(dados.conquistas); } catch(e) {}
@@ -4314,6 +4320,39 @@ function comprarPet(btn, chave, nome, callback) {
 comprarPet(btnSteve, "steveDesbloqueado", "Steve", () => { steveDesbloqueado = true; iniciarVisitasSteve(); });
 comprarPet(btnJoao,  "joaoDesbloqueado",  "João",  () => { joaoDesbloqueado  = true; iniciarVisitasJoao();  });
 comprarPet(btnJames, "jamesDesbloqueado", "James", () => { jamesDesbloqueado = true; iniciarVisitasJames(); });
+
+// VISITAS ESPECIAIS
+let annaDesbloqueada = localStorage.getItem("annaDesbloqueada") === "true";
+let kikaDesbloqueada = localStorage.getItem("kikaDesbloqueada") === "true";
+
+const btnAnna = document.getElementById("btnAnna");
+const btnKika = document.getElementById("btnKika");
+
+if (annaDesbloqueada) cinzarPetBtn(btnAnna, "Anna");
+if (kikaDesbloqueada) cinzarPetBtn(btnKika, "Kika");
+
+function comprarVisitaEspecial(btn, chave, nome, callback) {
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    if (localStorage.getItem(chave) === "true") {
+      mostrarAlertaLoja(`${nome} já visita vocês!`);
+      return;
+    }
+    if (moedas < 100000) {
+      mostrarAlertaLoja("Moedas insuficientes");
+      return;
+    }
+    moedas -= 100000;
+    localStorage.setItem(chave, "true");
+    cinzarPetBtn(btn, nome);
+    callback();
+    mostrarMensagem(`${nome} vai aparecer de visita!`);
+    atualizarStatus();
+  });
+}
+
+comprarVisitaEspecial(btnAnna, "annaDesbloqueada", "Anna", () => { annaDesbloqueada = true; iniciarVisitasAnna(); });
+comprarVisitaEspecial(btnKika, "kikaDesbloqueada", "Kika", () => { kikaDesbloqueada = true; iniciarVisitasKika(); });
 
 btnGatinha.addEventListener("click", () => {
 
@@ -6102,6 +6141,8 @@ function mostrarVisitaPet(sprite, fala, duracao = 8000, pet = null) {
   if (pet === "steve") desbloquearConquista("visita_steve");
   if (pet === "joao")  desbloquearConquista("visita_joao");
   if (pet === "james") desbloquearConquista("visita_james");
+  if (pet === "anna") desbloquearConquista("visita_anna");
+  if (pet === "kika") desbloquearConquista("visita_kika");
 
   momentoConjuntoAtivo = true;
   estadoVisual.momentoConjunto = true;
@@ -6187,10 +6228,58 @@ function iniciarVisitasJames() {
   }, 5 * 60 * 1000);
 }
 
+function iniciarVisitasAnna() {
+  const falas = [
+    "Vim ver como vocês tão!",
+    "Tô com saudade das meninas!",
+    "Trouxe um mimo pras gatinhas!",
+    "O que vocês tão aprontando?",
+    "Anna apareceu pra dar um oi!",
+    "Tô de olho em vocês!",
+  ];
+  const sprites = [
+    "assets/sprites/personagens/anna-visita-1.png",
+    "assets/sprites/personagens/anna-visita-2.png",
+    "assets/sprites/personagens/anna-visita-3.png",
+  ];
+  const intervalo = setInterval(() => {
+    if (!annaDesbloqueada) { clearInterval(intervalo); return; }
+    if (Math.random() > 0.6) return;
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    mostrarVisitaPet(sprite, fala, 15000, "anna");
+  }, 5 * 60 * 1000);
+}
+
+function iniciarVisitasKika() {
+  const falas = [
+    "Vim dar uma passadinha!",
+    "Tô com saudade das meninas!",
+    "Trouxe um petisco pras gatinhas!",
+    "Cook, eu tô de olho em você!",
+    "Kika apareceu!",
+    "Esse Cook tava roubando de novo!",
+  ];
+  const sprites = [
+    "assets/sprites/personagens/kika-visita-1.png",
+    "assets/sprites/personagens/kika-visita-2.png",
+    "assets/sprites/personagens/kika-visita-3.png",
+  ];
+  const intervalo = setInterval(() => {
+    if (!kikaDesbloqueada) { clearInterval(intervalo); return; }
+    if (Math.random() > 0.6) return;
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    mostrarVisitaPet(sprite, fala, 15000, "kika");
+  }, 5 * 60 * 1000);
+}
+
 // Inicia visitas se já desbloqueados
 if (steveDesbloqueado) iniciarVisitasSteve();
 if (joaoDesbloqueado)  iniciarVisitasJoao();
 if (jamesDesbloqueado) iniciarVisitasJames();
+if (annaDesbloqueada) iniciarVisitasAnna();
+if (kikaDesbloqueada) iniciarVisitasKika();
 
 // ══════════════════════════════════════════════
 //   JOGO — MISSÃO DO STEVE (Stealth)
