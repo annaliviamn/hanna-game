@@ -1861,9 +1861,15 @@ function atualizarGatinha() {
   else                       gatinhaSpritePor("gatinha-neutra");
 }
 
-if (!localStorage.getItem("hannaUid")) {
-  localStorage.clear();
-}
+// Limpa localStorage mantendo só as infos de conta
+const _uidTemp = localStorage.getItem("hannaUid");
+const _emailTemp = localStorage.getItem("hannaEmail");
+const _senhaTemp = localStorage.getItem("hannaSenhaTexto");
+localStorage.clear();
+if (_uidTemp) localStorage.setItem("hannaUid", _uidTemp);
+if (_emailTemp) localStorage.setItem("hannaEmail", _emailTemp);
+if (_senhaTemp) localStorage.setItem("hannaSenhaTexto", _senhaTemp);
+
 
 let fome        = Number(localStorage.getItem("fome"))        || 40;
 let felicidade  = Number(localStorage.getItem("felicidade"))  || 35;
@@ -2463,7 +2469,7 @@ function atualizarStatus() {
 
 let _ultimoSaveNuvem = 0;
 let _senhaHash = localStorage.getItem("hannaSenhaHash") || null;
-let _bloqueioSaveNuvem = false;
+let _bloqueioSaveNuvem = true; // começa bloqueado até fazer login
 
 function _salvar() {
   localStorage.setItem("fome",                    fome);
@@ -2477,6 +2483,7 @@ function _salvar() {
   localStorage.setItem("vinculoGatinhas",         vinculoGatinhas);
   localStorage.setItem("dormindo",                dormindo);
   localStorage.setItem("updatedAt", Date.now());
+  localStorage.setItem("ultimoAcesso", Date.now());
   localStorage.setItem("gatinhaDesbloqueada",     gatinhaDesbloqueada ? "true" : "false");
   localStorage.setItem("nomeGatinha",             nomeGatinha);
   localStorage.setItem("ultimaInteracaoGatinha",  ultimaInteracaoGatinha);
@@ -2499,6 +2506,7 @@ function _salvar() {
           sementesDouradas, ultimaSementeDourada,
           steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
           ultimaInteracaoGatinha,
+          ultimoAcesso: Date.now(), // linha nova
           fazenda: JSON.stringify(fazenda),
           conquistas: JSON.stringify(conquistasDesbloqueadas),
           lembretes: JSON.stringify(lembretes),
@@ -3014,18 +3022,11 @@ function carregarDadosNoJogo(dados) {
   if (dados.lembretes) {
     try { lembretes = JSON.parse(dados.lembretes); } catch(e) {}
   }
+
+  if (dados.ultimoAcesso) localStorage.setItem("ultimoAcesso", dados.ultimoAcesso); // linha nova
 }
 
-// Restaura o hash da senha ao carregar
-import("./firebase.js").then(async ({ buscarSenhaDoSave }) => {
-  const hash = await buscarSenhaDoSave();
-  if (hash) {
-    _senhaHash = hash;
-    localStorage.setItem("hannaSenhaHash", hash);
-  }
-});
-
-// ── TELA DE LOADING ──────────────────────────
+// TELA DE LOADING
 function mostrarLoading() {
   const hora = new Date().getHours();
   const sprite = (hora >= 6 && hora < 18)
@@ -3047,7 +3048,7 @@ function esconderLoading() {
   }, 500);
 }
 
-// ── ENTRAR NO JOGO ───────────────────────────
+// ENTRAR NO JOGO
 function entrarNoJogo() {
   document.querySelector(".bottomNav").style.display = "flex";
   esconderLoading();
@@ -3066,6 +3067,48 @@ function entrarNoJogo() {
       if (nomeGatinha) nomeDaGatinhaTexto.textContent = nomeGatinha;
     }
     momentoConjuntoAtivo = false;
+    exibindoSementeDourada = false;
+    dormindo = localStorage.getItem("dormindo") === "true";
+
+    // Reinicia interval de sono se já tava dormindo
+    if (dormindo) {
+      dormirInterval = setInterval(() => {
+        energia += 0.5;
+        if (energia >= 100) {
+          energia = 100;
+          dormindo = false;
+          clearInterval(dormirInterval);
+          localStorage.setItem("dormindo", "false");
+          zzzContainer.style.display = "none";
+          hannaSprite.src = "assets/sprites/hanna/neutra.png";
+          mostrarMensagem("A Hanna acordou descansada.");
+          atualizarStatus();
+        }
+        atualizarStatus();
+      }, 7000);
+    }
+
+    // Recalcula energia ganha dormindo
+    if (dormindo) {
+      const agora = Date.now();
+      const ultimoAcessoSalvo = Number(localStorage.getItem("ultimoAcesso")) || agora;
+      const minutosOff = Math.min((agora - ultimoAcessoSalvo) / 60000, 480);
+      energia = Math.min(100, energia + 0.5 * minutosOff);
+      if (energia >= 100) {
+        energia = 100;
+        dormindo = false;
+        localStorage.setItem("dormindo", "false");
+      }
+    }
+
+    // Sprite e zzz
+    if (dormindo) {
+      hannaSprite.src = "assets/sprites/hanna/dormindo.png";
+      zzzContainer.style.display = "flex";
+    } else {
+      zzzContainer.style.display = "none";
+    }
+
     atualizarStatus();
   }, 500);
 }
@@ -3114,7 +3157,12 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   localStorage.setItem("hannaSenhaTexto", senha);
 
   localStorage.clear();
-  if (resultado.dados) carregarDadosNoJogo(resultado.dados);
+  if (resultado.dados) {
+    carregarDadosNoJogo(resultado.dados);
+    restaurarSlotsVisuais();
+    setTimeout(() => reagendarCrescimentoOffline(), 600);
+    atualizarStatus();
+  }
   _bloqueioSaveNuvem = true;
   _salvar();
   setTimeout(() => { 
@@ -3342,7 +3390,7 @@ slotsPlantacao.forEach((slotHTML, idx) => {
 restaurarSlotsVisuais();
 
 // REAGENDAR CRESCIMENTO DAS PLANTAS OFFLINE
-(function reagendarCrescimentoOffline() {
+function reagendarCrescimentoOffline() {
   const agora   = Date.now();
   const PLANTAS = ["rosa","flor","morango","cenoura","abobora","lavanda","margarida","girassol"];
   const MATURACAO = 300000;
@@ -3360,20 +3408,16 @@ restaurarSlotsVisuais();
 
     const tempoRestante = slot.tempoFim - agora;
 
-    // Busca o sprite agora pra uso imediato
     const spriteAgora = slotsPlantacao[idx]?.querySelector("img");
 
     if (tempoRestante <= 0) {
-      // Já devia ter brotado offline
       slot.pronta = true;
       salvarFazenda();
       if (spriteAgora) spriteAgora.src = `assets/farm/${slot.flor}.png`;
     } else {
-      // Mostra brotinho se passou mais da metade
       const progresso = 1 - tempoRestante / MATURACAO;
       if (spriteAgora && progresso > 0.5) spriteAgora.src = "assets/farm/brotinho.png";
 
-      // Rebusca o sprite dentro do timeout — evita referência stale
       setTimeout(() => {
         slot.pronta = true;
         salvarFazenda();
@@ -3383,7 +3427,10 @@ restaurarSlotsVisuais();
       }, tempoRestante);
     }
   });
-})();
+}
+
+// Chama ao carregar a página (comportamento original)
+reagendarCrescimentoOffline();
 
 btnPlantar.addEventListener("click", () => {
 
@@ -3661,8 +3708,8 @@ setInterval(atualizarHorario, 60000);
 setInterval(() => {
   if (dormindo) return;
   const reacoes = [
-    { sprite:"assets/sprites/hanna/curiosa.png",    frase:"A Hanna está curiosa 👀" },
-    { sprite:"assets/sprites/hanna/animada.png",    frase:"A Hanna quer brincar 😺" },
+    { sprite:"assets/sprites/hanna/curiosa.png",    frase:"A Hanna está curiosa" },
+    { sprite:"assets/sprites/hanna/animada.png",    frase:"A Hanna quer brincar" },
     { sprite:"assets/sprites/hanna/apaixonada.png", frase:"Purrrr..." },
   ];
   const r = reacoes[Math.floor(Math.random() * reacoes.length)];
