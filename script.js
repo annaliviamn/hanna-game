@@ -595,6 +595,9 @@ const CONQUISTAS = {
   primeira_dourada:   { nome: "Semente Rara",           desc: "A Hanna te deu a primeira semente dourada!",             sprite: "assets/sprites/hanna/hanna-semente-dourada.png",           secao: "progressao" },
   visita_anna: { nome: "Visita Especial", desc: "Anna apareceu de visita pela primeira vez!", sprite: "assets/sprites/personagens/anna-avatar.png", secao: "progressao" },
   visita_kika: { nome: "Visita da Kika", desc: "Kika apareceu de visita pela primeira vez!", sprite: "assets/sprites/personagens/kika-avatar.png", secao: "progressao" },
+  // Momentos Especiais
+  pedido_aceito:    { nome: "Namoradas!",         desc: "A gatinha pretinha e a Hanna ficaram juntas para sempre!", sprite: "assets/sprites/hanna-gatinha/momento-especial.png", secao: "momentos" },
+  familia_completa: { nome: "Família Completa",   desc: "O filhotinho chegou! A família está completa.",           sprite: "assets/sprites/filhote/filhote.png",                secao: "momentos" },
 };
 
 const TOTAL_CONQUISTAS = Object.keys(CONQUISTAS).length;
@@ -688,7 +691,7 @@ function renderizarTrofeus() {
   if (cardPlatina) cardPlatina.classList.toggle("trofeu-desbloqueado", !!platina);
 
   // Grids por seção
-  const secoes = { cuidados: "gridCuidados", progressao: "gridProgressao", minigames: "gridMinigames" };
+  const secoes = { cuidados: "gridCuidados", progressao: "gridProgressao", minigames: "gridMinigames", momentos: "gridMomentos" };
 
   Object.entries(secoes).forEach(([secao, gridId]) => {
     const grid = document.getElementById(gridId);
@@ -1887,6 +1890,13 @@ let vinculoGatinhas = Number(localStorage.getItem("vinculoGatinhas")) || 0;
 let gatinhaDesbloqueada = localStorage.getItem("gatinhaDesbloqueada") === "true";
 let nomeGatinha = localStorage.getItem("nomeGatinha") || "";
 
+// FILHOTINHO
+let filhoteDesbloqueado = localStorage.getItem("filhoteDesbloqueado") === "true";
+let nomeFilhote         = localStorage.getItem("nomeFilhote") || "";
+let generoFilhote       = localStorage.getItem("generoFilhote") || "";
+let dataGravidez        = Number(localStorage.getItem("dataGravidez")) || 0;
+let pedidoAceito        = localStorage.getItem("pedidoAceito") === "true";
+
 let dormindo =
 localStorage.getItem("dormindo") === "true";
 
@@ -2488,6 +2498,11 @@ function _salvar() {
   localStorage.setItem("ultimoAcesso", Date.now());
   localStorage.setItem("gatinhaDesbloqueada",     gatinhaDesbloqueada ? "true" : "false");
   localStorage.setItem("nomeGatinha",             nomeGatinha);
+  localStorage.setItem("filhoteDesbloqueado", filhoteDesbloqueado ? "true" : "false");
+  localStorage.setItem("nomeFilhote",         nomeFilhote);
+  localStorage.setItem("generoFilhote",       generoFilhote);
+  localStorage.setItem("dataGravidez",        dataGravidez);
+  localStorage.setItem("pedidoAceito",        pedidoAceito ? "true" : "false");
   localStorage.setItem("ultimaInteracaoGatinha",  ultimaInteracaoGatinha);
   localStorage.setItem("steveDesbloqueado",       steveDesbloqueado ? "true" : "false");
   localStorage.setItem("joaoDesbloqueado",        joaoDesbloqueado  ? "true" : "false");
@@ -2508,6 +2523,8 @@ function _salvar() {
           fome, felicidade, energia, higiene, sementes, moedas,
           amizade, vinculoGatinhas, dormindo,
           gatinhaDesbloqueada, nomeGatinha,
+          filhoteDesbloqueado, nomeFilhote, generoFilhote,
+          dataGravidez, pedidoAceito,
           sementesDouradas, ultimaSementeDourada,
           steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
           annaDesbloqueada, kikaDesbloqueada, ultimaInteracaoGatinha,
@@ -3003,6 +3020,12 @@ function carregarDadosNoJogo(dados) {
   nomeGatinha          = dados.nomeGatinha || "";
   dormindo             = dados.dormindo === true || dados.dormindo === "true";
 
+  filhoteDesbloqueado = dados.filhoteDesbloqueado === true || dados.filhoteDesbloqueado === "true";
+  nomeFilhote         = dados.nomeFilhote || "";
+  generoFilhote       = dados.generoFilhote || "";
+  dataGravidez        = Number(dados.dataGravidez) || 0;
+  pedidoAceito        = dados.pedidoAceito === true || dados.pedidoAceito === "true";
+
   steveDesbloqueado    = dados.steveDesbloqueado === true || dados.steveDesbloqueado === "true";
   joaoDesbloqueado     = dados.joaoDesbloqueado === true || dados.joaoDesbloqueado === "true";
   jamesDesbloqueado    = dados.jamesDesbloqueado === true || dados.jamesDesbloqueado === "true";
@@ -3128,6 +3151,11 @@ function entrarNoJogo() {
     }
 
     atualizarStatus();
+
+    // Filhotinho
+    if (filhoteDesbloqueado) exibirFilhote();
+    if (dataGravidez > 0) verificarNascimentoFilhote();
+
   }, 500);
 }
 
@@ -4007,12 +4035,26 @@ btnSimPedido.addEventListener("click", () => {
   pedidoBtns.style.display = "none";
   pedidoSprite.src = "assets/sprites/hanna-gatinha/felizes.png";
 
+  // Seta pedido aceito
+  pedidoAceito = true;
+  desbloquearConquista("pedido_aceito");
+
+  // Bloqueia botão na loja
+  const btnPedido = document.getElementById("btnPedidoEspecial");
+  if (btnPedido) {
+    btnPedido.textContent = "Já namoram!";
+    btnPedido.classList.add("btn-adotado");
+    btnPedido.style.opacity = "0.5";
+    btnPedido.style.cursor = "not-allowed";
+  }
+
   const resposta = "Sério?! Eu sou a gatinha mais feliz do mundo! Prometo continuar ao seu lado em todas as nossas aventuras!";
 
   digitarTexto(textoPedido, resposta, 35, () => {
     setTimeout(() => {
       telaPedido.style.display = "none";
-      tocarTrilha("casa")
+      tocarTrilha("casa");
+      _salvar();
     }, 3000);
   });
 });
@@ -4029,12 +4071,16 @@ btnNaoPedido.addEventListener("click", () => {
 
 // PEDIDO ESPECIAL
 document.getElementById("btnPedidoEspecial")?.addEventListener("click", () => {
+  if (pedidoAceito) {
+    mostrarAlertaLoja("Elas já namoram!");
+    return;
+  }
   if (vinculoGatinhas < 80) {
     mostrarAlertaLoja("A Hanna precisa de 80% de vínculo primeiro!");
     return;
   }
   if (moedas < 70000) {
-    mostrarAlertaLoja("⚠️ Você precisa de 70.000 moedas!");
+    mostrarAlertaLoja("Você precisa de 70.000 moedas!");
     return;
   }
   moedas -= 70000;
@@ -4305,7 +4351,7 @@ function comprarPet(btn, chave, nome, callback) {
       return;
     }
     if (moedas < 50000) {
-      mostrarAlertaLoja("⚠️ Moedas insuficientes");
+      mostrarAlertaLoja("Moedas insuficientes");
       return;
     }
     moedas -= 50000;
@@ -4330,6 +4376,17 @@ const btnKika = document.getElementById("btnKika");
 
 if (annaDesbloqueada) cinzarPetBtn(btnAnna, "Anna");
 if (kikaDesbloqueada) cinzarPetBtn(btnKika, "Kika");
+
+// Bloqueia botão do pedido se já aceito
+if (pedidoAceito) {
+  const btnPedido = document.getElementById("btnPedidoEspecial");
+  if (btnPedido) {
+    btnPedido.textContent = "Já namoram!";
+    btnPedido.classList.add("btn-adotado");
+    btnPedido.style.opacity = "0.5";
+    btnPedido.style.cursor = "not-allowed";
+  }
+}
 
 function comprarVisitaEspecial(btn, chave, nome, callback) {
   if (!btn) return;
@@ -6039,6 +6096,9 @@ function iniciarMomentosEspeciais() {
 
     setInterval(() => {
 
+      // Verifica evento do filhotinho
+        verificarEventoFilhote();
+
         // chance pequena
         if (Math.random() > 0.35) return;
 
@@ -7639,4 +7699,156 @@ function jogoBolinha() {
   }, 0));
 
   desenhar();
+}
+
+// ── EVENTO DO FILHOTINHO ─────────────────────
+function verificarEventoFilhote() {
+  // Condições: pedido aceito, vínculo 100%, todos stats acima de 70%
+  if (filhoteDesbloqueado) return;
+  if (!pedidoAceito) return;
+  if (vinculoGatinhas < 100) return;
+  if (fome < 70 || felicidade < 70 || energia < 70 || higiene < 70) return;
+  if (dataGravidez > 0) return; // já tá grávida
+
+  // 1% de chance por verificação (roda a cada 5 minutos)
+  if (Math.random() > 0.01) return;
+
+  mostrarEventoFilhote();
+}
+
+function mostrarEventoFilhote() {
+  const overlay = document.createElement("div");
+  overlay.id = "overlayFilhote";
+  overlay.style.cssText = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; z-index: 999; gap: 16px; padding: 24px;
+  `;
+
+  overlay.innerHTML = `
+    <img src="assets/sprites/hanna-gatinha/momento-especial.png" 
+         style="width: 180px; image-rendering: pixelated;">
+    <div style="
+      background: var(--card-bg); border-radius: 16px; padding: 20px;
+      text-align: center; max-width: 300px; font-family: var(--font-pixel);
+    ">
+      <p style="font-size: 11px; color: var(--pink-deep); margin-bottom: 16px; line-height: 1.8;">
+        A gatinha olhou pra Hanna com olhinhos brilhando...<br><br>
+        <b>"Hanna... e se a gente tivesse um filhotinho?"</b>
+      </p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button id="btnAceitarFilhote" class="btn-principal" style="font-size: 10px;">
+          <span>Sim, eu adoraria!</span>
+        </button>
+        <button id="btnRecusarFilhote" class="btn-secundario" style="font-size: 10px;">
+          <span>Ainda não...</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById("btnAceitarFilhote").addEventListener("click", () => {
+    overlay.remove();
+    aceitarFilhote();
+  });
+
+  document.getElementById("btnRecusarFilhote").addEventListener("click", () => {
+    overlay.remove();
+  });
+}
+
+function aceitarFilhote() {
+  dataGravidez = Date.now();
+  generoFilhote = Math.random() > 0.5 ? "femea" : "macho";
+  
+  // Gatinha muda de sprite
+  if (gatinhaSprite) gatinhaSprite.src = "assets/sprites/gatinha/gatinha-animada-especial.png";
+  
+  mostrarMensagem("Daqui a 9 dias a família vai crescer!");
+  _salvar();
+  
+  // Inicia verificação de nascimento
+  verificarNascimentoFilhote();
+}
+
+function verificarNascimentoFilhote() {
+  if (!dataGravidez || filhoteDesbloqueado) return;
+  
+  const noveDias = 9 * 24 * 60 * 60 * 1000;
+  const agora = Date.now();
+  
+  if (agora - dataGravidez >= noveDias) {
+    nascerFilhote();
+    return;
+  }
+  
+  // Verifica a cada hora
+  const restante = (dataGravidez + noveDias) - agora;
+  jogoAtivo.timers.push(setTimeout(() => {
+    verificarNascimentoFilhote();
+  }, Math.min(restante, 60 * 60 * 1000)));
+}
+
+function nascerFilhote() {
+  const overlay = document.createElement("div");
+  overlay.id = "overlayNascimento";
+  overlay.style.cssText = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; z-index: 999; gap: 16px; padding: 24px;
+  `;
+
+  const generoTexto = generoFilhote === "femea" ? "uma menina" : "um menino";
+
+  overlay.innerHTML = `
+    <img src="assets/sprites/filhote/filhote.png"
+         style="width: 120px; image-rendering: pixelated; animation: idleFloat 3s ease-in-out infinite;">
+    <div style="
+      background: var(--card-bg); border-radius: 16px; padding: 20px;
+      text-align: center; max-width: 300px; font-family: var(--font-pixel);
+    ">
+      <p style="font-size: 13px; color: var(--pink-deep); margin-bottom: 12px;">
+        É ${generoTexto}!
+      </p>
+      <p style="font-size: 10px; color: var(--text-light); margin-bottom: 16px;">
+        Como você vai chamar esse filhotinho?
+      </p>
+      <input type="text" id="inputNomeFilhote" class="input-cozy" 
+             placeholder="Nome do filhotinho" maxlength="15"
+             style="margin-bottom: 12px;">
+      <button id="btnConfirmarNomeFilhote" class="btn-principal">
+        <span>Confirmar</span>
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById("btnConfirmarNomeFilhote").addEventListener("click", () => {
+    const nome = document.getElementById("inputNomeFilhote").value.trim();
+    if (!nome) return;
+    
+    nomeFilhote = nome;
+    filhoteDesbloqueado = true;
+    dataGravidez = 0;
+    
+    overlay.remove();
+    exibirFilhote();
+    desbloquearConquista("familia_completa");
+    mostrarMensagem(`Bem-vindo, ${nomeFilhote}!`);
+    _salvar();
+  });
+}
+
+function exibirFilhote() {
+  if (!filhoteDesbloqueado || !nomeFilhote) return;
+  
+  const filhoteContainer = document.getElementById("filhoteContainer");
+  if (filhoteContainer) {
+    filhoteContainer.style.display = "flex";
+    const filhoteImg = document.getElementById("filhoteSprite");
+    if (filhoteImg) filhoteImg.src = "assets/sprites/filhote/filhote.png";
+  }
 }
