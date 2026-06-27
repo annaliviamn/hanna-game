@@ -2490,6 +2490,7 @@ function _salvar() {
   localStorage.setItem("steveDesbloqueado",       steveDesbloqueado ? "true" : "false");
   localStorage.setItem("joaoDesbloqueado",        joaoDesbloqueado  ? "true" : "false");
   localStorage.setItem("jamesDesbloqueado",       jamesDesbloqueado ? "true" : "false");
+  localStorage.setItem("modoNoturno", document.body.classList.contains("dark-mode") ? "true" : "false");
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -2506,7 +2507,9 @@ function _salvar() {
           sementesDouradas, ultimaSementeDourada,
           steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
           ultimaInteracaoGatinha,
-          ultimoAcesso: Date.now(), // linha nova
+          ultimoAcesso: Date.now(),
+          modoNoturno: document.body.classList.contains("dark-mode"),
+          muted: isMuted,
           fazenda: JSON.stringify(fazenda),
           conquistas: JSON.stringify(conquistasDesbloqueadas),
           lembretes: JSON.stringify(lembretes),
@@ -3025,6 +3028,14 @@ function carregarDadosNoJogo(dados) {
   }
 
   if (dados.ultimoAcesso) localStorage.setItem("ultimoAcesso", dados.ultimoAcesso); // linha nova
+
+  if (dados.modoNoturno === true) document.body.classList.add("dark-mode");
+  else document.body.classList.remove("dark-mode");
+
+  if (dados.muted !== undefined) {
+    isMuted = dados.muted === true;
+    aplicarMute();
+  }
 }
 
 // TELA DE LOADING
@@ -5645,10 +5656,11 @@ document.addEventListener("visibilitychange", () => {
 
     } else {
 
-        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({
-                tipo: "CHECK_LEMBRETES"
-            });
+        // Usa ready em vez de controller pra garantir que o SW tá ativo
+        if (navigator.serviceWorker) {
+            navigator.serviceWorker.ready.then(sw => {
+                sw.active.postMessage({ tipo: "CHECK_LEMBRETES" });
+            }).catch(() => {});
         }
 
         if (!isMuted && trilhaAtual && trilhas[trilhaAtual]) {
