@@ -997,7 +997,7 @@ function jogoDomino() {
         <div class="dom-mesa-wrap">
           <div class="dom-mesa" id="domMesa">
             ${mesa.length === 0
-              ? '<span class="dom-vazia">Jogue a primeira peça 🎯</span>'
+              ? '<span class="dom-vazia">Jogue a primeira peça</span>'
               : (() => {
                   const porLinha = 5;
                   const linhas = [];
@@ -1019,7 +1019,7 @@ function jogoDomino() {
         </div>
 
         <div class="dom-sua-mao">
-          <div class="dom-label">Suas peças ${vezJogador ? "(sua vez 🎯)" : "(vez da Hanna...)"}</div>
+          <div class="dom-label">Suas peças ${vezJogador ? "(sua vez)" : "(vez da Hanna...)"}</div>
           <div class="dom-pecas" id="domPecas">
             ${maoJogador.map((p, i) => {
               const jogavel = pecaJogavel(p) && vezJogador;
@@ -1044,10 +1044,10 @@ function jogoDomino() {
 
         <div class="dom-acoes">
           ${vezJogador && pecasJogaveis.length === 0 && estoque.length > 0
-            ? `<button class="dom-btn" id="btnComprarDom">Comprar do estoque 📦</button>`
+            ? `<button class="dom-btn" id="btnComprarDom">Comprar do estoque</button>`
             : ""}
           ${vezJogador && pecasJogaveis.length === 0 && estoque.length === 0
-            ? `<button class="dom-btn" id="btnPassarDom">Passar a vez ➡️</button>`
+            ? `<button class="dom-btn" id="btnPassarDom">Passar a vez</button>`
             : ""}
         </div>
       </div>`;
@@ -1142,13 +1142,13 @@ function jogoDomino() {
     let titulo, emoji, recomp, desc;
 
     if (quem === "jogador") {
-      titulo = "Você ganhou! 🎉";
+      titulo = "Você ganhou!";
       emoji  = "🏆";
       recomp = 80;
       desc   = "Esvaziou a mão primeiro! A Hanna ficou impressionada.";
       desbloquearConquista("domino_mestre");
     } else if (quem === "hanna") {
-      titulo = "A Hanna ganhou! 😹";
+      titulo = "A Hanna ganhou!";
       emoji  = "😿";
       recomp = 20;
       desc   = "A Hanna esvaziou a mão primeiro. Tente de novo!";
@@ -1207,7 +1207,7 @@ function jogoHumor() {
   const TOTAL = 10;
 
   arenaConteudo.innerHTML = `
-    <div class="humor-streak" id="humorStreak">🔥 Sequência: 0</div>
+    <div class="humor-streak" id="humorStreak">Sequencia: 0</div>
     <div class="humor-instrucao" id="humorInstrucao">Como a Hanna está se sentindo?</div>
     <div class="humor-timer-bar-bg"><div class="humor-timer-bar-fill" id="humorTimerBar" style="width:100%"></div></div>
     <div class="humor-sprite-wrap">
@@ -1240,7 +1240,7 @@ function jogoHumor() {
           totalMoedas >= 15 ? "Você entende a Hanna!" : "Jogo finalizado!",
           totalMoedas >= 15 ? "💖" : "😺",
           totalMoedas,
-          `Acertou com sequência máxima de ${streak}! ${totalMoedas >= 15 ? "Você conhece bem a Hanna 💕" : "Pratique mais!"}`,
+          `Acertou com sequência máxima de ${streak}! ${totalMoedas >= 15 ? "Você conhece bem a Hanna" : "Pratique mais!"}`,
           jogoHumor
         );
       }, 800));
@@ -1299,12 +1299,12 @@ function jogoHumor() {
       streak >= 3 ? 12 :
       8;
       totalMoedas += ganho;
-      streakEl.textContent = `🔥 Sequência: ${streak} (+${ganho} moeda${ganho>1?"s":""})`;
+      streakEl.textContent = `Sequencia: ${streak} (+${ganho} moeda${ganho>1?"s":""})`;
       spriteEl.src = "assets/sprites/hanna/apaixonada.png";
     } else {
       if (btn) btn.classList.add("errado");
       streak = 0;
-      streakEl.textContent = `🔥 Sequência: 0`;
+      streakEl.textContent = `Sequencia: 0`;
       spriteEl.src = "assets/sprites/hanna/brava.png";
     }
 
@@ -1359,9 +1359,9 @@ function jogoReflexo() {
       jogoAtivo.timers.push(setTimeout(() => {
         mostrarResultado(
           acertos >= 6 ? "Reflexos de felino!" : "Jogo finalizado!",
-          acertos >= 6 ? "⚡" : acertos >= 4 ? "😺" : "😿",
+          "",
           totalMoedas,
-          `Você acertou ${acertos} de ${TOTAL} vezes! ${acertos >= 5 ? "Reflexos incríveis! 🐱" : "Treine seus reflexos!"}`,
+          `Voce acertou ${acertos} de ${TOTAL} vezes! ${acertos >= 5 ? "Reflexos incriveis!" : "Treine seus reflexos!"}`,
           jogoReflexo
         );
       }, 800));
@@ -1395,7 +1395,7 @@ function jogoReflexo() {
 
         // Se não clicou durante o flash = perdeu rodada
         if (esperando) {
-          setFeedback("Tarde demais! 😿", "#ff5555");
+          setFeedback("Tarde demais!", "#ff5555");
           esperando = false;
           rodada++;
           jogoAtivo.timers.push(setTimeout(novaRodada, 1000));
@@ -1413,13 +1413,13 @@ function jogoReflexo() {
       esperando = false;
       const ganho = 20;
       totalMoedas += ganho;
-      setFeedback("Perfeito! ⚡ +20", "#6acf88");
+      setFeedback("Perfeito! +20", "#6acf88");
       hannaEl.src = "assets/sprites/hanna/apaixonada.png";
       rodada++;
       jogoAtivo.timers.push(setTimeout(novaRodada, 1000));
     } else {
       // Muito cedo
-      setFeedback("Cedo demais! 😹", "#ff9944");
+      setFeedback("Cedo demais!", "#ff9944");
       hannaEl.src = "assets/sprites/hanna/brava.png";
       jogoAtivo.timers.push(setTimeout(() => {
         hannaEl.src = "assets/sprites/hanna/neutra.png";
@@ -2518,7 +2518,8 @@ function _salvar() {
 
 // Save automático garantido a cada 30 segundos
 setInterval(() => {
-  if (localStorage.getItem("hannaUid")) {
+  const uid = localStorage.getItem("hannaUid");
+  if (uid && !_bloqueioSaveNuvem && telaJogo.style.display === "block") {
     _salvar();
   }
 }, 30 * 1000);
@@ -3161,7 +3162,6 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
     carregarDadosNoJogo(resultado.dados);
     restaurarSlotsVisuais();
     setTimeout(() => reagendarCrescimentoOffline(), 600);
-    atualizarStatus();
   }
   _bloqueioSaveNuvem = true;
   _salvar();
@@ -6180,7 +6180,7 @@ if (joaoDesbloqueado)  iniciarVisitasJoao();
 if (jamesDesbloqueado) iniciarVisitasJames();
 
 // ══════════════════════════════════════════════
-//   JOGO 7 — MISSÃO DO STEVE (Stealth)
+//   JOGO — MISSÃO DO STEVE (Stealth)
 //   Steve tenta chegar ao osso sem ser visto.
 //   Clique nos momentos certos pra avançar.
 // ══════════════════════════════════════════════
@@ -6210,7 +6210,7 @@ function jogoSteve() {
           <img src="assets/sprites/pets/steve-missao.png" class="steve-sprite" id="steveSprite">
           <div class="steve-desc">${f.desc}</div>
           <div class="steve-botao-wrap">
-            <button class="steve-btn" id="steveAvançar">AGORA! 🐾</button>
+            <button class="steve-btn" id="steveAvançar">AGORA!</button>
           </div>
         </div>
         <div class="steve-dica">Toque no momento certo pra Steve avançar sem ser visto!</div>
@@ -6270,7 +6270,7 @@ function jogoSteve() {
 }
 
 // ══════════════════════════════════════════════
-//   JOGO 8 — JAMES E A DESPENSA (Stealth/Timing)
+//   JOGO 8 — COOK E A DESPENSA (Stealth/Timing)
 //   James tenta roubar comida sem ser pego.
 // ══════════════════════════════════════════════
 
@@ -6282,36 +6282,73 @@ function jogoJames() {
   let tempo   = 45;
   let rodando = true;
 
-  const comidas = ["🐟","🍣","🥩","🍗","🧀","🥚"];
-  const armadilhas = ["🚫","👀","🔔"];
+  const comidas = [
+    { src: "assets/shop/peixe.png",   nome: "Peixe"   },
+    { src: "assets/shop/sashimi.png", nome: "Sashimi" },
+    { src: "assets/shop/atum.png",    nome: "Atum"    },
+    { src: "assets/shop/carne.png",   nome: "Carne"   },
+    { src: "assets/shop/frango.png",  nome: "Frango"  },
+    { src: "assets/shop/presunto.png",nome: "Presunto"},
+  ];
+
+  const armadilhas = [
+    { src: "assets/sprites/personagens/kika-olhando.png", nome: "kika-olhando" },
+    { src: "assets/sprites/personagens/kika-brava.png",   nome: "kika-brava"   },
+    { src: "assets/sprites/personagens/kika-pegando.png", nome: "kika-pegando" },
+  ];
 
   arenaConteudo.innerHTML = `
     <div class="james-wrap">
       <div class="james-info">
-        <span>😺 <b id="jamesPontos">0</b> petiscos</span>
-        <span>❤️ <span id="jamesVidas">❤️❤️❤️</span></span>
-        <span>⏱️ <b id="jamesTimer">45</b>s</span>
+        <span>Petiscos: <b id="jamesPontos">0</b></span>
+        <div id="jamesVidas" style="display:flex;gap:4px;">
+          <img src="assets/ui/coracao-5.png" style="width:18px;">
+          <img src="assets/ui/coracao-5.png" style="width:18px;">
+          <img src="assets/ui/coracao-5.png" style="width:18px;">
+        </div>
+        <span>Tempo: <b id="jamesTimer">45</b>s</span>
       </div>
       <div class="james-arena" id="jamesArena">
         <img src="assets/sprites/pets/james-espiando.png" class="james-sprite">
       </div>
-      <div class="james-dica">Toque nas comidas! Evite as armadilhas 🚫</div>
+      <div class="james-dica">Toque nas comidas! Evite a Kika!</div>
     </div>`;
 
   const arena = document.getElementById("jamesArena");
 
+  function atualizarVidas() {
+    const el = document.getElementById("jamesVidas");
+    if (!el) return;
+    el.innerHTML = "";
+    for (let i = 0; i < 3; i++) {
+      const img = document.createElement("img");
+      img.src = i < vidas ? "assets/ui/coracao-5.png" : "assets/ui/coracao-1.png";
+      img.style.width = "18px";
+      el.appendChild(img);
+    }
+  }
+
   function criarItem() {
     if (!rodando) return;
     const isTrap = Math.random() < 0.3;
-    const emoji  = isTrap
+    const item   = isTrap
       ? armadilhas[Math.floor(Math.random() * armadilhas.length)]
       : comidas[Math.floor(Math.random() * comidas.length)];
 
-    const el  = document.createElement("div");
+    const el = document.createElement("div");
     el.className = "james-item";
-    el.textContent = emoji;
-    el.style.left  = Math.random() * 75 + "%" ;
-    el.style.top   = Math.random() * 70 + 10 + "%";
+    el.style.left = Math.random() * 75 + "%";
+    el.style.top  = Math.random() * 70 + 10 + "%";
+
+    const img = document.createElement("img");
+    img.src = item.src;
+    img.style.width = "40px";
+    img.style.height = "40px";
+    img.style.objectFit = "contain";
+    img.style.pointerEvents = "none";
+    img.style.imageRendering = "pixelated";
+    el.appendChild(img);
+
     arena.appendChild(el);
 
     el.addEventListener("click", () => {
@@ -6319,13 +6356,13 @@ function jogoJames() {
       el.remove();
       if (isTrap) {
         vidas--;
-        document.getElementById("jamesVidas").textContent = "❤️".repeat(Math.max(0, vidas));
-        mostrarFalaHanna("Cook foi pego!");
+        atualizarVidas();
+        mostrarFalaHanna("Cook foi pego pela Kika!");
         if (vidas <= 0) terminar();
       } else {
         pontos++;
         document.getElementById("jamesPontos").textContent = pontos;
-        mostrarFalaHanna(["Delícia!", "Roubado!", "Nham!"][Math.floor(Math.random()*3)]);
+        mostrarFalaHanna(["Delicia!", "Roubado!", "Nham!"][Math.floor(Math.random()*3)]);
       }
     });
 
@@ -6351,9 +6388,12 @@ function jogoJames() {
     desbloquearConquista("james_ladrao");
     jogoAtivo.timers.push(setTimeout(() => {
       mostrarResultado(
-        pontos >= 15 ? "Mestre ladrão! 😹" : "Quase lá!",
-        "🐱", recomp,
-        `James roubou ${pontos} petiscos!`, jogoJames);
+        pontos >= 15 ? "Mestre ladrao!" : "Quase la!",
+        "",
+        recomp,
+        `Cook roubou ${pontos} petiscos!`,
+        jogoJames
+      );
     }, 600));
   }
 }
@@ -6918,13 +6958,13 @@ async function jogoCacaPalavras() {
         achou = true;
         encontradas.add(i);
         sel.forEach(([r,c]) => celsMarcadas.add(`${r},${c}`));
-        mostrarFalaHanna(`"${PALAVRAS_DISPLAY[i]}" encontrada! 🌸`);
+        mostrarFalaHanna(`"${PALAVRAS_DISPLAY[i]}" encontrada!`);
         if (encontradas.size === PALAVRAS.length) {
           render();
           ganharMoedas(70);
           desbloquearConquista("caca_palavras");
           jogoAtivo.timers.push(setTimeout(() => {
-            mostrarResultado("Detetive Felina!", "🌸", 70,
+            mostrarResultado("Detetive Felina!", "", 70,
               "Encontrou todas as palavras! Incrível!", jogoCacaPalavras);
           }, 800));
           return;
@@ -7021,14 +7061,28 @@ async function jogoCacaPalavras() {
 //   Cada combo ganha pontos. 60 segundos.
 //   Recompensa proporcional aos pontos.
 // ══════════════════════════════════════════════
-
 function jogoMatch3() {
   abrirArena("Match-3 Felino");
 
   const COLS   = 6;
   const ROWS   = 7;
-  const ICONES = ["novelo","peixe","ratinho","coleira","donut","varinha"];
-  const MAX_JOGADAS = 20;
+  const ICONES = [
+    "novelo","novelo","novelo",
+    "peixe","peixe","peixe",
+    "ratinho","ratinho","ratinho",
+    "donut","donut","donut",
+    "coleira","coleira",
+    "varinha"
+  ];
+  const VALORES = {
+    novelo:  10,
+    peixe:   15,
+    ratinho: 20,
+    donut:   25,
+    coleira: 40,
+    varinha: 50,
+  };
+  const MAX_JOGADAS = 35;
 
   let board    = [];
   let selected = null;
@@ -7046,10 +7100,7 @@ function jogoMatch3() {
     }
     let mudou = true;
     while (mudou) { mudou = removerCombos(false); }
-
-    if (!existeJogadaPossivel()) {
-      novaGrade();
-    }
+    if (!existeJogadaPossivel()) novaGrade();
   }
 
   function existeJogadaPossivel() {
@@ -7073,48 +7124,44 @@ function jogoMatch3() {
   }
 
   function testarCombo() {
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS - 2; c++) {
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS - 2; c++)
         if (board[r][c] && board[r][c] === board[r][c+1] && board[r][c] === board[r][c+2]) return true;
-      }
-    }
-    for (let r = 0; r < ROWS - 2; r++) {
-      for (let c = 0; c < COLS; c++) {
+    for (let r = 0; r < ROWS - 2; r++)
+      for (let c = 0; c < COLS; c++)
         if (board[r][c] && board[r][c] === board[r+1][c] && board[r][c] === board[r+2][c]) return true;
-      }
-    }
     return false;
   }
 
   function removerCombos(contar = true) {
     const marcar = Array.from({length: ROWS}, () => Array(COLS).fill(false));
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS - 2; c++) {
+    const valores = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS - 2; c++)
         if (board[r][c] && board[r][c] === board[r][c+1] && board[r][c] === board[r][c+2]) {
           marcar[r][c] = marcar[r][c+1] = marcar[r][c+2] = true;
+          valores[r][c] = valores[r][c+1] = valores[r][c+2] = VALORES[board[r][c]] || 10;
         }
-      }
-    }
-    for (let r = 0; r < ROWS - 2; r++) {
-      for (let c = 0; c < COLS; c++) {
+
+    for (let r = 0; r < ROWS - 2; r++)
+      for (let c = 0; c < COLS; c++)
         if (board[r][c] && board[r][c] === board[r+1][c] && board[r][c] === board[r+2][c]) {
           marcar[r][c] = marcar[r+1][c] = marcar[r+2][c] = true;
+          valores[r][c] = valores[r+1][c] = valores[r+2][c] = VALORES[board[r][c]] || 10;
         }
-      }
-    }
-    let qtd = 0;
+
+    let ganho = 0;
     for (let r = 0; r < ROWS; r++)
       for (let c = 0; c < COLS; c++)
-        if (marcar[r][c]) qtd++;
+        if (marcar[r][c]) ganho += valores[r][c];
 
-    if (qtd === 0) return false;
-    if (contar) pontos += qtd * 10;
+    if (ganho === 0) return false;
+    if (contar) pontos += ganho;
 
     for (let c = 0; c < COLS; c++) {
       let novaCol = board.map(r => r[c]).filter((_, i) => !marcar[i][c]);
-      while (novaCol.length < ROWS) {
-        novaCol.unshift(ICONES[Math.floor(Math.random() * ICONES.length)]);
-      }
+      while (novaCol.length < ROWS) novaCol.unshift(ICONES[Math.floor(Math.random() * ICONES.length)]);
       for (let r = 0; r < ROWS; r++) board[r][c] = novaCol[r];
     }
     return true;
@@ -7135,7 +7182,7 @@ function jogoMatch3() {
       }
       if (!existeJogadaPossivel()) {
         novaGrade();
-        mostrarMensagem("Sem jogadas! Embaralhando... 🔄");
+        mostrarMensagem("Sem jogadas! Embaralhando...");
       }
     }
     render();
@@ -7146,20 +7193,22 @@ function jogoMatch3() {
     arenaConteudo.innerHTML = `
       <div class="m3-wrap">
         <div class="m3-info">
-          <span>⭐ <b id="m3Pontos">${pontos}</b></span>
-          <span>🎯 <b>${restam}</b> jogadas</span>
+          <span>Pontos: <b id="m3Pontos">${pontos}</b></span>
+          <span><b>${restam}</b> jogadas</span>
         </div>
         <div class="m3-grade" id="m3Grade">
           ${board.map((row, r) =>
-            row.map((icone, c) =>
-              `<div class="m3-cell ${selected && selected[0]===r && selected[1]===c ? 'm3-sel' : ''}"
-              data-r="${r}" data-c="${c}">
+            row.map((icone, c) => {
+              const valor = VALORES[icone] || 10;
+              return `<div class="m3-cell ${selected && selected[0]===r && selected[1]===c ? 'm3-sel' : ''}"
+                data-r="${r}" data-c="${c}">
                 <img src="assets/shop/${icone}.png" class="m3-item" draggable="false">
-              </div>`
-            ).join("")
+                <span class="m3-valor">${valor}</span>
+              </div>`;
+            }).join("")
           ).join("")}
         </div>
-        <div class="m3-dica">Toque numa peça e depois numa adjacente pra trocar!</div>
+        <div class="m3-dica">Toque numa peca e depois numa adjacente pra trocar!</div>
       </div>`;
 
     document.querySelectorAll(".m3-cell").forEach(el => {
@@ -7183,15 +7232,15 @@ function jogoMatch3() {
 
   function terminar() {
     rodando = false;
-    const recomp = pontos >= 500 ? 100 : pontos >= 300 ? 70 : pontos >= 150 ? 45 : pontos >= 50 ? 25 : 10;
+    const recomp = pontos >= 1000 ? 100 : pontos >= 600 ? 70 : pontos >= 300 ? 45 : pontos >= 100 ? 25 : 10;
     ganharMoedas(recomp);
-    if (pontos >= 300) desbloquearConquista("match3_mestre");
+    if (pontos >= 600) desbloquearConquista("match3_mestre");
     jogoAtivo.timers.push(setTimeout(() => {
       mostrarResultado(
-        pontos >= 300 ? "Combinação perfeita! ✨" : "Jogadas esgotadas!",
-        pontos >= 300 ? "✨" : "😿",
+        pontos >= 600 ? "Combinacao perfeita!" : "Jogadas esgotadas!",
+        "",
         recomp,
-        `Você fez ${pontos} pontos em ${MAX_JOGADAS} jogadas!`,
+        `Voce fez ${pontos} pontos em ${MAX_JOGADAS} jogadas!`,
         jogoMatch3
       );
     }, 600));
@@ -7200,6 +7249,7 @@ function jogoMatch3() {
   novaGrade();
   render();
 }
+
 
 // ══════════════════════════════════════════════
 //   JOGO 8 — PALAVRAS DA HANNA (Wordle)
@@ -7212,7 +7262,7 @@ async function jogoPalavras() {
   abrirArena("Palavras da Hanna");
 
   // Mostra loading enquanto busca
-  arenaConteudo.innerHTML = `<div style="text-align:center;padding:40px;color:#fff;font-weight:800;">Carregando... 🌸</div>`;
+  arenaConteudo.innerHTML = `<div style="text-align:center;padding:40px;color:#fff;font-weight:800;">Carregando...</div>`;
 
   // Tenta buscar do Firebase, usa local como fallback
   let palavraEscolhida;
@@ -7325,7 +7375,7 @@ async function jogoPalavras() {
         ganharMoedas(recomp);
         desbloquearConquista("palavra_certa");
         jogoAtivo.timers.push(setTimeout(() => {
-          mostrarResultado("Acertou! 🎉", "🌸", recomp,
+          mostrarResultado("Acertou!", "", recomp,
             `"${palavra}" em ${tentativas.length} tentativa${tentativas.length > 1 ? "s" : ""}!`,
             jogoPalavras);
         }, 800));
@@ -7333,7 +7383,7 @@ async function jogoPalavras() {
         render();
         ganharMoedas(5);
         jogoAtivo.timers.push(setTimeout(() => {
-          mostrarResultado("Quase lá! 😿", "😿", 5,
+          mostrarResultado("Quase lá!", "", 5,
             `A palavra era "${palavra}". Tente de novo!`, jogoPalavras);
         }, 800));
       } else {
@@ -7446,8 +7496,8 @@ function jogoBolinha() {
       cancelAnimationFrame(animId);
       jogoAtivo.timers.push(setTimeout(() => {
         mostrarResultado(
-          pontos >= 15 ? "Incrível! 🧶" : "Fim de jogo!",
-          pontos >= 15 ? "🧶" : "😿",
+          pontos >= 15 ? "Incrível!" : "Fim de jogo!",
+          pontos >= 15 ? "" : "",
           recomp,
           `Você fez ${pontos} rebatidas! ${pontos >= 15 ? "A Hanna ficou impressionada!" : "Tente não deixar cair!"}`,
           jogoBolinha
