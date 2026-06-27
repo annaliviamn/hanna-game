@@ -5057,10 +5057,11 @@ function mostrarFeedbackConta(msg, erro = false) {
 }
 
 function atualizarEstadoConta() {
-  const id = localStorage.getItem("hannaDeviceId");
-  if (contaComConta) contaComConta.style.display = id ? "block" : "none";
+  const uid = localStorage.getItem("hannaUid");
+  const email = localStorage.getItem("hannaEmail");
+  if (contaComConta) contaComConta.style.display = uid ? "block" : "none";
   if (contaTrocarSenha) contaTrocarSenha.style.display = "none";
-  if (textoNickname && id) textoNickname.textContent = id;
+  if (textoNickname && email) textoNickname.textContent = email;
 }
 
 // Atualiza estado ao carregar
