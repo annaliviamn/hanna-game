@@ -338,7 +338,7 @@ textarea {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 8px;
+  gap: 2px;
   width: 100%;
   position: absolute;
   bottom: -5px;
@@ -5243,4 +5243,106 @@ button {
 @keyframes pontinhosPulse {
   0%, 100% { transform: scale(1); opacity: 0.5; }
   50% { transform: scale(1.3); opacity: 1; }
+}
+
+/* Pedido Filhote */
+#overlayFilhote {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Jogo do filhotinho */
+.esconde-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.esconde-hud {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 11px;
+  font-family: var(--font-pixel);
+  color: var(--pink-deep);
+  padding: 0 4px;
+}
+
+.esconde-bg {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  max-height: 140px;
+}
+
+.esconde-fala {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--pink-deep);
+  text-align: center;
+  min-height: 20px;
+}
+
+.esconde-filhote-dica {
+  width: 60px;
+  image-rendering: pixelated;
+}
+
+.esconde-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.esconde-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 10px;
+  border: 2px solid transparent;
+  transition: border 0.2s;
+}
+
+.esconde-item:active {
+  transform: scale(0.96);
+}
+
+.esconde-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.esconde-nome {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--text-light);
+}
+
+.esconde-correto {
+  border-color: #6acf88 !important;
+  background: #1a3a2e !important;
+}
+
+.esconde-score {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+@keyframes sacudir {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-6px); }
+  50%  { transform: translateX(6px); }
+  75%  { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
 }

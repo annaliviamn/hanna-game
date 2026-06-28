@@ -588,6 +588,7 @@ const CONQUISTAS = {
   colecionadora:      { nome: "Colecionadora",          desc: "Venceu o jogo Cartinhas da Hanna.",             sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
   cirurgia_felina:    { nome: "Cirurgiã Felina",        desc: "Venceu a Operação Sardinha.",                   sprite: "assets/sprites/hanna-gatinha/hanna-cod.png",  secao: "minigames" },
   recados_perfeito:   { nome: "Sintonia Total",         desc: "Acertou todas as respostas na Troca de Recados!",        sprite: "assets/ui/icons/icon-recados.png", secao: "minigames"  },
+  esconde_mestre: { nome: "Achou!", desc: "Encontrou o filhotinho 7 vezes no Esconde-Esconde!", sprite: "assets/sprites/filhote/filhote-pego.png", secao: "momentos" },
   // Visitas e semente
   visita_steve:       { nome: "Visita Surpresa",        desc: "Steve Rogers apareceu de visita pela primeira vez!",     sprite: "assets/sprites/pets/steve-feliz.png",       secao: "progressao" },
   visita_joao:        { nome: "Visita do Tonton",       desc: "João Antônio veio fazer bagunça pela primeira vez!",     sprite: "assets/sprites/pets/joao-feliz.png",   secao: "progressao" },
@@ -1835,6 +1836,11 @@ function iniciarMomentosGatinha() {
 // SPRITE DA GATINHA
 function gatinhaSpritePor(nome) {
   if (!gatinhaDesbloqueada) return;
+  // Se tá grávida, mantém a sprite especial
+  if (dataGravidez > 0 && !filhoteDesbloqueado) {
+    gatinhaSprite.src = "assets/sprites/gatinha/gatinha-animada-especial.png";
+    return;
+  }
   gatinhaSprite.src = `assets/sprites/gatinha/${nome}.png`;
 }
 
@@ -4411,6 +4417,17 @@ function comprarVisitaEspecial(btn, chave, nome, callback) {
 comprarVisitaEspecial(btnAnna, "annaDesbloqueada", "Anna", () => { annaDesbloqueada = true; iniciarVisitasAnna(); });
 comprarVisitaEspecial(btnKika, "kikaDesbloqueada", "Kika", () => { kikaDesbloqueada = true; iniciarVisitasKika(); });
 
+// Bloqueia esconde-esconde se filhotinho não nasceu
+const btnEsconde = document.getElementById("btnEsconde");
+if (btnEsconde) {
+  if (!filhoteDesbloqueado) {
+    btnEsconde.textContent = "Bloqueado";
+    btnEsconde.disabled = true;
+    btnEsconde.style.opacity = "0.5";
+    btnEsconde.style.cursor = "not-allowed";
+  }
+}
+
 btnGatinha.addEventListener("click", () => {
 
   if (gatinhaDesbloqueada) {
@@ -5286,6 +5303,8 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
     else if (jogo === "joao")         jogoJoao();
     else if (jogo === "quebracabeca") jogoQuebracabeca();
     else if (jogo === "recados")      jogoRecados();
+    else if (jogo === "recados")      jogoRecados();
+    else if (jogo === "esconde")      jogoEscondeEsconde();
   });
 });
 
@@ -6112,40 +6131,42 @@ function iniciarMomentosEspeciais() {
         ) return;
 
         const momentos = [
-
             {
-                sprite:
-                "assets/sprites/hanna-gatinha/gatinhas-dormindo.png",
-
-                frase:
-                "Elas dormiram juntinhas",
-
-                chance:
-                () => energia < 40
+                sprite: "assets/sprites/hanna-gatinha/gatinhas-dormindo.png",
+                frase: "Elas dormiram juntinhas",
+                chance: () => energia < 40
             },
-
             {
-                sprite:
-                "assets/sprites/hanna-gatinha/gatinhas-carinho.png",
-
-                frase:
-                "Muito carinho por aqui",
-
-                chance:
-                () => amizade > 3.5
+                sprite: "assets/sprites/hanna-gatinha/gatinhas-carinho.png",
+                frase: "Muito carinho por aqui",
+                chance: () => amizade > 3.5
             },
-
             {
-                sprite:
-                "assets/sprites/hanna-gatinha/gatinhas-brincando3.png",
-
-                frase:
-                "As duas estão brincando",
-
-                chance:
-                () => felicidade > 60
-            }
-
+                sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando3.png",
+                frase: "As duas estão brincando",
+                chance: () => felicidade > 60
+            },
+            // Momentos da família (só aparecem se o filhotinho tiver nascido)
+            {
+                sprite: "assets/sprites/familia/familia-brincando.png",
+                frase: "A família toda brincando!",
+                chance: () => filhoteDesbloqueado && felicidade > 60
+            },
+            {
+                sprite: "assets/sprites/familia/familia-comendo.png",
+                frase: "Hora da refeição em família!",
+                chance: () => filhoteDesbloqueado && fome > 50
+            },
+            {
+                sprite: "assets/sprites/familia/familia-dormindo.png",
+                frase: "A família dormindo juntinha",
+                chance: () => filhoteDesbloqueado && energia < 40
+            },
+            {
+                sprite: "assets/sprites/familia/familia-aprontando.png",
+                frase: "O filhotinho aprontando igual as mães!",
+                chance: () => filhoteDesbloqueado && Math.random() > 0.5
+            },
         ];
 
         const disponiveis =
@@ -7851,4 +7872,170 @@ function exibirFilhote() {
     const filhoteImg = document.getElementById("filhoteSprite");
     if (filhoteImg) filhoteImg.src = "assets/sprites/filhote/filhote.png";
   }
+}
+
+// MINIGAME: ESCONDE-ESCONDE DO FILHOTINHO
+function jogoEscondeEsconde() {
+  if (!filhoteDesbloqueado) {
+    mostrarMensagem("O filhotinho precisa nascer primeiro!");
+    return;
+  }
+
+  abrirArena("Esconde-Esconde!");
+
+  const esconderijos = [
+    { id: "almofada",  nome: "Almofada",  fechado: "assets/sprites/filhote/esconderijos/almofada.png",  aberto: "assets/sprites/filhote/esconderijos/almofada-aberta.png"  },
+    { id: "caixa",     nome: "Caixa",     fechado: "assets/sprites/filhote/esconderijos/caixa.png",     aberto: "assets/sprites/filhote/esconderijos/caixa-aberta.png"     },
+    { id: "cortina",   nome: "Cortina",   fechado: "assets/sprites/filhote/esconderijos/cortina.png",   aberto: "assets/sprites/filhote/esconderijos/cortina-aberta.png"   },
+    { id: "cobertor",  nome: "Cobertor",  fechado: "assets/sprites/filhote/esconderijos/cobertor.png",  aberto: "assets/sprites/filhote/esconderijos/cobertor-aberto.png"  },
+  ];
+
+  const falas = [
+    "Me pegaram!",
+    "Nao acredito!",
+    "Como voce me achou?!",
+    "Nao vale!",
+    "Eu tava tao bem escondido!",
+    "Isso e injusto!",
+  ];
+
+  const falasEscapou = [
+    "Hahaha nao me achou!",
+    "Sou imbativel!",
+    "Tente de novo!",
+    "Muito facil pra mim!",
+  ];
+
+  let rodada    = 0;
+  let pontos    = 0;
+  let acertos   = 0;
+  const TOTAL   = 8;
+
+  function novaRodada() {
+    if (rodada >= TOTAL) {
+      terminar();
+      return;
+    }
+
+    rodada++;
+
+    // Escolhe esconderijo correto aleatoriamente
+    const correto = esconderijos[Math.floor(Math.random() * esconderijos.length)];
+
+    // Embaralha os 4 esconderijos
+    const opcoes = [...esconderijos].sort(() => Math.random() - 0.5);
+
+    let tempoRestante = 30;
+    let encontrou = false;
+
+    arenaConteudo.innerHTML = `
+      <div class="esconde-wrap">
+        <div class="esconde-hud">
+          <span>Rodada <b>${rodada}</b>/${TOTAL}</span>
+          <span>Acertos: <b>${acertos}</b></span>
+          <span>Tempo: <b id="escondeTimer">30</b>s</span>
+        </div>
+        <img src="assets/backgrounds/esconde-esconde.png" class="esconde-bg">
+        <div class="esconde-fala" id="escondeFala">Onde eu estou?</div>
+        <img src="assets/sprites/filhote/filhote-curioso.png" class="esconde-filhote-dica" id="escondeFilhote">
+        <div class="esconde-grid" id="escondeGrid">
+          ${opcoes.map(e => `
+            <div class="esconde-item" data-id="${e.id}">
+              <img src="${e.fechado}" class="esconde-sprite">
+              <span class="esconde-nome">${e.nome}</span>
+            </div>
+          `).join("")}
+        </div>
+        <div class="esconde-score">
+          <span>Pontos: <b id="escondePontos">${pontos}</b></span>
+        </div>
+      </div>`;
+
+    // Timer
+    const timerEl = document.getElementById("escondeTimer");
+    const timerInterval = setInterval(() => {
+      tempoRestante--;
+      if (timerEl) timerEl.textContent = tempoRestante;
+      if (tempoRestante <= 0) {
+        clearInterval(timerInterval);
+        if (!encontrou) {
+          // Tempo esgotado — revela onde estava
+          const fala = falasEscapou[Math.floor(Math.random() * falasEscapou.length)];
+          const falaEl = document.getElementById("escondeFala");
+          const filhoteEl = document.getElementById("escondeFilhote");
+          if (falaEl) falaEl.textContent = fala;
+          if (filhoteEl) filhoteEl.src = "assets/sprites/filhote/filhote-escapou.png";
+
+          // Revela o esconderijo correto
+          document.querySelectorAll(".esconde-item").forEach(el => {
+            if (el.dataset.id === correto.id) {
+              el.querySelector("img").src = correto.aberto;
+              el.classList.add("esconde-correto");
+            }
+            el.style.pointerEvents = "none";
+          });
+
+          jogoAtivo.timers.push(setTimeout(novaRodada, 2000));
+        }
+      }
+    }, 1000);
+    jogoAtivo.intervals.push(timerInterval);
+
+    // Cliques nos esconderijos
+    document.querySelectorAll(".esconde-item").forEach(el => {
+      el.addEventListener("click", () => {
+        if (encontrou) return;
+
+        const acertou = el.dataset.id === correto.id;
+
+        if (acertou) {
+          encontrou = true;
+          clearInterval(timerInterval);
+
+          const ganho = tempoRestante >= 20 ? 15 : tempoRestante >= 10 ? 10 : 5;
+          pontos += ganho;
+          acertos++;
+
+          const fala = falas[Math.floor(Math.random() * falas.length)];
+          const falaEl = document.getElementById("escondeFala");
+          const filhoteEl = document.getElementById("escondeFilhote");
+          const pontosEl = document.getElementById("escondePontos");
+
+          if (falaEl) falaEl.textContent = fala;
+          if (filhoteEl) filhoteEl.src = "assets/sprites/filhote/filhote-pego.png";
+          if (pontosEl) pontosEl.textContent = pontos;
+
+          el.querySelector("img").src = correto.aberto;
+          el.classList.add("esconde-correto");
+          el.style.animation = "sacudir 0.4s ease";
+
+          document.querySelectorAll(".esconde-item").forEach(i => i.style.pointerEvents = "none");
+
+          jogoAtivo.timers.push(setTimeout(novaRodada, 2000));
+
+        } else {
+          // Errou — sacude o errado
+          el.style.animation = "sacudir 0.4s ease";
+          setTimeout(() => el.style.animation = "", 400);
+        }
+      });
+    });
+  }
+
+  function terminar() {
+    if (acertos >= 7) desbloquearConquista("esconde_mestre");
+    const recomp = acertos >= 7 ? 80 : acertos >= 5 ? 50 : acertos >= 3 ? 30 : 15;
+    ganharMoedas(recomp);
+    jogoAtivo.timers.push(setTimeout(() => {
+      mostrarResultado(
+        acertos >= 7 ? "Especialista em esconde-esconde!" : acertos >= 5 ? "Quase la!" : "O filhotinho ganhou!",
+        "",
+        recomp,
+        `Voce achou o filhotinho ${acertos} de ${TOTAL} vezes!`,
+        jogoEscondeEsconde
+      );
+    }, 600));
+  }
+
+  novaRodada();
 }
