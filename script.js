@@ -2023,7 +2023,7 @@ if (!gatinhaDesbloqueada) {
     true;
 
     inputNomeGatinha.placeholder =
-    "Adote a gatinha primeiro 🖤";
+    "Adote a gatinha primeiro";
 
 } else if (!nomeGatinha) {
 
@@ -2654,7 +2654,7 @@ function gatinhaVaiEmbora() {
 
     inputNomeGatinha.disabled            = true;
     btnSalvarNomeGatinha.disabled        = true;
-    inputNomeGatinha.placeholder         = "Adote a gatinha primeiro 🖤";
+    inputNomeGatinha.placeholder         = "Adote a gatinha primeiro";
 
     atualizarStatus();
   }, 4000);
@@ -3207,6 +3207,7 @@ function entrarNoJogo() {
     atualizarStatus();
     atualizarBtnEsconde();
     atualizarBtnsLoja();
+    atualizarConfigGatinha();
 
     // Filhotinho
     if (filhoteDesbloqueado) exibirFilhote();
@@ -4498,6 +4499,19 @@ function atualizarBtnEsconde() {
     btnEsconde.disabled = false;
     btnEsconde.style.opacity = "1";
     btnEsconde.style.cursor = "pointer";
+  }
+}
+
+function atualizarConfigGatinha() {
+  if (!gatinhaDesbloqueada) {
+    inputNomeGatinha.disabled = true;
+    btnSalvarNomeGatinha.disabled = true;
+    inputNomeGatinha.placeholder = "Adote a gatinha primeiro";
+  } else {
+    inputNomeGatinha.disabled = false;
+    btnSalvarNomeGatinha.disabled = false;
+    inputNomeGatinha.value = nomeGatinha || "";
+    inputNomeGatinha.placeholder = nomeGatinha ? nomeGatinha : "Dê um nome pra ela";
   }
 }
 
