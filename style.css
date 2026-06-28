@@ -5349,25 +5349,22 @@ button {
 
 /* Balão Fala Filhote */
 #filhoteFala {
-  opacity: 0;
-  transition: opacity 0.3s;
-  font-family: var(--font-pixel);
-  font-size: 9px;
   background: linear-gradient(135deg, #ffe0f0, #e8d5ff);
-  border: 1.5px solid #c084fc;
-  border-radius: 8px;
-  padding: 4px 8px;
-  text-align: center;
-  width: 90px;
-  word-wrap: break-word;
-  white-space: normal;
-  position: absolute;
-  top: -50px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  pointer-events: none;
+  border: 2px solid #c084fc;
+  border-radius: 14px 14px 14px 4px;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 800;
   color: #7c3aed;
+  box-shadow: 0 2px 8px rgba(192,132,252,0.15);
+  margin-bottom: 3px;
+  white-space: normal;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .3s, transform .3s;
+  pointer-events: none;
+  max-width: 110px;
+  text-align: center;
 }
 
 #filhoteContainer {
