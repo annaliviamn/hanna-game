@@ -598,6 +598,7 @@ const CONQUISTAS = {
   visita_kika: { nome: "Visita da Kika", desc: "Kika apareceu de visita pela primeira vez!", sprite: "assets/sprites/personagens/kika-avatar.png", secao: "progressao" },
   // Momentos Especiais
   pedido_aceito:    { nome: "Namoradas!",         desc: "A gatinha pretinha e a Hanna ficaram juntas para sempre!", sprite: "assets/sprites/hanna-gatinha/momento-especial.png", secao: "momentos" },
+  esperando_filhote: { nome: "Novidade em Casa!", desc: "A gatinha ficou gravida! O filhotinho chega em 9 dias.", sprite: "assets/sprites/gatinha/gatinha-animada-especial.png", secao: "momentos" },
   familia_completa: { nome: "Família Completa",   desc: "O filhotinho chegou! A família está completa.",           sprite: "assets/sprites/filhote/filhote.png",                secao: "momentos" },
 };
 
@@ -2034,57 +2035,24 @@ if (!gatinhaDesbloqueada) {
 
 let ultimoAcesso = Number(localStorage.getItem("ultimoAcesso")) || Date.now();
 
-// ── COMPENSAR TEMPO OFFLINE ──────────────────────────────────
+// COMPENSAR TEMPO OFFLINE
 // Calcula quantos minutos se passaram desde o último acesso
 // e aplica a degradação de stats proporcionalmente (máx 8h)
-(function compensarTempoOffline() {
-  const agora      = Date.now();
-  const minutosOff = Math.min((agora - ultimoAcesso) / 60000, 480);
+function compensarTempoOffline() {
+  const agora = Date.now();
+  const ultimoAcessoSalvo = Number(localStorage.getItem("ultimoAcesso")) || agora;
+  const minutosOff = Math.min((agora - ultimoAcessoSalvo) / 60000, 480);
 
   if (minutosOff >= 1) {
     if (dormindo) {
-      // Recupera energia enquanto dormia offline
       energia = Math.min(100, energia + 0.5 * minutosOff);
-
-      // Se energia encheu, acorda
       if (energia >= 100) {
-
         energia = 100;
-
         dormindo = false;
-
         momentoConjuntoAtivo = false;
-
         localStorage.setItem("dormindo", "false");
-
-        zzzContainer.style.display = "none";
-
-        const hannaContainer =
-        document.getElementById("hannaContainer");
-
-        const gatinhaContainer =
-        document.getElementById("gatinhaContainer");
-
-        const spriteConjunta =
-        document.getElementById("spriteConjunta");
-
-        if (spriteConjunta) {
-          spriteConjunta.style.display = "none";
-        }
-
-        if (hannaContainer) {
-          hannaContainer.style.display = "flex";
-        }
-
-        if (gatinhaContainer) {
-          gatinhaContainer.style.display = "flex";
-        }
-
-        atualizarGatinha();
-        atualizarStatus();
       }
     } else {
-      // Degrada stats normalmente
       fome       = Math.max(0, fome       - 2   * minutosOff);
       felicidade = Math.max(0, felicidade - 1   * minutosOff);
       energia    = Math.max(0, energia    - 0.5 * minutosOff);
@@ -2096,7 +2064,7 @@ let ultimoAcesso = Number(localStorage.getItem("ultimoAcesso")) || Date.now();
   setInterval(() => {
     localStorage.setItem("ultimoAcesso", Date.now());
   }, 30000);
-})();
+}
 
 // ── REAGENDAR CRESCIMENTO DAS PLANTAS OFFLINE ─────────────────
 // (executado após a declaração de fazenda e slotsPlantacao, mais abaixo)
@@ -3276,6 +3244,7 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   localStorage.clear();
   if (resultado.dados) {
     carregarDadosNoJogo(resultado.dados);
+    compensarTempoOffline();
     restaurarSlotsVisuais();
     setTimeout(() => reagendarCrescimentoOffline(), 600);
   }
@@ -6937,7 +6906,7 @@ function jogoRecados() {
   iniciarRodada();
 }
 
-//   QUEBRA-CABEÇA — 8 NÍVEIS PROGRESSIVOS
+//   QUEBRA-CABEÇA — 9 NÍVEIS PROGRESSIVOS
 
 function jogoQuebracabeca() {
   abrirArena("Quebra-Cabeca");
@@ -6951,6 +6920,7 @@ function jogoQuebracabeca() {
     { sprite: "assets/sprites/puzzle/puzzle-nivel6.png", grade: 6, nome: "Uma familia Completa" },
     { sprite: "assets/sprites/puzzle/puzzle-nivel7.png", grade: 6, nome: "Manha de Caos em Casa" },
     { sprite: "assets/sprites/puzzle/puzzle-nivel8.png", grade: 6, nome: "Noite de Cinema em Familia" },
+    { sprite: "assets/sprites/puzzle/puzzle-nivel9.png", grade: 7, nome: "A Familia Cresceu" },
   ];
 
   let nivelAtual = parseInt(localStorage.getItem("puzzleNivel") || "0");
@@ -7049,7 +7019,7 @@ function jogoQuebracabeca() {
         jogoAtivo.timers.push(setTimeout(() => {
           arenaConteudo.innerHTML = `
             <div class="pz-wrap" style="align-items:center;gap:20px;">
-              <div style="font-size:32px; color:var(--accent);">Nivel ${idx+1} completo!</div>
+              <div style="font-size:32px; color:var(--pink-deep);">Nivel ${idx+1} completo!</div>
               <div style="font-size:13px;color:var(--text-mid);">+${recomp} moedas</div>
               <button class="steve-btn" id="pzProximo">Proximo nivel</button>
             </div>`;
@@ -7336,7 +7306,8 @@ function jogoMatch3() {
     coleira: 40,
     varinha: 50,
   };
-  const MAX_JOGADAS = 35;
+  const opcoesJogadas = [10, 15, 20, 25, 30];
+  const MAX_JOGADAS = opcoesJogadas[Math.floor(Math.random() * opcoesJogadas.length)];
 
   let board    = [];
   let selected = null;
@@ -7854,6 +7825,8 @@ function mostrarEventoFilhote() {
 function aceitarFilhote() {
   dataGravidez = Date.now();
   generoFilhote = Math.random() > 0.5 ? "femea" : "macho";
+
+  desbloquearConquista("esperando_filhote");
   
   // Gatinha muda de sprite
   if (gatinhaSprite) gatinhaSprite.src = "assets/sprites/gatinha/gatinha-animada-especial.png";
@@ -8008,11 +7981,13 @@ function jogoEscondeEsconde() {
         </div>
         <img src="assets/backgrounds/esconde-esconde.png" class="esconde-bg">
         <div class="esconde-fala" id="escondeFala">Onde eu estou?</div>
-        <img src="assets/sprites/filhote/filhote-curioso.png" class="esconde-filhote-dica" id="escondeFilhote">
         <div class="esconde-grid" id="escondeGrid">
           ${opcoes.map(e => `
-            <div class="esconde-item" data-id="${e.id}">
+            <div class="esconde-item" data-id="${e.id}" style="position:relative;">
               <img src="${e.fechado}" class="esconde-sprite">
+              <img src="assets/sprites/filhote/filhote.png" 
+                  class="esconde-filhote-oculto" 
+                  style="display:none; position:absolute; bottom:30px; left:50%; transform:translateX(-50%); width:50px; image-rendering:pixelated; pointer-events:none;">
               <span class="esconde-nome">${e.nome}</span>
             </div>
           `).join("")}
@@ -8040,7 +8015,12 @@ function jogoEscondeEsconde() {
           // Revela o esconderijo correto
           document.querySelectorAll(".esconde-item").forEach(el => {
             if (el.dataset.id === correto.id) {
-              el.querySelector("img").src = correto.aberto;
+              el.querySelector("img.esconde-sprite").src = correto.aberto;
+              const filhoteOculto = el.querySelector(".esconde-filhote-oculto");
+              if (filhoteOculto) {
+                filhoteOculto.src = "assets/sprites/filhote/filhote-escapou.png";
+                filhoteOculto.style.display = "block";
+              }
               el.classList.add("esconde-correto");
             }
             el.style.pointerEvents = "none";
@@ -8069,19 +8049,22 @@ function jogoEscondeEsconde() {
 
           const fala = falas[Math.floor(Math.random() * falas.length)];
           const falaEl = document.getElementById("escondeFala");
-          const filhoteEl = document.getElementById("escondeFilhote");
           const pontosEl = document.getElementById("escondePontos");
 
           if (falaEl) falaEl.textContent = fala;
-          if (filhoteEl) filhoteEl.src = "assets/sprites/filhote/filhote-pego.png";
           if (pontosEl) pontosEl.textContent = pontos;
 
-          el.querySelector("img").src = correto.aberto;
+          // Mostra o filhotinho saindo do esconderijo correto
+          el.querySelector("img.esconde-sprite").src = correto.aberto;
+          const filhoteOculto = el.querySelector(".esconde-filhote-oculto");
+          if (filhoteOculto) {
+            filhoteOculto.src = "assets/sprites/filhote/filhote-pego.png";
+            filhoteOculto.style.display = "block";
+          }
           el.classList.add("esconde-correto");
           el.style.animation = "sacudir 0.4s ease";
 
           document.querySelectorAll(".esconde-item").forEach(i => i.style.pointerEvents = "none");
-
           jogoAtivo.timers.push(setTimeout(novaRodada, 2000));
 
         } else {
