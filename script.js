@@ -2248,7 +2248,7 @@ function renderizarGatinhas() {
 
     spriteConjunta.src = spriteDormindo;
     spriteConjunta.style.display = "block";
-    spriteConjunta.style.bottom = "-65px";
+    spriteConjunta.style.bottom = filhoteDesbloqueado ? "0px" : "-65px";
 
     return;
   }
