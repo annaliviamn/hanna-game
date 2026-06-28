@@ -8052,7 +8052,6 @@ function exibirFilhote() {
   if (filhoteContainer) {
     filhoteContainer.style.display = "flex";
     if (filhoteSprite) filhoteSprite.src = spriteBase;
-    if (nomeFilhoteTexto) nomeFilhoteTexto.textContent = nomeFilhote;
   }
   iniciarIdleFilhote();
 }

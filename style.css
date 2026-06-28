@@ -5393,3 +5393,22 @@ button {
   position: relative;
   cursor: pointer;
 }
+
+#filhoteContainer span {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--pink-deep);
+  text-align: center;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: none;
+}
+
+#filhoteContainer img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
