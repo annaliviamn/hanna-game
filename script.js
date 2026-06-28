@@ -4487,7 +4487,15 @@ function atualizarBtnEsconde() {
 
 // Função que acinzenta os botões especiais depois de comprados
 function atualizarBtnsLoja() {
-  if (gatinhaDesbloqueada) cinzarPetBtn(document.getElementById("btnGatinha"), "Gatinha");
+  if (gatinhaDesbloqueada) {
+    const btnGatinha = document.getElementById("btnGatinha");
+    if (btnGatinha) {
+      btnGatinha.textContent = "Já é da família!";
+      btnGatinha.classList.add("btn-adotado");
+      btnGatinha.style.opacity = "0.5";
+      btnGatinha.style.cursor = "not-allowed";
+    }
+  }
   if (steveDesbloqueado) cinzarPetBtn(btnSteve, "Steve");
   if (joaoDesbloqueado)  cinzarPetBtn(btnJoao,  "João");
   if (jamesDesbloqueado) cinzarPetBtn(btnJames, "James");
@@ -4507,7 +4515,7 @@ function atualizarBtnsLoja() {
 btnGatinha.addEventListener("click", () => {
 
   if (gatinhaDesbloqueada) {
-    mostrarAlertaLoja(`🖤 ${nomeGatinha || "sua gatinha"} já mora com vocês`);
+    mostrarAlertaLoja(`${nomeGatinha || "sua gatinha"} já mora com vocês`);
     return;
   }
   if (gatinhaBloqueadaAte && Date.now() < gatinhaBloqueadaAte) {
@@ -4531,7 +4539,7 @@ btnGatinha.addEventListener("click", () => {
 
   if (moedas < 25000) {
 
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
 
     return;
   }
