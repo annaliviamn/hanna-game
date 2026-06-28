@@ -5412,3 +5412,7 @@ button {
   object-fit: contain;
   image-rendering: pixelated;
 }
+
+#filhoteSprite {
+  animation: idleFloat 3s ease-in-out infinite;
+}
