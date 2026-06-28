@@ -1740,27 +1740,59 @@ const filhoteSprite    = document.getElementById("filhoteSprite");
 const filhoteFala      = document.getElementById("filhoteFala");
 const nomeFilhoteTexto = document.getElementById("nomeFilhoteTexto");
 
-const spritesFilhote = [
-  "assets/sprites/filhote/filhote.png",
-  "assets/sprites/filhote/filhote-curioso.png",
-  "assets/sprites/filhote/filhote-dramatico.png",
-  "assets/sprites/filhote/filhote-comendo.png",
-  "assets/sprites/filhote/filhote-dormindo.png",
-  "assets/sprites/filhote/filhote-aprontando.png",
-];
+const spritesFilhote = {
+  misto: [
+    "assets/sprites/filhote/filhote.png",
+    "assets/sprites/filhote/filhote-curioso.png",
+    "assets/sprites/filhote/filhote-dramatico.png",
+    "assets/sprites/filhote/filhote-comendo.png",
+    "assets/sprites/filhote/filhote-dormindo.png",
+    "assets/sprites/filhote/filhote-aprontando.png",
+  ],
+  hanna: [
+    "assets/sprites/filhote/filhote-hanna.png",
+    "assets/sprites/filhote/filhote-hanna-curioso.png",
+    "assets/sprites/filhote/filhote-hanna-dramatico.png",
+    "assets/sprites/filhote/filhote-hanna-comendo.png",
+    "assets/sprites/filhote/filhote-hanna-dormindo.png",
+    "assets/sprites/filhote/filhote-hanna-aprontando.png",
+  ],
+  gatinha: [
+    "assets/sprites/filhote/filhote-gatinha.png",
+    "assets/sprites/filhote/filhote-gatinha-curioso.png",
+    "assets/sprites/filhote/filhote-gatinha-dramatico.png",
+    "assets/sprites/filhote/filhote-gatinha-comendo.png",
+    "assets/sprites/filhote/filhote-gatinha-dormindo.png",
+    "assets/sprites/filhote/filhote-gatinha-aprontando.png",
+  ],
+};
 
-const falasFilhote = [
-  "Miau!",
-  "Me olha!",
-  "Tô com fome já!",
-  "O que é isso?",
-  "Me dá atenção!",
-  "Vou morder!",
-  "Eu nao fui eu!",
-  "Tô dormindo nao me acorde!",
-  "Descobri uma coisa...",
-  "Psiu, segredo!",
-];
+const falasFilhote = {
+  misto: [
+    "Me pegaram!",
+    "Isso e injusto!",
+    "Eu nao fui eu!",
+    "Tô chorando aqui!",
+    "Nao acredito!",
+    "Como voce me achou?!",
+  ],
+  hanna: [
+    "Oi... com licenca...",
+    "Eu tava so olhando...",
+    "Nao me assusta!",
+    "Posso ficar aqui?",
+    "Desculpa...",
+    "Eu so queria ajudar...",
+  ],
+  gatinha: [
+    "Nao fui eu!",
+    "Provem!",
+    "Ja fiz pior!",
+    "Isso foi divertido!",
+    "Vou aprontar mais!",
+    "Ninguem me pega!",
+  ],
+};
 
 function mostrarFalaFilhote(texto) {
   if (!filhoteFala) return;
@@ -1771,15 +1803,26 @@ function mostrarFalaFilhote(texto) {
 
 function iniciarIdleFilhote() {
   if (!filhoteDesbloqueado) return;
+
+  const versao = versaoFilhote || "misto";
+  const spriteBase = versao === "hanna"
+    ? "assets/sprites/filhote/filhote-hanna.png"
+    : versao === "gatinha"
+    ? "assets/sprites/filhote/filhote-gatinha.png"
+    : "assets/sprites/filhote/filhote.png";
+
+  const sprites = spritesFilhote[versao] || spritesFilhote.misto;
+  const falas   = falasFilhote[versao]   || falasFilhote.misto;
+
   setInterval(() => {
     if (!filhoteDesbloqueado) return;
     if (Math.random() > 0.4) return;
-    const sprite = spritesFilhote[Math.floor(Math.random() * spritesFilhote.length)];
-    const fala   = falasFilhote[Math.floor(Math.random() * falasFilhote.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
     if (filhoteSprite) filhoteSprite.src = sprite;
     mostrarFalaFilhote(fala);
     setTimeout(() => {
-      if (filhoteSprite) filhoteSprite.src = "assets/sprites/filhote/filhote.png";
+      if (filhoteSprite) filhoteSprite.src = spriteBase;
     }, 4000);
   }, 15000);
 }
@@ -1788,12 +1831,23 @@ function iniciarIdleFilhote() {
 if (filhoteContainer) {
   filhoteContainer.addEventListener("click", () => {
     if (!filhoteDesbloqueado) return;
-    const fala = falasFilhote[Math.floor(Math.random() * falasFilhote.length)];
-    const sprite = spritesFilhote[Math.floor(Math.random() * spritesFilhote.length)];
+
+    const versao = versaoFilhote || "misto";
+    const spriteBase = versao === "hanna"
+      ? "assets/sprites/filhote/filhote-hanna.png"
+      : versao === "gatinha"
+      ? "assets/sprites/filhote/filhote-gatinha.png"
+      : "assets/sprites/filhote/filhote.png";
+
+    const sprites = spritesFilhote[versao] || spritesFilhote.misto;
+    const falas   = falasFilhote[versao]   || falasFilhote.misto;
+
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
     if (filhoteSprite) filhoteSprite.src = sprite;
     mostrarFalaFilhote(fala);
     setTimeout(() => {
-      if (filhoteSprite) filhoteSprite.src = "assets/sprites/filhote/filhote.png";
+      if (filhoteSprite) filhoteSprite.src = spriteBase;
     }, 3000);
   });
 }
@@ -1965,6 +2019,7 @@ let nomeGatinha = localStorage.getItem("nomeGatinha") || "";
 let filhoteDesbloqueado = localStorage.getItem("filhoteDesbloqueado") === "true";
 let nomeFilhote         = localStorage.getItem("nomeFilhote") || "";
 let generoFilhote       = localStorage.getItem("generoFilhote") || "";
+let versaoFilhote       = localStorage.getItem("versaoFilhote") || "misto"; // linha nova
 let dataGravidez        = Number(localStorage.getItem("dataGravidez")) || 0;
 let pedidoAceito        = localStorage.getItem("pedidoAceito") === "true";
 
@@ -2546,6 +2601,7 @@ function _salvar() {
   localStorage.setItem("nomeGatinha",             nomeGatinha);
   localStorage.setItem("filhoteDesbloqueado", filhoteDesbloqueado ? "true" : "false");
   localStorage.setItem("nomeFilhote",         nomeFilhote);
+  localStorage.setItem("versaoFilhote", versaoFilhote);
   localStorage.setItem("generoFilhote",       generoFilhote);
   localStorage.setItem("dataGravidez",        dataGravidez);
   localStorage.setItem("pedidoAceito",        pedidoAceito ? "true" : "false");
@@ -2570,7 +2626,7 @@ function _salvar() {
           amizade, vinculoGatinhas, dormindo,
           gatinhaDesbloqueada, nomeGatinha,
           filhoteDesbloqueado, nomeFilhote, generoFilhote,
-          dataGravidez, pedidoAceito,
+          versaoFilhote, dataGravidez, pedidoAceito,
           sementesDouradas, ultimaSementeDourada,
           steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
           annaDesbloqueada, kikaDesbloqueada, ultimaInteracaoGatinha,
@@ -3077,6 +3133,7 @@ function carregarDadosNoJogo(dados) {
   filhoteDesbloqueado = dados.filhoteDesbloqueado === true || dados.filhoteDesbloqueado === "true";
   nomeFilhote         = dados.nomeFilhote || "";
   generoFilhote       = dados.generoFilhote || "";
+  versaoFilhote       = dados.versaoFilhote || "misto";
   dataGravidez        = Number(dados.dataGravidez) || 0;
   pedidoAceito        = dados.pedidoAceito === true || dados.pedidoAceito === "true";
 
@@ -6262,24 +6319,24 @@ function iniciarMomentosEspeciais() {
             },
             // Momentos da família (só aparecem se o filhotinho tiver nascido)
             {
-                sprite: "assets/sprites/familia/familia-brincando.png",
-                frase: "A família toda brincando!",
-                chance: () => filhoteDesbloqueado && felicidade > 60
+              sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}brincando.png`,
+              frase: "A família toda brincando!",
+              chance: () => filhoteDesbloqueado && felicidade > 60
             },
             {
-                sprite: "assets/sprites/familia/familia-comendo.png",
-                frase: "Hora da refeição em família!",
-                chance: () => filhoteDesbloqueado && fome > 50
+              sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}comendo.png`,
+              frase: "Hora da refeição em família!",
+              chance: () => filhoteDesbloqueado && fome > 50
             },
             {
-                sprite: "assets/sprites/familia/familia-dormindo.png",
-                frase: "A família dormindo juntinha",
-                chance: () => filhoteDesbloqueado && energia < 40
+              sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}dormindo.png`,
+              frase: "A família dormindo juntinha",
+              chance: () => filhoteDesbloqueado && energia < 40
             },
             {
-                sprite: "assets/sprites/familia/familia-aprontando.png",
-                frase: "O filhotinho aprontando igual as mães!",
-                chance: () => filhoteDesbloqueado && Math.random() > 0.5
+              sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}aprontando.png`,
+              frase: "O filhotinho aprontando igual as mães!",
+              chance: () => filhoteDesbloqueado && Math.random() > 0.5
             },
         ];
 
@@ -7899,6 +7956,8 @@ function mostrarEventoFilhote() {
 function aceitarFilhote() {
   dataGravidez = Date.now();
   generoFilhote = Math.random() > 0.5 ? "femea" : "macho";
+  const versoes = ["misto", "gatinha", "hanna"];
+  versaoFilhote = versoes[Math.floor(Math.random() * versoes.length)];
 
   desbloquearConquista("esperando_filhote");
   
@@ -7942,7 +8001,7 @@ function nascerFilhote() {
   const generoTexto = generoFilhote === "femea" ? "uma menina" : "um menino";
 
   overlay.innerHTML = `
-    <img src="assets/sprites/filhote/filhote.png"
+    <img src="${versaoFilhote === 'hanna' ? 'assets/sprites/filhote/filhote-hanna.png' : versaoFilhote === 'gatinha' ? 'assets/sprites/filhote/filhote-gatinha.png' : 'assets/sprites/filhote/filhote.png'}"
          style="width: 120px; image-rendering: pixelated; animation: idleFloat 3s ease-in-out infinite;">
     <div style="
       background: var(--card-bg); border-radius: 16px; padding: 20px;
@@ -7983,13 +8042,19 @@ function nascerFilhote() {
 
 function exibirFilhote() {
   if (!filhoteDesbloqueado || !nomeFilhote) return;
-  
-  const filhoteContainer = document.getElementById("filhoteContainer");
+
+  const spriteBase = versaoFilhote === "hanna" 
+    ? "assets/sprites/filhote/filhote-hanna.png"
+    : versaoFilhote === "gatinha"
+    ? "assets/sprites/filhote/filhote-gatinha.png"
+    : "assets/sprites/filhote/filhote.png";
+
   if (filhoteContainer) {
     filhoteContainer.style.display = "flex";
-    const filhoteImg = document.getElementById("filhoteSprite");
-    if (filhoteImg) filhoteImg.src = "assets/sprites/filhote/filhote.png";
+    if (filhoteSprite) filhoteSprite.src = spriteBase;
+    if (nomeFilhoteTexto) nomeFilhoteTexto.textContent = nomeFilhote;
   }
+  iniciarIdleFilhote();
 }
 
 // MINIGAME: ESCONDE-ESCONDE DO FILHOTINHO
