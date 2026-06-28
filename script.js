@@ -4487,6 +4487,7 @@ function atualizarBtnEsconde() {
 
 // Função que acinzenta os botões especiais depois de comprados
 function atualizarBtnsLoja() {
+  if (gatinhaDesbloqueada) cinzarPetBtn(document.getElementById("btnGatinha"), "Gatinha");
   if (steveDesbloqueado) cinzarPetBtn(btnSteve, "Steve");
   if (joaoDesbloqueado)  cinzarPetBtn(btnJoao,  "João");
   if (jamesDesbloqueado) cinzarPetBtn(btnJames, "James");
