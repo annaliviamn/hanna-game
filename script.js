@@ -1835,6 +1835,31 @@ function iniciarIdleFilhote() {
   }, 15000);
 }
 
+// Clique no filhotinho
+if (filhoteContainer) {
+  filhoteContainer.addEventListener("click", () => {
+    if (!filhoteDesbloqueado) return;
+
+    const versao = versaoFilhote || "misto";
+    const spriteBase = versao === "hanna"
+      ? "assets/sprites/filhote/filhote-hanna.png"
+      : versao === "gatinha"
+      ? "assets/sprites/filhote/filhote-gatinha.png"
+      : "assets/sprites/filhote/filhote.png";
+
+    const sprites = spritesFilhote[versao] || spritesFilhote.misto;
+    const falas   = falasFilhote[versao]   || falasFilhote.misto;
+
+    const fala   = falas[Math.floor(Math.random() * falas.length)];
+    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+    if (filhoteSprite) filhoteSprite.src = sprite;
+    mostrarFalaFilhote(fala);
+    setTimeout(() => {
+      if (filhoteSprite) filhoteSprite.src = spriteBase;
+    }, 3000);
+  });
+}
+
 // Momentos juntos: acontecem a cada 3–6 min se a gatinha estiver desbloqueada
 // Progressivo por vínculo:
 //   0–40%  → apenas brincam lado a lado (sprites individuais animadas)
