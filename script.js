@@ -2042,6 +2042,8 @@ function compensarTempoOffline() {
   const agora = Date.now();
   const ultimoAcessoSalvo = Number(localStorage.getItem("ultimoAcesso")) || agora;
   const minutosOff = Math.min((agora - ultimoAcessoSalvo) / 60000, 480);
+  const hora = new Date().getHours();
+  const horarioSono = hora >= 0 && hora < 8;
 
   if (minutosOff >= 1) {
     if (dormindo) {
@@ -2057,6 +2059,12 @@ function compensarTempoOffline() {
       felicidade = Math.max(0, felicidade - 1   * minutosOff);
       energia    = Math.max(0, energia    - 0.5 * minutosOff);
       higiene    = Math.max(0, higiene    - 1   * minutosOff);
+
+      // Vínculo cai 1% por hora fora do horário de sono
+      if (!horarioSono && gatinhaDesbloqueada) {
+        const horasOff = minutosOff / 60;
+        vinculoGatinhas = Math.max(0, vinculoGatinhas - 1 * horasOff);
+      }
     }
   }
 
@@ -3036,10 +3044,18 @@ setInterval(() => {
     fome       = Math.max(0, fome       - 2);
     felicidade = Math.max(0, felicidade - 1);
     energia    = Math.max(0, energia    - 0.5);
-    higiene = Math.max(0, higiene - 1);
+    higiene    = Math.max(0, higiene    - 1);
+
+    // Vínculo cai 1% por hora fora do horário de sono
+    const hora = new Date().getHours();
+    const horarioSono = hora >= 0 && hora < 8;
+    if (!horarioSono && gatinhaDesbloqueada) {
+      vinculoGatinhas = Math.max(0, vinculoGatinhas - (1/60));
+    }
+
     atualizarStatus();
   }
-}, 60000);                // 1 min
+}, 60000); // 1 min
 
 // Carregar dados do Jogo
 function carregarDadosNoJogo(dados) {
