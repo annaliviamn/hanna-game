@@ -3190,6 +3190,7 @@ function entrarNoJogo() {
 
     atualizarStatus();
     atualizarBtnEsconde();
+    atualizarBtnsLoja();
 
     // Filhotinho
     if (filhoteDesbloqueado) exibirFilhote();
@@ -4450,6 +4451,22 @@ function comprarVisitaEspecial(btn, chave, nome, callback) {
 
 comprarVisitaEspecial(btnAnna, "annaDesbloqueada", "Anna", () => { annaDesbloqueada = true; iniciarVisitasAnna(); });
 comprarVisitaEspecial(btnKika, "kikaDesbloqueada", "Kika", () => { kikaDesbloqueada = true; iniciarVisitasKika(); });
+
+// Atualiza botões da loja após carregar save
+if (steveDesbloqueado) cinzarPetBtn(btnSteve, "Steve");
+if (joaoDesbloqueado)  cinzarPetBtn(btnJoao,  "João");
+if (jamesDesbloqueado) cinzarPetBtn(btnJames, "James");
+if (annaDesbloqueada)  cinzarPetBtn(btnAnna,  "Anna");
+if (kikaDesbloqueada)  cinzarPetBtn(btnKika,  "Kika");
+if (pedidoAceito) {
+  const btnPedido = document.getElementById("btnPedidoEspecial");
+  if (btnPedido) {
+    btnPedido.textContent = "Já namoram!";
+    btnPedido.classList.add("btn-adotado");
+    btnPedido.style.opacity = "0.5";
+    btnPedido.style.cursor = "not-allowed";
+  }
+}
 
 // Bloqueia esconde-esconde se filhotinho não nasceu
 function atualizarBtnEsconde() {
