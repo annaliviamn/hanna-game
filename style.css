@@ -5352,13 +5352,13 @@ button {
   opacity: 0;
   transition: opacity 0.3s;
   font-family: var(--font-pixel);
-  font-size: 10px;
+  font-size: 8px;
   background: linear-gradient(135deg, #ffe0f0, #e8d5ff);
   border: 1.5px solid #c084fc;
   border-radius: 8px;
-  padding: 4px 8px;
+  padding: 3px 6px;
   text-align: center;
-  max-width: 100px;
+  max-width: 80px;
   position: absolute;
   top: -35px;
   left: 50%;
