@@ -5358,14 +5358,15 @@ button {
   border-radius: 8px;
   padding: 4px 8px;
   text-align: center;
-  max-width: 100px;
+  width: 90px;
+  word-wrap: break-word;
+  white-space: normal;
   position: absolute;
-  top: -20px;
+  top: -50px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
   pointer-events: none;
-  white-space: nowrap;
   color: #7c3aed;
 }
 
