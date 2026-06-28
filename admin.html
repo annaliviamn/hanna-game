@@ -262,6 +262,25 @@
           <button id="btn-kika-nao" onclick="setarBool('kikaDesbloqueada', false)">Não</button>
         </div>
       </div>
+      <div class="field-row">
+        <label>Filhote Desbloqueado</label>
+        <div class="toggle-bool">
+          <button id="btn-filhote-sim" onclick="setarBool('filhoteDesbloqueado', true)">Sim</button>
+          <button id="btn-filhote-nao" onclick="setarBool('filhoteDesbloqueado', false)">Não</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>Nome do Filhote</label>
+        <input type="text" id="ed-nomeFilhote" maxlength="15">
+      </div>
+      <div class="field-row">
+        <label>Versão do Filhote</label>
+        <select id="ed-versaoFilhote">
+          <option value="misto">Misto</option>
+          <option value="hanna">Hanna</option>
+          <option value="gatinha">Gatinha</option>
+        </select>
+      </div>
     </div>
 
     <!-- CONQUISTAS -->
@@ -349,6 +368,7 @@
     jamesDesbloqueado: false,
     annaDesbloqueada: false,
     kikaDesbloqueada: false,
+    filhoteDesbloqueado: false, // linha nova
   };
 
   // Expõe funções pro HTML
@@ -407,6 +427,9 @@
     document.getElementById("ed-sementesDouradas").value = d.sementesDouradas || 0;
     document.getElementById("ed-nomeGatinha").value     = d.nomeGatinha || "";
     document.getElementById("ed-vinculoGatinhas").value = d.vinculoGatinhas || 0;
+    document.getElementById("ed-nomeFilhote").value = d.nomeFilhote || "";
+    document.getElementById("ed-versaoFilhote").value = d.versaoFilhote || "misto";
+    booleans.filhoteDesbloqueado = d.filhoteDesbloqueado === true;
 
     // Booleans
     booleans.dormindo            = d.dormindo === true;
@@ -498,6 +521,9 @@
       jamesDesbloqueado:   booleans.jamesDesbloqueado,
       annaDesbloqueada:    booleans.annaDesbloqueada,
       kikaDesbloqueada:    booleans.kikaDesbloqueada,
+      filhoteDesbloqueado: booleans.filhoteDesbloqueado,
+      nomeFilhote: document.getElementById("ed-nomeFilhote").value.trim(),
+      versaoFilhote: document.getElementById("ed-versaoFilhote").value,
       conquistas:          JSON.stringify(conquistas),
       updatedAt:           Date.now() + (999999 * 999999),
     };
