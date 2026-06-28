@@ -4485,6 +4485,24 @@ function atualizarBtnEsconde() {
   }
 }
 
+// Função que acinzenta os botões especiais depois de comprados
+function atualizarBtnsLoja() {
+  if (steveDesbloqueado) cinzarPetBtn(btnSteve, "Steve");
+  if (joaoDesbloqueado)  cinzarPetBtn(btnJoao,  "João");
+  if (jamesDesbloqueado) cinzarPetBtn(btnJames, "James");
+  if (annaDesbloqueada)  cinzarPetBtn(btnAnna,  "Anna");
+  if (kikaDesbloqueada)  cinzarPetBtn(btnKika,  "Kika");
+  if (pedidoAceito) {
+    const btnPedido = document.getElementById("btnPedidoEspecial");
+    if (btnPedido) {
+      btnPedido.textContent = "Já namoram!";
+      btnPedido.classList.add("btn-adotado");
+      btnPedido.style.opacity = "0.5";
+      btnPedido.style.cursor = "not-allowed";
+    }
+  }
+}
+
 btnGatinha.addEventListener("click", () => {
 
   if (gatinhaDesbloqueada) {
