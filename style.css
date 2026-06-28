@@ -338,7 +338,7 @@ textarea {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 2px;
+  gap: 0;
   width: 100%;
   position: absolute;
   bottom: -5px;
@@ -5345,4 +5345,34 @@ button {
   50%  { transform: translateX(6px); }
   75%  { transform: translateX(-4px); }
   100% { transform: translateX(0); }
+}
+
+/* Balão Fala Filhote */
+#filhoteFala {
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  background: linear-gradient(135deg, #ffe0f0, #e8d5ff);
+  border: 1.5px solid #c084fc;
+  border-radius: 8px;
+  padding: 4px 8px;
+  text-align: center;
+  max-width: 100px;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  white-space: nowrap;
+  color: #7c3aed;
+}
+
+#filhoteContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
 }

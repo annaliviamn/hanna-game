@@ -1733,6 +1733,70 @@ document.getElementById("hannaContainer").addEventListener("click", () => {
     }
   });
 
+// INTERAÇÕES DO FILHOTINHO
+const filhoteContainer = document.getElementById("filhoteContainer");
+const filhoteSprite    = document.getElementById("filhoteSprite");
+const filhoteFala      = document.getElementById("filhoteFala");
+const nomeFilhoteTexto = document.getElementById("nomeFilhoteTexto");
+
+const spritesFilhote = [
+  "assets/sprites/filhote/filhote.png",
+  "assets/sprites/filhote/filhote-curioso.png",
+  "assets/sprites/filhote/filhote-dramatico.png",
+  "assets/sprites/filhote/filhote-comendo.png",
+  "assets/sprites/filhote/filhote-dormindo.png",
+  "assets/sprites/filhote/filhote-aprontando.png",
+];
+
+const falasFilhote = [
+  "Miau!",
+  "Me olha!",
+  "Tô com fome já!",
+  "O que é isso?",
+  "Me dá atenção!",
+  "Vou morder!",
+  "Eu nao fui eu!",
+  "Tô dormindo nao me acorde!",
+  "Descobri uma coisa...",
+  "Psiu, segredo!",
+];
+
+function mostrarFalaFilhote(texto) {
+  if (!filhoteFala) return;
+  filhoteFala.textContent = texto;
+  filhoteFala.style.opacity = "1";
+  setTimeout(() => { filhoteFala.style.opacity = "0"; }, 2500);
+}
+
+function iniciarIdleFilhote() {
+  if (!filhoteDesbloqueado) return;
+  setInterval(() => {
+    if (!filhoteDesbloqueado) return;
+    if (Math.random() > 0.4) return;
+    const sprite = spritesFilhote[Math.floor(Math.random() * spritesFilhote.length)];
+    const fala   = falasFilhote[Math.floor(Math.random() * falasFilhote.length)];
+    if (filhoteSprite) filhoteSprite.src = sprite;
+    mostrarFalaFilhote(fala);
+    setTimeout(() => {
+      if (filhoteSprite) filhoteSprite.src = "assets/sprites/filhote/filhote.png";
+    }, 4000);
+  }, 15000);
+}
+
+// Clique no filhotinho
+if (filhoteContainer) {
+  filhoteContainer.addEventListener("click", () => {
+    if (!filhoteDesbloqueado) return;
+    const fala = falasFilhote[Math.floor(Math.random() * falasFilhote.length)];
+    const sprite = spritesFilhote[Math.floor(Math.random() * spritesFilhote.length)];
+    if (filhoteSprite) filhoteSprite.src = sprite;
+    mostrarFalaFilhote(fala);
+    setTimeout(() => {
+      if (filhoteSprite) filhoteSprite.src = "assets/sprites/filhote/filhote.png";
+    }, 3000);
+  });
+}
+
 // Momentos juntos: acontecem a cada 3–6 min se a gatinha estiver desbloqueada
 // Progressivo por vínculo:
 //   0–40%  → apenas brincam lado a lado (sprites individuais animadas)
@@ -3157,6 +3221,7 @@ function entrarNoJogo() {
     }
 
     atualizarStatus();
+    atualizarBtnEsconde();
 
     // Filhotinho
     if (filhoteDesbloqueado) exibirFilhote();
@@ -4418,13 +4483,19 @@ comprarVisitaEspecial(btnAnna, "annaDesbloqueada", "Anna", () => { annaDesbloque
 comprarVisitaEspecial(btnKika, "kikaDesbloqueada", "Kika", () => { kikaDesbloqueada = true; iniciarVisitasKika(); });
 
 // Bloqueia esconde-esconde se filhotinho não nasceu
-const btnEsconde = document.getElementById("btnEsconde");
-if (btnEsconde) {
+function atualizarBtnEsconde() {
+  const btnEsconde = document.getElementById("btnEsconde");
+  if (!btnEsconde) return;
   if (!filhoteDesbloqueado) {
     btnEsconde.textContent = "Bloqueado";
     btnEsconde.disabled = true;
     btnEsconde.style.opacity = "0.5";
     btnEsconde.style.cursor = "not-allowed";
+  } else {
+    btnEsconde.textContent = "Jogar";
+    btnEsconde.disabled = false;
+    btnEsconde.style.opacity = "1";
+    btnEsconde.style.cursor = "pointer";
   }
 }
 
