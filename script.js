@@ -2220,6 +2220,11 @@ function renderizarGatinhas() {
     if (gatinhaSprite) gatinhaSprite.style.display = "block";
   }
 
+  // Mostra filhotinho quando acorda
+  if (filhoteDesbloqueado) {
+    filhoteContainer.style.display = "flex";
+  }
+
   if (spriteConjunta) {
     spriteConjunta.style.display = "none";
   }
@@ -2232,12 +2237,17 @@ function renderizarGatinhas() {
     }
 
     gatinhaContainer.style.display = "none";
+    
+    if (filhoteDesbloqueado) {
+      filhoteContainer.style.display = "none";
+    }
 
-    spriteConjunta.src =
-    "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
+    const spriteDormindo = filhoteDesbloqueado
+      ? `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}dormindo.png`
+      : "assets/sprites/hanna-gatinha/gatinhas-dormindo.png";
 
+    spriteConjunta.src = spriteDormindo;
     spriteConjunta.style.display = "block";
-
     spriteConjunta.style.bottom = "-65px";
 
     return;
