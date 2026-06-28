@@ -5280,6 +5280,7 @@ button {
   object-fit: cover;
   border-radius: 12px;
   z-index: 0;
+  filter: blur(2px) brightness(0.7);
 }
 
 .esconde-fala {
@@ -5299,7 +5300,10 @@ button {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  width: 100%;
+  width: 90%;
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
 }
 
 .esconde-item {
@@ -5308,10 +5312,11 @@ button {
   align-items: center;
   gap: 4px;
   cursor: pointer;
-  background: var(--card-bg);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(4px);
   border-radius: 12px;
   padding: 10px;
-  border: 2px solid transparent;
+  border: 2px solid rgba(255,255,255,0.3);
   transition: border 0.2s;
 }
 
