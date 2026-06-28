@@ -2930,6 +2930,17 @@ somBotao.play().catch(()=>{});
   hannaSprite.src = "assets/sprites/hanna/carinho.png";
   gatinhaSpriteTemp("gatinha-apaixonada", 2000);
   setTimeout(atualizarStatus, 2000);
+  // Filhotinho reage ao carinho
+  if (filhoteDesbloqueado) {
+    const sprites = spritesFilhote[versaoFilhote] || spritesFilhote.misto;
+    const spriteBase = versaoFilhote === "hanna"
+      ? "assets/sprites/filhote/filhote-hanna.png"
+      : versaoFilhote === "gatinha"
+      ? "assets/sprites/filhote/filhote-gatinha.png"
+      : "assets/sprites/filhote/filhote.png";
+    if (filhoteSprite) filhoteSprite.src = sprites[Math.floor(Math.random() * sprites.length)];
+    setTimeout(() => { if (filhoteSprite) filhoteSprite.src = spriteBase; }, 2000);
+  }
 });
 
 btnComida.addEventListener("click", () => {
@@ -2972,6 +2983,18 @@ somBotao.play().catch(()=>{});
     }, 1000);
 
     setTimeout(atualizarStatus, 2000);
+
+    // Filhotinho reage à comida
+  if (filhoteDesbloqueado) {
+    const sprites = spritesFilhote[versaoFilhote] || spritesFilhote.misto;
+    const spriteBase = versaoFilhote === "hanna"
+      ? "assets/sprites/filhote/filhote-hanna.png"
+      : versaoFilhote === "gatinha"
+      ? "assets/sprites/filhote/filhote-gatinha.png"
+      : "assets/sprites/filhote/filhote.png";
+    if (filhoteSprite) filhoteSprite.src = sprites.find(s => s.includes("comendo")) || sprites[0];
+    setTimeout(() => { if (filhoteSprite) filhoteSprite.src = spriteBase; }, 2000);
+  }
 
 });
 
@@ -3091,6 +3114,16 @@ somBotao.play().catch(()=>{});
 
 
     iniciarSono();
+
+    // Filhotinho reage ao dormir
+    if (filhoteDesbloqueado) {
+      const spriteBase = versaoFilhote === "hanna" ? "assets/sprites/filhote/filhote-hanna.png"
+        : versaoFilhote === "gatinha" ? "assets/sprites/filhote/filhote-gatinha.png"
+        : "assets/sprites/filhote/filhote.png";
+      const sprites = spritesFilhote[versaoFilhote] || spritesFilhote.misto;
+      if (filhoteSprite) filhoteSprite.src = sprites.find(s => s.includes("dormindo")) || sprites[0];
+      setTimeout(() => { if (filhoteSprite) filhoteSprite.src = spriteBase; }, 3000);
+    }
 
 });
 
@@ -5100,8 +5133,6 @@ if (dormindo) {
 }
 
 // LISTENERS DE NAVEGAÇÃO
-
-// Botão de minigames na tela principal
 // Petisco
 btnPetisco.addEventListener("click", () => {
   if (dormindo || momentoConjuntoAtivo) {
@@ -5131,6 +5162,15 @@ btnPetisco.addEventListener("click", () => {
 
   setTimeout(() => atualizarStatus(), 2500);
   _salvar();
+  // Filhotinho reage ao petisco
+  if (filhoteDesbloqueado) {
+    const sprites = spritesFilhote[versaoFilhote] || spritesFilhote.misto;
+    const spriteBase = versaoFilhote === "hanna" ? "assets/sprites/filhote/filhote-hanna.png"
+      : versaoFilhote === "gatinha" ? "assets/sprites/filhote/filhote-gatinha.png"
+      : "assets/sprites/filhote/filhote.png";
+    if (filhoteSprite) filhoteSprite.src = sprites.find(s => s.includes("comendo")) || sprites[0];
+    setTimeout(() => { if (filhoteSprite) filhoteSprite.src = spriteBase; }, 2500);
+  }
 });
 
 // COÇAR BARRIGA
@@ -5159,6 +5199,15 @@ btnCocarBarriga.addEventListener("click", () => {
 
   setTimeout(() => atualizarStatus(), 2500);
   _salvar();
+  // Filhotinho reage ao carinho
+  if (filhoteDesbloqueado) {
+    const sprites = spritesFilhote[versaoFilhote] || spritesFilhote.misto;
+    const spriteBase = versaoFilhote === "hanna" ? "assets/sprites/filhote/filhote-hanna.png"
+      : versaoFilhote === "gatinha" ? "assets/sprites/filhote/filhote-gatinha.png"
+      : "assets/sprites/filhote/filhote.png";
+    if (filhoteSprite) filhoteSprite.src = sprites.find(s => s.includes("curioso")) || sprites[0];
+    setTimeout(() => { if (filhoteSprite) filhoteSprite.src = spriteBase; }, 2500);
+  }
 });
 
 let telaAnteriorConfig = "casa";
