@@ -5416,3 +5416,58 @@ button {
 #filhoteSprite {
   animation: idleFloat 3s ease-in-out infinite;
 }
+
+/* Banner Visita */
+#bannerVisita {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 360px;
+  background: var(--card-bg);
+  border: 2px solid var(--pink-main);
+  border-radius: 16px;
+  padding: 10px 16px;
+  z-index: 9999;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255,100,180,0.3);
+  transition: top 0.4s ease;
+}
+
+#bannerVisita.visivel {
+  top: 16px;
+}
+
+#bannerVisitaConteudo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#bannerVisitaSprite {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 50%;
+}
+
+#bannerVisitaTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#bannerVisitaNome {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--pink-deep);
+  font-weight: 700;
+}
+
+#bannerVisitaDesc {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--text-light);
+}

@@ -2118,10 +2118,10 @@ function compensarTempoOffline() {
         localStorage.setItem("dormindo", "false");
       }
     } else {
-      fome       = Math.max(0, fome       - 2   * minutosOff);
-      felicidade = Math.max(0, felicidade - 1   * minutosOff);
-      energia    = Math.max(0, energia    - 0.5 * minutosOff);
-      higiene    = Math.max(0, higiene    - 1   * minutosOff);
+      fome       = Math.max(0, fome       - 1.5 * minutosOff);
+      felicidade = Math.max(0, felicidade - 0.8 * minutosOff);
+      energia    = Math.max(0, energia    - 0.3 * minutosOff);
+      higiene    = Math.max(0, higiene    - 0.8 * minutosOff);
 
       // Vínculo cai 1% por hora fora do horário de sono
       if (!horarioSono && gatinhaDesbloqueada) {
@@ -2873,8 +2873,8 @@ function dispararEventoAleatorio() {
 
   const evento = pool[Math.floor(Math.random() * pool.length)];
 
-  // 40% de chance de não disparar mesmo assim (pra não ficar repetitivo)
-  if (Math.random() > 0.6) return;
+  // 60% de chance de não disparar mesmo assim (pra não ficar repetitivo)
+  if (Math.random() > 0.4) return;
 
   eventoEmAndamento = true;
 
@@ -3148,10 +3148,10 @@ somBotao.play().catch(()=>{});
 // PASSAGEM DO TEMPO
 setInterval(() => {
   if (!dormindo) {
-    fome       = Math.max(0, fome       - 2);
-    felicidade = Math.max(0, felicidade - 1);
-    energia    = Math.max(0, energia    - 0.5);
-    higiene    = Math.max(0, higiene    - 1);
+    fome       = Math.max(0, fome       - 1.5);
+    felicidade = Math.max(0, felicidade - 0.8);
+    energia    = Math.max(0, energia    - 0.3);
+    higiene    = Math.max(0, higiene    - 0.8);
 
     // Vínculo cai 1% por hora fora do horário de sono
     const hora = new Date().getHours();
@@ -6447,21 +6447,81 @@ function iniciarMomentosEspeciais() {
 
 }
 
-//   VISITAS DOS PETS
+// ── BANNER DE NOTIFICAÇÃO DE VISITA ──────────
+const somCampainha = criarAudio("assets/music/som-campainha.mp3");
 
-function mostrarVisitaPet(sprite, fala, duracao = 8000, pet = null) {
-  if (telaJogo.style.display !== "block") return;
+let _visitaPendente = null;
+let _bannerTimer = null;
+
+function mostrarBannerVisita(sprite, nome, callback) {
+  const banner = document.getElementById("bannerVisita");
+  const bannerSprite = document.getElementById("bannerVisitaSprite");
+  const bannerNome = document.getElementById("bannerVisitaNome");
+  if (!banner) return;
+
+  // Toca campainha
+  somCampainha.currentTime = 0;
+  somCampainha.volume = parseFloat(volumeEfeitos.value);
+  somCampainha.play().catch(() => {});
+
+  bannerSprite.src = sprite;
+  bannerNome.textContent = nome;
+  banner.style.display = "block";
+
+  setTimeout(() => banner.classList.add("visivel"), 50);
+
+  // Guarda callback
+  _visitaPendente = callback;
+
+  // Some após 30 segundos
+  _bannerTimer = setTimeout(() => {
+    fecharBannerVisita();
+    _visitaPendente = null;
+  }, 30000);
+
+  // Clique no banner
+  banner.onclick = () => {
+    clearTimeout(_bannerTimer);
+    fecharBannerVisita();
+    // Vai pra home
+    abrirTela(telaJogo);
+    setTimeout(() => {
+      if (_visitaPendente) {
+        _visitaPendente();
+        _visitaPendente = null;
+      }
+    }, 500);
+  };
+}
+
+function fecharBannerVisita() {
+  const banner = document.getElementById("bannerVisita");
+  if (!banner) return;
+  banner.classList.remove("visivel");
+  setTimeout(() => banner.style.display = "none", 400);
+}
+
+//   VISITAS DOS PETS
+function mostrarVisitaPet(sprite, fala, duracao = 8000, pet = null, nomeExibicao = "") {
+  // Se não tiver na home, mostra banner
+  if (telaJogo.style.display !== "block") {
+    mostrarBannerVisita(sprite, nomeExibicao || "Visita chegou!", () => {
+      mostrarVisitaPet(sprite, fala, duracao, pet, nomeExibicao);
+    });
+    return;
+  }
+
   if (dormindo || momentoConjuntoAtivo) return;
 
   const spriteConjunta = document.getElementById("spriteConjunta");
   if (!spriteConjunta) return;
 
-  // Conquista de primeira visita
+  // Conquistas
   if (pet === "steve") desbloquearConquista("visita_steve");
   if (pet === "joao")  desbloquearConquista("visita_joao");
   if (pet === "james") desbloquearConquista("visita_james");
-  if (pet === "anna") desbloquearConquista("visita_anna");
-  if (pet === "kika") desbloquearConquista("visita_kika");
+  if (pet === "anna")  desbloquearConquista("visita_anna");
+  if (pet === "kika")  desbloquearConquista("visita_kika");
 
   momentoConjuntoAtivo = true;
   estadoVisual.momentoConjunto = true;
@@ -6498,10 +6558,10 @@ function iniciarVisitasSteve() {
   ];
   const intervalo = setInterval(() => {
     if (!steveDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.6) return;
+    if (Math.random() > 0.4) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "steve");
+    mostrarVisitaPet(sprite, fala, 15000, "steve", "Steve Rogers chegou!");
   }, 5 * 60 * 1000);
 }
 
@@ -6519,10 +6579,10 @@ function iniciarVisitasJoao() {
   ];
   const intervalo = setInterval(() => {
     if (!joaoDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.6) return;
+    if (Math.random() > 0.4) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "joao");
+    mostrarVisitaPet(sprite, fala, 15000, "joao", "João Antonio chegou!");
   }, 5 * 60 * 1000);
 }
 
@@ -6540,10 +6600,10 @@ function iniciarVisitasJames() {
   ];
   const intervalo = setInterval(() => {
     if (!jamesDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.6) return;
+    if (Math.random() > 0.4) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "james");
+    mostrarVisitaPet(sprite, fala, 15000, "james", "James Cook chegou!");
   }, 5 * 60 * 1000);
 }
 
@@ -6563,10 +6623,10 @@ function iniciarVisitasAnna() {
   ];
   const intervalo = setInterval(() => {
     if (!annaDesbloqueada) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.6) return;
+    if (Math.random() > 0.4) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "anna");
+    mostrarVisitaPet(sprite, fala, 15000, "anna", "Anna chegou!");
   }, 5 * 60 * 1000);
 }
 
@@ -6586,10 +6646,10 @@ function iniciarVisitasKika() {
   ];
   const intervalo = setInterval(() => {
     if (!kikaDesbloqueada) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.6) return;
+    if (Math.random() > 0.4) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "kika");
+    mostrarVisitaPet(sprite, fala, 15000, "kika", "Kika chegou!");
   }, 5 * 60 * 1000);
 }
 
@@ -7978,6 +8038,15 @@ function verificarEventoFilhote() {
 }
 
 function mostrarEventoFilhote() {
+  // Se não tiver na home, mostra banner
+  if (telaJogo.style.display !== "block") {
+    mostrarBannerVisita(
+      "assets/sprites/gatinha/gatinha-animada-especial.png",
+      "A gatinha quer te falar algo...",
+      () => mostrarEventoFilhote()
+    );
+    return;
+  }
   const overlay = document.createElement("div");
   overlay.id = "overlayFilhote";
   overlay.style.cssText = `
@@ -8057,6 +8126,17 @@ function verificarNascimentoFilhote() {
 }
 
 function nascerFilhote() {
+  // Se não tiver na home, mostra banner
+  if (telaJogo.style.display !== "block") {
+    mostrarBannerVisita(
+      versaoFilhote === "hanna" ? "assets/sprites/filhote/filhote-hanna.png"
+      : versaoFilhote === "gatinha" ? "assets/sprites/filhote/filhote-gatinha.png"
+      : "assets/sprites/filhote/filhote.png",
+      "O filhotinho nasceu! Toque pra conhecer!",
+      () => nascerFilhote()
+    );
+    return;
+  }
   const overlay = document.createElement("div");
   overlay.id = "overlayNascimento";
   overlay.style.cssText = `
