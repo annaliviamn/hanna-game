@@ -6401,6 +6401,24 @@ function iniciarMomentosEspeciais() {
                 frase: "Psiu... ouviu essa fofoca?",
                 chance: () => new Date().getHours() >= 19 || new Date().getHours() < 6
             },
+
+            // Momentos da gravidez
+            {
+                sprite: "assets/sprites/hanna-gatinha/gravidez-carinho.png",
+                frase: "Hanna fazendo carinho na barriguinha...",
+                chance: () => dataGravidez > 0 && !filhoteDesbloqueado
+            },
+            {
+                sprite: "assets/sprites/hanna-gatinha/gravidez-beijo.png",
+                frase: "Um beijinho especial na barriguinha!",
+                chance: () => dataGravidez > 0 && !filhoteDesbloqueado
+            },
+            {
+                sprite: "assets/sprites/hanna-gatinha/gravidez-discussao.png",
+                frase: "Será menino ou menina? As duas não se entendem!",
+                chance: () => dataGravidez > 0 && !filhoteDesbloqueado
+            },
+
             // Momentos da família
             {
                 sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}brincando.png`,
