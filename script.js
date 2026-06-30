@@ -2630,6 +2630,7 @@ function _salvar() {
   localStorage.setItem("annaDesbloqueada", annaDesbloqueada ? "true" : "false");
   localStorage.setItem("kikaDesbloqueada", kikaDesbloqueada ? "true" : "false");
   localStorage.setItem("modoNoturno", document.body.classList.contains("dark-mode") ? "true" : "false");
+  localStorage.setItem("ultimaRoleta", localStorage.getItem("ultimaRoleta") || "0");
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -2654,6 +2655,7 @@ function _salvar() {
           fazenda: JSON.stringify(fazenda),
           conquistas: JSON.stringify(conquistasDesbloqueadas),
           lembretes: JSON.stringify(lembretes),
+          ultimaRoleta: Number(localStorage.getItem("ultimaRoleta")) || 0,
         });
       }).catch(() => {});
     }
@@ -3227,6 +3229,8 @@ function carregarDadosNoJogo(dados) {
     isMuted = dados.muted === true;
     aplicarMute();
   }
+
+  if (dados.ultimaRoleta) localStorage.setItem("ultimaRoleta", dados.ultimaRoleta);
 }
 
 // TELA DE LOADING
