@@ -3326,12 +3326,8 @@ function entrarNoJogo() {
     if (filhoteDesbloqueado) exibirFilhote();
     if (dataGravidez > 0) verificarNascimentoFilhote();
 
-    // Inicia visitas se já desbloqueadas
-    if (steveDesbloqueado) iniciarVisitasSteve();
-    if (joaoDesbloqueado)  iniciarVisitasJoao();
-    if (jamesDesbloqueado) iniciarVisitasJames();
-    if (annaDesbloqueada)  iniciarVisitasAnna();
-    if (kikaDesbloqueada)  iniciarVisitasKika();
+    // Inicia sistema de visitas (fila central)
+    iniciarSistemaVisitas();
 
   }, 500);
 }
@@ -6569,127 +6565,143 @@ function mostrarVisitaPet(sprite, fala, duracao = 8000, pet = null, nomeExibicao
   }, duracao);
 }
 
-function iniciarVisitasSteve() {
-  const falas = [
-    "Steve apareceu com uma fofoca",
-    "Steve trouxe novidades do bairro!",
-    "Steve veio fazer companhia",
-    "Psiu... Steve ouviu algo interessante!",
-  ];
-  const sprites = [
-    "assets/sprites/pets/steve-visita.png",
-    "assets/sprites/pets/steve-visita-2.png",
-    "assets/sprites/pets/steve-visita-3.png",
-  ];
-  const intervalo = setInterval(() => {
-    if (!steveDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.3) return;
-    const fala   = falas[Math.floor(Math.random() * falas.length)];
-    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "steve", "Steve Rogers chegou!");
+// SISTEMA DE FILA DE VISITAS
+let _filaVisitas = [];
+
+function gerarNovaFilaVisitas() {
+  const personagensDisponiveis = [];
+  
+  if (steveDesbloqueado) personagensDisponiveis.push("steve");
+  if (joaoDesbloqueado)  personagensDisponiveis.push("joao");
+  if (jamesDesbloqueado) personagensDisponiveis.push("james");
+  if (annaDesbloqueada)  personagensDisponiveis.push("anna");
+  if (kikaDesbloqueada)  personagensDisponiveis.push("kika");
+  
+  // Embaralha a lista (Fisher-Yates)
+  for (let i = personagensDisponiveis.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [personagensDisponiveis[i], personagensDisponiveis[j]] = [personagensDisponiveis[j], personagensDisponiveis[i]];
+  }
+  
+  _filaVisitas = personagensDisponiveis;
+}
+
+function proximaVisitaDaFila() {
+  // Se a fila tá vazia, gera uma nova rodada
+  if (_filaVisitas.length === 0) {
+    gerarNovaFilaVisitas();
+  }
+  
+  // Se ainda tá vazia (nenhum pet desbloqueado), retorna null
+  if (_filaVisitas.length === 0) return null;
+  
+  return _filaVisitas.shift(); // remove e retorna o primeiro
+}
+
+function iniciarSistemaVisitas() {
+  setInterval(() => {
+    // Não tem ninguém desbloqueado
+    if (!steveDesbloqueado && !joaoDesbloqueado && !jamesDesbloqueado && !annaDesbloqueada && !kikaDesbloqueada) return;
+    
+    if (Math.random() > 0.7) return; // 70% de chance
+    
+    const personagem = proximaVisitaDaFila();
+    if (!personagem) return;
+    
+    dispararVisita(personagem);
   }, 5 * 60 * 1000);
 }
 
-function iniciarVisitasJoao() {
-  const falas = [
-    "João Antônio derrubou alguma coisa!",
-    "João Antônio veio aprontar por aqui",
-    "João chegou fazendo bagunça!",
-    "João Antônio não quer nem saber do James hoje",
-  ];
-  const sprites = [
-    "assets/sprites/pets/joao-visita.png",
-    "assets/sprites/pets/joao-visita-2.png",
-    "assets/sprites/pets/joao-visita-3.png",
-  ];
-  const intervalo = setInterval(() => {
-    if (!joaoDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.3) return;
-    const fala   = falas[Math.floor(Math.random() * falas.length)];
-    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "joao", "João Antonio chegou!");
-  }, 5 * 60 * 1000);
+function dispararVisita(personagem) {
+  const dados = {
+    steve: {
+      falas: [
+        "Steve apareceu com uma fofoca",
+        "Steve trouxe novidades do bairro!",
+        "Steve veio fazer companhia",
+        "Psiu... Steve ouviu algo interessante!",
+      ],
+      sprites: [
+        "assets/sprites/pets/steve-visita.png",
+        "assets/sprites/pets/steve-visita-2.png",
+        "assets/sprites/pets/steve-visita-3.png",
+      ],
+      nomeExibicao: "Steve Rogers chegou!",
+    },
+    joao: {
+      falas: [
+        "João Antônio derrubou alguma coisa!",
+        "João Antônio veio aprontar por aqui",
+        "João chegou fazendo bagunça!",
+        "João Antônio não quer nem saber do James hoje",
+      ],
+      sprites: [
+        "assets/sprites/pets/joao-visita.png",
+        "assets/sprites/pets/joao-visita-2.png",
+        "assets/sprites/pets/joao-visita-3.png",
+      ],
+      nomeExibicao: "João Antônio chegou!",
+    },
+    james: {
+      falas: [
+        "Cook veio conferir a despensa",
+        "Cook apareceu com cara de fome!",
+        "Cook farejando comida por aqui",
+        "Cook tentou roubar o petisco da Hanna!",
+      ],
+      sprites: [
+        "assets/sprites/pets/james-visita.png",
+        "assets/sprites/pets/james-visita-2.png",
+        "assets/sprites/pets/james-visita-3.png",
+      ],
+      nomeExibicao: "James Cook chegou!",
+    },
+    anna: {
+      falas: [
+        "Vim ver como vocês tão!",
+        "Tô com saudade das meninas!",
+        "Trouxe um mimo pras gatinhas!",
+        "O que vocês tão aprontando?",
+        "Anna apareceu pra dar um oi!",
+        "Tô de olho em vocês!",
+      ],
+      sprites: [
+        "assets/sprites/personagens/anna-visita-1.png",
+        "assets/sprites/personagens/anna-visita-2.png",
+        "assets/sprites/personagens/anna-visita-3.png",
+      ],
+      nomeExibicao: "Anna chegou!",
+    },
+    kika: {
+      falas: [
+        "Vim dar uma passadinha!",
+        "Tô com saudade das meninas!",
+        "Trouxe um petisco pras gatinhas!",
+        "Cook, eu tô de olho em você!",
+        "Kika apareceu!",
+        "Esse Cook tava roubando de novo!",
+      ],
+      sprites: [
+        "assets/sprites/personagens/kika-visita-1.png",
+        "assets/sprites/personagens/kika-visita-2.png",
+        "assets/sprites/personagens/kika-visita-3.png",
+      ],
+      nomeExibicao: "Kika chegou!",
+    },
+  };
+
+  const info = dados[personagem];
+  if (!info) return;
+
+  const fala = info.falas[Math.floor(Math.random() * info.falas.length)];
+  const sprite = info.sprites[Math.floor(Math.random() * info.sprites.length)];
+
+  mostrarVisitaPet(sprite, fala, 15000, personagem, info.nomeExibicao);
 }
 
-function iniciarVisitasJames() {
-  const falas = [
-    "James Cook veio conferir a despensa",
-    "James apareceu com cara de fome!",
-    "James Cook farejando comida por aqui",
-    "James tentou roubar o petisco da Hanna!",
-  ];
-  const sprites = [
-    "assets/sprites/pets/james-visita.png",
-    "assets/sprites/pets/james-visita-2.png",
-    "assets/sprites/pets/james-visita-3.png",
-  ];
-  const intervalo = setInterval(() => {
-    if (!jamesDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.3) return;
-    const fala   = falas[Math.floor(Math.random() * falas.length)];
-    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "james", "James Cook chegou!");
-  }, 5 * 60 * 1000);
-}
-
-function iniciarVisitasAnna() {
-  const falas = [
-    "Vim ver como vocês tão!",
-    "Tô com saudade das meninas!",
-    "Trouxe um mimo pras gatinhas!",
-    "O que vocês tão aprontando?",
-    "Anna apareceu pra dar um oi!",
-    "Tô de olho em vocês!",
-  ];
-  const sprites = [
-    "assets/sprites/personagens/anna-visita-1.png",
-    "assets/sprites/personagens/anna-visita-2.png",
-    "assets/sprites/personagens/anna-visita-3.png",
-  ];
-  const intervalo = setInterval(() => {
-    if (!annaDesbloqueada) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.3) return;
-    const fala   = falas[Math.floor(Math.random() * falas.length)];
-    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "anna", "Anna chegou!");
-  }, 5 * 60 * 1000);
-}
-
-function iniciarVisitasKika() {
-  const falas = [
-    "Vim dar uma passadinha!",
-    "Tô com saudade das meninas!",
-    "Trouxe um petisco pras gatinhas!",
-    "Cook, eu tô de olho em você!",
-    "Kika apareceu!",
-    "Esse Cook tava roubando de novo!",
-  ];
-  const sprites = [
-    "assets/sprites/personagens/kika-visita-1.png",
-    "assets/sprites/personagens/kika-visita-2.png",
-    "assets/sprites/personagens/kika-visita-3.png",
-  ];
-  const intervalo = setInterval(() => {
-    if (!kikaDesbloqueada) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.3) return;
-    const fala   = falas[Math.floor(Math.random() * falas.length)];
-    const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-    mostrarVisitaPet(sprite, fala, 15000, "kika", "Kika chegou!");
-  }, 5 * 60 * 1000);
-}
-
-// Inicia visitas se já desbloqueados
-if (steveDesbloqueado) iniciarVisitasSteve();
-if (joaoDesbloqueado)  iniciarVisitasJoao();
-if (jamesDesbloqueado) iniciarVisitasJames();
-if (annaDesbloqueada) iniciarVisitasAnna();
-if (kikaDesbloqueada) iniciarVisitasKika();
-
-// ══════════════════════════════════════════════
 //   JOGO — MISSÃO DO STEVE (Stealth)
 //   Steve tenta chegar ao osso sem ser visto.
 //   Clique nos momentos certos pra avançar.
-// ══════════════════════════════════════════════
 
 function jogoSteve() {
   abrirArena("Missão do Steve");
@@ -8042,12 +8054,12 @@ function jogoBolinha() {
   desenhar();
 }
 
-// ── EVENTO DO FILHOTINHO ─────────────────────
+// EVENTO DO FILHOTINHO
 function verificarEventoFilhote() {
   // Condições: pedido aceito, vínculo 100%, todos stats acima de 70%
   if (filhoteDesbloqueado) return;
   if (!pedidoAceito) return;
-  if (vinculoGatinhas < 100) return;
+  if (vinculoGatinhas < 90) return;
   if (fome < 70 || felicidade < 70 || energia < 70 || higiene < 70) return;
   if (dataGravidez > 0) return; // já tá grávida
 
