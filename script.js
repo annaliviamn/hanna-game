@@ -1603,41 +1603,6 @@ function tocarPurr() {
   somPurr.play().catch(() => {});
 }
 
-// SISTEMA DE INTERAÇÕES HANNA + GATINHA 
-const momentosJuntas = [
-  {
-    sprite: "assets/sprites/hanna-gatinha/gatinhas-abraco.png",
-    fala: "se abraçando fofinho",
-    som: "purr",
-  },
-  {
-    sprite: "assets/sprites/hanna-gatinha/gatinhas-beijinho.png",
-    fala: "beijinho da gatinha preta",
-    som: "purr",
-  },
-  {
-    sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando.png",
-    fala: "brincando juntas.",
-    som: "meow",
-  },
-  {
-    sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando2.png",
-    fala: "aprontando juntas",
-    som: "purr",
-  },
-  {
-    sprite: "assets/sprites/hanna-gatinha/gatinhas-lambendo.png",
-    fala: "se lambendo de carinho.",
-    som: "purr",
-  },
-  {
-    sprite: "assets/sprites/hanna-gatinha/noite-feliz.png",
-    fala: "psiu... ouviu essa fofoca?",
-    som: null,
-    condicao: () => new Date().getHours() >= 19 || new Date().getHours() < 6,
-  },
-];
-
 const gatinhaFalaEl = document.getElementById("gatinhaFala");
 let gatinhaFalaTimer;
 
@@ -6370,6 +6335,7 @@ function mostrarAlertaLoja(texto) {
   }, 2500);
 }
 
+// SISTEMA DE INTERAÇÕES HANNA + GATINHA 
 function iniciarMomentosEspeciais() {
 
     setInterval(() => {
@@ -6405,26 +6371,56 @@ function iniciarMomentosEspeciais() {
                 frase: "As duas estão brincando",
                 chance: () => felicidade > 60
             },
-            // Momentos da família (só aparecem se o filhotinho tiver nascido)
             {
-              sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}brincando.png`,
-              frase: "A família toda brincando!",
-              chance: () => filhoteDesbloqueado && felicidade > 60
+                sprite: "assets/sprites/hanna-gatinha/gatinhas-abraco.png",
+                frase: "Se abraçando fofinho",
+                chance: () => amizade > 3
             },
             {
-              sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}comendo.png`,
-              frase: "Hora da refeição em família!",
-              chance: () => filhoteDesbloqueado && fome > 50
+                sprite: "assets/sprites/hanna-gatinha/gatinhas-beijinho.png",
+                frase: "Beijinho da gatinha preta",
+                chance: () => vinculoGatinhas > 50
             },
             {
-              sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}dormindo.png`,
-              frase: "A família dormindo juntinha",
-              chance: () => filhoteDesbloqueado && energia < 40
+                sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando.png",
+                frase: "Brincando juntas",
+                chance: () => felicidade > 50
             },
             {
-              sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}aprontando.png`,
-              frase: "O filhotinho aprontando igual as mães!",
-              chance: () => filhoteDesbloqueado && Math.random() > 0.5
+                sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando2.png",
+                frase: "Aprontando juntas",
+                chance: () => felicidade > 50
+            },
+            {
+                sprite: "assets/sprites/hanna-gatinha/gatinhas-lambendo.png",
+                frase: "Se lambendo de carinho",
+                chance: () => vinculoGatinhas > 40
+            },
+            {
+                sprite: "assets/sprites/hanna-gatinha/noite-feliz.png",
+                frase: "Psiu... ouviu essa fofoca?",
+                chance: () => new Date().getHours() >= 19 || new Date().getHours() < 6
+            },
+            // Momentos da família
+            {
+                sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}brincando.png`,
+                frase: "A família toda brincando!",
+                chance: () => filhoteDesbloqueado && felicidade > 60
+            },
+            {
+                sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}comendo.png`,
+                frase: "Hora da refeição em família!",
+                chance: () => filhoteDesbloqueado && fome > 50
+            },
+            {
+                sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}dormindo.png`,
+                frase: "A família dormindo juntinha",
+                chance: () => filhoteDesbloqueado && energia < 40
+            },
+            {
+                sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}aprontando.png`,
+                frase: "O filhotinho aprontando igual as mães!",
+                chance: () => filhoteDesbloqueado && Math.random() > 0.5
             },
         ];
 
