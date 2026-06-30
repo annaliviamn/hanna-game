@@ -2416,9 +2416,9 @@ function verificarRecompensaSementeDourada() {
   if (!todosAltos) return;
 
   const agora = Date.now();
-  const passou24h = (agora - ultimaSementeDourada) >= 24 * 60 * 60 * 1000;
+  const passou15dias = (agora - ultimaSementeDourada) >= 15 * 24 * 60 * 60 * 1000;
 
-  if (!passou24h) return;
+  if (!passou15dias) return;
 
   const sorteio = Math.random();
 
