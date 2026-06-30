@@ -5471,3 +5471,58 @@ button {
   font-size: 9px;
   color: var(--text-light);
 }
+
+/* Roleta Diária */
+#overlayRoleta {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.roleta-container {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 320px;
+  width: 90%;
+}
+
+.roleta-titulo {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: var(--pink-deep);
+}
+
+.roleta-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.roleta-seta {
+  font-size: 24px;
+  color: var(--pink-main);
+  z-index: 2;
+  margin-bottom: -8px;
+}
+
+#roletaPremio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--pink-deep);
+  text-align: center;
+}

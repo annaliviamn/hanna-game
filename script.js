@@ -1824,7 +1824,7 @@ function iniciarIdleFilhote() {
 
   _idleFilhoteInterval = setInterval(() => {
     if (!filhoteDesbloqueado) return;
-    if (Math.random() > 0.4) return;
+    if (Math.random() > 0.6) return;
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     if (filhoteSprite) filhoteSprite.src = sprite;
@@ -2762,7 +2762,7 @@ function iniciarFalasVinculo() {
 
   vinculoFalaTimer = setInterval(() => {
     if (!gatinhaDesbloqueada || dormindo || momentoConjuntoAtivo) return;
-    if (Math.random() > 0.4) return; // 40% de chance
+    if (Math.random() > 0.6) return; // 40% de chance
 
     const frases = vinculoGatinhas >= 70 ? frasesVinculoAlto : frasesVinculoBaixo;
     const fala = frases[Math.floor(Math.random() * frases.length)];
@@ -3313,6 +3313,7 @@ function entrarNoJogo() {
     }
 
     atualizarStatus();
+    verificarRoletaDiaria();
     atualizarBtnEsconde();
     atualizarBtnsLoja();
     atualizarConfigGatinha();
@@ -3320,6 +3321,13 @@ function entrarNoJogo() {
     // Filhotinho
     if (filhoteDesbloqueado) exibirFilhote();
     if (dataGravidez > 0) verificarNascimentoFilhote();
+
+    // Inicia visitas se já desbloqueadas
+    if (steveDesbloqueado) iniciarVisitasSteve();
+    if (joaoDesbloqueado)  iniciarVisitasJoao();
+    if (jamesDesbloqueado) iniciarVisitasJames();
+    if (annaDesbloqueada)  iniciarVisitasAnna();
+    if (kikaDesbloqueada)  iniciarVisitasKika();
 
   }, 500);
 }
@@ -4319,6 +4327,19 @@ btnAlmofada.addEventListener("click", () => {
   mostrarMensagem("A Hanna descansou fofinha.");
   atualizarStatus();
 });
+
+function abrirCaixa() {
+  // Simula o clique no botão da caixa sem cobrar moedas
+  caixaSprite.src = "assets/shop/caixa.png";
+  textoCaixa.textContent = "O que será que tem aqui dentro?";
+  btnAbrirCaixa.style.display = "block";
+  btnAbrirCaixa.disabled = false;
+  btnFecharCaixa.style.display = "none";
+  resultadoCaixa.style.display = "none";
+  resultadoCaixa.innerHTML = "";
+  telaCaixa.style.display = "flex";
+  atualizarStatus();
+}
 
 // CAIXA MISTERIOSA
 btnCaixa.addEventListener("click", () => {
@@ -6482,15 +6503,15 @@ function mostrarBannerVisita(sprite, nome, callback) {
   // Clique no banner
   banner.onclick = () => {
     clearTimeout(_bannerTimer);
+    const callback = _visitaPendente;
+    _visitaPendente = null;
     fecharBannerVisita();
     // Vai pra home
     abrirTela(telaJogo);
+    tocarTrilha("casa");
     setTimeout(() => {
-      if (_visitaPendente) {
-        _visitaPendente();
-        _visitaPendente = null;
-      }
-    }, 500);
+      if (callback) callback();
+    }, 800);
   };
 }
 
@@ -6558,7 +6579,7 @@ function iniciarVisitasSteve() {
   ];
   const intervalo = setInterval(() => {
     if (!steveDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.4) return;
+    if (Math.random() > 0.3) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
     mostrarVisitaPet(sprite, fala, 15000, "steve", "Steve Rogers chegou!");
@@ -6579,7 +6600,7 @@ function iniciarVisitasJoao() {
   ];
   const intervalo = setInterval(() => {
     if (!joaoDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.4) return;
+    if (Math.random() > 0.3) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
     mostrarVisitaPet(sprite, fala, 15000, "joao", "João Antonio chegou!");
@@ -6600,7 +6621,7 @@ function iniciarVisitasJames() {
   ];
   const intervalo = setInterval(() => {
     if (!jamesDesbloqueado) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.4) return;
+    if (Math.random() > 0.3) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
     mostrarVisitaPet(sprite, fala, 15000, "james", "James Cook chegou!");
@@ -6623,7 +6644,7 @@ function iniciarVisitasAnna() {
   ];
   const intervalo = setInterval(() => {
     if (!annaDesbloqueada) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.4) return;
+    if (Math.random() > 0.3) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
     mostrarVisitaPet(sprite, fala, 15000, "anna", "Anna chegou!");
@@ -6646,7 +6667,7 @@ function iniciarVisitasKika() {
   ];
   const intervalo = setInterval(() => {
     if (!kikaDesbloqueada) { clearInterval(intervalo); return; }
-    if (Math.random() > 0.4) return;
+    if (Math.random() > 0.3) return;
     const fala   = falas[Math.floor(Math.random() * falas.length)];
     const sprite = sprites[Math.floor(Math.random() * sprites.length)];
     mostrarVisitaPet(sprite, fala, 15000, "kika", "Kika chegou!");
@@ -7537,12 +7558,7 @@ async function jogoCacaPalavras() {
   render();
 }
 
-// ══════════════════════════════════════════════
 //   JOGO 7 — MATCH-3 FELINO
-//   Combine 3 ou mais ícones iguais em linha/coluna.
-//   Cada combo ganha pontos. 60 segundos.
-//   Recompensa proporcional aos pontos.
-// ══════════════════════════════════════════════
 function jogoMatch3() {
   abrirArena("Match-3 Felino");
 
@@ -7715,14 +7731,14 @@ function jogoMatch3() {
 
   function terminar() {
     rodando = false;
-    const recomp = pontos >= 1000 ? 100 : pontos >= 600 ? 70 : pontos >= 300 ? 45 : pontos >= 100 ? 25 : 10;
-    ganharMoedas(recomp);
+    
+    ganharMoedas(pontos);
     if (pontos >= 600) desbloquearConquista("match3_mestre");
     jogoAtivo.timers.push(setTimeout(() => {
       mostrarResultado(
         pontos >= 600 ? "Combinacao perfeita!" : "Jogadas esgotadas!",
         "",
-        recomp,
+        pontos,
         `Voce fez ${pontos} pontos em ${MAX_JOGADAS} jogadas!`,
         jogoMatch3
       );
@@ -8377,4 +8393,170 @@ function jogoEscondeEsconde() {
   }
 
   novaRodada();
+}
+
+// ROLETA DIÁRIA
+const PREMIOS_ROLETA = [
+  { nome: "Novelo",          sprite: "assets/shop/novelo.png",                        cor: "#ff8fc2", tipo: "item",    valor: "novelo",    quantidade: 1  },
+  { nome: "Ratinho",         sprite: "assets/shop/ratinho.png",                       cor: "#ffb347", tipo: "item",    valor: "ratinho",   quantidade: 1  },
+  { nome: "Peixe",           sprite: "assets/shop/peixe.png",                         cor: "#87ceeb", tipo: "item",    valor: "peixe",     quantidade: 1  },
+  { nome: "10 Sementes",     sprite: "assets/shop/pacote-sementes.png",               cor: "#98fb98", tipo: "semente", valor:                          10 },
+  { nome: "Coleira",         sprite: "assets/shop/coleira.png",                       cor: "#dda0dd", tipo: "item",    valor: "coleira",   quantidade: 1  },
+  { nome: "Caixa Misteriosa",sprite: "assets/shop/caixa.png",                         cor: "#ffd700", tipo: "caixa",   valor: "caixa"                     },
+  { nome: "5000 Moedas",     sprite: "assets/sprites/hanna/hanna-rica.png",           cor: "#ffa500", tipo: "moedas",  valor: 5000                        },
+  { nome: "Semente Dourada", sprite: "assets/sprites/hanna/hanna-semente-dourada.png",cor: "#ff6347", tipo: "dourada", valor: 1                           },
+];
+
+function verificarRoletaDiaria() {
+  const ultimaRoleta = Number(localStorage.getItem("ultimaRoleta")) || 0;
+  const agora = Date.now();
+  const umDia = 24 * 60 * 60 * 1000;
+  if (agora - ultimaRoleta >= umDia) {
+    setTimeout(() => mostrarRoleta(), 1500);
+  }
+}
+
+function mostrarRoleta() {
+  const overlay = document.getElementById("overlayRoleta");
+  if (!overlay) return;
+  overlay.style.display = "flex";
+
+  const canvas = document.getElementById("roletaCanvas");
+  const ctx = canvas.getContext("2d");
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const raio = cx - 10;
+  const total = PREMIOS_ROLETA.length;
+  const anguloPorFatia = (2 * Math.PI) / total;
+  const anguloInicial = -Math.PI / 2; // seta no topo
+
+  function desenharRoleta(rotacao) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    PREMIOS_ROLETA.forEach((premio, i) => {
+      const inicio = rotacao + anguloInicial + i * anguloPorFatia;
+      const fim = inicio + anguloPorFatia;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, raio, inicio, fim);
+      ctx.closePath();
+      ctx.fillStyle = premio.cor;
+      ctx.fill();
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(inicio + anguloPorFatia / 2);
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 10px Arial";
+      ctx.textAlign = "right";
+      ctx.fillText(premio.nome, raio - 10, 4);
+      ctx.restore();
+    });
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 20, 0, 2 * Math.PI);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.strokeStyle = "#ff8fc2";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
+  desenharRoleta(0);
+
+  let girando = false;
+
+  document.getElementById("btnGirarRoleta").onclick = () => {
+    if (girando) return;
+    girando = true;
+    document.getElementById("btnGirarRoleta").style.display = "none";
+
+    const pesos = [15, 15, 15, 15, 15, 10, 10, 5];
+    const pool = [];
+    PREMIOS_ROLETA.forEach((p, i) => {
+      for (let j = 0; j < pesos[i]; j++) pool.push(i);
+    });
+    const idxSorteado = pool[Math.floor(Math.random() * pool.length)];
+    console.log("Sorteado idx:", idxSorteado, "Nome:", PREMIOS_ROLETA[idxSorteado].nome);
+
+    const somCamp = criarAudio("assets/music/som-campainha.mp3");
+
+    const voltas = 5 + Math.random() * 3;
+    // Gira um número aleatório de voltas + ângulo aleatório
+    const anguloFinal = (2 * Math.PI * (5 + Math.floor(Math.random() * 3))) + (Math.random() * 2 * Math.PI);
+    const duracao = 4000;
+    const inicio = performance.now();
+
+    function animar(agora) {
+      const elapsed = agora - inicio;
+      const progresso = Math.min(elapsed / duracao, 1);
+      const ease = 1 - Math.pow(1 - progresso, 4);
+      const rotacaoAtual = ease * anguloFinal;
+      desenharRoleta(rotacaoAtual);
+
+      if (progresso < 1) {
+        requestAnimationFrame(animar);
+      } else {
+        // Lê qual fatia tá na seta (topo)
+        const rotacaoNormalizada = ((rotacaoAtual % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        const anguloSeta = (2 * Math.PI - rotacaoNormalizada) % (2 * Math.PI);
+        const idxReal = Math.floor(anguloSeta / anguloPorFatia) % total;
+
+        somCamp.currentTime = 0;
+        somCamp.volume = parseFloat(volumeEfeitos.value);
+        somCamp.play().catch(() => {});
+
+        const premio = PREMIOS_ROLETA[idxReal];
+        console.log("idx real:", idxReal, "premio:", premio.nome);
+        entregarPremioProleta(premio);
+
+        document.getElementById("roletaPremioSprite").src = premio.sprite;
+        document.getElementById("roletaPremioTexto").textContent = `Voce ganhou: ${premio.nome}!`;
+        document.getElementById("roletaPremio").style.display = "flex";
+
+        localStorage.setItem("ultimaRoleta", Date.now());
+      }
+    }
+
+    requestAnimationFrame(animar);
+  };
+
+  document.getElementById("btnFecharRoleta").onclick = () => {
+    overlay.style.display = "none";
+  };
+}
+
+function entregarPremioProleta(premio) {
+  switch (premio.tipo) {
+    case "moedas":
+      moedas += premio.valor;
+      mostrarMensagem(`+${premio.valor} moedas!`);
+      break;
+    case "semente":
+      sementes += premio.valor;
+      mostrarMensagem(`+${premio.valor} sementes!`);
+      break;
+    case "dourada":
+      sementesDouradas += premio.valor;
+      mostrarMensagem("Semente Dourada conquistada!");
+      break;
+    case "caixa":
+      setTimeout(() => abrirCaixa(), 1000);
+      break;
+    case "item":
+      // Usa os valores da caixa misteriosa
+      const efeitos = {
+        novelo:  () => { felicidade = Math.min(100, felicidade + 15); mostrarMensagem("Hanna adorou o novelo!"); },
+        ratinho: () => { felicidade = Math.min(100, felicidade + 30); mostrarMensagem("Hanna ficou animada!"); },
+        peixe:   () => { fome = Math.min(100, fome + 20); mostrarMensagem("Que peixinho gostoso!"); },
+        coleira: () => { felicidade = Math.min(100, felicidade + 40); vinculoGatinhas = Math.min(100, vinculoGatinhas + 5); mostrarMensagem("Coleirinha nova!"); },
+      };
+      if (efeitos[premio.valor]) efeitos[premio.valor]();
+      break;
+  }
+  atualizarStatus();
+  _salvar();
 }

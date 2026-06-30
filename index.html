@@ -43,6 +43,25 @@
     </div>
   </div>
 
+  <!-- Roleta Diária -->
+  <div id="overlayRoleta" style="display:none;">
+    <div class="roleta-container">
+      <div class="roleta-titulo">Roleta Diária!</div>
+      <div class="roleta-wrap">
+        <div class="roleta-seta">▼</div>
+        <canvas id="roletaCanvas" width="280" height="280"></canvas>
+      </div>
+      <button id="btnGirarRoleta" class="btn-principal">
+        <span>Girar!</span>
+      </button>
+      <div id="roletaPremio" style="display:none;">
+        <img id="roletaPremioSprite" src="" style="width:60px;image-rendering:pixelated;">
+        <div id="roletaPremioTexto"></div>
+        <button id="btnFecharRoleta" class="btn-principal"><span>Oba!</span></button>
+      </div>
+    </div>
+  </div>
+
 <!-- Tela Inicial -->
 <div id="telaInicial">
   <div class="tela-inicial-bg">
@@ -1410,7 +1429,7 @@
           <div class="mg-card-info">
             <div class="mg-card-titulo">Hanna Crush</div>
             <div class="mg-card-desc">Combine 3 ou mais ícones iguais pra pontuar! Quanto mais combos, mais moedas!</div>
-            <div class="mg-card-recompensa">🪙 10–100 moedas</div>
+            <div class="mg-card-recompensa">Pontos viram moedas diretamente!</div>
           </div>
           <button class="mg-btn-jogar" data-jogo="match3">Jogar</button>
         </div>
