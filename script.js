@@ -6359,49 +6359,48 @@ function iniciarMomentosEspeciais() {
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-dormindo.png",
                 frase: "Elas dormiram juntinhas",
-                chance: () => energia < 40
+                chance: () => energia < 40 && dataGravidez === 0
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-carinho.png",
                 frase: "Muito carinho por aqui",
-                chance: () => amizade > 3.5
+                chance: () => amizade > 3.5 && dataGravidez === 0
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando3.png",
                 frase: "As duas estão brincando",
-                chance: () => felicidade > 60
+                chance: () => felicidade > 60 && dataGravidez === 0
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-abraco.png",
                 frase: "Se abraçando fofinho",
-                chance: () => amizade > 3
+                chance: () => amizade > 3 && dataGravidez === 0
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-beijinho.png",
                 frase: "Beijinho da gatinha preta",
-                chance: () => vinculoGatinhas > 50
+                chance: () => vinculoGatinhas > 50 && dataGravidez === 0
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando.png",
                 frase: "Brincando juntas",
-                chance: () => felicidade > 50
+                chance: () => felicidade > 50 && dataGravidez === 0
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando2.png",
                 frase: "Aprontando juntas",
-                chance: () => felicidade > 50
+                chance: () => felicidade > 50 && dataGravidez === 0
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-lambendo.png",
                 frase: "Se lambendo de carinho",
-                chance: () => vinculoGatinhas > 40
+                chance: () => vinculoGatinhas > 40 && dataGravidez === 0
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/noite-feliz.png",
                 frase: "Psiu... ouviu essa fofoca?",
-                chance: () => new Date().getHours() >= 19 || new Date().getHours() < 6
+                chance: () => (new Date().getHours() >= 19 || new Date().getHours() < 6) && dataGravidez === 0
             },
-
             // Momentos da gravidez
             {
                 sprite: "assets/sprites/hanna-gatinha/gravidez-carinho.png",
@@ -6418,7 +6417,6 @@ function iniciarMomentosEspeciais() {
                 frase: "Será menino ou menina? As duas não se entendem!",
                 chance: () => dataGravidez > 0 && !filhoteDesbloqueado
             },
-
             // Momentos da família
             {
                 sprite: `assets/sprites/familia/familia-${versaoFilhote === "hanna" ? "hanna-" : versaoFilhote === "gatinha" ? "gatinha-" : ""}brincando.png`,
