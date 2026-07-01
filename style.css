@@ -444,61 +444,38 @@ textarea {
 
 /* BOTÕES DE AÇÃO */
 .botoes-grid {
-
     display: grid;
-
-    grid-template-columns:
-    repeat(2, 180px);
-
+    grid-template-columns: repeat(3, 1fr);
     justify-content: center;
-
-    gap: 10px;
-
+    gap: 8px;
     margin-top: 2px;
-
     margin-bottom: 4px;
-
+    padding: 0 4px;
 }
 
 .btn-acao {
-
-    width: 180px;
-
-    height: 48px;
-
-    padding: 4px;
-
+    width: 100%;
+    height: 56px;
+    padding: 6px 4px;
     border: none;
-
-    border-radius: 12px;
-
+    border-radius: 18px;
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
     justify-content: center;
-
-    gap: 2px;
-
-    font-size: 10px;
-
+    gap: 4px;
+    font-size: 9px;
     font-weight: 800;
-
     color: white;
-
     cursor: pointer;
-
     transition: 0.15s;
-
 }
 
-.btn-acao:active { transform: translateY(4px); }
+.btn-acao:active { transform: translateY(3px); }
 
 .iconeBotao {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
     image-rendering: pixelated;
     filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15));
