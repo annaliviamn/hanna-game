@@ -4724,10 +4724,16 @@ function atualizarBtnsLoja() {
       btnPedido.style.cursor = "not-allowed";
     }
   }
-  const secaoFilhote = document.getElementById("secaoFilhote");
-  if (secaoFilhote) {
-    secaoFilhote.style.display = filhoteDesbloqueado ? "grid" : "none";
-  }
+  const btnsMamadeira = [btnMamadeira, btnPelucia, btnGuizo, btnCaminha, btnDiaPerfeitoFilhote];
+  btnsMamadeira.forEach(btn => {
+    if (!btn) return;
+    if (!filhoteDesbloqueado) {
+      btn.textContent = "Indisponível";
+      btn.classList.add("btn-adotado");
+      btn.style.opacity = "0.5";
+      btn.style.cursor = "not-allowed";
+    }
+  });
 }
 
 btnGatinha.addEventListener("click", () => {
