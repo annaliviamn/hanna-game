@@ -1468,7 +1468,7 @@ const btnUrsinho = document.getElementById("btnUrsinho");
 const btnMorango = document.getElementById("btnMorango");
 const btnGatinha = document.getElementById("btnGatinha");
 
-// ── PRESENTINHOS PRA GATINHA ─────────────────
+// PRESENTINHOS PRA GATINHA 
 const btnPresenteFlor      = document.getElementById("btnPresenteFlor");
 const btnPresenteChocolate = document.getElementById("btnPresenteChocolate");
 const btnPresenteCesta     = document.getElementById("btnPresenteCesta");
@@ -1981,6 +1981,7 @@ let higiene     = Number(localStorage.getItem("higiene"))     || 30;
 let sementes    = Number(localStorage.getItem("sementes"))    || 0;
 let sementesDouradas = Number(localStorage.getItem("sementesDouradas")) || 0;
 let ultimaSementeDourada = Number(localStorage.getItem("ultimaSementeDourada")) || 0;
+let ultimaRoleta = Number(localStorage.getItem("ultimaRoleta")) || 0;
 let moedas      = Number(localStorage.getItem("moedas"))      || 0;
 let amizade     = Number(localStorage.getItem("amizade"))     || 0;
 let vinculoGatinhas = Number(localStorage.getItem("vinculoGatinhas")) || 0;
@@ -1995,6 +1996,7 @@ let generoFilhote       = localStorage.getItem("generoFilhote") || "";
 let versaoFilhote       = localStorage.getItem("versaoFilhote") || "misto"; // linha nova
 let dataGravidez        = Number(localStorage.getItem("dataGravidez")) || 0;
 let pedidoAceito        = localStorage.getItem("pedidoAceito") === "true";
+let cuidadosFilhote = Number(localStorage.getItem("cuidadosFilhote")) || 0;
 
 let dormindo =
 localStorage.getItem("dormindo") === "true";
@@ -2520,6 +2522,19 @@ function atualizarStatus() {
     if (vinculoContainer) vinculoContainer.style.display = "block";
   }
 
+  // Barra de cuidados do filhotinho
+  const cuidadosContainer = document.getElementById("cuidadosFilhoteContainer");
+  if (cuidadosContainer) {
+    if (filhoteDesbloqueado) {
+      cuidadosContainer.style.display = "block";
+      document.getElementById("barraCuidadosFilhote").style.width = cuidadosFilhote + "%";
+      document.getElementById("cuidadosFilhotePorcentagem").textContent = Math.floor(cuidadosFilhote) + "%";
+      document.getElementById("nomeFilhoteBar").textContent = nomeFilhote || "filhotinho";
+    } else {
+      cuidadosContainer.style.display = "none";
+    }
+  }
+
   saldoLoja.textContent = moedas;
 
   // Conquistas automáticas
@@ -2566,6 +2581,7 @@ function atualizarStatus() {
 let _ultimoSaveNuvem = 0;
 let _senhaHash = localStorage.getItem("hannaSenhaHash") || null;
 let _bloqueioSaveNuvem = true; // começa bloqueado até fazer login
+let _decayCuidadosPausado = false;
 
 function _salvar() {
   localStorage.setItem("fome",                    fome);
@@ -2587,6 +2603,7 @@ function _salvar() {
   localStorage.setItem("versaoFilhote", versaoFilhote);
   localStorage.setItem("generoFilhote",       generoFilhote);
   localStorage.setItem("dataGravidez",        dataGravidez);
+  localStorage.setItem("cuidadosFilhote", cuidadosFilhote);
   localStorage.setItem("pedidoAceito",        pedidoAceito ? "true" : "false");
   localStorage.setItem("ultimaInteracaoGatinha",  ultimaInteracaoGatinha);
   localStorage.setItem("steveDesbloqueado",       steveDesbloqueado ? "true" : "false");
@@ -2595,7 +2612,7 @@ function _salvar() {
   localStorage.setItem("annaDesbloqueada", annaDesbloqueada ? "true" : "false");
   localStorage.setItem("kikaDesbloqueada", kikaDesbloqueada ? "true" : "false");
   localStorage.setItem("modoNoturno", document.body.classList.contains("dark-mode") ? "true" : "false");
-  localStorage.setItem("ultimaRoleta", localStorage.getItem("ultimaRoleta") || "0");
+  localStorage.setItem("ultimaRoleta", ultimaRoleta);
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -2614,13 +2631,13 @@ function _salvar() {
           sementesDouradas, ultimaSementeDourada,
           steveDesbloqueado, joaoDesbloqueado, jamesDesbloqueado,
           annaDesbloqueada, kikaDesbloqueada, ultimaInteracaoGatinha,
-          ultimoAcesso: Date.now(),
+          ultimoAcesso: Date.now(), cuidadosFilhote,
           modoNoturno: document.body.classList.contains("dark-mode"),
           muted: isMuted,
           fazenda: JSON.stringify(fazenda),
           conquistas: JSON.stringify(conquistasDesbloqueadas),
           lembretes: JSON.stringify(lembretes),
-          ultimaRoleta: Number(localStorage.getItem("ultimaRoleta")) || 0,
+          ultimaRoleta: ultimaRoleta,
         });
       }).catch(() => {});
     }
@@ -2917,6 +2934,7 @@ somBotao.play().catch(()=>{});
   setTimeout(atualizarStatus, 2000);
   // Filhotinho reage ao carinho
   if (filhoteDesbloqueado) {
+    cuidadosFilhote = Math.min(100, cuidadosFilhote + 20); // dobro da felicidade (+10)
     const sprites = spritesFilhote[versaoFilhote] || spritesFilhote.misto;
     const spriteBase = versaoFilhote === "hanna"
       ? "assets/sprites/filhote/filhote-hanna.png"
@@ -2971,6 +2989,7 @@ somBotao.play().catch(()=>{});
 
     // Filhotinho reage à comida
   if (filhoteDesbloqueado) {
+    cuidadosFilhote = Math.min(100, cuidadosFilhote + 20); // dobro da fome (+10)
     const sprites = spritesFilhote[versaoFilhote] || spritesFilhote.misto;
     const spriteBase = versaoFilhote === "hanna"
       ? "assets/sprites/filhote/filhote-hanna.png"
@@ -3128,6 +3147,11 @@ setInterval(() => {
     }
 
     atualizarStatus();
+
+    // Cuidados do filhotinho decaem 1.5% por minuto
+    if (filhoteDesbloqueado && !_decayCuidadosPausado) {
+      cuidadosFilhote = Math.max(0, cuidadosFilhote - 1.5);
+    }
   }
 }, 60000); // 1 min
 
@@ -3154,6 +3178,7 @@ function carregarDadosNoJogo(dados) {
   versaoFilhote       = dados.versaoFilhote || "misto";
   dataGravidez        = Number(dados.dataGravidez) || 0;
   pedidoAceito        = dados.pedidoAceito === true || dados.pedidoAceito === "true";
+  cuidadosFilhote     = Number(dados.cuidadosFilhote) || 0;
 
   steveDesbloqueado    = dados.steveDesbloqueado === true || dados.steveDesbloqueado === "true";
   joaoDesbloqueado     = dados.joaoDesbloqueado === true || dados.joaoDesbloqueado === "true";
@@ -3195,7 +3220,7 @@ function carregarDadosNoJogo(dados) {
     aplicarMute();
   }
 
-  if (dados.ultimaRoleta) localStorage.setItem("ultimaRoleta", dados.ultimaRoleta);
+  ultimaRoleta = Number(dados.ultimaRoleta) || 0;
 }
 
 // TELA DE LOADING
@@ -3983,6 +4008,14 @@ const btnDonut = document.getElementById("btnDonut");
 const btnVarinha = document.getElementById("btnVarinha");
 const btnRobo = document.getElementById("btnRobo");
 const btnAlmofada = document.getElementById("btnAlmofada");
+
+// Filhotinho
+const btnMamadeira = document.getElementById("btnMamadeira");
+const btnPelucia = document.getElementById("btnPelucia");
+const btnGuizo = document.getElementById("btnGuizo");
+const btnCaminha = document.getElementById("btnCaminha");
+const btnDiaPerfeitoFilhote = document.getElementById("btnDiaPerfeitoFilhote");
+
 // Cinza o botão de adotar se já tem gatinha
 btnSashimi.addEventListener("click", () => {
   if (moedas < 900) {
@@ -4290,6 +4323,63 @@ btnAlmofada.addEventListener("click", () => {
   somCompra.play().catch(()=>{});
 
   mostrarMensagem("A Hanna descansou fofinha.");
+  atualizarStatus();
+});
+
+// Itens da Loja Filhotinho
+btnMamadeira.addEventListener("click", () => {
+  if (moedas < 60000) { mostrarAlertaLoja("Moedas insuficientes"); return; }
+  moedas -= 60000;
+  cuidadosFilhote = Math.min(100, cuidadosFilhote + 40);
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+  mostrarMensagem("O filhotinho adorou a mamadeira!");
+  atualizarStatus();
+});
+
+btnPelucia.addEventListener("click", () => {
+  if (moedas < 50000) { mostrarAlertaLoja("Moedas insuficientes"); return; }
+  moedas -= 50000;
+  cuidadosFilhote = Math.min(100, cuidadosFilhote + 35);
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+  mostrarMensagem("O filhotinho ficou apegadinho!");
+  atualizarStatus();
+});
+
+btnGuizo.addEventListener("click", () => {
+  if (moedas < 40000) { mostrarAlertaLoja("Moedas insuficientes"); return; }
+  moedas -= 40000;
+  cuidadosFilhote = Math.min(100, cuidadosFilhote + 30);
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+  mostrarMensagem("O filhotinho enlouqueceu com o brinquedinho!");
+  atualizarStatus();
+});
+
+btnCaminha.addEventListener("click", () => {
+  if (moedas < 80000) { mostrarAlertaLoja("Moedas insuficientes"); return; }
+  moedas -= 80000;
+  _decayCuidadosPausado = true;
+  setTimeout(() => { _decayCuidadosPausado = false; }, 30 * 60 * 1000);
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+  mostrarMensagem("O filhotinho tá quentinho na caminha!");
+  atualizarStatus();
+});
+
+btnDiaPerfeitoFilhote.addEventListener("click", () => {
+  if (moedas < 150000) { mostrarAlertaLoja("Moedas insuficientes"); return; }
+  moedas -= 150000;
+  cuidadosFilhote = 100;
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+  mostrarMensagem("Que dia perfeito pro filhotinho!");
   atualizarStatus();
 });
 
@@ -4633,6 +4723,10 @@ function atualizarBtnsLoja() {
       btnPedido.style.opacity = "0.5";
       btnPedido.style.cursor = "not-allowed";
     }
+  }
+  const secaoFilhote = document.getElementById("secaoFilhote");
+  if (secaoFilhote) {
+    secaoFilhote.style.display = filhoteDesbloqueado ? "grid" : "none";
   }
 }
 
@@ -5168,6 +5262,7 @@ btnPetisco.addEventListener("click", () => {
   _salvar();
   // Filhotinho reage ao petisco
   if (filhoteDesbloqueado) {
+    cuidadosFilhote = Math.min(100, cuidadosFilhote + 30); // dobro da felicidade (+15)
     const sprites = spritesFilhote[versaoFilhote] || spritesFilhote.misto;
     const spriteBase = versaoFilhote === "hanna" ? "assets/sprites/filhote/filhote-hanna.png"
       : versaoFilhote === "gatinha" ? "assets/sprites/filhote/filhote-gatinha.png"
@@ -5205,6 +5300,7 @@ btnCocarBarriga.addEventListener("click", () => {
   _salvar();
   // Filhotinho reage ao carinho
   if (filhoteDesbloqueado) {
+    cuidadosFilhote = Math.min(100, cuidadosFilhote + 40); // dobro da felicidade (+20)
     const sprites = spritesFilhote[versaoFilhote] || spritesFilhote.misto;
     const spriteBase = versaoFilhote === "hanna" ? "assets/sprites/filhote/filhote-hanna.png"
       : versaoFilhote === "gatinha" ? "assets/sprites/filhote/filhote-gatinha.png"
@@ -8436,7 +8532,6 @@ const PREMIOS_ROLETA = [
 ];
 
 function verificarRoletaDiaria() {
-  const ultimaRoleta = Number(localStorage.getItem("ultimaRoleta")) || 0;
   const agora = Date.now();
   const umDia = 24 * 60 * 60 * 1000;
   if (agora - ultimaRoleta >= umDia) {
@@ -8545,7 +8640,7 @@ function mostrarRoleta() {
         document.getElementById("roletaPremioTexto").textContent = `Voce ganhou: ${premio.nome}!`;
         document.getElementById("roletaPremio").style.display = "flex";
 
-        localStorage.setItem("ultimaRoleta", Date.now());
+        ultimaRoleta = Date.now();
       }
     }
 

@@ -409,6 +409,7 @@ textarea {
   object-fit: cover;
 }
 
+/* Status Hanna, Gatinha e Filhote */
 .barraContainer { margin: 10px 0; }
 .barraTitulo {
   display: flex; justify-content: space-between;
@@ -425,6 +426,7 @@ textarea {
 #barraFelicidade { height:100%; border-radius:20px; background: linear-gradient(90deg,#ff5fa2,#ff8fc2); transition:.5s; }
 #barraEnergia { height:100%; border-radius:20px; background: linear-gradient(90deg,#b57cff,#d4aaff); transition:.5s; }
 #barraHigiene { height:100%; border-radius:20px; background: linear-gradient(90deg,#8f5be8,#b784ff); transition:.5s; }
+#barraCuidadosFilhote { height:100%; border-radius:20px; background: linear-gradient(90deg,#ffb347,#ffd580); transition:.5s; }
 
 /* SECTION LABEL */
 .section-label {
@@ -828,6 +830,19 @@ textarea {
   border: 1.5px solid #ffe066 !important;
   box-shadow: 0 0 10px rgba(255, 224, 102, 0.3) !important;
   background: linear-gradient(135deg, var(--bg-card) 80%, rgba(255, 224, 102, 0.05));
+}
+
+/* Itens da Loja Filhotinho */
+.item-loja.item-filhote {
+  border: 1.5px solid #c9a0f5 !important;
+  box-shadow: 0 0 10px rgba(180, 130, 255, 0.3) !important;
+  background: linear-gradient(135deg, var(--bg-card) 80%, rgba(180, 130, 255, 0.08));
+}
+
+.item-loja.item-filhote-especial {
+  border: 1.5px solid #f5a0d0 !important;
+  box-shadow: 0 0 14px rgba(255, 140, 200, 0.4) !important;
+  background: linear-gradient(135deg, var(--bg-card) 75%, rgba(255, 140, 200, 0.12));
 }
 
 .preco-chip {
