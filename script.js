@@ -1948,17 +1948,29 @@ function atualizarGatinha() {
   if (momentoConjuntoAtivo) return;
   if (!gatinhaDesbloqueada) return;
 
-  // Dormindo: conjunta se tiver a gatinha, senão individual
+  // Dormindo
   if (dormindo) {
     gatinhaSpritePor("gatinha-dormindo");
     return;
   }
 
+  // Grávida — sprites alternadas por humor
+  if (dataGravidez > 0 && !filhoteDesbloqueado) {
+    if (felicidade >= 80 && fome >= 70) {
+      gatinhaSpritePor("gatinha-animada-especial");
+    } else if (fome <= 30 || felicidade <= 30) {
+      gatinhaSpritePor("gatinha-gravida-triste");
+    } else {
+      gatinhaSpritePor("gatinha-gravida-neutra");
+    }
+    return;
+  }
+
   // Segue o humor da Hanna
-  if (energia <= 20)        gatinhaSpritePor("gatinha-dormindo");
-  else if (fome <= 15)      gatinhaSpritePor("gatinha-brava");
-  else if (fome <= 50)      gatinhaSpritePor("gatinha-triste");
-  else if (higiene <= 30)   gatinhaSpritePor("gatinha-confusa");
+  if (energia <= 20)         gatinhaSpritePor("gatinha-dormindo");
+  else if (fome <= 15)       gatinhaSpritePor("gatinha-brava");
+  else if (fome <= 50)       gatinhaSpritePor("gatinha-triste");
+  else if (higiene <= 30)    gatinhaSpritePor("gatinha-confusa");
   else if (felicidade >= 95) gatinhaSpritePor("gatinha-apaixonada");
   else if (felicidade >= 80) gatinhaSpritePor("gatinha-animada");
   else                       gatinhaSpritePor("gatinha-neutra");
@@ -2925,7 +2937,6 @@ somBotao.play().catch(()=>{});
     vinculoGatinhas = Math.min(100, vinculoGatinhas + 2);
     registrarInteracaoGatinha();
   }
-  sementes++;
   criarParticulas("💖", 8);
   mostrarMensagem("Purrrr...");
   desbloquearConquista("primeiro_carinho");
