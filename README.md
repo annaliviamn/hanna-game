@@ -10,25 +10,30 @@ A cozy virtual pet experience built with HTML, CSS and Vanilla JavaScript.
 
 **Hanna** é um jogo mobile de gatinha virtual no estilo *cozy*, inspirado em Tamagotchi e Stardew Valley. O jogador cuida da Hanna — alimentando, dando carinho, colocando pra dormir, dando banho — e vai construindo um vínculo ao longo do tempo.
 
-Foi um projeto desenvolvido inteiramente do zero como presente especial, com foco em uma experiência mobile-first, instalável como PWA.
+Foi desenvolvido inteiramente do zero como presente especial, com foco em uma experiência mobile-first, instalável como PWA, com save na nuvem via Firebase.
 
 ---
 
 ## Recursos
 
-- **Gatinha virtual** com sprites animados e expressões variadas
+- **Gatinha virtual** com sprites animados e expressões variadas reagindo ao humor e aos cuidados
 - **Sistema de status** — Fome, Felicidade, Energia, Higiene e Vínculo
-- **Eventos aleatórios** — a Hanna reage ao tempo, humor e ao dia com eventos visuais únicos
-- **Fazenda** — plante sementes, cuide e colha plantas pra ganhar moedas. O girassol é raro e vale mais!
-- **Lojinha** — gaste moedas em comidas, brinquedos e mimos que melhoram os status da Hanna, além de um pack de sementes
-- **6 minigames** — Memória das Patas, Dominó com a Hanna, Adivinhe o Humor, Reflexo Felino, Cartinhas da Hanna e Operação Sardinha
+- **Save na nuvem** — progresso sincronizado entre dispositivos via Firebase Auth + Firestore
 - **Gatinha parceira** desbloqueável com sistema de vínculo, momentos especiais conjuntos e risco de ir embora se negligenciada
-- **Sistema de conquistas** — troféus desbloqueáveis por ações e marcos do jogo
-- **Lembretes** com notificações push via Service Worker
+- **Sistema de gravidez e filhotinho** — evento raro que desencadeia uma gravidez de 9 dias reais, com sprites temáticas e nascimento com escolha de nome e gênero
+- **Fazenda** — plante sementes, cuide e colha plantas pra ganhar moedas
+- **Roleta diária** — gire uma vez por dia pra ganhar prêmios variados
+- **Loja completa** — itens pra Hanna, gatinha parceira, filhotinho e visitantes especiais
+- **Pets visitantes** — Steve, João Antônio e James Cook aparecem de surpresa com falas e sprites próprias
+- **Visitas especiais** — personagens reais desbloqueáveis que aparecem com mensagens personalizadas
+- **Sistema de fila de visitas** — garante variedade e evita repetição de visitantes
+- **16 minigames** — Memória das Patas, Dominó, Adivinhe o Humor, Reflexo Felino, Cartinhas, Operação Sardinha, Hanna Crush (Match-3), Palavras da Hanna (Wordle), Bolinha de Lã, Caça-Palavras, Missão do Steve, James e a Despensa, João e as Prateleiras, Quebra-Cabeça (10 níveis), Troca de Recados, Esconde-Esconde e Colorindo com a Hanna
+- **Colorindo com a Hanna** — minigame relaxante com flood fill, zoom por pinch/scroll, paleta expandida e sistema de duas camadas de canvas
+- **Sistema de conquistas** — troféus organizados por categoria (cuidados, progressão, minigames, momentos especiais)
+- **Notificações de visitas** — banner deslizante com som de campainha ao receber visitas
 - **Ciclo de dia/noite** com overlays visuais e eventos especiais
-- **Chuva aleatória** com som ambiente
+- **Modo escuro/claro** persistente na nuvem
 - **Trilhas sonoras** por tela com fade in/out suave
-- **Modo escuro** persistente
 - **PWA** — instalável como app no Android e iOS sem loja
 
 ---
@@ -38,12 +43,13 @@ Foi um projeto desenvolvido inteiramente do zero como presente especial, com foc
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
 
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- Service Workers + IndexedDB
+- HTML5, CSS3, Vanilla JavaScript
+- Firebase Auth + Firestore (autenticação e save na nuvem)
+- Service Workers + Cache API
 - Web Audio API
+- Canvas API (minigame de colorir)
 - LocalStorage
 - Progressive Web App (PWA)
 
@@ -70,7 +76,7 @@ Foi um projeto desenvolvido inteiramente do zero como presente especial, com foc
 Não precisa de nenhuma instalação. Basta clonar e abrir:
 
 ```bash
-git clone https://github.com/annaliviam_/hanna-game.git
+git clone https://github.com/annaliviamn/hanna-game.git
 cd hanna-game
 ```
 
@@ -79,25 +85,27 @@ Abre o `index.html` no navegador — ou usa uma extensão como **Live Server** n
 ---
 
 ## Estrutura do Projeto
-
-```
 hanna-game/
 ├── index.html
 ├── script.js
-├── style.css
+├── estilo.css
 ├── manifest.json
 ├── sw.js
+├── firebase.js
 ├── assets/
 │   ├── sprites/
-│   │   ├── hanna/          # sprites da Hanna (neutra, feliz, triste...)
-│   │   ├── gatinha/        # sprites da gatinha parceira
-│   │   └── hanna-gatinha/  # sprites conjuntas
-│   ├── farm/               # sprites da fazenda
-│   ├── shop/               # ícones da loja
-│   ├── ui/                 # ícones de interface e corações
-│   ├── icons/              # ícones PWA (192x192, 512x512)
-│   └── music/              # trilhas e efeitos sonoros
-```
+│   │   ├── hanna/            # sprites da Hanna
+│   │   ├── gatinha/          # sprites da gatinha parceira
+│   │   ├── hanna-gatinha/    # sprites conjuntas e momentos especiais
+│   │   ├── filhote/          # sprites do filhotinho
+│   │   ├── familia/          # sprites de família completa
+│   │   ├── colorir/          # desenhos do minigame de colorir
+│   │   ├── personagens/      # sprites das visitas especiais
+│   │   └── pets/             # sprites dos pets visitantes
+│   ├── shop/                 # ícones da loja
+│   ├── ui/                   # ícones de interface
+│   ├── icons/                # ícones PWA
+│   └── music/                # trilhas e efeitos sonoros
 
 ---
 
@@ -106,13 +114,14 @@ hanna-game/
 Este projeto foi um grande laboratório prático. Alguns dos conceitos aplicados:
 
 - Arquitetura de um jogo em JS puro sem game engine
-- Gerenciamento de estado global com variáveis e LocalStorage
-- Service Workers, IndexedDB e notificações push
-- PWA com manifest e instalação nativa
+- Gerenciamento de estado global com variáveis, LocalStorage e Firestore
+- Autenticação e sincronização de dados com Firebase Auth + Firestore
+- Canvas API com flood fill, sistema de camadas e zoom touch/scroll
+- Service Workers e PWA com instalação nativa
 - Sistema de trilhas sonoras com fade entre telas
 - Animações CSS complexas (float, shake, bounce, pulse)
 - Design mobile-first com foco em UX tátil
-- Depuração de bugs em contexto PWA no iOS
+- Depuração de bugs em contexto PWA no iOS e Android
 
 ---
 

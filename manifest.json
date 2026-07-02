@@ -1,7 +1,7 @@
 {
-  "name": "Hanna 🐾",
+  "name": "Hanna",
   "short_name": "Hanna",
-  "description": "Sua gatinha virtual cozy 🌸",
+  "description": "Sua gatinha virtual cozy",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
