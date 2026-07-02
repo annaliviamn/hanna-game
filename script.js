@@ -7489,7 +7489,6 @@ function animarTela(tela) {
 }
 
 // HANNA GOODS
-// COLORINDO COM A HANNA
 function jogoColorir() {
   abrirArena("Colorindo com a Hanna");
 
@@ -7509,6 +7508,7 @@ function jogoColorir() {
   let corAtual = "#ffb8d8";
   let canvasCtx = null;
   let desenhoAtual = null;
+  let _historicoCanvas = [];
 
   const FALAS = [
     '"Que cor bonita!"',
@@ -7536,7 +7536,6 @@ function jogoColorir() {
     const cor = hexParaRgb(corAlvo);
     if (!cor) return;
     if (r0 === cor.r && g0 === cor.g && b0 === cor.b) return;
-    if (r0 < 50 && g0 < 50 && b0 < 50) return;
     const stack = [[x, y]];
     const visited = new Uint8Array(canvas.width * canvas.height);
     while (stack.length) {
@@ -7546,8 +7545,7 @@ function jogoColorir() {
       if (visited[i]) continue;
       visited[i] = 1;
       const pi = i * 4;
-      if (Math.abs(data[pi]-r0) > 40 || Math.abs(data[pi+1]-g0) > 40 || Math.abs(data[pi+2]-b0) > 40) continue;
-      if (data[pi] < 50 && data[pi+1] < 50 && data[pi+2] < 50) continue;
+      if (Math.abs(data[pi]-r0) > 15 || Math.abs(data[pi+1]-g0) > 15 || Math.abs(data[pi+2]-b0) > 15) continue;
       data[pi] = cor.r; data[pi+1] = cor.g; data[pi+2] = cor.b; data[pi+3] = 255;
       stack.push([cx+1,cy],[cx-1,cy],[cx,cy+1],[cx,cy-1]);
     }
@@ -7578,28 +7576,30 @@ function jogoColorir() {
   function renderCanvas(idx) {
     desenhoAtual = idx;
     const CORES = [
-      // Pastéis
-      "#ffb8d8", "#ffd6ec", "#ffc8a2", "#fff0a0", "#c8f0a0",
-      "#a0e8f0", "#c8b8f8", "#f8c8f8", "#f8b8b8", "#d0f0d0",
-      // Fortes
-      "#ff8fc2", "#ff5580", "#ff7043", "#ffd700", "#40c040",
-      "#00bcd4", "#7c4dff", "#e040fb", "#f44336", "#2196f3",
-      // Neutros e extras
-      "#ffffff", "#f5f5dc", "#d2a679", "#a0522d", "#3a2a5a",
-      "#333333", "#000000",
-      "#f5deb3", // bege claro (Steve)
-      "#d2b48c", // bege médio (Cook)
-      "#8b6347", // castanho
-      "#555555", // cinza médio
-      "#888888", // cinza claro
-      "#222222", // preto suave
-      "#2ab7a9", // azul esverdeado
+      "#ffb8d8","#ffd6ec","#ffc8a2","#fff0a0","#c8f0a0",
+      "#a0e8f0","#c8b8f8","#f8c8f8","#f8b8b8","#d0f0d0",
+      "#ff8fc2","#ff5580","#ff0000","#cc0000","#990000",
+      "#ff6666","#ff9999","#ffcccc",
+      "#ff7043","#ff5722","#ff8c00","#ffa040",
+      "#ffd700","#ffeb3b","#fff176","#f9a825","#f57f17",
+      "#ffe066","#ffcc00",
+      "#40c040","#2e7d32","#66bb6a","#a5d6a7","#00c853",
+      "#1b5e20","#98fb98","#00e676",
+      "#2196f3","#0d47a1","#64b5f6","#00bcd4","#2ab7a9",
+      "#80deea","#01579b",
+      "#7c4dff","#c9a0f5","#ddb0ff","#9c27b0","#6a1b9a",
+      "#e040fb","#ce93d8",
+      "#ffffff","#f5f5dc","#d2b48c","#a0522d","#8b6347",
+      "#f5deb3","#d2a679","#555555","#888888","#222222","#000000",
     ];
 
     arenaConteudo.innerHTML = `
       <div class="pz-wrap">
         <div class="colorir-fala" id="colorirFala">"Clique numa área pra colorir!"</div>
-        <canvas id="canvasColorir" style="display:block;margin:0 auto 12px;border-radius:12px;border:1.5px solid var(--pink-mid);max-width:100%;cursor:crosshair;"></canvas>
+        <div style="position:relative;display:inline-block;margin:0 auto 12px;max-width:100%;">
+          <canvas id="canvasColorir" style="display:block;border-radius:12px;max-width:100%;cursor:crosshair;"></canvas>
+          <canvas id="canvasContorno" style="position:absolute;top:0;left:0;border-radius:12px;max-width:100%;pointer-events:none;"></canvas>
+        </div>
         <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-align:center;margin-bottom:6px;letter-spacing:0.5px;">paleta de cores</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">
           ${CORES.map(c => `
@@ -7611,6 +7611,7 @@ function jogoColorir() {
         </div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;margin-top:8px;">
           <button class="steve-btn" id="btnResetZoom">Zoom</button>
+          <button class="steve-btn" id="btnUndo">↩ Voltar</button>
           <button class="steve-btn" id="btnRecomecar">Recomeçar</button>
           <button class="steve-btn" id="btnTrocarDesenho">Trocar desenho</button>
           <button class="steve-btn" id="btnSalvarColorir">Salvar</button>
@@ -7618,7 +7619,9 @@ function jogoColorir() {
       </div>`;
 
     const canvas = document.getElementById("canvasColorir");
+    const canvasContorno = document.getElementById("canvasContorno");
     const ctx = canvas.getContext("2d");
+    const ctxContorno = canvasContorno.getContext("2d");
     canvasCtx = ctx;
 
     const img = new Image();
@@ -7626,18 +7629,35 @@ function jogoColorir() {
     img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
+      
+      // Começa com a imagem original no canvas de pintura
       ctx.drawImage(img, 0, 0);
+
+      // Canvas de contorno — mesma imagem por cima
+      canvasContorno.width = img.width;
+      canvasContorno.height = img.height;
+      canvasContorno.style.width = canvas.style.width;
+      canvasContorno.style.height = canvas.style.height;
+      ctxContorno.drawImage(img, 0, 0);
+
+      // Torna os pixels brancos do contorno transparentes
+      const imageData = ctxContorno.getImageData(0, 0, canvasContorno.width, canvasContorno.height);
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i] > 200 && data[i+1] > 200 && data[i+2] > 200) {
+          data[i+3] = 0;
+        }
+      }
+      ctxContorno.putImageData(imageData, 0, 0);
     };
 
     // Pinch to zoom
     let _escala = 1;
-    let _offsetX = 0;
-    let _offsetY = 0;
     let _distanciaInicial = null;
+    const wrapper = canvas.parentElement;
+    wrapper.style.transformOrigin = "top left";
 
-    canvas.style.transformOrigin = "top left";
-
-    canvas.addEventListener("touchstart", (e) => {
+    wrapper.addEventListener("touchstart", (e) => {
       if (e.touches.length === 2) {
         e.preventDefault();
         const dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -7646,35 +7666,39 @@ function jogoColorir() {
       }
     }, { passive: false });
 
-    canvas.addEventListener("touchmove", (e) => {
+    wrapper.addEventListener("touchmove", (e) => {
       if (e.touches.length === 2 && _distanciaInicial) {
         e.preventDefault();
         const dx = e.touches[0].clientX - e.touches[1].clientX;
         const dy = e.touches[0].clientY - e.touches[1].clientY;
         const distanciaAtual = Math.sqrt(dx*dx + dy*dy);
         const fator = distanciaAtual / _distanciaInicial;
-        _escala = Math.min(Math.max(_escala * fator, 1), 4); // zoom entre 1x e 4x
-        canvas.style.transform = `scale(${_escala})`;
+        _escala = Math.min(Math.max(_escala * fator, 1), 4);
+        wrapper.style.transform = `scale(${_escala})`;
         _distanciaInicial = distanciaAtual;
       }
     }, { passive: false });
 
-    canvas.addEventListener("touchend", () => {
+    wrapper.addEventListener("touchend", () => {
       _distanciaInicial = null;
     });
 
-    canvas.addEventListener("wheel", (e) => {
+    wrapper.addEventListener("wheel", (e) => {
       e.preventDefault();
       const fator = e.deltaY < 0 ? 1.1 : 0.9;
       _escala = Math.min(Math.max(_escala * fator, 1), 4);
-      canvas.style.transform = `scale(${_escala})`;
+      wrapper.style.transform = `scale(${_escala})`;
     }, { passive: false });
 
     canvas.addEventListener("click", (e) => {
-        if (!canvasCtx) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
-        const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
+      if (!canvasCtx) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
+      const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
+
+      _historicoCanvas.push(canvasCtx.getImageData(0, 0, canvas.width, canvas.height));
+      if (_historicoCanvas.length > 20) _historicoCanvas.shift();
+
       floodFill(canvasCtx, x, y, corAtual);
       document.getElementById("colorirFala").textContent =
         FALAS[Math.floor(Math.random() * FALAS.length)];
@@ -7694,7 +7718,13 @@ function jogoColorir() {
 
     document.getElementById("btnResetZoom").addEventListener("click", () => {
       _escala = 1;
-      canvas.style.transform = "scale(1)";
+      wrapper.style.transform = "scale(1)";
+    });
+
+    document.getElementById("btnUndo").addEventListener("click", () => {
+      if (_historicoCanvas.length === 0) return;
+      const estado = _historicoCanvas.pop();
+      canvasCtx.putImageData(estado, 0, 0);
     });
 
     document.getElementById("btnRecomecar").addEventListener("click", () => {
@@ -7706,9 +7736,16 @@ function jogoColorir() {
     });
 
     document.getElementById("btnSalvarColorir").addEventListener("click", () => {
+      // Combina os dois canvas pra salvar
+      const canvasFinal = document.createElement("canvas");
+      canvasFinal.width = canvas.width;
+      canvasFinal.height = canvas.height;
+      const ctxFinal = canvasFinal.getContext("2d");
+      ctxFinal.drawImage(canvas, 0, 0);
+      ctxFinal.drawImage(canvasContorno, 0, 0);
       const link = document.createElement("a");
       link.download = "hanna-colorida.png";
-      link.href = canvas.toDataURL();
+      link.href = canvasFinal.toDataURL();
       link.click();
       document.getElementById("colorirFala").textContent = '"Guardei esse momento com carinho!"';
       ganharMoedas(500);
@@ -7716,10 +7753,8 @@ function jogoColorir() {
       desbloquearConquista("artista_felina");
     });
   }
-
   renderSelecao();
 }
-
 // ══════════════════════════════════════════════
 //   JOGO 10 — CAÇA-PALAVRAS
 //   Encontre todas as palavras na grade 10x10.

@@ -5531,3 +5531,7 @@ button {
   margin-bottom: 10px;
   font-style: italic;
 }
+
+#canvasColorir {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><text y='28' font-size='28'>🖌️</text></svg>") 0 32, crosshair;
+}
