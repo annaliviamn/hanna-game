@@ -7609,7 +7609,7 @@ function jogoColorir() {
             </div>
           `).join("")}
         </div>
-        <div style="display:flex;gap:8px;justify-content:center;">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;margin-top:8px;">
           <button class="steve-btn" id="btnResetZoom">Zoom</button>
           <button class="steve-btn" id="btnRecomecar">Recomeçar</button>
           <button class="steve-btn" id="btnTrocarDesenho">Trocar desenho</button>
