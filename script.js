@@ -579,16 +579,17 @@ const CONQUISTAS = {
   bolinha_mestre:     { nome: "Bolinha Voadora",         desc: "Fez 20+ rebatidas na Bolinha de Lã.",              sprite: "assets/sprites/hanna/brincando-novelo.png",   secao: "minigames" },
   cocar_barriga:      { nome: "Coçadinha Especial",      desc: "Coçou a barriga da Hanna pela primeira vez.",      sprite: "assets/sprites/hanna/carinho-barriga.png",  secao: "cuidados" },
   caca_palavras:      { nome: "Detetive Felina",         desc: "Encontrou todas as palavras no Caça-Palavras.",    sprite: "assets/ui/icons/icon-cacando-palavras.png",   secao: "minigames" },
-  missao_steve:       { nome: "Missão Cumprida",      desc: "Completou a Missão do Steve Rogers.",             sprite: "assets/sprites/pets/steve-missao.png", secao: "minigames" },
-  james_ladrao:       { nome: "Mestre Ladrão",        desc: "James roubou 15+ petiscos na despensa.",          sprite: "assets/sprites/pets/james-espiando.png", secao: "minigames" },
-  joao_aprontando:    { nome: "Destruição Total",     desc: "João derrubou 20+ objetos nas prateleiras.",      sprite: "assets/sprites/pets/joao-prateleira.png", secao: "minigames" },
+  missao_steve:       { nome: "Missão Cumprida",         desc: "Completou a Missão do Steve Rogers.",             sprite: "assets/sprites/pets/steve-missao.png", secao: "minigames" },
+  james_ladrao:       { nome: "Mestre Ladrão",           desc: "James roubou 15+ petiscos na despensa.",          sprite: "assets/sprites/pets/james-espiando.png", secao: "minigames" },
+  joao_aprontando:    { nome: "Destruição Total",        desc: "João derrubou 20+ objetos nas prateleiras.",      sprite: "assets/sprites/pets/joao-prateleira.png", secao: "minigames" },
   puzzle_mestre:      { nome: "Mestre do Quebra-Cabeça", desc: "Completou todos os níveis do quebra-cabeça!", sprite: "assets/sprites/hanna/animada.png", secao: "minigames" },
   leitora_humores:    { nome: "Leitora de Humores",     desc: "Venceu o jogo Adivinhe o Humor.",               sprite: "assets/sprites/hanna/curiosa.png",  secao: "minigames" },
   reflexos_felinos:   { nome: "Reflexos Felinos",       desc: "Venceu o jogo Reflexo Felino.",                 sprite: "assets/sprites/hanna/doidinha.png",  secao: "minigames" },
   colecionadora:      { nome: "Colecionadora",          desc: "Venceu o jogo Cartinhas da Hanna.",             sprite: "assets/sprites/hanna/brincando.png",  secao: "minigames" },
   cirurgia_felina:    { nome: "Cirurgiã Felina",        desc: "Venceu a Operação Sardinha.",                   sprite: "assets/sprites/hanna-gatinha/hanna-cod.png",  secao: "minigames" },
   recados_perfeito:   { nome: "Sintonia Total",         desc: "Acertou todas as respostas na Troca de Recados!",        sprite: "assets/ui/icons/icon-recados.png", secao: "minigames"  },
-  esconde_mestre: { nome: "Achou!", desc: "Encontrou o filhotinho 7 vezes no Esconde-Esconde!", sprite: "assets/sprites/filhote/filhote-pego.png", secao: "momentos" },
+  artista_felina:     { nome: "Artista Felina",         desc: "Salvou um desenho colorido com a Hanna.",        sprite: "assets/sprites/hanna/metida.png", secao: "minigames" },
+  esconde_mestre:     { nome: "Achou!",                 desc: "Encontrou o filhotinho 7 vezes no Esconde-Esconde!", sprite: "assets/sprites/filhote/filhote-pego.png", secao: "momentos" },
   // Visitas e semente
   visita_steve:       { nome: "Visita Surpresa",        desc: "Steve Rogers apareceu de visita pela primeira vez!",     sprite: "assets/sprites/pets/steve-feliz.png",       secao: "progressao" },
   visita_joao:        { nome: "Visita do Tonton",       desc: "João Antônio veio fazer bagunça pela primeira vez!",     sprite: "assets/sprites/pets/joao-feliz.png",   secao: "progressao" },
@@ -5640,6 +5641,7 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
     else if (jogo === "joao")         jogoJoao();
     else if (jogo === "quebracabeca") jogoQuebracabeca();
     else if (jogo === "recados")      jogoRecados();
+    else if (jogo === "colorir")      jogoColorir();
     else if (jogo === "recados")      jogoRecados();
     else if (jogo === "esconde")      jogoEscondeEsconde();
   });
@@ -7326,7 +7328,7 @@ function jogoRecados() {
   iniciarRodada();
 }
 
-//   QUEBRA-CABEÇA — 9 NÍVEIS PROGRESSIVOS
+// QUEBRA-CABEÇA — 9 NÍVEIS PROGRESSIVOS
 
 function jogoQuebracabeca() {
   abrirArena("Quebra-Cabeca");
@@ -7484,6 +7486,195 @@ function animarTela(tela) {
 
     tela.classList.add("fadeTela");
 
+}
+
+// HANNA GOODS
+// COLORINDO COM A HANNA
+function jogoColorir() {
+  abrirArena("Colorindo com a Hanna");
+
+  const DESENHOS = [
+    { sprite: "assets/sprites/colorir/colorir-1.png", nome: "Desenho 1" },
+    { sprite: "assets/sprites/colorir/colorir-2.png", nome: "Desenho 2" },
+    { sprite: "assets/sprites/colorir/colorir-3.png", nome: "Desenho 3" },
+    { sprite: "assets/sprites/colorir/colorir-4.png", nome: "Desenho 4" },
+    { sprite: "assets/sprites/colorir/colorir-5.png", nome: "Desenho 5" },
+    { sprite: "assets/sprites/colorir/colorir-6.png", nome: "Desenho 6" },
+    { sprite: "assets/sprites/colorir/colorir-7.png", nome: "Desenho 7" },
+    { sprite: "assets/sprites/colorir/colorir-8.png", nome: "Desenho 8" },
+    { sprite: "assets/sprites/colorir/colorir-9.png", nome: "Desenho 9" },
+    { sprite: "assets/sprites/colorir/colorir-10.png", nome: "Desenho 10" },
+  ];
+
+  let corAtual = "#ffb8d8";
+  let canvasCtx = null;
+  let desenhoAtual = null;
+
+  const FALAS = [
+    '"Que cor bonita!"',
+    '"Ficou lindo assim..."',
+    '"Você tem um talento especial!"',
+    '"Hanna aprova!"',
+    '"Que combinação fofa..."',
+    '"Continue, tá ficando incrível!"',
+  ];
+
+  function hexParaRgb(hex) {
+    const r = parseInt(hex.slice(1,3), 16);
+    const g = parseInt(hex.slice(3,5), 16);
+    const b = parseInt(hex.slice(5,7), 16);
+    if (isNaN(r)) return null;
+    return { r, g, b };
+  }
+
+  function floodFill(ctx, x, y, corAlvo) {
+    const canvas = ctx.canvas;
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    const idx = (y * canvas.width + x) * 4;
+    const r0 = data[idx], g0 = data[idx+1], b0 = data[idx+2];
+    const cor = hexParaRgb(corAlvo);
+    if (!cor) return;
+    if (r0 === cor.r && g0 === cor.g && b0 === cor.b) return;
+    if (r0 < 50 && g0 < 50 && b0 < 50) return;
+    const stack = [[x, y]];
+    const visited = new Uint8Array(canvas.width * canvas.height);
+    while (stack.length) {
+      const [cx, cy] = stack.pop();
+      if (cx < 0 || cx >= canvas.width || cy < 0 || cy >= canvas.height) continue;
+      const i = cy * canvas.width + cx;
+      if (visited[i]) continue;
+      visited[i] = 1;
+      const pi = i * 4;
+      if (Math.abs(data[pi]-r0) > 40 || Math.abs(data[pi+1]-g0) > 40 || Math.abs(data[pi+2]-b0) > 40) continue;
+      if (data[pi] < 50 && data[pi+1] < 50 && data[pi+2] < 50) continue;
+      data[pi] = cor.r; data[pi+1] = cor.g; data[pi+2] = cor.b; data[pi+3] = 255;
+      stack.push([cx+1,cy],[cx-1,cy],[cx,cy+1],[cx,cy-1]);
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  function renderSelecao() {
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap">
+        <div class="pz-label" style="font-size:14px; color:var(--text-dark);">Escolha um desenho</div>
+        <div class="pz-niveis">
+          ${DESENHOS.map((d, i) => `
+            <div class="pz-nivel-card" data-idx="${i}">
+              <img src="${d.sprite}" class="pz-nivel-img">
+              <div class="pz-nivel-nome">${d.nome}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>`;
+
+    document.querySelectorAll(".pz-nivel-card").forEach(el => {
+      el.addEventListener("click", () => {
+        renderCanvas(parseInt(el.dataset.idx));
+      });
+    });
+  }
+
+  function renderCanvas(idx) {
+    desenhoAtual = idx;
+    const CORES = [
+      // Pastéis
+      "#ffb8d8", "#ffd6ec", "#ffc8a2", "#fff0a0", "#c8f0a0",
+      "#a0e8f0", "#c8b8f8", "#f8c8f8", "#f8b8b8", "#d0f0d0",
+      // Fortes
+      "#ff8fc2", "#ff5580", "#ff7043", "#ffd700", "#40c040",
+      "#00bcd4", "#7c4dff", "#e040fb", "#f44336", "#2196f3",
+      // Neutros e extras
+      "#ffffff", "#f5f5dc", "#d2a679", "#a0522d", "#3a2a5a",
+      "#333333", "#000000",
+      "#f5deb3", // bege claro (Steve)
+      "#d2b48c", // bege médio (Cook)
+      "#8b6347", // castanho
+      "#555555", // cinza médio
+      "#888888", // cinza claro
+      "#222222", // preto suave
+      "#2ab7a9", // azul esverdeado
+    ];
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap">
+        <div class="colorir-fala" id="colorirFala">"Clique numa área pra colorir!"</div>
+        <canvas id="canvasColorir" style="display:block;margin:0 auto 12px;border-radius:12px;border:1.5px solid var(--pink-mid);max-width:100%;cursor:crosshair;"></canvas>
+        <div style="font-size:10px;font-weight:700;color:var(--text-mid);text-align:center;margin-bottom:6px;letter-spacing:0.5px;">paleta de cores</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">
+          ${CORES.map(c => `
+            <div class="colorir-cor ${c === corAtual ? "selecionada" : ""}" 
+              data-cor="${c}" 
+              style="width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid ${c === corAtual ? "var(--pink-deep)" : "transparent"};background:${c};transition:transform 0.1s;">
+            </div>
+          `).join("")}
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button class="steve-btn" id="btnRecomecar">Recomeçar</button>
+          <button class="steve-btn" id="btnTrocarDesenho">Trocar desenho</button>
+          <button class="steve-btn" id="btnSalvarColorir">Salvar</button>
+        </div>
+      </div>`;
+
+    const canvas = document.getElementById("canvasColorir");
+    const ctx = canvas.getContext("2d");
+    canvasCtx = ctx;
+
+    const img = new Image();
+    img.src = DESENHOS[idx].sprite;
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+    };
+
+    canvas.addEventListener("click", (e) => {
+      if (!canvasCtx) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const scrollX = window.scrollX || document.documentElement.scrollLeft;
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const x = Math.floor((e.clientX - rect.left + scrollX - scrollX) * scaleX);
+      const y = Math.floor((e.clientY - rect.top + scrollY - scrollY) * scaleY);
+      floodFill(canvasCtx, x, y, corAtual);
+      document.getElementById("colorirFala").textContent =
+        FALAS[Math.floor(Math.random() * FALAS.length)];
+    });
+
+    document.querySelectorAll(".colorir-cor").forEach(c => {
+      c.addEventListener("click", () => {
+        document.querySelectorAll(".colorir-cor").forEach(x => {
+          x.style.borderColor = "transparent";
+          x.classList.remove("selecionada");
+        });
+        c.style.borderColor = "var(--pink-deep)";
+        c.classList.add("selecionada");
+        corAtual = c.dataset.cor;
+      });
+    });
+
+    document.getElementById("btnRecomecar").addEventListener("click", () => {
+      renderCanvas(desenhoAtual);
+    });
+
+    document.getElementById("btnTrocarDesenho").addEventListener("click", () => {
+      renderSelecao();
+    });
+
+    document.getElementById("btnSalvarColorir").addEventListener("click", () => {
+      const link = document.createElement("a");
+      link.download = "hanna-colorida.png";
+      link.href = canvas.toDataURL();
+      link.click();
+      document.getElementById("colorirFala").textContent = '"Guardei esse momento com carinho!"';
+      ganharMoedas(500);
+      mostrarMensagem("Desenho salvo! +500 moedas");
+      desbloquearConquista("artista_felina");
+    });
+  }
+
+  renderSelecao();
 }
 
 // ══════════════════════════════════════════════

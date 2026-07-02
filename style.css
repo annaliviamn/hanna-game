@@ -5518,3 +5518,16 @@ button {
   color: var(--pink-deep);
   text-align: center;
 }
+
+/* Hanna Goods */
+.colorir-fala {
+  background: var(--bg-card);
+  border: 1px solid var(--pink-mid);
+  border-radius: 12px;
+  padding: 8px 14px;
+  color: var(--text-mid);
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-style: italic;
+}
