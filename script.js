@@ -7610,6 +7610,7 @@ function jogoColorir() {
           `).join("")}
         </div>
         <div style="display:flex;gap:8px;justify-content:center;">
+          <button class="steve-btn" id="btnResetZoom">Zoom</button>
           <button class="steve-btn" id="btnRecomecar">Recomeçar</button>
           <button class="steve-btn" id="btnTrocarDesenho">Trocar desenho</button>
           <button class="steve-btn" id="btnSalvarColorir">Salvar</button>
@@ -7628,15 +7629,52 @@ function jogoColorir() {
       ctx.drawImage(img, 0, 0);
     };
 
+    // Pinch to zoom
+    let _escala = 1;
+    let _offsetX = 0;
+    let _offsetY = 0;
+    let _distanciaInicial = null;
+
+    canvas.style.transformOrigin = "top left";
+
+    canvas.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        _distanciaInicial = Math.sqrt(dx*dx + dy*dy);
+      }
+    }, { passive: false });
+
+    canvas.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 2 && _distanciaInicial) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const distanciaAtual = Math.sqrt(dx*dx + dy*dy);
+        const fator = distanciaAtual / _distanciaInicial;
+        _escala = Math.min(Math.max(_escala * fator, 1), 4); // zoom entre 1x e 4x
+        canvas.style.transform = `scale(${_escala})`;
+        _distanciaInicial = distanciaAtual;
+      }
+    }, { passive: false });
+
+    canvas.addEventListener("touchend", () => {
+      _distanciaInicial = null;
+    });
+
+    canvas.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const fator = e.deltaY < 0 ? 1.1 : 0.9;
+      _escala = Math.min(Math.max(_escala * fator, 1), 4);
+      canvas.style.transform = `scale(${_escala})`;
+    }, { passive: false });
+
     canvas.addEventListener("click", (e) => {
-      if (!canvasCtx) return;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const scrollX = window.scrollX || document.documentElement.scrollLeft;
-      const scrollY = window.scrollY || document.documentElement.scrollTop;
-      const x = Math.floor((e.clientX - rect.left + scrollX - scrollX) * scaleX);
-      const y = Math.floor((e.clientY - rect.top + scrollY - scrollY) * scaleY);
+        if (!canvasCtx) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
+        const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
       floodFill(canvasCtx, x, y, corAtual);
       document.getElementById("colorirFala").textContent =
         FALAS[Math.floor(Math.random() * FALAS.length)];
@@ -7652,6 +7690,11 @@ function jogoColorir() {
         c.classList.add("selecionada");
         corAtual = c.dataset.cor;
       });
+    });
+
+    document.getElementById("btnResetZoom").addEventListener("click", () => {
+      _escala = 1;
+      canvas.style.transform = "scale(1)";
     });
 
     document.getElementById("btnRecomecar").addEventListener("click", () => {
