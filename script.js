@@ -4363,6 +4363,10 @@ function abrirMensagemEspecial() {
 
   // Toca o áudio
   const audio = criarAudio("assets/music/recado-anna.MP3");
+  // Para a trilha atual e salva qual era
+  const trilhaAtual = document.querySelector("audio.trilha:not([paused])");
+  const nomeTrilhaAtual = trilhaAtual ? trilhaAtual.id.replace("musica", "").replace("Musica", "").toLowerCase() : "casa";
+  if (trilhaAtual) trilhaAtual.pause();
   audio.volume = 1;
   audio.play().catch(() => {});
 
@@ -4380,6 +4384,8 @@ function abrirMensagemEspecial() {
   // Quando o áudio terminar
   audio.addEventListener("ended", () => {
     clearInterval(intervaloSlide);
+    // Retoma a trilha
+    tocarTrilha(nomeTrilhaAtual);
     btnFechar.style.display = "block";
   });
 }
