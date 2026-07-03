@@ -4363,7 +4363,7 @@ function abrirMensagemEspecial() {
 
   // Toca o áudio
   const audio = criarAudio("assets/music/recado-anna.mp3");
-  audio.volume = parseFloat(volumeEfeitos.value);
+  audio.volume = 1;
   audio.play().catch(() => {});
 
   // Slide automático
