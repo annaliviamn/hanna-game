@@ -4362,7 +4362,7 @@ function abrirMensagemEspecial() {
   document.body.appendChild(overlay);
 
   // Toca o áudio
-  const audio = criarAudio("assets/music/recado-anna.mp3");
+  const audio = criarAudio("assets/music/recado-anna.MP3");
   audio.volume = 1;
   audio.play().catch(() => {});
 
