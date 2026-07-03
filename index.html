@@ -1118,6 +1118,24 @@
         </div>
       </div>
 
+      <!-- SEÇÃO MENSAGEM ESPECIAL -->
+      <div class="categoriaLoja">✦ Item Raro</div>
+
+      <div class="loja-grid">
+        <div class="item-loja item-premium" style="border-color: #ff69b4 !important; box-shadow: 0 0 14px rgba(255,105,180,0.5) !important;">
+          <div class="item-loja-icon-wrap"><img src="assets/sprites/personagens/anna-recado-conquista.png" class="iconeLoja" style="border-radius:50%;"></div>
+          <div class="item-loja-info">
+            <h3>Mensagem Especial</h3>
+            <p class="item-desc">A conquista final do jogo está escondida aqui. Um item raro, uma mensagem muito especial. Separe os fones de ouvido e um lencinho antes de abrir.</p>
+            <p>Item especial — ouça quantas vezes quiser</p>
+            <div class="item-loja-footer">
+              <span class="preco-chip">🪙 1.000.000</span>
+              <button id="btnMensagemEspecial" class="btn-comprar">Obter</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- SEÇÃO FILHOTINHO -->
       <div class="categoriaLoja">Cuidados com o Neném</div>
 
@@ -1191,6 +1209,65 @@
               <button id="btnDiaPerfeitoFilhote" class="btn-comprar">Comprar</button>
             </div>
           </div>
+        </div>
+
+        <!-- SEÇÃO CUSTOMIZAÇÃO DO FILHOTINHO -->
+        <div class="categoriaLoja" id="categoriaCustomFilhote" style="display:none;">Personalizar o Filhotinho</div>
+
+        <div class="loja-grid" id="secaoCustomFilhote" style="display:none;">
+
+          <!-- Trocar Nome -->
+          <div class="item-loja item-filhote">
+            <div class="item-loja-icon-wrap"><img src="assets/sprites/filhote/filhote-curioso.png" class="iconeLoja"></div>
+            <div class="item-loja-info">
+              <h3>Trocar Nome</h3>
+              <p class="item-desc">Quer dar um novo nome pro filhotinho? Aqui você pode!</p>
+              <div class="item-loja-footer" style="flex-direction:column; gap:8px; align-items:stretch;">
+                <input type="text" id="inputNovoNomeFilhote" class="input-cozy" placeholder="Novo nome..." maxlength="12">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="preco-chip">🪙 5.000</span>
+                  <button id="btnTrocarNomeFilhote" class="btn-comprar">Confirmar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trocar Versão -->
+          <div class="item-loja item-filhote">
+            <div class="item-loja-icon-wrap" id="previewVersaoFilhote">
+              <img src="assets/sprites/filhote/filhote.png" class="iconeLoja">
+            </div>
+            <div class="item-loja-info">
+              <h3>Trocar Aparência</h3>
+              <p class="item-desc">Escolha uma nova aparência pro filhotinho entre as 3 versões disponíveis.</p>
+              <div class="item-loja-footer" style="flex-direction:column; gap:8px; align-items:stretch;">
+                <select id="selectVersaoFilhote" class="input-cozy">
+                  <option value="misto">Pretinho com manchas brancas</option>
+                  <option value="hanna">Branquinho com manchinhas</option>
+                  <option value="gatinha">Pretinho com orelhas brancas</option>
+                </select>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="preco-chip">🪙 25.000</span>
+                  <button id="btnTrocarVersaoFilhote" class="btn-comprar">Confirmar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trocar Gênero -->
+          <div class="item-loja item-filhote">
+            <div class="item-loja-icon-wrap"><img src="assets/shop/lojinha-trocar-genero.png" class="iconeLoja"></div>
+            <div class="item-loja-info">
+              <h3>Trocar Gênero</h3>
+              <p class="item-desc">Mudou de ideia sobre o gênero do filhotinho? Sem problema!</p>
+              <p id="generoAtualTexto">Gênero atual: —</p>
+              <div class="item-loja-footer">
+                <span class="preco-chip">🪙 15.000</span>
+                <button id="btnTrocarGeneroFilhote" class="btn-comprar">Trocar</button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -1381,6 +1458,26 @@
               </div>
 
               <div class="slotPlantacao" data-slot="9">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="10">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="11">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="12">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="13">
+                  <img src="assets/farm/vazio.png" class="spritePlantacao">
+              </div>
+
+              <div class="slotPlantacao" data-slot="14">
                   <img src="assets/farm/vazio.png" class="spritePlantacao">
               </div>
 

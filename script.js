@@ -571,6 +571,7 @@ const CONQUISTAS = {
   bem_cuidada:        { nome: "Bem cuidada",            desc: "Todos os status acima de 95% ao mesmo tempo.",  sprite: "assets/sprites/hanna/chorando-felicidade.png", secao: "progressao" },
   nova_companheira:   { nome: "Nova companheira",       desc: "A gatinha pretinha chegou!",                    sprite: "assets/sprites/gatinha/gatinha-sorrindo.png", secao: "progressao" },
   inseparaveis:       { nome: "Inseparáveis",           desc: "Vínculo máximo com a gatinha pretinha.",        sprite: "assets/sprites/hanna-gatinha/felizes.png", secao: "progressao" },
+  kanna_final:        { nome: "Kanna: A Conquista Final", desc: "Você encontrou a mensagem mais especial do jogo. Obrigada por jogar.", sprite: "assets/ui/coracao-5.png", secao: "progressao" },
   // Minigames
   mestre_memoria:     { nome: "Mestre da Memória",      desc: "Venceu o jogo Memória das Patas.",              sprite: "assets/ui/icons/icon-minigames.png",  secao: "minigames" },
   domino_mestre:      { nome: "Mestre do Dominó",       desc: "Venceu a Hanna no dominó.",                       sprite: "assets/ui/icons/icon-domino.png",   secao: "minigames" },
@@ -2626,6 +2627,7 @@ function _salvar() {
   localStorage.setItem("kikaDesbloqueada", kikaDesbloqueada ? "true" : "false");
   localStorage.setItem("modoNoturno", document.body.classList.contains("dark-mode") ? "true" : "false");
   localStorage.setItem("ultimaRoleta", ultimaRoleta);
+  localStorage.setItem("mensagemEspecialComprada", _mensagemEspecialComprada ? "true" : "false");
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -2651,6 +2653,7 @@ function _salvar() {
           conquistas: JSON.stringify(conquistasDesbloqueadas),
           lembretes: JSON.stringify(lembretes),
           ultimaRoleta: ultimaRoleta,
+          mensagemEspecialComprada: _mensagemEspecialComprada,
         });
       }).catch(() => {});
     }
@@ -3191,6 +3194,7 @@ function carregarDadosNoJogo(dados) {
   dataGravidez        = Number(dados.dataGravidez) || 0;
   pedidoAceito        = dados.pedidoAceito === true || dados.pedidoAceito === "true";
   cuidadosFilhote     = Number(dados.cuidadosFilhote) || 0;
+  _mensagemEspecialComprada = dados.mensagemEspecialComprada === true;
 
   steveDesbloqueado    = dados.steveDesbloqueado === true || dados.steveDesbloqueado === "true";
   joaoDesbloqueado     = dados.joaoDesbloqueado === true || dados.joaoDesbloqueado === "true";
@@ -3493,15 +3497,29 @@ const valorPlantas = {
 
     rosa: 55,
 
+    batata: 75,
+
     morango: 85,
+
+    tomate: 95,
 
     cenoura: 110,
 
+    brocolis: 110,
+
     abobora: 180,
+
+    mandioca: 220,
 
     lavanda: 260,
 
+    babosa: 300,
+
     margarida: 350,
+
+    melancia: 420,
+
+    melao: 550,
 
     girassol: 3500,
 
@@ -3514,6 +3532,11 @@ const fazenda = (() => {
     try { return JSON.parse(salvo); } catch(e) {}
   }
   return [
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
+    { plantada:false, pronta:false, flor:"", tempoFim:0 },
     { plantada:false, pronta:false, flor:"", tempoFim:0 },
     { plantada:false, pronta:false, flor:"", tempoFim:0 },
     { plantada:false, pronta:false, flor:"", tempoFim:0 },
@@ -3613,7 +3636,7 @@ restaurarSlotsVisuais();
 // REAGENDAR CRESCIMENTO DAS PLANTAS OFFLINE
 function reagendarCrescimentoOffline() {
   const agora   = Date.now();
-  const PLANTAS = ["rosa","flor","morango","cenoura","abobora","lavanda","margarida","girassol"];
+  const PLANTAS = ["rosa","flor","morango","cenoura","abobora","lavanda","margarida","girassol","batata","tomate","brocolis","mandioca","babosa","melancia","melao"];
   const MATURACAO = 300000;
 
   fazenda.forEach((slot, idx) => {
@@ -3686,6 +3709,29 @@ btnPlantar.addEventListener("click", () => {
   slot.plantada = true;
 
 const plantas = [
+
+  "batata",
+  "batata",
+  "batata",
+
+  "tomate",
+  "tomate",
+  "tomate",
+
+  "brocolis",
+  "brocolis",
+
+  "mandioca",
+  "mandioca",
+
+  "babosa",
+  "babosa",
+
+  "melancia",
+  "melancia",
+
+  "melao",
+  "melao",
 
   "rosa",
   "rosa",
@@ -4253,6 +4299,147 @@ btnNaoPedido.addEventListener("click", () => {
 
 });
 
+// MENSAGEM ESPECIAL
+let _mensagemEspecialComprada = false;
+
+document.getElementById("btnMensagemEspecial")?.addEventListener("click", () => {
+  if (!_mensagemEspecialComprada) {
+    if (moedas < 1000000) {
+      mostrarAlertaLoja("Você precisa de 1.000.000 de moedas!");
+      return;
+    }
+    moedas -= 1000000;
+    _mensagemEspecialComprada = true;
+    atualizarStatus();
+    desbloquearConquista("kanna_final");
+    _salvar();
+  }
+  abrirMensagemEspecial();
+});
+
+function abrirMensagemEspecial() {
+  const slides = [
+    "assets/sprites/personagens/anna-visita-1.png",
+    "assets/sprites/personagens/kika-visita-1.png",
+    "assets/sprites/personagens/anna-visita-2.png",
+    "assets/sprites/personagens/kika-visita-2.png",
+    "assets/sprites/personagens/anna-visita-3.png",
+    "assets/sprites/personagens/kika-visita-3.png",
+    "assets/ui/icons/icon-recados.png",
+    "assets/sprites/puzzle/puzzle-nivel6.png",
+  ];
+
+  // Cria overlay
+  const overlay = document.createElement("div");
+  overlay.id = "overlayMensagemEspecial";
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 20px;
+  `;
+
+  const img = document.createElement("img");
+  img.style.cssText = `
+    width: 220px; height: 220px; object-fit: contain;
+    border-radius: 20px; border: 3px solid #ff8fc2;
+    transition: opacity 0.5s;
+  `;
+  img.src = slides[0];
+
+  const btnFechar = document.createElement("button");
+  btnFechar.textContent = "Fechar";
+  btnFechar.className = "steve-btn";
+  btnFechar.style.display = "none";
+  btnFechar.onclick = () => {
+    audio.pause();
+    audio.currentTime = 0;
+    overlay.remove();
+  };
+
+  overlay.appendChild(img);
+  overlay.appendChild(btnFechar);
+  document.body.appendChild(overlay);
+
+  // Toca o áudio
+  const audio = criarAudio("assets/music/recado-anna.mp3");
+  audio.volume = parseFloat(volumeEfeitos.value);
+  audio.play().catch(() => {});
+
+  // Slide automático
+  let idxSlide = 0;
+  const intervaloSlide = setInterval(() => {
+    img.style.opacity = "0";
+    setTimeout(() => {
+      idxSlide = (idxSlide + 1) % slides.length;
+      img.src = slides[idxSlide];
+      img.style.opacity = "1";
+    }, 500);
+  }, 3000);
+
+  // Quando o áudio terminar
+  audio.addEventListener("ended", () => {
+    clearInterval(intervaloSlide);
+    btnFechar.style.display = "block";
+  });
+}
+
+// CUSTOMIZAÇÃO DO FILHOTINHO
+document.getElementById("btnTrocarNomeFilhote")?.addEventListener("click", () => {
+  if (moedas < 5000) { mostrarAlertaLoja("Moedas insuficientes"); return; }
+  const novoNome = document.getElementById("inputNovoNomeFilhote").value.trim();
+  if (!novoNome) { mostrarAlertaLoja("Digite um nome primeiro!"); return; }
+  moedas -= 5000;
+  nomeFilhote = novoNome;
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+  mostrarMensagem(`O filhotinho agora se chama ${nomeFilhote}!`);
+  atualizarStatus();
+  _salvar();
+});
+
+document.getElementById("btnTrocarVersaoFilhote")?.addEventListener("click", () => {
+  if (moedas < 25000) { mostrarAlertaLoja("Moedas insuficientes"); return; }
+  const novaVersao = document.getElementById("selectVersaoFilhote").value;
+  if (novaVersao === versaoFilhote) { mostrarAlertaLoja("O filhotinho já tem essa aparência!"); return; }
+  moedas -= 25000;
+  versaoFilhote = novaVersao;
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+  mostrarMensagem("O filhotinho mudou de aparência!");
+  exibirFilhote();
+  atualizarStatus();
+  _salvar();
+});
+
+document.getElementById("btnTrocarGeneroFilhote")?.addEventListener("click", () => {
+  if (moedas < 15000) { mostrarAlertaLoja("Moedas insuficientes"); return; }
+  moedas -= 15000;
+  generoFilhote = generoFilhote === "macho" ? "femea" : "macho";
+  somCompra.currentTime = 0;
+  somCompra.volume = parseFloat(volumeEfeitos.value);
+  somCompra.play().catch(() => {});
+  const generoTexto = generoFilhote === "macho" ? "macho" : "fêmea";
+  mostrarMensagem(`O filhotinho agora é ${generoTexto}!`);
+  document.getElementById("generoAtualTexto").textContent = `Gênero atual: ${generoTexto}`;
+  atualizarStatus();
+  _salvar();
+});
+
+// Preview da versão no select
+document.getElementById("selectVersaoFilhote")?.addEventListener("change", (e) => {
+  const preview = document.getElementById("previewVersaoFilhote")?.querySelector("img");
+  if (!preview) return;
+  const versao = e.target.value;
+  preview.src = versao === "hanna"
+    ? "assets/sprites/filhote/filhote-hanna.png"
+    : versao === "gatinha"
+    ? "assets/sprites/filhote/filhote-gatinha.png"
+    : "assets/sprites/filhote/filhote.png";
+});
+
 // PEDIDO ESPECIAL
 document.getElementById("btnPedidoEspecial")?.addEventListener("click", () => {
   if (pedidoAceito) {
@@ -4277,7 +4464,7 @@ document.getElementById("btnPedidoEspecial")?.addEventListener("click", () => {
 
 btnVarinha.addEventListener("click", () => {
   if (moedas < 1750) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -4746,6 +4933,33 @@ function atualizarBtnsLoja() {
       btn.style.cursor = "not-allowed";
     }
   });
+
+  // Seção de customização do filhotinho
+  const secaoCustomFilhote = document.getElementById("secaoCustomFilhote");
+  const categoriaCustomFilhote = document.getElementById("categoriaCustomFilhote");
+  if (secaoCustomFilhote && categoriaCustomFilhote) {
+    if (filhoteDesbloqueado) {
+      secaoCustomFilhote.style.display = "grid";
+      categoriaCustomFilhote.style.display = "block";
+      // Atualiza gênero atual
+      const generoEl = document.getElementById("generoAtualTexto");
+      if (generoEl) {
+        const generoTexto = generoFilhote === "macho" ? "macho" : "fêmea";
+        generoEl.textContent = `Gênero atual: ${generoTexto}`;
+      }
+    } else {
+      secaoCustomFilhote.style.display = "none";
+      categoriaCustomFilhote.style.display = "none";
+    }
+  }
+
+  // Botão mensagem especial — cinza se já comprada
+  if (_mensagemEspecialComprada) {
+    const btnMsg = document.getElementById("btnMensagemEspecial");
+    if (btnMsg) {
+      btnMsg.textContent = "Ouvir novamente";
+    }
+  }
 }
 
 btnGatinha.addEventListener("click", () => {

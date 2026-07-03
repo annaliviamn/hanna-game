@@ -209,6 +209,25 @@
       <div class="field-row"><label>Sementes</label><input type="number" id="ed-sementes" min="0"></div>
       <div class="field-row"><label>Sementes Douradas</label><input type="number" id="ed-sementesDouradas" min="0"></div>
     </div>
+    
+    <!--Roleta-->
+    <div class="field-row">
+      <label>Última Roleta (timestamp)</label>
+      <input type="number" id="ed-ultimaRoleta" min="0">
+      <button onclick="zerarRoleta()" class="btn-secondary" style="padding:6px 12px;font-size:12px;">Zerar</button>
+    </div>
+
+    <!--Mensagem Especial-->
+    <div class="card">
+      <h2>Itens Especiais</h2>
+      <div class="field-row">
+        <label>Mensagem Especial Comprada</label>
+        <div class="toggle-bool">
+          <button id="btn-mensagem-sim" onclick="setarBool('mensagemEspecialComprada', true)">Sim</button>
+          <button id="btn-mensagem-nao" onclick="setarBool('mensagemEspecialComprada', false)">Não</button>
+        </div>
+      </div>
+    </div>
 
     <!-- GATINHA -->
     <div class="card">
@@ -222,6 +241,13 @@
       </div>
       <div class="field-row"><label>Nome da Gatinha</label><input type="text" id="ed-nomeGatinha" maxlength="20"></div>
       <div class="field-row"><label>Vínculo (0-100)</label><input type="number" id="ed-vinculoGatinhas" min="0" max="100"></div>
+      <div class="field-row">
+        <label>Pedido Aceito</label>
+        <div class="toggle-bool">
+          <button id="btn-pedido-sim" onclick="setarBool('pedidoAceito', true)">Sim</button>
+          <button id="btn-pedido-nao" onclick="setarBool('pedidoAceito', false)">Não</button>
+        </div>
+      </div>
     </div>
 
     <!-- PETS VISITANTES -->
@@ -280,6 +306,17 @@
           <option value="hanna">Hanna</option>
           <option value="gatinha">Gatinha</option>
         </select>
+      </div>
+      <div class="field-row">
+        <label>Gênero do Filhote</label>
+        <div class="toggle-bool">
+          <button id="btn-genero-macho" onclick="setarBool('generoFilhoteMacho', true)">Macho</button>
+          <button id="btn-genero-femea" onclick="setarBool('generoFilhoteMacho', false)">Fêmea</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>Cuidados do Filhote (0-100)</label>
+        <input type="number" id="ed-cuidadosFilhote" min="0" max="100">
       </div>
     </div>
 
@@ -357,6 +394,8 @@
     familia_completa: "Família Completa",
     esperando_filhote: "Novidade em Casa!",
     esconde_mestre: "Achou!",
+    artista_felina: "Artista Felina",
+    kanna_final: "Kanna: A Conquista Final",
   };
 
   let dadosAtuais = {};
@@ -368,7 +407,10 @@
     jamesDesbloqueado: false,
     annaDesbloqueada: false,
     kikaDesbloqueada: false,
-    filhoteDesbloqueado: false, // linha nova
+    filhoteDesbloqueado: false,
+    pedidoAceito: false,
+    generoFilhoteMacho: false,
+    mensagemEspecialComprada: false,
   };
 
   // Expõe funções pro HTML
@@ -430,6 +472,11 @@
     document.getElementById("ed-nomeFilhote").value = d.nomeFilhote || "";
     document.getElementById("ed-versaoFilhote").value = d.versaoFilhote || "misto";
     booleans.filhoteDesbloqueado = d.filhoteDesbloqueado === true;
+    document.getElementById("ed-cuidadosFilhote").value = d.cuidadosFilhote || 0;
+    document.getElementById("ed-ultimaRoleta").value = d.ultimaRoleta || 0;
+    booleans.pedidoAceito = d.pedidoAceito === true;
+    booleans.generoFilhoteMacho = d.generoFilhote === "macho";
+    booleans.mensagemEspecialComprada = d.mensagemEspecialComprada === true;
 
     // Booleans
     booleans.dormindo            = d.dormindo === true;
@@ -472,6 +519,9 @@
       jamesDesbloqueado:   ["btn-james-sim",    "btn-james-nao"],
       annaDesbloqueada:    ["btn-anna-sim",     "btn-anna-nao"],
       kikaDesbloqueada:    ["btn-kika-sim",     "btn-kika-nao"],
+      pedidoAceito:             ["btn-pedido-sim",   "btn-pedido-nao"],
+      generoFilhoteMacho:       ["btn-genero-macho", "btn-genero-femea"],
+      mensagemEspecialComprada: ["btn-mensagem-sim", "btn-mensagem-nao"],
     };
 
     Object.entries(mapa).forEach(([campo, [simId, naoId]]) => {
@@ -526,6 +576,11 @@
       versaoFilhote: document.getElementById("ed-versaoFilhote").value,
       conquistas:          JSON.stringify(conquistas),
       updatedAt:           Date.now() + (999999 * 999999),
+      cuidadosFilhote: Number(document.getElementById("ed-cuidadosFilhote").value),
+      ultimaRoleta: Number(document.getElementById("ed-ultimaRoleta").value),
+      pedidoAceito: booleans.pedidoAceito,
+      generoFilhote: booleans.generoFilhoteMacho ? "macho" : "femea",
+      mensagemEspecialComprada: booleans.mensagemEspecialComprada,
     };
 
     mostrarFeedback("feedbackSalvar", "Salvando...", false);
@@ -556,6 +611,10 @@
   document.getElementById("inputNickname").addEventListener("keydown", e => {
     if (e.key === "Enter") window.buscarJogadora();
   });
+
+  window.zerarRoleta = () => {
+  document.getElementById("ed-ultimaRoleta").value = 0;
+};
 </script>
 </body>
 </html>
