@@ -4366,7 +4366,7 @@ function abrirMensagemEspecial() {
   // Para a trilha atual e salva qual era
   const trilhaAtual = document.querySelector("audio.trilha:not([paused])");
   const nomeTrilhaAtual = trilhaAtual ? trilhaAtual.id.replace("musica", "").replace("Musica", "").toLowerCase() : "casa";
-  if (trilhaAtual) trilhaAtual.pause();
+  if (trilhaAtual) trilhaAtual.volume = 0.1;
   audio.volume = 1;
   audio.play().catch(() => {});
 
@@ -4385,6 +4385,7 @@ function abrirMensagemEspecial() {
   audio.addEventListener("ended", () => {
     clearInterval(intervaloSlide);
     // Retoma a trilha
+    if (trilhaAtual) trilhaAtual.volume = 1;
     tocarTrilha(nomeTrilhaAtual);
     btnFechar.style.display = "block";
   });
