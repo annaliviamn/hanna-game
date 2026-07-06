@@ -1956,14 +1956,36 @@ function atualizarGatinha() {
     return;
   }
 
-  // Grávida — sprites alternadas por humor
+  // Grávida — humor instável e dramático
   if (dataGravidez > 0 && !filhoteDesbloqueado) {
-    if (felicidade >= 80 && fome >= 70) {
-      gatinhaSpritePor("gatinha-animada-especial");
-    } else if (fome <= 30 || felicidade <= 30) {
+    const hora = new Date().getHours();
+    const minuto = new Date().getMinutes();
+    const ciclo = Math.floor((hora * 60 + minuto) / 15) % 3; // muda a cada 15 min
+
+    // Stats ruins da Hanna = grávida triste independente do ciclo
+    if (fome <= 30 || felicidade <= 30 || higiene <= 30) {
       gatinhaSpritePor("gatinha-gravida-triste");
-    } else {
+      return;
+    }
+
+    // Humor instável baseado no ciclo do dia
+    if (ciclo === 0) {
+      // Feliz — stats da Hanna tão bons
+      if (felicidade >= 60 && fome >= 60) {
+        gatinhaSpritePor("gatinha-animada-especial");
+      } else {
+        gatinhaSpritePor("gatinha-gravida-neutra");
+      }
+    } else if (ciclo === 1) {
+      // Neutra — independente dos stats
       gatinhaSpritePor("gatinha-gravida-neutra");
+    } else {
+      // Triste — grávida tá exigente
+      if (felicidade < 80 || fome < 70) {
+        gatinhaSpritePor("gatinha-gravida-triste");
+      } else {
+        gatinhaSpritePor("gatinha-animada-especial");
+      }
     }
     return;
   }
@@ -2588,7 +2610,7 @@ function atualizarStatus() {
     }
     atualizarGatinha();
   }
-
+  atualizarCardGravidez();
   _salvar();
 }
 
@@ -3327,6 +3349,7 @@ function entrarNoJogo() {
     atualizarBtnEsconde();
     atualizarBtnsLoja();
     atualizarConfigGatinha();
+    atualizarCardGravidez();
 
     // Filhotinho
     if (filhoteDesbloqueado) exibirFilhote();
@@ -4077,7 +4100,7 @@ const btnDiaPerfeitoFilhote = document.getElementById("btnDiaPerfeitoFilhote");
 // Cinza o botão de adotar se já tem gatinha
 btnSashimi.addEventListener("click", () => {
   if (moedas < 900) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -4099,7 +4122,7 @@ somCompra.play().catch(()=>{});
 
 btnNovelo.addEventListener("click", () => {
   if (moedas < 600) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -4120,7 +4143,7 @@ somCompra.play().catch(()=>{});
 
 btnRatinho.addEventListener("click", () => {
   if (moedas < 900) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -4141,7 +4164,7 @@ btnRatinho.addEventListener("click", () => {
 
 btnAtum.addEventListener("click", () => {
   if (moedas < 1500) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -4163,7 +4186,7 @@ btnAtum.addEventListener("click", () => {
 
 btnBiscoito.addEventListener("click", () => {
   if (moedas < 1000) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -4187,7 +4210,7 @@ btnBiscoito.addEventListener("click", () => {
 
 btnDonut.addEventListener("click", () => {
   if (moedas < 1250) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -4210,7 +4233,7 @@ btnDonut.addEventListener("click", () => {
 // PACK DE SEMENTES
 document.getElementById("btnPackSementes").addEventListener("click", () => {
   if (moedas < 4000) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -4221,7 +4244,15 @@ document.getElementById("btnPackSementes").addEventListener("click", () => {
   somCompra.volume = parseFloat(volumeEfeitos.value);
   somCompra.play().catch(() => {});
 
-  mostrarMensagem("10 sementes adicionadas! 🌱");
+  // 10% de chance de vir uma semente dourada surpresa
+  if (Math.random() < 0.10) {
+    sementesDouradas++;
+    mostrarMensagem("10 sementes + uma Semente Dourada surpresa!");
+    desbloquearConquista("primeira_dourada");
+  } else {
+    mostrarMensagem("10 sementes adicionadas!");
+  }
+
   atualizarStatus();
 });
 
@@ -9189,4 +9220,73 @@ function entregarPremioProleta(premio) {
   }
   atualizarStatus();
   _salvar();
+}
+
+// CARD CONTAGEM REGRESSIVA GRAVIDEZ
+const falasGravidez = [
+  // Muitos dias (6-9)
+  { dias: [7,8,9], falas: [
+    "Ainda falta muito... mas já tô ansiosa!",
+    "Será menino ou menina? Eu acho que é menina!",
+    "Já pensei em 47 nomes diferentes hoje.",
+    "Tô lendo tudo sobre como ser boa mãe.",
+  ]},
+  // Meio do caminho (4-6)
+  { dias: [4,5,6], falas: [
+    "Já tô sentindo o neném se mexer!",
+    "Precisamos decidir o nome logo!",
+    "Eu quero que o nome seja Mike Shinoda. — kkkkk ótima escolha de nome.",
+    "Tô com fome o tempo todo ultimamente...",
+  ]},
+  // Quase lá (2-3)
+  { dias: [2,3], falas: [
+    "Tô tão ansiosa que mal consigo dormir!",
+    "A malinha tá pronta?",
+    "Já escolhemos o nome? PRECISAMOS escolher o nome.",
+    "Falta pouco! Falta pouco! Falta pouco!",
+  ]},
+  // Último dia (1)
+  { dias: [1], falas: [
+    "Acho que... acho que tá chegando a hora!",
+    "Hoje pode ser o dia!!!",
+    "Tô nervosa demais. E você?",
+  ]},
+  // Hoje (0)
+  { dias: [0], falas: [
+    "É hoje! É hoje! É HOJE!",
+    "Qualquer momento agora...",
+    "Não consigo parar de olhar pro relógio!",
+  ]},
+];
+
+function atualizarCardGravidez() {
+  const card = document.getElementById("cardGravidez");
+  if (!card) return;
+
+  if (dataGravidez <= 0 || filhoteDesbloqueado) {
+    card.style.display = "none";
+    return;
+  }
+
+  const agora = Date.now();
+  const diasRestantes = Math.max(0, Math.ceil((dataGravidez + 9 * 24 * 60 * 60 * 1000 - agora) / (24 * 60 * 60 * 1000)));
+
+  card.style.display = "block";
+
+  // Texto dos dias
+  const diasEl = document.getElementById("gravidezDias");
+  if (diasRestantes === 0) {
+    diasEl.textContent = "O grande dia chegou!";
+  } else if (diasRestantes === 1) {
+    diasEl.textContent = "Falta 1 dia!";
+  } else {
+    diasEl.textContent = `Faltam ${diasRestantes} dias!`;
+  }
+
+  // Fala baseada nos dias restantes
+  const falaEl = document.getElementById("gravidezFala");
+  const grupo = falasGravidez.find(g => g.dias.includes(diasRestantes))
+    || falasGravidez[0];
+  const falaAleatoria = grupo.falas[Math.floor(Math.random() * grupo.falas.length)];
+  falaEl.textContent = `"${falaAleatoria}"`;
 }

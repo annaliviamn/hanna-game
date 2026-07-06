@@ -5535,3 +5535,44 @@ button {
 #canvasColorir {
   cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><text y='28' font-size='28'>🖌️</text></svg>") 0 32, crosshair;
 }
+
+/* CARD GRAVIDEZ */
+.gravidez-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1.5px solid #c9a0f5;
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin: 8px 0;
+  box-shadow: 0 0 10px rgba(180, 130, 255, 0.2);
+}
+
+.gravidez-sprites {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.gravidez-sprite-hanna,
+.gravidez-sprite-gatinha {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.gravidez-dias {
+  font-size: 13px;
+  font-weight: 800;
+  color: #c9a0f5;
+  margin-bottom: 4px;
+}
+
+.gravidez-fala {
+  font-size: 11px;
+  color: var(--text-mid);
+  font-style: italic;
+  line-height: 1.4;
+}
