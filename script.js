@@ -9271,22 +9271,15 @@ function atualizarCardGravidez() {
   const agora = Date.now();
   const diasRestantes = Math.max(0, Math.ceil((dataGravidez + 9 * 24 * 60 * 60 * 1000 - agora) / (24 * 60 * 60 * 1000)));
 
-  card.style.display = "block";
+  const grupo = falasGravidez.find(g => g.dias.includes(diasRestantes)) || falasGravidez[0];
+  const fala = grupo.falas[Math.floor(Math.random() * grupo.falas.length)];
+  const diasTexto = diasRestantes === 0 ? "hoje!" : diasRestantes === 1 ? "1 dia" : `${diasRestantes} dias`;
 
-  // Texto dos dias
-  const diasEl = document.getElementById("gravidezDias");
-  if (diasRestantes === 0) {
-    diasEl.textContent = "O grande dia chegou!";
-  } else if (diasRestantes === 1) {
-    diasEl.textContent = "Falta 1 dia!";
-  } else {
-    diasEl.textContent = `Faltam ${diasRestantes} dias!`;
-  }
-
-  // Fala baseada nos dias restantes
   const falaEl = document.getElementById("gravidezFala");
-  const grupo = falasGravidez.find(g => g.dias.includes(diasRestantes))
-    || falasGravidez[0];
-  const falaAleatoria = grupo.falas[Math.floor(Math.random() * grupo.falas.length)];
-  falaEl.textContent = `"${falaAleatoria}"`;
+  falaEl.textContent = `"${fala}" — faltam ${diasTexto}`;
+
+  card.style.display = "block";
+  setTimeout(() => {
+    card.style.display = "none";
+  }, 5000);
 }
