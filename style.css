@@ -455,8 +455,8 @@ textarea {
 
 .btn-acao {
     width: 100%;
-    height: 56px;
-    padding: 6px 4px;
+    height: 42px;
+    padding: 4px 2px;
     border: none;
     border-radius: 18px;
     display: flex;
