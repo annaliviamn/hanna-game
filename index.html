@@ -323,11 +323,8 @@
         </button>
 
         <button class="navItem" id="navLembretes">
-
-            <img src="assets/ui/icons/icon-reminder.png" class="iconeNav">
-
-            <p>Lembretes</p>
-
+          <img src="assets/ui/icons/icon-msn.png" class="iconeNav">
+          <p>MSNHanna</p>
         </button>
 
         <button class="navItem" id="navLoja">
@@ -556,13 +553,13 @@
         <p>Cada um dá moedas ao vencer e alguns aumentam a felicidade da Hanna também.</p>
       </div>
 
-      <!-- Lembretes -->
+      <!-- MSNHanna -->
       <div class="tutorial-card">
         <div class="tutorial-header">
-          <img src="assets/sprites/hanna/sonolenta.png" class="tutorial-sprite" />
-          <h3>Lembretes</h3>
+          <img src="assets/sprites/personagens/chat-msn.png" class="tutorial-sprite" />
+          <h3>MSNHanna</h3>
         </div>
-        <p>Você pode configurar lembretes pra não esquecer de cuidar da Hanna, aniversários, alertas em geral, etc. As notificações aparecem mesmo com o app fechado, é só permitir na primeira vez que pedir.</p>
+        <p>Conecte-se com outra jogadora! Mande mimos, mensagens e cuide da Hanninha dela de longe. Desbloqueie na loja por 1.000.000 moedas.</p>
       </div>
 
       <!-- Pedido e Namoro -->
@@ -1111,6 +1108,20 @@
         </div>
       </div>
 
+      <!-- MSNHanna — conexão entre jogadoras -->
+      <div class="item-loja item-premium">
+        <div class="item-loja-icon-wrap"><img src="assets/sprites/personagens/chat-msn.png" class="iconeLoja"></div>
+        <div class="item-loja-info">
+          <h3>MSNHanna</h3>
+          <p class="item-desc">Conecte-se com outra jogadora! Mande mimos, figurinhas e mensagens de longe.</p>
+          <p>Conexão especial entre jogadoras</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">🪙 1.000.000</span>
+            <button id="btnComprarMSN" class="btn-comprar">Desbloquear</button>
+          </div>
+        </div>
+      </div>
+
       <!-- SEÇÃO MENSAGEM ESPECIAL -->
       <div class="categoriaLoja">✦ Item Raro</div>
 
@@ -1294,55 +1305,97 @@
   </div>
 </div>
 
-<!-- Tela de Lembretes -->
+<!-- Tela MSNHanna-->
 <div id="telaLembretes" style="display:none;">
   <div class="tela-lembretes-bg">
 
     <div class="tela-sec-header lembrete-header">
       <button class="btn-back btn-back-lembrete" id="btnVoltarLembretes">‹</button>
-      <span class="tela-sec-title lembrete-titulo">Lembretes</span>
+      <span class="tela-sec-title lembrete-titulo">MSNHanna</span>
     </div>
 
-    <!-- Hanna mini decorativa -->
-    <div class="lembrete-hanna-deco">
-      <img src="assets/sprites/hanna/contente.png" alt="" class="hanna-deco-img">
-      <div class="fala-deco">Não esqueça de nada! </div>
-    </div>
+    <!-- MSNHanna -->
+    <div class="msn-section">
 
-    <!-- Formulário -->
-    <div class="lembrete-form-card">
-      <div class="form-row">
-        <select id="tipoLembrete" class="input-cozy">
-          <option value="📚">📚 Tarefa</option>
-          <option value="⏰">⏰ Alerta</option>
-          <option value="🎂">🎂 Aniversário</option>
-        </select>
+      <!-- MSNHanna bloqueado -->
+      <div id="msnBloqueado">
+        <div class="msn-locked-card" style="flex-direction:column; align-items:center; text-align:center; gap:16px; padding:24px;">
+          <img src="assets/sprites/hanna/medo.png" style="width:80px; image-rendering:pixelated;">
+          <div>
+            <h3 class="msn-titulo">MSNHanna</h3>
+            <p class="msn-desc">Conecte-se com outra jogadora e mande mimos, figurinhas e mensagens de longe. Disponível na loja!</p>
+          </div>
+        </div>
       </div>
-      <input type="text" id="inputLembrete" class="input-cozy" placeholder="Digite seu lembrete...">
-      <div class="form-row-2">
-        <input type="date" id="dataLembrete" class="input-cozy input-metade">
-        <input type="text" id="dataAniversario" class="input-cozy input-metade" placeholder="DD/MM" maxlength="5" inputmode="numeric" style="display:none;">
-        <input type="time" id="horaLembrete" class="input-cozy input-metade">
-      </div>
-      <!-- Recorrência — aparece só para Alerta e Aniversário -->
-      <div class="form-row" id="rowRecorrencia" style="display:none;">
-        <select id="recorrenciaLembrete" class="input-cozy">
-          <option value="nenhuma">🔔 Sem repetição</option>
-          <option value="diario">📅 Diário</option>
-          <option value="semanal">📆 Semanal</option>
-          <option value="mensal">🗓️ Mensal</option>
-          <option value="anual">🎂 Anual</option>
-        </select>
-      </div>
-      <button id="btnSalvarLembrete" class="btn-salvar-lembrete">✦ Salvar lembrete</button>
-    </div>
+      <!-- Desbloqueado -->
+      <div id="msnDesbloqueado" style="display:none;">
 
-    <!-- Lista -->
-    <div class="lembrete-lista-titulo">Seus lembretes</div>
-    <div id="listaLembretes"></div>
+        <!-- Status da conexão -->
+        <div class="msn-conexao-card">
+          <img src="assets/sprites/personagens/kika-msn.png" class="msn-avatar">
+          <div class="msn-conexao-info">
+            <span class="msn-nome">Kika</span>
+            <span class="msn-status" id="msnStatusKika">online</span>
+          </div>
+          <div class="msn-bolinha-status" id="msnBolinhaKika"></div>
+        </div>
 
+        <!-- Mimos -->
+        <div class="msn-categoria">Mimos</div>
+        <div class="msn-acoes-grid">
+          <button class="msn-btn-acao" id="msnCarinho">
+            <img src="assets/ui/icons/icon-carinho.png" class="msn-icon">
+            <span>Carinho</span>
+          </button>
+          <button class="msn-btn-acao" id="msnPetisco">
+            <img src="assets/ui/icons/icon-petisco.png" class="msn-icon">
+            <span>Petisco</span>
+          </button>
+          <button class="msn-btn-acao" id="msnBoaNnoite">
+            <img src="assets/ui/icons/icon-dormir.png" class="msn-icon">
+            <span>Boa noite</span>
+          </button>
+          <button class="msn-btn-acao" id="msnMoedas">
+            <img src="assets/ui/icons/icon-comida.png" class="msn-icon">
+            <span>Mandar moedas</span>
+          </button>
+        </div>
+
+        <!-- Histórico de recebidos -->
+        <div class="msn-categoria">Recebidos</div>
+        <div id="msnRecebidos" class="msn-recebidos-lista"></div>
+
+        <!-- Enviados -->
+        <div class="msn-categoria">Enviados</div>
+        <div id="msnEnviados" class="msn-recebidos-lista"></div>
+
+        <!-- Figurinhas -->
+        <div id="msnFigurinhasPanel" style="display:none;">
+          <div class="msn-fig-categorias">
+            <button class="msn-fig-cat ativo" data-cat="hanna">Hanna</button>
+            <button class="msn-fig-cat" data-cat="gatinha">Gatinha</button>
+            <button class="msn-fig-cat" data-cat="juntas">Juntas</button>
+            <button class="msn-fig-cat" data-cat="nos">Nós</button>
+            <button class="msn-fig-cat" data-cat="pets">Pets</button>
+            <button class="msn-fig-cat" data-cat="filhote">Filhote</button>
+          </div>
+          <div class="msn-fig-grid" id="msnFigGrid"></div>
+        </div>
+
+        <!-- Mensagem -->
+        <div class="msn-categoria">Mensagem</div>
+        <div class="msn-msg-area">
+          <div class="msn-figurinhas-btn-wrap">
+            <button id="btnAbrirFigurinhas" class="msn-btn-figurinha">Figurinhas</button>
+          </div>
+          <input type="text" id="msnInputMsg" class="input-cozy" placeholder="Digite uma mensagem..." maxlength="80">
+          <button id="msnEnviarMsg" class="msn-btn-enviar">Enviar</button>
+        </div>
+
+      </div>
   </div>
 </div>
+
 <!-- Tela Fazenda -->
 <div id="telaFazenda" class="tela-secundaria" style="display:none;">
 
@@ -1774,8 +1827,9 @@
 <!-- Loja -->
 <audio playsinline id="musicaLoja" class="trilha" src="assets/music/loja.mp3" loop preload="none"></audio>
 
-<!-- Lembretes -->
+<!-- MSNHanna -->
 <audio playsinline id="musicaLembretes" class="trilha" src="assets/music/lembretes.mp3" loop preload="none"></audio>
+<audio playsinline id="somPlim" src="assets/music/som-plim.mp3" preload="none"></audio>
 
 <!-- Menu de Minigames -->
 <audio playsinline id="musicaMinigames" class="trilha" src="assets/music/minigames-menu.mp3" loop preload="none"></audio>

@@ -208,6 +208,11 @@
       <div class="field-row"><label>Moedas</label><input type="number" id="ed-moedas" min="0"></div>
       <div class="field-row"><label>Sementes</label><input type="number" id="ed-sementes" min="0"></div>
       <div class="field-row"><label>Sementes Douradas</label><input type="number" id="ed-sementesDouradas" min="0"></div>
+        <div class="field-row"><label>MSN Desbloqueado</label><div class="toggle-bool">
+          <button id="btn-msn-sim" onclick="setarBool('msnDesbloqueado', true)">Sim</button>
+          <button id="btn-msn-nao" onclick="setarBool('msnDesbloqueado', false)">Não</button>
+        </div>
+      </div>
     </div>
     
     <!--Roleta-->
@@ -411,6 +416,7 @@
     pedidoAceito: false,
     generoFilhoteMacho: false,
     mensagemEspecialComprada: false,
+    msnDesbloqueado: false,
   };
 
   // Expõe funções pro HTML
@@ -471,12 +477,9 @@
     document.getElementById("ed-vinculoGatinhas").value = d.vinculoGatinhas || 0;
     document.getElementById("ed-nomeFilhote").value = d.nomeFilhote || "";
     document.getElementById("ed-versaoFilhote").value = d.versaoFilhote || "misto";
-    booleans.filhoteDesbloqueado = d.filhoteDesbloqueado === true;
     document.getElementById("ed-cuidadosFilhote").value = d.cuidadosFilhote || 0;
     document.getElementById("ed-ultimaRoleta").value = d.ultimaRoleta || 0;
-    booleans.pedidoAceito = d.pedidoAceito === true;
-    booleans.generoFilhoteMacho = d.generoFilhote === "macho";
-    booleans.mensagemEspecialComprada = d.mensagemEspecialComprada === true;
+    
 
     // Booleans
     booleans.dormindo            = d.dormindo === true;
@@ -486,6 +489,11 @@
     booleans.jamesDesbloqueado   = d.jamesDesbloqueado === true;
     booleans.annaDesbloqueada    = d.annaDesbloqueada === true; // linha nova
     booleans.kikaDesbloqueada    = d.kikaDesbloqueada === true; // linha nova
+    booleans.msnDesbloqueado = d.msnDesbloqueado === true;
+    booleans.pedidoAceito = d.pedidoAceito === true;
+    booleans.generoFilhoteMacho = d.generoFilhote === "macho";
+    booleans.mensagemEspecialComprada = d.mensagemEspecialComprada === true;
+    booleans.filhoteDesbloqueado = d.filhoteDesbloqueado === true;
     atualizarBotoesBool();
 
     // Conquistas
@@ -522,6 +530,7 @@
       pedidoAceito:             ["btn-pedido-sim",   "btn-pedido-nao"],
       generoFilhoteMacho:       ["btn-genero-macho", "btn-genero-femea"],
       mensagemEspecialComprada: ["btn-mensagem-sim", "btn-mensagem-nao"],
+      msnDesbloqueado: ["btn-msn-sim", "btn-msn-nao"],
     };
 
     Object.entries(mapa).forEach(([campo, [simId, naoId]]) => {
@@ -581,6 +590,7 @@
       pedidoAceito: booleans.pedidoAceito,
       generoFilhote: booleans.generoFilhoteMacho ? "macho" : "femea",
       mensagemEspecialComprada: booleans.mensagemEspecialComprada,
+      msnDesbloqueado: booleans.msnDesbloqueado,
     };
 
     mostrarFeedback("feedbackSalvar", "Salvando...", false);

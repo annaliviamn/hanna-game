@@ -844,51 +844,6 @@ textarea {
 }
 .btn-comprar:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--pink-darker); }
 
-/* TELA LEMBRETES */
-.tela-lembretes-bg {
-  width: 100%;
-  min-height: 100vh;
-  background: linear-gradient(160deg, #ffe8f5 0%, #f0e0ff 100%);
-  overflow-y: auto;
-}
-
-.lembrete-header { background: rgba(255,232,245,0.95); border-color: #d8a0c8; }
-.btn-back-lembrete { border-color: #d8a0c8; background: #f9d8ef; color: var(--purple-deep); }
-.lembrete-titulo { color: var(--purple-deep); }
-
-/* HANNA DECORATIVA NA TELA DE LEMBRETES */
-.lembrete-hanna-deco {
-  display: flex; align-items: flex-end; gap: 12px;
-  padding: 16px 18px 0;
-}
-.hanna-deco-img {
-  width: 72px; image-rendering: pixelated;
-  animation: idleFloat 4.5s ease-in-out infinite;
-  filter: drop-shadow(0 3px 6px rgba(180,80,200,0.2));
-}
-.fala-deco {
-  background: white;
-  border: 2px solid #d8a0d8;
-  border-radius: 16px 16px 16px 4px;
-  padding: 9px 14px;
-  font-size: 13px; font-weight: 700;
-  color: var(--purple-deep);
-  box-shadow: 0 2px 10px rgba(180,80,200,0.12);
-  position: relative;
-}
-
-/* FORMULÁRIO DE LEMBRETES */
-.lembrete-form-card {
-  margin: 14px 16px 0;
-  background: rgba(255,255,255,0.75);
-  backdrop-filter: blur(10px);
-  border-radius: var(--radius-md);
-  border: 1.5px solid #d8a0d8;
-  padding: 16px;
-  box-shadow: 0 4px 20px rgba(180,80,200,0.1);
-  display: flex; flex-direction: column; gap: 10px;
-}
-
 .input-cozy {
   width: 100%;
   padding: 13px 14px;
@@ -907,160 +862,316 @@ textarea {
   box-shadow: 0 0 0 3px rgba(181,124,255,0.15);
 }
 
-.form-row { width: 100%; }
-.form-row-2 { display: flex; gap: 8px; }
-.input-metade { flex: 1; }
-
-.btn-salvar-lembrete {
-  width: 100%; height: 50px;
-  background: linear-gradient(135deg, var(--purple-main), var(--purple-deep));
-  border: none; border-radius: var(--radius-md);
-  color: white;
-  font-family: var(--font-pixel);
-  font-size: 9px; letter-spacing: 1px;
-  cursor: pointer;
-  box-shadow: 0 5px 0 #6a40b0, 0 8px 20px rgba(143,91,212,0.3);
-  transition: transform .12s, box-shadow .12s;
+/* MSNHANNA */
+.msn-section {
+  margin: 16px 16px 0;
 }
-.btn-salvar-lembrete:active {
-  transform: translateY(4px);
+
+.msn-locked-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  border: 1.5px solid #d8a0d8;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(180,80,200,0.1);
+}
+
+.msn-sprite-locked {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 50%;
+  border: 2px solid #d8a0d8;
+}
+
+.msn-titulo {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--purple-deep);
+  margin-bottom: 4px;
+}
+
+.msn-desc {
+  font-size: 12px;
+  color: var(--text-mid);
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.msn-locked-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.msn-conexao-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  border: 1.5px solid #d8a0d8;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.msn-avatar {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 50%;
+  border: 2px solid #d8a0d8;
+}
+
+.msn-conexao-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.msn-nome {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--purple-deep);
+}
+
+.msn-status {
+  font-size: 11px;
+  color: var(--text-mid);
+}
+
+.msn-bolinha-status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #6acf88;
+}
+
+.msn-categoria {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--purple-deep);
+  letter-spacing: 1px;
+  padding: 12px 0 8px;
+}
+
+.msn-acoes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.msn-btn-acao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.75);
+  border: 1.5px solid #d8a0d8;
+  border-radius: var(--radius-md);
+  padding: 14px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple-deep);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.msn-btn-acao:active {
+  background: #f0daf8;
+  transform: scale(0.96);
+}
+
+.msn-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.msn-msg-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.msn-recebidos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 16px;
+}
+
+.msn-recebido-item {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 85%;
+}
+
+.msn-recebido-item.enviado {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.msn-recebido-item.recebido {
+  align-self: flex-start;
+}
+
+.msn-recebido-avatar {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.msn-bolha {
+  background: rgba(255,255,255,0.75);
+  border: 1.5px solid #d8a0d8;
+  border-radius: 16px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-dark);
+  max-width: 100%;
+}
+
+.msn-divisoria {
+  margin: 20px 16px 0;
+  border: none;
+  border-top: 1.5px dashed #d8a0d8;
+}
+
+.msn-recebido-item.enviado .msn-bolha {
+  background: var(--purple-main);
+  color: white;
+  border-color: var(--purple-main);
+  border-bottom-right-radius: 4px;
+}
+
+.msn-recebido-item.recebido .msn-bolha {
+  border-bottom-left-radius: 4px;
+}
+
+/* FIGURINHAS */
+.msn-figurinhas-btn-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+
+.msn-btn-figurinha {
+  background: rgba(255,255,255,0.75);
+  border: 1.5px solid #d8a0d8;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple-deep);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.msn-btn-figurinha:active {
+  background: #f0daf8;
+}
+
+.msn-fig-categorias {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.msn-fig-cat {
+  background: transparent;
+  border: 1.5px solid #d8a0d8;
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--purple-deep);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.msn-fig-cat.ativo {
+  background: var(--purple-main);
+  color: white;
+  border-color: var(--purple-main);
+}
+
+.msn-fig-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(255,255,255,0.5);
+  border-radius: var(--radius-sm);
+  border: 1.5px solid #d8a0d8;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.msn-fig-item {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: pixelated;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 4px;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.msn-fig-item:hover {
+  background: #f0daf8;
+  transform: scale(1.1);
+}
+
+.msn-btn-enviar {
+  width: 100%;
+  height: 44px;
+  background: linear-gradient(135deg, #b57cff, #8f5be8);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  box-shadow: 0 4px 0 #6a40b0;
+}
+
+.msn-btn-enviar:active {
+  transform: translateY(3px);
   box-shadow: 0 1px 0 #6a40b0;
 }
 
-/* LISTA DE LEMBRETES */
-.lembrete-lista-titulo {
-  font-family: var(--font-pixel);
-  font-size: 8px; color: var(--purple-deep);
-  padding: 16px 18px 8px;
-  letter-spacing: 1px;
-}
-
-#listaLembretes {
-  padding: 0 16px 32px;
-  display: flex; flex-direction: column; gap: 10px;
-}
-
-.lembrete {
-  background: rgba(255,255,255,0.82);
-  backdrop-filter: blur(6px);
-  border-radius: var(--radius-md);
-  border: 1.5px solid #d8b0e8;
-  border-left: 5px solid var(--purple-main);
-  padding: 14px;
-  box-shadow: 0 2px 10px rgba(180,80,200,0.08);
-  transition: transform .15s, box-shadow .15s;
-}
-.lembrete:active { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(180,80,200,0.15); }
-
-.lembrete-info {
-  display: flex; flex-direction: column; gap: 2px; flex: 1;
-}
-
-.lembrete-badge {
-  font-size: 10px; font-weight: 700;
-  color: #a070d0;
-  opacity: 0.85;
-}
-
-/* ANIMAÇÃO DE CONCLUSÃO */
-.lembrete-concluindo {
-  animation: lembreteConclui 1.8s ease forwards;
-  pointer-events: none;
-}
-.lembrete-concluindo .textoLembrete {
-  text-decoration: line-through;
-  opacity: 0.5;
-  transition: opacity .4s;
-}
-@keyframes lembreteConclui {
-  0%   { opacity: 1; transform: scale(1); }
-  60%  { opacity: 1; transform: scale(1); }
-  80%  { opacity: 0.4; transform: scale(0.97); }
-  100% { opacity: 0; transform: scale(0.94) translateX(20px); }
-}
-
-/* LEMBRETES DARK MODE */
-body.dark-mode .lembrete {
+/* DARK MODE */
+body.dark-mode .msn-locked-card,
+body.dark-mode .msn-conexao-card,
+body.dark-mode .msn-btn-acao,
+body.dark-mode .msn-recebido-item {
   background: rgba(42,36,61,0.92);
   border-color: #5a4675;
-  border-left-color: #b57cff;
 }
-body.dark-mode .textoLembrete {
+
+body.dark-mode .msn-titulo,
+body.dark-mode .msn-nome,
+body.dark-mode .msn-btn-acao {
   color: #f4eaff;
-}
-body.dark-mode .lembrete-badge {
-  color: #c4a0f0;
-}
-body.dark-mode .checkmark {
-  background: #2a243d;
-  border-color: #b57cff;
-}
-body.dark-mode .btnEditar,
-body.dark-mode .btnExcluir {
-  background: #352847;
-  color: #f4eaff;
-}
-body.dark-mode .btnEditar:active,
-body.dark-mode .btnExcluir:active {
-  background: #5a4675;
-}
-body.dark-mode #listaLembretes > div {
-  color: #d7c4f3;
-}
-
-.topoLembrete {
-  display: flex; justify-content: space-between; align-items: center; gap: 10px;
-}
-
-.checkboxContainer {
-  display: flex; align-items: center; gap: 10px;
-  cursor: pointer; flex: 1;
-}
-
-.checkboxLembrete { display: none; }
-
-.checkmark {
-  width: 22px; height: 22px; flex-shrink: 0;
-  border-radius: 50%;
-  border: 2.5px solid var(--purple-main);
-  background: white;
-  transition: .2s;
-  position: relative;
-}
-.checkboxLembrete:checked + .checkmark {
-  background: var(--purple-main);
-  box-shadow: 0 0 10px rgba(181,124,255,0.5);
-}
-.checkmark::after {
-  content: ''; position: absolute; display: none;
-  left: 6px; top: 2px;
-  width: 5px; height: 10px;
-  border: solid white; border-width: 0 2.5px 2.5px 0;
-  transform: rotate(45deg);
-}
-.checkboxLembrete:checked + .checkmark::after { display: block; }
-
-.textoLembrete {
-  font-size: 13px; font-weight: 700; color: var(--text-dark);
-  line-height: 1.4;
-  transition: .2s;
-}
-.checkboxLembrete:checked ~ .textoLembrete {
-  text-decoration: line-through; opacity: .5;
-}
-
-.acoesLembrete { display: flex; gap: 6px; }
-
-.btnEditar, .btnExcluir {
-  width: 34px; height: 34px;
-  border: none; border-radius: 10px;
-  background: #f0daf8;
-  font-size: 14px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .15s, transform .1s;
-}
-.btnEditar:active, .btnExcluir:active {
-  background: #d8b0e8; transform: scale(.92);
 }
 
 /* HORÁRIO (período do dia — só overlay, background controlado por JS) */

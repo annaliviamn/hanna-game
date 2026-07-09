@@ -6,48 +6,9 @@ async function registrarSW() {
   try {
     swRegistration = await navigator.serviceWorker.register("sw.js");
     console.log("Service Worker registrado");
-
-    // Registra sync periódico para lembretes (Android background)
-    if ("periodicSync" in swRegistration) {
-      try {
-        const status = await navigator.permissions.query({ name: "periodic-background-sync" });
-        if (status.state === "granted") {
-          await swRegistration.periodicSync.register("hanna-lembretes", {
-            minInterval: 60 * 1000, // mínimo 1 min
-          });
-        }
-      } catch (e) {
-        // periodicSync não suportado — o IndexedDB no SW ainda cobre
-      }
-    }
   } catch (e) {
     console.warn("SW não registrado:", e);
   }
-}
-
-async function pedirPermissaoNotificacao() {
-  if (!("Notification" in window)) return false;
-  if (Notification.permission === "granted") return true;
-  if (Notification.permission === "denied") return false;
-  const result = await Notification.requestPermission();
-  return result === "granted";
-}
-
-// Envia mensagem pro SW agendar a notificação
-function agendarNotificacaoSW(lembrete) {
-  if (!swRegistration || !lembrete.timestamp) return;
-  swRegistration.active?.postMessage({
-    tipo:      "AGENDAR_LEMBRETE",
-    id:        lembrete.id,
-    texto:     lembrete.texto,
-    timestamp: lembrete.timestamp,
-  });
-}
-
-// Cancela notificação agendada
-function cancelarNotificacaoSW(id) {
-  if (!swRegistration) return;
-  swRegistration.active?.postMessage({ tipo: "CANCELAR_LEMBRETE", id });
 }
 
 // Inicia tudo
@@ -1527,17 +1488,317 @@ btnPresenteCesta?.addEventListener("click", () => {
   darPresente(40000, 40, "ultimoPresenteCesta", "essa cesta");
 });
 
-// LEMBRETES
-const btnLembretes = null; // navegação feita via navLembretes.onclick abaixo
+// LEMBRETES / MSNHANNA
 const btnVoltarLembretes = document.getElementById("btnVoltarLembretes");
-const btnSalvarLembrete  = document.getElementById("btnSalvarLembrete");
-const inputLembrete      = document.getElementById("inputLembrete");
-const listaLembretes     = document.getElementById("listaLembretes");
-const tipoLembrete       = document.getElementById("tipoLembrete");
-const dataLembrete       = document.getElementById("dataLembrete");
-const horaLembrete       = document.getElementById("horaLembrete");
 const btnAbrirFazenda    = document.getElementById("btnAbrirFazenda");
 const btnVoltarFazenda   = document.getElementById("btnVoltarFazenda");
+
+// MSNHANNA
+const MINHA_UID = "QSvSUBgIIERdE8ukwNgLhVSisF12";
+const KIKA_UID  = "YawXVeC0OPUpeNzIua7zXocE1Op2";
+let msnDesbloqueado = localStorage.getItem("msnDesbloqueado") === "true";
+
+function atualizarMSN() {
+  const bloqueado    = document.getElementById("msnBloqueado");
+  const desbloqueado = document.getElementById("msnDesbloqueado");
+  if (!bloqueado || !desbloqueado) return;
+  if (msnDesbloqueado) {
+    bloqueado.style.display    = "none";
+    desbloqueado.style.display = "block";
+  } else {
+    bloqueado.style.display    = "block";
+    desbloqueado.style.display = "none";
+  }
+}
+
+// Comprar MSN
+document.getElementById("btnComprarMSN")?.addEventListener("click", () => {
+  if (moedas < 1000000) {
+    mostrarAlertaLoja("Você precisa de 1.000.000 de moedas!");
+    return;
+  }
+  moedas -= 1000000;
+  msnDesbloqueado = true;
+  localStorage.setItem("msnDesbloqueado", "true");
+  atualizarStatus();
+  atualizarMSN();
+  mostrarMensagem("MSNHanna desbloqueado!");
+  _salvar();
+});
+
+// Verificar caixa de entrada do Firestore
+async function verificarCaixaEntrada() {
+  const uid = localStorage.getItem("hannaUid");
+  if (!uid || !msnDesbloqueado) return;
+
+  const { getFirestore, doc, getDoc, updateDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+  const db   = getFirestore(getApp());
+  const snap = await getDoc(doc(db, "saves", uid));
+  if (!snap.exists()) return;
+
+  const dados = snap.data();
+  const caixa = dados.caixaDeEntrada || [];
+  if (caixa.length === 0) return;
+
+  // Processa cada item
+  for (const item of caixa) {
+    processarItemMSN(item);
+  }
+
+  // Limpa a caixa
+  await updateDoc(doc(db, "saves", uid), { caixaDeEntrada: [] });
+}
+
+function processarItemMSN(item) {
+  const somPlim = document.getElementById("somPlim");
+  if (somPlim) {
+    somPlim.currentTime = 0;
+    somPlim.volume = parseFloat(volumeEfeitos.value);
+    somPlim.play().catch(() => {});
+  }
+
+  const quem = item.de === "anna" ? "Anna" : "Kika";
+  const spriteQuem = item.de === "anna"
+    ? "assets/sprites/personagens/anna-msn.png"
+    : "assets/sprites/personagens/kika-msn.png";
+
+  switch(item.tipo) {
+    case "carinho":
+      felicidade = Math.min(100, felicidade + 15);
+      mostrarBannerMSN(spriteQuem, `${quem} te mandou um carinho!`);
+      adicionarMensagemMSN(`${quem} te mandou um carinho!`, "recebido");
+      break;
+    case "petisco":
+      fome = Math.min(100, fome + 10);
+      vinculoGatinhas = Math.min(100, vinculoGatinhas + 5);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou um petisco pra gatinha!`);
+      adicionarMensagemMSN(`${quem} mandou um petisco pra gatinha!`, "recebido");
+      break;
+    case "boanoite":
+      mostrarBannerMSN(spriteQuem, `${quem} deseja boa noite pra vocês!`);
+      adicionarMensagemMSN(`${quem} deseja boa noite pra vocês!`, "recebido");
+      break;
+    case "moedas":
+      moedas += item.valor || 0;
+      mostrarBannerMSN(spriteQuem, `${quem} te mandou ${item.valor} moedas!`);
+      adicionarMensagemMSN(`${quem} te mandou ${item.valor} moedas!`, "recebido");
+      break;
+    case "mensagem":
+      mostrarBannerMSN(spriteQuem, `${quem} diz: "${item.texto}"`);
+      adicionarMensagemMSN(`${quem}: "${item.texto}"`, "recebido");
+      break;
+    case "figurinha":
+      mostrarBannerMSN(spriteQuem, `${quem} te mandou uma figurinha!`);
+      adicionarMensagemMSN("", "recebido", item.src);
+      break;
+  }
+
+  atualizarStatus();
+}
+
+function mostrarBannerMSN(sprite, texto) {
+  // Reusa o sistema de banner das visitas
+  const banner = document.getElementById("bannerVisita") || criarBannerMSN();
+  const bannerImg  = document.getElementById("bannerVisitaImg");
+  const bannerText = document.getElementById("bannerVisitaTexto");
+  if (bannerImg)  bannerImg.src = sprite;
+  if (bannerText) bannerText.textContent = texto;
+  banner.style.display = "flex";
+  banner.classList.add("slide-in");
+  setTimeout(() => {
+    banner.classList.remove("slide-in");
+    banner.style.display = "none";
+  }, 5000);
+}
+
+function adicionarMensagemMSN(texto, tipo, src = null) {
+  const listaRecebidos = document.getElementById("msnRecebidos");
+  const listaEnviados = document.getElementById("msnEnviados");
+  const lista = tipo === "enviado" ? listaEnviados : listaRecebidos;
+  if (!lista) return;
+
+  const avatar = tipo === "enviado"
+    ? "assets/sprites/personagens/anna-msn.png"
+    : "assets/sprites/personagens/kika-msn.png";
+
+  const conteudo = src
+    ? `<img src="${src}" style="width:60px;height:60px;object-fit:contain;image-rendering:pixelated;">`
+    : texto;
+
+  const item = document.createElement("div");
+  item.className = `msn-recebido-item ${tipo}`;
+  item.innerHTML = `
+    <img src="${avatar}" class="msn-recebido-avatar">
+    <div class="msn-bolha">${conteudo}</div>
+  `;
+  lista.prepend(item);
+}
+
+// Enviar ação pra Kika
+async function enviarAcaoMSN(tipo, extra = {}) {
+  const { getFirestore, doc, getDoc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+  const db = getFirestore(getApp());
+
+  const payload = { tipo, de: "anna", timestamp: Date.now(), ...extra };
+  await updateDoc(doc(db, "saves", KIKA_UID), {
+    caixaDeEntrada: arrayUnion(payload)
+  });
+
+  mostrarMensagem("Enviado pra Kika!");
+}
+
+// Listeners dos botões de ação
+document.getElementById("msnCarinho")?.addEventListener("click", () => {
+  enviarAcaoMSN("carinho");
+  adicionarMensagemMSN("Você mandou um carinho!", "enviado");
+});
+
+document.getElementById("msnPetisco")?.addEventListener("click", () => {
+  enviarAcaoMSN("petisco");
+  adicionarMensagemMSN("Você mandou um petisco pra gatinha!", "enviado");
+});
+
+document.getElementById("msnBoaNnoite")?.addEventListener("click", () => {
+  enviarAcaoMSN("boanoite");
+  adicionarMensagemMSN("Você desejou boa noite!", "enviado");
+});
+
+document.getElementById("msnMoedas")?.addEventListener("click", () => {
+  const valor = 1000;
+  if (moedas < valor) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= valor;
+  enviarAcaoMSN("moedas", { valor });
+  adicionarMensagemMSN(`Você mandou ${valor} moedas!`, "enviado");
+  atualizarStatus();
+});
+
+document.getElementById("msnEnviarMsg")?.addEventListener("click", () => {
+  const texto = document.getElementById("msnInputMsg").value.trim();
+  if (!texto) return;
+  enviarAcaoMSN("mensagem", { texto });
+  adicionarMensagemMSN(`Você: "${texto}"`, "enviado");
+  document.getElementById("msnInputMsg").value = "";
+});
+
+// FIGURINHAS
+const figurinhas = {
+  hanna: [
+    "assets/sprites/hanna/animada.png",
+    "assets/sprites/hanna/apaixonada.png",
+    "assets/sprites/hanna/contente.png",
+    "assets/sprites/hanna/feliz.png",
+    "assets/sprites/hanna/triste.png",
+    "assets/sprites/hanna/brava.png",
+    "assets/sprites/hanna/curiosa.png",
+    "assets/sprites/hanna/doidinha.png",
+    "assets/sprites/hanna/carinho.png",
+    "assets/sprites/hanna/chorando-felicidade.png",
+  ],
+  gatinha: [
+    "assets/sprites/gatinha/gatinha-animada.png",
+    "assets/sprites/gatinha/gatinha-apaixonada.png",
+    "assets/sprites/gatinha/gatinha-neutra.png",
+    "assets/sprites/gatinha/gatinha-triste.png",
+    "assets/sprites/gatinha/gatinha-brava.png",
+    "assets/sprites/gatinha/gatinha-sorrindo.png",
+    "assets/sprites/gatinha/gatinha-confusa.png",
+    "assets/sprites/gatinha/gatinha-medo.png",
+  ],
+  juntas: [
+    "assets/sprites/hanna-gatinha/felizes.png",
+    "assets/sprites/hanna-gatinha/gatinhas-abraco.png",
+    "assets/sprites/hanna-gatinha/gatinhas-beijinho.png",
+    "assets/sprites/hanna-gatinha/gatinhas-brincando.png",
+    "assets/sprites/hanna-gatinha/gatinhas-carinho.png",
+    "assets/sprites/hanna-gatinha/gatinhas-lambendo.png",
+    "assets/sprites/hanna-gatinha/momento-especial.png",
+    "assets/sprites/hanna-gatinha/pedido.png",
+  ],
+  nos: [
+    "assets/sprites/personagens/anna-avatar.png",
+    "assets/sprites/personagens/anna-msn.png",
+    "assets/sprites/personagens/anna-recado-conquista.png",
+    "assets/sprites/personagens/kika-avatar.png",
+    "assets/sprites/personagens/kika-msn.png",
+    "assets/sprites/personagens/kika-brava.png",
+    "assets/sprites/personagens/kika-apontando.png",
+    "assets/sprites/personagens/kika-olhando.png",
+    "assets/sprites/personagens/kika-pegando.png",
+    "assets/sprites/personagens/chat-msn.png",
+  ],
+  pets: [
+    "assets/sprites/pets/steve-visita.png",
+    "assets/sprites/pets/steve-feliz.png",
+    "assets/sprites/pets/joao-visita.png",
+    "assets/sprites/pets/joao-feliz.png",
+    "assets/sprites/pets/james-visita.png",
+    "assets/sprites/pets/james-espiando.png",
+  ],
+  filhote: [
+    "assets/sprites/filhote/filhote.png",
+    "assets/sprites/filhote/filhote-aprontando.png",
+    "assets/sprites/filhote/filhote-comendo.png",
+    "assets/sprites/filhote/filhote-curioso.png",
+    "assets/sprites/filhote/filhote-dormindo.png",
+    "assets/sprites/filhote/filhote-dramatico.png",
+    "assets/sprites/filhote/filhote-escapou.png",
+    "assets/sprites/filhote/filhote-gatinha.png",
+    "assets/sprites/filhote/filhote-gatinha-aprontando.png",
+    "assets/sprites/filhote/filhote-gatinha-comendo.png",
+    "assets/sprites/filhote/filhote-gatinha-curioso.png",
+    "assets/sprites/filhote/filhote-gatinha-dormindo.png",
+    "assets/sprites/filhote/filhote-gatinha-dramatico.png",
+    "assets/sprites/filhote/filhote-hanna.png",
+    "assets/sprites/filhote/filhote-hanna-aprontando.png",
+    "assets/sprites/filhote/filhote-hanna-comendo.png",
+    "assets/sprites/filhote/filhote-hanna-curioso.png",
+    "assets/sprites/filhote/filhote-hanna-dormindo.png",
+    "assets/sprites/filhote/filhote-hanna-dramatico.png",
+    "assets/sprites/filhote/filhote-pego.png",
+  ],
+};
+
+let _catFigurinhaAtual = "hanna";
+
+function renderizarFigurinhas(cat) {
+  const grid = document.getElementById("msnFigGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  (figurinhas[cat] || []).forEach(src => {
+    const img = document.createElement("img");
+    img.src = src;
+    img.className = "msn-fig-item";
+    img.addEventListener("click", () => {
+      enviarAcaoMSN("figurinha", { src });
+      adicionarMensagemMSN("", "enviado", src);
+      document.getElementById("msnFigurinhasPanel").style.display = "none";
+      mostrarMensagem("Figurinha enviada!");
+    });
+    grid.appendChild(img);
+  });
+}
+
+document.getElementById("btnAbrirFigurinhas")?.addEventListener("click", () => {
+  const panel = document.getElementById("msnFigurinhasPanel");
+  if (!panel) return;
+  const aberto = panel.style.display === "block";
+  panel.style.display = aberto ? "none" : "block";
+  if (!aberto) renderizarFigurinhas(_catFigurinhaAtual);
+});
+
+document.querySelectorAll(".msn-fig-cat").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".msn-fig-cat").forEach(b => b.classList.remove("ativo"));
+    btn.classList.add("ativo");
+    _catFigurinhaAtual = btn.dataset.cat;
+    renderizarFigurinhas(_catFigurinhaAtual);
+  });
+});
+
+// Verifica caixa de entrada a cada 5 minutos
+setInterval(verificarCaixaEntrada, 5 * 60 * 1000);
 
 // SONS (silencia erro se arquivo ausente)
 function criarAudio(src) {
@@ -2057,7 +2318,7 @@ btnSalvarNomeGatinha.onclick = () => {
     if (nomeGatinha) {
         if (moedas < 2000) {
             inputNomeGatinha.style.border = "2px solid #ff5fa2";
-            inputNomeGatinha.placeholder = "⚠️ Precisa de 2.000 moedas!";
+            inputNomeGatinha.placeholder = "Precisa de 2.000 moedas!";
             inputNomeGatinha.value = "";
             setTimeout(() => {
                 inputNomeGatinha.style.border = "";
@@ -2074,7 +2335,7 @@ btnSalvarNomeGatinha.onclick = () => {
 
     localStorage.setItem("nomeGatinha", nomeGatinha);
 
-    mostrarMensagem(`${nomeGatinha} adorou o novo nome 💖`);
+    mostrarMensagem(`${nomeGatinha} adorou o novo nome`);
 
     atualizarStatus();
 
@@ -2650,6 +2911,7 @@ function _salvar() {
   localStorage.setItem("modoNoturno", document.body.classList.contains("dark-mode") ? "true" : "false");
   localStorage.setItem("ultimaRoleta", ultimaRoleta);
   localStorage.setItem("mensagemEspecialComprada", _mensagemEspecialComprada ? "true" : "false");
+  localStorage.setItem("msnDesbloqueado", msnDesbloqueado ? "true" : "false");
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -2676,6 +2938,7 @@ function _salvar() {
           lembretes: JSON.stringify(lembretes),
           ultimaRoleta: ultimaRoleta,
           mensagemEspecialComprada: _mensagemEspecialComprada,
+          msnDesbloqueado,
         });
       }).catch(() => {});
     }
@@ -3217,6 +3480,7 @@ function carregarDadosNoJogo(dados) {
   pedidoAceito        = dados.pedidoAceito === true || dados.pedidoAceito === "true";
   cuidadosFilhote     = Number(dados.cuidadosFilhote) || 0;
   _mensagemEspecialComprada = dados.mensagemEspecialComprada === true;
+  msnDesbloqueado     = dados.msnDesbloqueado === true || localStorage.getItem("msnDesbloqueado") === "true";
 
   steveDesbloqueado    = dados.steveDesbloqueado === true || dados.steveDesbloqueado === "true";
   joaoDesbloqueado     = dados.joaoDesbloqueado === true || dados.joaoDesbloqueado === "true";
@@ -3254,8 +3518,8 @@ function carregarDadosNoJogo(dados) {
   else document.body.classList.remove("dark-mode");
 
   if (dados.muted !== undefined) {
-    isMuted = dados.muted === true;
-    aplicarMute();
+      isMuted = dados.muted === true;
+      if (typeof aplicarMute === "function") aplicarMute();
   }
 
   ultimaRoleta = Number(dados.ultimaRoleta) || 0;
@@ -4026,20 +4290,6 @@ if (btnLoja) {
         animarTela(telaLoja);
 
         tocarTrilha("loja");
-
-    });
-
-}
-
-if (btnLembretes) {
-
-    btnLembretes.addEventListener("click", () => {
-
-        abrirTela(telaLembretes);
-
-        animarTela(telaLembretes);
-
-        tocarTrilha("lembretes");
 
     });
 
@@ -5154,312 +5404,8 @@ if (btnVoltarLembretes) {
 
 }
 
-// RECORRÊNCIA DE LEMBRETES
-function proximoTimestamp(lembrete) {
-  const base = lembrete.timestamp ? new Date(lembrete.timestamp) : new Date();
-  const agora = new Date();
-  let proxima = new Date(base);
-
-  switch (lembrete.recorrencia) {
-    case "diario":
-      proxima.setDate(proxima.getDate() + 1);
-      break;
-    case "semanal":
-      proxima.setDate(proxima.getDate() + 7);
-      break;
-    case "mensal":
-      proxima.setMonth(proxima.getMonth() + 1);
-      break;
-    case "anual":
-      proxima.setFullYear(proxima.getFullYear() + 1);
-      break;
-  }
-
-  // Se a próxima ainda é no passado, avança até ficar no futuro
-  while (proxima <= agora) {
-    switch (lembrete.recorrencia) {
-      case "diario":  proxima.setDate(proxima.getDate() + 1); break;
-      case "semanal": proxima.setDate(proxima.getDate() + 7); break;
-      case "mensal":  proxima.setMonth(proxima.getMonth() + 1); break;
-      case "anual":   proxima.setFullYear(proxima.getFullYear() + 1); break;
-      default: return proxima.getTime();
-    }
-  }
-  return proxima.getTime();
-}
-
-function processarRecorrencias() {
-  const agora = Date.now();
-  let mudou = false;
-
-  // Remove lembretes únicos que já passaram da hora
-  const antes = lembretes.length;
-  lembretes = lembretes.filter(l => {
-    if (
-      (!l.recorrencia || l.recorrencia === "nenhuma") &&
-      l.timestamp &&
-      l.timestamp < agora &&
-      !l.feito
-    ) {
-      cancelarNotificacaoSW(l.id);
-      return false; // remove
-    }
-    return true;
-  });
-  if (lembretes.length !== antes) mudou = true;
-
-  // Recorrentes que passaram — reagenda
-  lembretes.forEach((l, i) => {
-    if (l.recorrencia && l.recorrencia !== "nenhuma" && l.feito && l.timestamp && l.timestamp <= agora) {
-      lembretes[i].feito     = false;
-      lembretes[i].timestamp = proximoTimestamp(l);
-      mudou = true;
-    }
-  });
-
-  if (mudou) localStorage.setItem("lembretes", JSON.stringify(lembretes));
-}
-
-function renderizarLembretes() {
-  // Verifica e processa recorrências antes de renderizar
-  processarRecorrencias();
-
-  listaLembretes.innerHTML = "";
-  if (lembretes.length === 0) {
-    listaLembretes.innerHTML = `
-      <div style="text-align:center;padding:24px 0;color:#b080c8;font-size:13px;font-weight:700;">
-        Nenhum lembrete ainda<br>
-        <span style="font-size:12px;opacity:.7;">Crie o primeiro acima!</span>
-      </div>`;
-    return;
-  }
-
-  const badgeRecorrencia = {
-    diario:  "📅 diário",
-    semanal: "📆 semanal",
-    mensal:  "🗓️ mensal",
-    anual:   "🎂 anual",
-  };
-
-  lembretes.forEach((lembrete, index) => {
-    const div = document.createElement("div");
-    div.className = "lembrete";
-    const badge = lembrete.recorrencia && lembrete.recorrencia !== "nenhuma"
-      ? `<span class="lembrete-badge">${badgeRecorrencia[lembrete.recorrencia] || ""}</span>`
-      : "";
-    div.innerHTML = `
-      <div class="topoLembrete">
-        <label class="checkboxContainer">
-          <input type="checkbox" class="checkboxLembrete" ${lembrete.feito ? "checked" : ""}>
-          <span class="checkmark"></span>
-          <div class="lembrete-info">
-            <span class="textoLembrete">${lembrete.texto}</span>
-            ${badge}
-          </div>
-        </label>
-        <div class="acoesLembrete">
-          <button class="btnEditar" title="Editar">✏️</button>
-          <button class="btnExcluir" title="Excluir">🗑️</button>
-        </div>
-      </div>`;
-
-    // Checkbox — marcar como feito
-    div.querySelector(".checkboxLembrete").addEventListener("change", (e) => {
-      if (!e.target.checked) return;
-
-      div.classList.add("lembrete-concluindo");
-
-      setTimeout(() => {
-        const rec = lembrete.recorrencia || "nenhuma";
-
-        if (rec !== "nenhuma") {
-          // Recorrente: reagenda para a próxima ocorrência
-          lembretes[index].feito     = false;
-          lembretes[index].timestamp = proximoTimestamp(lembrete);
-          // Atualiza data no texto se tiver
-          if (lembrete.data) {
-            const novaData = new Date(lembretes[index].timestamp)
-              .toISOString().slice(0, 10);
-            lembretes[index].data  = novaData;
-            lembretes[index].texto = lembretes[index].texto.replace(
-              /— \d{4}-\d{2}-\d{2}/, `— ${novaData}`
-            );
-          }
-          const labels = { diario:"diário", semanal:"semanal", mensal:"mensal", anual:"anual" };
-          mostrarMensagem(`Lembrete ${labels[rec]} reagendado.`);
-        } else {
-          // Único: remove
-          cancelarNotificacaoSW(lembrete.id);
-          lembretes.splice(index, 1);
-        }
-
-        localStorage.setItem("lembretes", JSON.stringify(lembretes));
-        renderizarLembretes();
-      }, 1800);
-    });
-
-    // Excluir
-    div.querySelector(".btnExcluir").addEventListener("click", () => {
-      cancelarNotificacaoSW(lembrete.id);
-      lembretes.splice(index, 1);
-      localStorage.setItem("lembretes", JSON.stringify(lembretes));
-      renderizarLembretes();
-    });
-
-    // Editar
-    div.querySelector(".btnEditar").addEventListener("click", () => {
-      const novo = prompt("Editar lembrete:", lembrete.texto);
-      if (novo !== null && novo.trim() !== "") {
-        lembretes[index].texto = novo.trim();
-        localStorage.setItem("lembretes", JSON.stringify(lembretes));
-        renderizarLembretes();
-      }
-    });
-
-    listaLembretes.appendChild(div);
-  });
-}
-
-// Mostrar/esconder recorrência conforme o tipo
-const rowRecorrencia      = document.getElementById("rowRecorrencia");
-const recorrenciaLembrete = document.getElementById("recorrenciaLembrete");
-
-tipoLembrete.addEventListener("change", () => {
-  const tipo = tipoLembrete.value;
-  const dataAniversario = document.getElementById("dataAniversario");
-  const horaRow = horaLembrete.parentElement;
-
-  if (tipo === "🎂") {
-    dataLembrete.style.display    = "none";
-    dataAniversario.style.display = "block";
-    horaLembrete.style.display    = "block"; // hora opcional pro aniversário
-    rowRecorrencia.style.display  = "block";
-    recorrenciaLembrete.value     = "anual";
-  } else if (tipo === "⏰") {
-    dataLembrete.style.display    = "block";
-    dataAniversario.style.display = "none";
-    horaLembrete.style.display    = "block";
-    rowRecorrencia.style.display  = "block";
-    recorrenciaLembrete.value     = "nenhuma";
-  } else {
-    dataLembrete.style.display    = "block";
-    dataAniversario.style.display = "none";
-    horaLembrete.style.display    = "block";
-    rowRecorrencia.style.display  = "none";
-    recorrenciaLembrete.value     = "nenhuma";
-  }
-});
-
-btnSalvarLembrete.addEventListener("click", async () => {
-  const texto = inputLembrete.value.trim();
-  if (!texto) return;
-
-  const tipo            = tipoLembrete.value;
-  const dataAniversario = document.getElementById("dataAniversario");
-  const data            = tipo === "🎂" ? dataAniversario.value : dataLembrete.value;
-  const hora            = horaLembrete.value;
-  const recorrencia     = recorrenciaLembrete ? recorrenciaLembrete.value : "nenhuma";
-
-  let conteudo = `${tipo} ${texto}`;
-  if (tipo === "🎂" && data) conteudo += ` — ${data}`;
-  if (tipo === "🎂" && hora) conteudo += ` às ${hora}`;
-  if (tipo === "⏰" && data) conteudo += ` — ${data}`;
-  if (tipo === "⏰" && hora) conteudo += ` às ${hora}`;
-
-  // Monta timestamp
-  let timestamp = null;
-  if (tipo === "🎂" && data) {
-
-    const [dia, mes] = data.split("/");
-
-    if (dia && mes) {
-
-      const agora = new Date();
-      const horaAniv = hora || "08:00";
-      let ano = agora.getFullYear();
-
-      let aniv = new Date(
-        `${ano}-${mes.padStart(2,"0")}-${dia.padStart(2,"0")}T${horaAniv}:00`
-      );
-
-      if (aniv <= agora) {
-        aniv.setFullYear(ano + 1);
-      }
-
-      timestamp = aniv.getTime();
-    }
-
-  }
-
-  // ALERTAS E TAREFAS
-  else if (hora) {
-
-    const hoje =
-    new Date().toISOString().slice(0, 10);
-
-    timestamp =
-    new Date(`${hoje}T${hora}:00`).getTime();
-
-    // se já passou do horário hoje,
-    // joga pra amanhã
-    if (timestamp <= Date.now()) {
-      timestamp += 86400000;
-    }
-
-  }
-
-  const id = Date.now();
-  const novoLembrete = { id, tipo, recorrencia, texto: conteudo, data, hora, feito: false, timestamp };
-  console.log("TIPO:", tipo);
-  console.log("DATA:", data);
-  console.log("HORA:", hora);
-  console.log("TIMESTAMP:", timestamp);
-
-  lembretes.push(novoLembrete);
-  localStorage.setItem("lembretes", JSON.stringify(lembretes));
-  renderizarLembretes();
-
-  // Agenda notificação
-  if (timestamp && timestamp > Date.now()) {
-    const permitido = await pedirPermissaoNotificacao();
-    if (permitido) {
-      try {
-        const sw = await navigator.serviceWorker.ready;
-        // Espera o SW ficar ativo (importante no mobile)
-        const active = sw.active || await new Promise(resolve => {
-          const check = setInterval(() => {
-            if (sw.active) { clearInterval(check); resolve(sw.active); }
-          }, 100);
-          setTimeout(() => { clearInterval(check); resolve(null); }, 3000);
-        });
-        if (active) {
-          active.postMessage({ tipo: "AGENDAR_LEMBRETE", id, texto: conteudo, timestamp });
-          mostrarMensagem("Lembrete agendado.");
-        }
-      } catch(e) {
-        console.warn("Erro ao agendar notificação:", e);
-      }
-    } else {
-      mostrarMensagem("Permita notificações para ser lembrado.");
-    }
-  }
-
-  inputLembrete.value          = "";
-  dataLembrete.value           = "";
-  horaLembrete.value           = "";
-  horaLembrete.style.display   = "block";
-  recorrenciaLembrete.value    = "nenhuma";
-  rowRecorrencia.style.display = "none";
-  tipoLembrete.value           = "📚";
-  dataAniversario.value        = "";
-  dataAniversario.style.display = "none";
-  dataLembrete.style.display   = "block";
-
-});
-
 // INIT 
 atualizarStatus();
-renderizarLembretes();
 iniciarMomentosGatinha();
 if (gatinhaDesbloqueada) iniciarFalasVinculo();
 
@@ -6211,6 +6157,12 @@ navFarm.onclick = () => {
 
 };
 
+navLembretes.onclick = () => {
+  abrirTela(telaLembretes);
+  tocarTrilha("lembretes");
+  atualizarMSN();
+  verificarCaixaEntrada();
+};
 
 navLoja.onclick = () => {
 
@@ -6220,16 +6172,6 @@ navLoja.onclick = () => {
 
 };
 
-
-navLembretes.onclick = () => {
-
-    abrirTela(telaLembretes);
-
-    renderizarLembretes();
-
-    tocarTrilha("lembretes");
-
-};
 
 // NAV GAMES
 
