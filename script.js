@@ -1418,11 +1418,11 @@ const sementesTexto     = document.getElementById("sementes");
 const moedasTexto       = document.getElementById("moedas");
 const coracoes          = document.querySelectorAll(".coracaoAmizade");
 
-const navHome = document.getElementById("navHome");
-const navFarm = document.getElementById("navFarm");
+const navHome      = document.getElementById("navHome");
+const navFarm      = document.getElementById("navFarm");
 const navLembretes = document.getElementById("navLembretes");
-const navLoja = document.getElementById("navLoja");
-const navGames = document.getElementById("navGames");
+const navLoja      = document.getElementById("navLoja");
+const navGames     = document.getElementById("navGames");
 
 // LOJA
 const btnLoja = null; // navegação feita via navLoja.onclick abaixo
