@@ -1579,10 +1579,35 @@ function processarItemMSN(item) {
       mostrarBannerMSN(spriteQuem, `${quem} deseja boa noite pra vocês!`);
       adicionarMensagemMSN(`${quem} deseja boa noite pra vocês!`, "recebido");
       break;
+    case "banho":
+      higiene = Math.min(100, higiene + 20);
+      mostrarBannerMSN(spriteQuem, `${quem} deu um banho na Hanna!`);
+      adicionarMensagemMSN(`${quem} deu um banho na Hanna!`, "recebido");
+      break;
+    case "comida":
+      fome = Math.min(100, fome + 15);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou comida pra Hanna!`);
+      adicionarMensagemMSN(`${quem} mandou comida pra Hanna!`, "recebido");
+      break;
+    case "cocarbarriga":
+      felicidade = Math.min(100, felicidade + 20);
+      mostrarBannerMSN(spriteQuem, `${quem} coçou a barriga da Hanna!`);
+      adicionarMensagemMSN(`${quem} coçou a barriga da Hanna!`, "recebido");
+      break;
     case "moedas":
       moedas += item.valor || 0;
       mostrarBannerMSN(spriteQuem, `${quem} te mandou ${item.valor} moedas!`);
       adicionarMensagemMSN(`${quem} te mandou ${item.valor} moedas!`, "recebido");
+      break;
+    case "sementes":
+      sementes += item.valor || 0;
+      mostrarBannerMSN(spriteQuem, `${quem} te mandou ${item.valor} sementes!`);
+      adicionarMensagemMSN(`${quem} te mandou ${item.valor} sementes!`, "recebido");
+      break;
+    case "sementedourada":
+      sementesDouradas++;
+      mostrarBannerMSN(spriteQuem, `${quem} te mandou uma semente dourada!`);
+      adicionarMensagemMSN(`${quem} te mandou uma semente dourada!`, "recebido");
       break;
     case "mensagem":
       mostrarBannerMSN(spriteQuem, `${quem} diz: "${item.texto}"`);
@@ -1594,7 +1619,20 @@ function processarItemMSN(item) {
       break;
   }
 
+  // Salva no histórico do próprio save
+  salvarNoHistoricoMSN(item);
   atualizarStatus();
+}
+
+async function salvarNoHistoricoMSN(item) {
+  const uid = localStorage.getItem("hannaUid");
+  if (!uid) return;
+  const { getFirestore, doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+  const db = getFirestore(getApp());
+  await updateDoc(doc(db, "saves", uid), {
+    historicoMSN: arrayUnion(item)
+  });
 }
 
 function mostrarBannerMSN(sprite, texto) {
@@ -1635,18 +1673,62 @@ function adicionarMensagemMSN(texto, tipo, src = null) {
   lista.prepend(item);
 }
 
-// Enviar ação pra Kika
+// Enviar ação pra Kika e salvar no histórico
 async function enviarAcaoMSN(tipo, extra = {}) {
-  const { getFirestore, doc, getDoc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getFirestore, doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
   const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
   const db = getFirestore(getApp());
 
   const payload = { tipo, de: "anna", timestamp: Date.now(), ...extra };
+  
+  // Envia pra caixa de entrada da Kika
   await updateDoc(doc(db, "saves", KIKA_UID), {
     caixaDeEntrada: arrayUnion(payload)
   });
 
+  // Salva no histórico do próprio save
+  const uid = localStorage.getItem("hannaUid");
+  if (uid) {
+    await updateDoc(doc(db, "saves", uid), {
+      historicoMSN: arrayUnion(payload)
+    });
+  }
+
   mostrarMensagem("Enviado pra Kika!");
+}
+
+// Carregar histórico do Firestore
+async function carregarHistoricoMSN() {
+  const uid = localStorage.getItem("hannaUid");
+  if (!uid) return;
+
+  const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+  const db = getFirestore(getApp());
+
+  const snap = await getDoc(doc(db, "saves", uid));
+  if (!snap.exists()) return;
+
+  const historico = snap.data().historicoMSN || [];
+  // Ordena por timestamp
+  historico.sort((a, b) => b.timestamp - a.timestamp);
+  // Pega os últimos 50
+  historico.slice(0, 50).forEach(item => {
+    const tipo = item.de === "anna" ? "enviado" : "recebido";
+    switch(item.tipo) {
+      case "carinho":    adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou um carinho!`, tipo); break;
+      case "petisco":    adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou um petisco!`, tipo); break;
+      case "boanoite":   adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} desejou boa noite!`, tipo); break;
+      case "banho":      adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} deu um banho!`, tipo); break;
+      case "comida":     adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou comida!`, tipo); break;
+      case "cocarbarriga": adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} coçou a barriga!`, tipo); break;
+      case "moedas":     adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou ${item.valor} moedas!`, tipo); break;
+      case "sementes":   adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou ${item.valor} sementes!`, tipo); break;
+      case "sementedourada": adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou uma semente dourada!`, tipo); break;
+      case "mensagem":   adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"}: "${item.texto}"`, tipo); break;
+      case "figurinha":  adicionarMensagemMSN("", tipo, item.src); break;
+    }
+  });
 }
 
 // Listeners dos botões de ação
@@ -1671,6 +1753,37 @@ document.getElementById("msnMoedas")?.addEventListener("click", () => {
   moedas -= valor;
   enviarAcaoMSN("moedas", { valor });
   adicionarMensagemMSN(`Você mandou ${valor} moedas!`, "enviado");
+  atualizarStatus();
+});
+
+document.getElementById("msnBanho")?.addEventListener("click", () => {
+  enviarAcaoMSN("banho");
+  adicionarMensagemMSN("Você deu um banho na Hanna dela!", "enviado");
+});
+
+document.getElementById("msnComida")?.addEventListener("click", () => {
+  enviarAcaoMSN("comida");
+  adicionarMensagemMSN("Você mandou comida pra Hanna dela!", "enviado");
+});
+
+document.getElementById("msnCocarBarriga")?.addEventListener("click", () => {
+  enviarAcaoMSN("cocarbarriga");
+  adicionarMensagemMSN("Você coçou a barriga da Hanna dela!", "enviado");
+});
+
+document.getElementById("msnSementes")?.addEventListener("click", () => {
+  if (sementes < 5) { mostrarMensagem("Sementes insuficientes!"); return; }
+  sementes -= 5;
+  enviarAcaoMSN("sementes", { valor: 5 });
+  adicionarMensagemMSN("Você mandou 5 sementes!", "enviado");
+  atualizarStatus();
+});
+
+document.getElementById("msnSementeDourada")?.addEventListener("click", () => {
+  if (sementesDouradas < 1) { mostrarMensagem("Você não tem sementes douradas!"); return; }
+  sementesDouradas--;
+  enviarAcaoMSN("sementedourada");
+  adicionarMensagemMSN("Você mandou uma semente dourada!", "enviado");
   atualizarStatus();
 });
 
@@ -6162,6 +6275,7 @@ navLembretes.onclick = () => {
   tocarTrilha("lembretes");
   atualizarMSN();
   verificarCaixaEntrada();
+  if (msnDesbloqueado) carregarHistoricoMSN();
 };
 
 navLoja.onclick = () => {
@@ -6668,47 +6782,47 @@ function iniciarMomentosEspeciais() {
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-dormindo.png",
                 frase: "Elas dormiram juntinhas",
-                chance: () => energia < 40 && dataGravidez === 0
+                chance: () => energia < 40 && dataGravidez === 0 && !filhoteDesbloqueado
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-carinho.png",
                 frase: "Muito carinho por aqui",
-                chance: () => amizade > 3.5 && dataGravidez === 0
+                chance: () => amizade > 3.5 && dataGravidez === 0 && !filhoteDesbloqueado
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando3.png",
                 frase: "As duas estão brincando",
-                chance: () => felicidade > 60 && dataGravidez === 0
+                chance: () => felicidade > 60 && dataGravidez === 0 && !filhoteDesbloqueado
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-abraco.png",
                 frase: "Se abraçando fofinho",
-                chance: () => amizade > 3 && dataGravidez === 0
+                chance: () => amizade > 3 && dataGravidez === 0 && !filhoteDesbloqueado
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-beijinho.png",
                 frase: "Beijinho da gatinha preta",
-                chance: () => vinculoGatinhas > 50 && dataGravidez === 0
+                chance: () => vinculoGatinhas > 50 && dataGravidez === 0 && !filhoteDesbloqueado
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando.png",
                 frase: "Brincando juntas",
-                chance: () => felicidade > 50 && dataGravidez === 0
+                chance: () => felicidade > 50 && dataGravidez === 0 && !filhoteDesbloqueado
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-brincando2.png",
                 frase: "Aprontando juntas",
-                chance: () => felicidade > 50 && dataGravidez === 0
+                chance: () => felicidade > 50 && dataGravidez === 0 && !filhoteDesbloqueado
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/gatinhas-lambendo.png",
                 frase: "Se lambendo de carinho",
-                chance: () => vinculoGatinhas > 40 && dataGravidez === 0
+                chance: () => vinculoGatinhas > 40 && dataGravidez === 0 && !filhoteDesbloqueado
             },
             {
                 sprite: "assets/sprites/hanna-gatinha/noite-feliz.png",
                 frase: "Psiu... ouviu essa fofoca?",
-                chance: () => (new Date().getHours() >= 19 || new Date().getHours() < 6) && dataGravidez === 0
+                chance: () => (new Date().getHours() >= 19 || new Date().getHours() < 6) && dataGravidez === 0 && !filhoteDesbloqueado
             },
             // Momentos da gravidez
             {

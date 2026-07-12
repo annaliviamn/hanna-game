@@ -69,7 +69,7 @@ export async function salvarProgressoNuvem(dados) {
     await setDoc(doc(db, "saves", uid), {
       ...dados,
       updatedAt: Date.now()
-    });
+    }, { merge: true });
   } catch (e) {}
 }
 
