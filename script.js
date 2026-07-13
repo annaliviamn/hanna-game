@@ -1760,17 +1760,17 @@ async function carregarHistoricoMSN() {
 // Listeners dos botões de ação
 document.getElementById("msnCarinho")?.addEventListener("click", () => {
   enviarAcaoMSN("carinho");
-  adicionarMensagemMSN("Você mandou um carinho!", "enviado");
+  adicionarMensagemMSN("Você mandou um carinho!", "enviado", null, getMinhaUidStr());
 });
 
 document.getElementById("msnPetisco")?.addEventListener("click", () => {
   enviarAcaoMSN("petisco");
-  adicionarMensagemMSN("Você mandou um petisco pra gatinha!", "enviado");
+  adicionarMensagemMSN("Você mandou um petisco pra gatinha!", "enviado", null, getMinhaUidStr());
 });
 
 document.getElementById("msnBoaNnoite")?.addEventListener("click", () => {
   enviarAcaoMSN("boanoite");
-  adicionarMensagemMSN("Você desejou boa noite!", "enviado");
+  adicionarMensagemMSN("Você desejou boa noite!", "enviado", null, getMinhaUidStr());
 });
 
 document.getElementById("msnMoedas")?.addEventListener("click", () => {
@@ -1778,30 +1778,30 @@ document.getElementById("msnMoedas")?.addEventListener("click", () => {
   if (moedas < valor) { mostrarMensagem("Moedas insuficientes!"); return; }
   moedas -= valor;
   enviarAcaoMSN("moedas", { valor });
-  adicionarMensagemMSN(`Você mandou ${valor} moedas!`, "enviado");
+  adicionarMensagemMSN(`Você mandou ${valor} moedas!`, "enviado", null, getMinhaUidStr());
   atualizarStatus();
 });
 
 document.getElementById("msnBanho")?.addEventListener("click", () => {
   enviarAcaoMSN("banho");
-  adicionarMensagemMSN("Você deu um banho na Hanna dela!", "enviado");
+  adicionarMensagemMSN("Você deu um banho na Hanna dela!", "enviado", null, getMinhaUidStr());
 });
 
 document.getElementById("msnComida")?.addEventListener("click", () => {
   enviarAcaoMSN("comida");
-  adicionarMensagemMSN("Você mandou comida pra Hanna dela!", "enviado");
+  adicionarMensagemMSN("Você mandou comida pra Hanna dela!", "enviado", null, getMinhaUidStr());
 });
 
 document.getElementById("msnCocarBarriga")?.addEventListener("click", () => {
   enviarAcaoMSN("cocarbarriga");
-  adicionarMensagemMSN("Você coçou a barriga da Hanna dela!", "enviado");
+  adicionarMensagemMSN("Você coçou a barriga da Hanna dela!", "enviado", null, getMinhaUidStr());
 });
 
 document.getElementById("msnSementes")?.addEventListener("click", () => {
   if (sementes < 5) { mostrarMensagem("Sementes insuficientes!"); return; }
   sementes -= 5;
   enviarAcaoMSN("sementes", { valor: 5 });
-  adicionarMensagemMSN("Você mandou 5 sementes!", "enviado");
+  adicionarMensagemMSN("Você mandou 5 sementes!", "enviado", null, getMinhaUidStr());
   atualizarStatus();
 });
 
@@ -1809,7 +1809,7 @@ document.getElementById("msnSementeDourada")?.addEventListener("click", () => {
   if (sementesDouradas < 1) { mostrarMensagem("Você não tem sementes douradas!"); return; }
   sementesDouradas--;
   enviarAcaoMSN("sementedourada");
-  adicionarMensagemMSN("Você mandou uma semente dourada!", "enviado");
+  adicionarMensagemMSN("Você mandou uma semente dourada!", "enviado", null, getMinhaUidStr());
   atualizarStatus();
 });
 
@@ -1817,7 +1817,7 @@ document.getElementById("msnEnviarMsg")?.addEventListener("click", () => {
   const texto = document.getElementById("msnInputMsg").value.trim();
   if (!texto) return;
   enviarAcaoMSN("mensagem", { texto });
-  adicionarMensagemMSN(`Você: "${texto}"`, "enviado");
+  adicionarMensagemMSN(`Você: "${texto}"`, "enviado", null, getMinhaUidStr());
   document.getElementById("msnInputMsg").value = "";
 });
 
@@ -1928,7 +1928,7 @@ function renderizarFigurinhas(cat) {
     img.className = "msn-fig-item";
     img.addEventListener("click", () => {
       enviarAcaoMSN("figurinha", { src });
-      adicionarMensagemMSN("", "enviado", src);
+      adicionarMensagemMSN("", "enviado", src, getMinhaUidStr());
       document.getElementById("msnFigurinhasPanel").style.display = "none";
       mostrarMensagem("Figurinha enviada!");
     });
@@ -1953,8 +1953,8 @@ document.querySelectorAll(".msn-fig-cat").forEach(btn => {
   });
 });
 
-// Verifica caixa de entrada a cada 5 minutos
-setInterval(verificarCaixaEntrada, 5 * 60 * 1000);
+// Verifica caixa de entrada a cada 30 segundos
+setInterval(verificarCaixaEntrada, 30 * 1000);
 
 // SONS (silencia erro se arquivo ausente)
 function criarAudio(src) {
