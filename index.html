@@ -1332,12 +1332,17 @@
 
         <!-- Status da conexão -->
         <div class="msn-conexao-card">
-          <img src="assets/sprites/personagens/kika-msn.png" class="msn-avatar">
+          <img src="assets/sprites/personagens/anna-msn.png" class="msn-avatar">
           <div class="msn-conexao-info">
+            <span class="msn-nome">Anna</span>
+            <span class="msn-status">online</span>
+          </div>
+          <div style="flex:1;"></div>
+          <div class="msn-conexao-info" style="align-items:flex-end;">
             <span class="msn-nome">Kika</span>
             <span class="msn-status" id="msnStatusKika">online</span>
           </div>
-          <div class="msn-bolinha-status" id="msnBolinhaKika"></div>
+          <img src="assets/sprites/personagens/kika-msn.png" class="msn-avatar">
         </div>
 
         <!-- Mimos -->
@@ -1381,13 +1386,9 @@
           </button>
         </div>
 
-        <!-- Histórico de recebidos -->
-        <div class="msn-categoria">Recebidos</div>
-        <div id="msnRecebidos" class="msn-recebidos-lista"></div>
-
-        <!-- Enviados -->
-        <div class="msn-categoria">Enviados</div>
-        <div id="msnEnviados" class="msn-recebidos-lista"></div>
+        <!-- Conversa -->
+        <div class="msn-categoria">Conversa</div>
+        <div id="msnConversa" class="msn-conversa-container"></div>
 
         <!-- Figurinhas -->
         <div id="msnFigurinhasPanel" style="display:none;">

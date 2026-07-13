@@ -1651,10 +1651,8 @@ function mostrarBannerMSN(sprite, texto) {
 }
 
 function adicionarMensagemMSN(texto, tipo, src = null) {
-  const listaRecebidos = document.getElementById("msnRecebidos");
-  const listaEnviados = document.getElementById("msnEnviados");
-  const lista = tipo === "enviado" ? listaEnviados : listaRecebidos;
-  if (!lista) return;
+  const conversa = document.getElementById("msnConversa");
+  if (!conversa) return;
 
   const avatar = tipo === "enviado"
     ? "assets/sprites/personagens/anna-msn.png"
@@ -1670,7 +1668,10 @@ function adicionarMensagemMSN(texto, tipo, src = null) {
     <img src="${avatar}" class="msn-recebido-avatar">
     <div class="msn-bolha">${conteudo}</div>
   `;
-  lista.prepend(item);
+  conversa.appendChild(item);
+
+  // Scrolla pro final automaticamente
+  conversa.scrollTop = conversa.scrollHeight;
 }
 
 // Enviar ação pra Kika e salvar no histórico
@@ -1710,10 +1711,9 @@ async function carregarHistoricoMSN() {
   if (!snap.exists()) return;
 
   const historico = snap.data().historicoMSN || [];
-  // Ordena por timestamp
-  historico.sort((a, b) => b.timestamp - a.timestamp);
   // Pega os últimos 50
-  historico.slice(0, 50).forEach(item => {
+  historico.sort((a, b) => a.timestamp - b.timestamp);
+  historico.slice(-50).forEach(item => {
     const tipo = item.de === "anna" ? "enviado" : "recebido";
     switch(item.tipo) {
       case "carinho":    adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou um carinho!`, tipo); break;
