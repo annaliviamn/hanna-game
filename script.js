@@ -1650,13 +1650,20 @@ function mostrarBannerMSN(sprite, texto) {
   }, 5000);
 }
 
-function adicionarMensagemMSN(texto, tipo, src = null) {
+function adicionarMensagemMSN(texto, tipo, src = null, de = null) {
   const conversa = document.getElementById("msnConversa");
   if (!conversa) return;
 
-  const avatar = tipo === "enviado"
-    ? "assets/sprites/personagens/anna-msn.png"
-    : "assets/sprites/personagens/kika-msn.png";
+  let avatar;
+  if (de) {
+    avatar = de === "anna"
+      ? "assets/sprites/personagens/anna-msn.png"
+      : "assets/sprites/personagens/kika-msn.png";
+  } else {
+    avatar = tipo === "enviado"
+      ? "assets/sprites/personagens/anna-msn.png"
+      : "assets/sprites/personagens/kika-msn.png";
+  }
 
   const conteudo = src
     ? `<img src="${src}" style="width:60px;height:60px;object-fit:contain;image-rendering:pixelated;">`
@@ -1669,13 +1676,10 @@ function adicionarMensagemMSN(texto, tipo, src = null) {
     <div class="msn-bolha">${conteudo}</div>
   `;
 
-  // Clique longo pra apagar
   let pressTimer;
   item.addEventListener("touchstart", () => {
     pressTimer = setTimeout(() => {
-      if (confirm("Apagar esta mensagem?")) {
-        item.remove();
-      }
+      if (confirm("Apagar esta mensagem?")) item.remove();
     }, 600);
   });
   item.addEventListener("touchend", () => clearTimeout(pressTimer));
@@ -1725,20 +1729,24 @@ async function carregarHistoricoMSN() {
   // Pega os últimos 50
   historico.sort((a, b) => a.timestamp - b.timestamp);
   historico.slice(-50).forEach(item => {
-    const tipo = item.de === "anna" ? "enviado" : "recebido";
-    switch(item.tipo) {
-      case "carinho":    adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou um carinho!`, tipo); break;
-      case "petisco":    adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou um petisco!`, tipo); break;
-      case "boanoite":   adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} desejou boa noite!`, tipo); break;
-      case "banho":      adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} deu um banho!`, tipo); break;
-      case "comida":     adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou comida!`, tipo); break;
-      case "cocarbarriga": adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} coçou a barriga!`, tipo); break;
-      case "moedas":     adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou ${item.valor} moedas!`, tipo); break;
-      case "sementes":   adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou ${item.valor} sementes!`, tipo); break;
-      case "sementedourada": adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"} mandou uma semente dourada!`, tipo); break;
-      case "mensagem":   adicionarMensagemMSN(`${item.de === "anna" ? "Você" : "Kika"}: "${item.texto}"`, tipo); break;
-      case "figurinha":  adicionarMensagemMSN("", tipo, item.src); break;
-    }
+      const uid = localStorage.getItem("hannaUid");
+      const minhaUid = uid === MINHA_UID ? "anna" : "kika";
+      const tipo = item.de === minhaUid ? "enviado" : "recebido";
+      const quem = item.de === minhaUid ? "Você" : (item.de === "anna" ? "Anna" : "Kika");
+      
+      switch(item.tipo) {
+        case "carinho":      adicionarMensagemMSN(`${quem} mandou um carinho!`, tipo, null, item.de); break;
+        case "petisco":      adicionarMensagemMSN(`${quem} mandou um petisco!`, tipo, null, item.de); break;
+        case "boanoite":     adicionarMensagemMSN(`${quem} desejou boa noite!`, tipo, null, item.de); break;
+        case "banho":        adicionarMensagemMSN(`${quem} deu um banho!`, tipo, null, item.de); break;
+        case "comida":       adicionarMensagemMSN(`${quem} mandou comida!`, tipo, null, item.de); break;
+        case "cocarbarriga": adicionarMensagemMSN(`${quem} coçou a barriga!`, tipo, null, item.de); break;
+        case "moedas":       adicionarMensagemMSN(`${quem} mandou ${item.valor} moedas!`, tipo, null, item.de); break;
+        case "sementes":     adicionarMensagemMSN(`${quem} mandou ${item.valor} sementes!`, tipo, null, item.de); break;
+        case "sementedourada": adicionarMensagemMSN(`${quem} mandou uma semente dourada!`, tipo, null, item.de); break;
+        case "mensagem":     adicionarMensagemMSN(`${quem}: "${item.texto}"`, tipo, null, item.de); break;
+        case "figurinha":    adicionarMensagemMSN("", tipo, item.src, item.de); break;
+      }
   });
 }
 
