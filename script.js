@@ -1625,7 +1625,7 @@ function processarItemMSN(item) {
       break;
     case "figurinha":
       mostrarBannerMSN(spriteQuem, `${quem} te mandou uma figurinha!`);
-      adicionarMensagemMSN("", "recebido", item.src);
+      adicionarMensagemMSN("", "recebido", item.src, item.de);
       break;
   }
 
@@ -1665,11 +1665,12 @@ function adicionarMensagemMSN(texto, tipo, src = null, de = null) {
   if (!conversa) return;
 
   let avatar;
-  if (de) {
-    avatar = de === "anna"
-      ? "assets/sprites/personagens/anna-msn.png"
-      : "assets/sprites/personagens/kika-msn.png";
+  if (de === "anna") {
+    avatar = "assets/sprites/personagens/anna-msn.png";
+  } else if (de === "kika") {
+    avatar = "assets/sprites/personagens/kika-msn.png";
   } else {
+    // fallback
     avatar = tipo === "enviado"
       ? "assets/sprites/personagens/anna-msn.png"
       : "assets/sprites/personagens/kika-msn.png";
