@@ -1577,51 +1577,51 @@ function processarItemMSN(item) {
     case "carinho":
       felicidade = Math.min(100, felicidade + 15);
       mostrarBannerMSN(spriteQuem, `${quem} te mandou um carinho!`);
-      adicionarMensagemMSN(`${quem} te mandou um carinho!`, "recebido");
+      adicionarMensagemMSN(`${quem} te mandou um carinho!`, "recebido", null, item.de);
       break;
     case "petisco":
       fome = Math.min(100, fome + 10);
       vinculoGatinhas = Math.min(100, vinculoGatinhas + 5);
       mostrarBannerMSN(spriteQuem, `${quem} mandou um petisco pra gatinha!`);
-      adicionarMensagemMSN(`${quem} mandou um petisco pra gatinha!`, "recebido");
+      adicionarMensagemMSN(`${quem} mandou um petisco pra gatinha!`, "recebido", null, item.de);
       break;
     case "boanoite":
       mostrarBannerMSN(spriteQuem, `${quem} deseja boa noite pra vocês!`);
-      adicionarMensagemMSN(`${quem} deseja boa noite pra vocês!`, "recebido");
+      adicionarMensagemMSN(`${quem} deseja boa noite pra vocês!`, "recebido", null, item.de);
       break;
     case "banho":
       higiene = Math.min(100, higiene + 20);
       mostrarBannerMSN(spriteQuem, `${quem} deu um banho na Hanna!`);
-      adicionarMensagemMSN(`${quem} deu um banho na Hanna!`, "recebido");
+      adicionarMensagemMSN(`${quem} deu um banho na Hanna!`, "recebido", null, item.de);
       break;
     case "comida":
       fome = Math.min(100, fome + 15);
       mostrarBannerMSN(spriteQuem, `${quem} mandou comida pra Hanna!`);
-      adicionarMensagemMSN(`${quem} mandou comida pra Hanna!`, "recebido");
+      adicionarMensagemMSN(`${quem} mandou comida pra Hanna!`, "recebido", null, item.de);
       break;
     case "cocarbarriga":
       felicidade = Math.min(100, felicidade + 20);
       mostrarBannerMSN(spriteQuem, `${quem} coçou a barriga da Hanna!`);
-      adicionarMensagemMSN(`${quem} coçou a barriga da Hanna!`, "recebido");
+      adicionarMensagemMSN(`${quem} coçou a barriga da Hanna!`, "recebido", null, item.de);
       break;
     case "moedas":
       moedas += item.valor || 0;
       mostrarBannerMSN(spriteQuem, `${quem} te mandou ${item.valor} moedas!`);
-      adicionarMensagemMSN(`${quem} te mandou ${item.valor} moedas!`, "recebido");
+      adicionarMensagemMSN(`${quem} te mandou ${item.valor} moedas!`, "recebido", null, item.de);
       break;
     case "sementes":
       sementes += item.valor || 0;
       mostrarBannerMSN(spriteQuem, `${quem} te mandou ${item.valor} sementes!`);
-      adicionarMensagemMSN(`${quem} te mandou ${item.valor} sementes!`, "recebido");
+      adicionarMensagemMSN(`${quem} te mandou ${item.valor} sementes!`, "recebido", null, item.de);
       break;
     case "sementedourada":
       sementesDouradas++;
       mostrarBannerMSN(spriteQuem, `${quem} te mandou uma semente dourada!`);
-      adicionarMensagemMSN(`${quem} te mandou uma semente dourada!`, "recebido");
+      adicionarMensagemMSN(`${quem} te mandou uma semente dourada!`, "recebido", null, item.de);
       break;
     case "mensagem":
       mostrarBannerMSN(spriteQuem, `${quem} diz: "${item.texto}"`);
-      adicionarMensagemMSN(`${quem}: "${item.texto}"`, "recebido");
+      adicionarMensagemMSN(`${quem}: "${item.texto}"`, "recebido", null, item.de);
       break;
     case "figurinha":
       mostrarBannerMSN(spriteQuem, `${quem} te mandou uma figurinha!`);
@@ -1629,7 +1629,6 @@ function processarItemMSN(item) {
       break;
   }
 
-  // Salva no histórico do próprio save
   salvarNoHistoricoMSN(item);
   atualizarStatus();
 }
