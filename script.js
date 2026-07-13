@@ -1668,9 +1668,20 @@ function adicionarMensagemMSN(texto, tipo, src = null) {
     <img src="${avatar}" class="msn-recebido-avatar">
     <div class="msn-bolha">${conteudo}</div>
   `;
-  conversa.appendChild(item);
 
-  // Scrolla pro final automaticamente
+  // Clique longo pra apagar
+  let pressTimer;
+  item.addEventListener("touchstart", () => {
+    pressTimer = setTimeout(() => {
+      if (confirm("Apagar esta mensagem?")) {
+        item.remove();
+      }
+    }, 600);
+  });
+  item.addEventListener("touchend", () => clearTimeout(pressTimer));
+  item.addEventListener("touchmove", () => clearTimeout(pressTimer));
+
+  conversa.appendChild(item);
   conversa.scrollTop = conversa.scrollHeight;
 }
 
@@ -1793,6 +1804,23 @@ document.getElementById("msnEnviarMsg")?.addEventListener("click", () => {
   enviarAcaoMSN("mensagem", { texto });
   adicionarMensagemMSN(`Você: "${texto}"`, "enviado");
   document.getElementById("msnInputMsg").value = "";
+});
+
+document.getElementById("btnLimparConversa")?.addEventListener("click", async () => {
+  if (!confirm("Apagar toda a conversa?")) return;
+  
+  // Limpa visualmente
+  const conversa = document.getElementById("msnConversa");
+  if (conversa) conversa.innerHTML = "";
+
+  // Limpa no Firestore
+  const uid = localStorage.getItem("hannaUid");
+  if (!uid) return;
+  const { getFirestore, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+  const db = getFirestore(getApp());
+  await updateDoc(doc(db, "saves", uid), { historicoMSN: [] });
+  mostrarMensagem("Conversa apagada!");
 });
 
 // FIGURINHAS
