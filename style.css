@@ -1065,8 +1065,8 @@ textarea {
 }
 
 .msn-recebido-item.recebido .msn-bolha {
-  background: rgba(255,255,255,0.75);
-  border: 1.5px solid #d8a0d8;
+  background: rgba(180, 130, 255, 0.2);
+  border: 1.5px solid #c9a0f5;
   color: var(--text-dark);
   border-bottom-left-radius: 4px;
 }
