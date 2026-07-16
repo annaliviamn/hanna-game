@@ -9248,7 +9248,6 @@ function jogoEsportes() {
 
     function pontarJogador() {
       pontosJogador++;
-      tocarApito();
       if (document.getElementById("mensagemVolei"))
         document.getElementById("mensagemVolei").textContent = "Ponto seu!";
       if (document.getElementById("placarVolei"))
@@ -9258,7 +9257,6 @@ function jogoEsportes() {
 
     function pontarAdversaria() {
       pontosAdversaria++;
-      tocarApito();
       if (document.getElementById("mensagemVolei"))
         document.getElementById("mensagemVolei").textContent = "Ponto da adversária!";
       if (document.getElementById("spriteJogador"))
@@ -9483,9 +9481,9 @@ function jogoEsportes() {
             tocarApito();
             if (document.getElementById("spriteAdversaria"))
               document.getElementById("spriteAdversaria").src = sprites[adversariaId].feliz;
-            if (msg) msg.textContent += " | Adversária marcou!";
+            if (msg) msg.textContent = "Adversária marcou também!";
           } else {
-            if (msg) msg.textContent += " | Adversária errou!";
+            if (msg) msg.textContent = "Adversária errou o penalti!";
           }
 
           if (document.getElementById("placarFutebol"))
