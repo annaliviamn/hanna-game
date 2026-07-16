@@ -552,6 +552,8 @@ const CONQUISTAS = {
   recados_perfeito:   { nome: "Sintonia Total",         desc: "Acertou todas as respostas na Troca de Recados!",        sprite: "assets/ui/icons/icon-recados.png", secao: "minigames"  },
   artista_felina:     { nome: "Artista Felina",         desc: "Salvou um desenho colorido com a Hanna.",        sprite: "assets/sprites/hanna/metida.png", secao: "minigames" },
   esconde_mestre:     { nome: "Achou!",                 desc: "Encontrou o filhotinho 7 vezes no Esconde-Esconde!", sprite: "assets/sprites/filhote/filhote-pego.png", secao: "momentos" },
+  craque_volei:       { nome: "Craque do Vôlei",    desc: "Venceu uma partida de vôlei!",   sprite: "assets/sprites/esportes/hanna-volei-feliz.png",   secao: "minigames" },
+  craque_futebol:     { nome: "Craque do Futebol",  desc: "Venceu uma partida de futebol!", sprite: "assets/sprites/esportes/gatinha-futebol-feliz.png", secao: "minigames" },
   // Visitas e semente
   visita_steve:       { nome: "Visita Surpresa",        desc: "Steve Rogers apareceu de visita pela primeira vez!",     sprite: "assets/sprites/pets/steve-feliz.png",       secao: "progressao" },
   visita_joao:        { nome: "Visita do Tonton",       desc: "João Antônio veio fazer bagunça pela primeira vez!",     sprite: "assets/sprites/pets/joao-feliz.png",   secao: "progressao" },
@@ -5998,6 +6000,7 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
     else if (jogo === "colorir")      jogoColorir();
     else if (jogo === "recados")      jogoRecados();
     else if (jogo === "esconde")      jogoEscondeEsconde();
+    else if (jogo === "esportes") jogoEsportes();
   });
 });
 
@@ -8979,6 +8982,567 @@ function exibirFilhote() {
   }
   iniciarIdleFilhote();
 }
+
+// ESPORTES COM A HANNA
+function jogoEsportes() {
+  abrirArena("Esportes com a Hanna");
+
+  const somApito = criarAudio("assets/music/som-apito.mp3");
+
+  function tocarApito() {
+    somApito.currentTime = 0;
+    somApito.volume = parseFloat(volumeEfeitos.value);
+    somApito.play().catch(() => {});
+  }
+
+  // TELA DE SELEÇÃO DE ESPORTE
+  function telaSelecaoEsporte() {
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="align-items:center; gap:16px;">
+        <div style="font-size:16px; font-weight:800; color:var(--pink-deep);">Escolha o esporte</div>
+        <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
+          <div class="mg-card" style="cursor:pointer; flex-direction:row; align-items:center; gap:16px;" id="btnEscolheVolei">
+            <img src="assets/sprites/esportes/bola-volei.png" style="width:64px;height:64px;image-rendering:pixelated;flex-shrink:0;">
+            <div>
+              <div class="mg-card-titulo">Vôlei</div>
+              <div class="mg-card-desc">Hanna x Anna — melhor de 3 sets</div>
+            </div>
+          </div>
+          <div class="mg-card" style="cursor:pointer; flex-direction:row; align-items:center; gap:16px;" id="btnEscolheFutebol">
+            <img src="assets/sprites/esportes/bola-futebol.png" style="width:64px;height:64px;image-rendering:pixelated;flex-shrink:0;">
+            <div>
+              <div class="mg-card-titulo">Futebol</div>
+              <div class="mg-card-desc">Gatinha x Kika — disputa de penaltis</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+    document.getElementById("btnEscolheVolei").addEventListener("click", () => {
+      telaSelecaoPersonagem("volei");
+    });
+    document.getElementById("btnEscolheFutebol").addEventListener("click", () => {
+      telaSelecaoPersonagem("futebol");
+    });
+  }
+
+  // TELA DE SELEÇÃO DE PERSONAGEM
+  function telaSelecaoPersonagem(esporte) {
+    const opcoes = esporte === "volei"
+      ? [
+          { id: "hanna", nome: "Hanna", sprite: "assets/sprites/esportes/hanna-volei-jogando.png", adversaria: "Anna" },
+          { id: "anna", nome: "Anna", sprite: "assets/sprites/esportes/anna-volei-jogando.png", adversaria: "Hanna" },
+        ]
+      : [
+          { id: "gatinha", nome: "Gatinha", sprite: "assets/sprites/esportes/gatinha-futebol-jogando.png", adversaria: "Kika" },
+          { id: "kika", nome: "Kika", sprite: "assets/sprites/esportes/kika-futebol-jogando.png", adversaria: "Gatinha" },
+        ];
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="align-items:center; gap:16px;">
+        <div style="font-size:16px; font-weight:800; color:var(--pink-deep);">Com quem você quer jogar?</div>
+        <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
+          ${opcoes.map(o => `
+            <div class="mg-card" style="cursor:pointer; flex-direction:row; align-items:center; gap:16px;" data-id="${o.id}">
+              <img src="${o.sprite}" style="width:80px;height:80px;image-rendering:pixelated;flex-shrink:0;">
+              <div>
+                <div class="mg-card-titulo">${o.nome}</div>
+                <div class="mg-card-desc">Adversária: ${o.adversaria}</div>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+        <button class="steve-btn" onclick="jogoEsportes()">Voltar</button>
+      </div>`;
+
+    document.querySelectorAll("[data-id]").forEach(el => {
+      el.addEventListener("click", () => {
+        const personagem = el.dataset.id;
+        const adversaria = opcoes.find(o => o.id !== personagem);
+        if (esporte === "volei") {
+          iniciarVolei(personagem, adversaria);
+        } else {
+          iniciarFutebol(personagem, adversaria);
+        }
+      });
+    });
+  }
+
+  // VÔLEI
+  function iniciarVolei(personagemId, adversariaObj) {
+    const sprites = {
+      hanna: {
+        jogando: "assets/sprites/esportes/hanna-volei-jogando.png",
+        feliz: "assets/sprites/esportes/hanna-volei-feliz.png",
+        triste: "assets/sprites/esportes/hanna-volei-triste.png",
+      },
+      anna: {
+        jogando: "assets/sprites/esportes/anna-volei-jogando.png",
+        feliz: "assets/sprites/esportes/anna-volei-feliz.png",
+        triste: "assets/sprites/esportes/anna-volei-triste.png",
+      },
+    };
+
+    const adversariaId = adversariaObj.id;
+    let setsJogador = 0, setsAdversaria = 0;
+    let pontosJogador = 0, pontosAdversaria = 0;
+    let bolaAtiva = false;
+    let bolaX = 50, bolaY = 50;
+    let bolaVX = 3, bolaVY = 2;
+    let animacaoId = null;
+    let podeBater = false;
+
+    function dificuldadeIA() {
+      const vantagem = pontosJogador - pontosAdversaria;
+      if (vantagem > 5) return 0.85;
+      if (vantagem > 2) return 0.70;
+      return 0.50;
+    }
+
+    function renderVolei() {
+      arenaConteudo.innerHTML = `
+        <div class="pz-wrap" style="gap:8px;">
+
+          <!-- Placar -->
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="text-align:center;">
+              <img src="${sprites[personagemId].jogando}" id="spriteJogador" 
+                style="width:80px;height:80px;image-rendering:pixelated;cursor:pointer;" id="btnBater">
+              <div style="font-size:11px;font-weight:800;color:var(--pink-deep);">${personagemId === "hanna" ? "Hanna" : "Anna"}</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:22px;font-weight:800;color:var(--pink-deep);" id="placarVolei">${pontosJogador} x ${pontosAdversaria}</div>
+              <div style="font-size:10px;color:var(--text-mid);">Sets: ${setsJogador} x ${setsAdversaria}</div>
+            </div>
+            <div style="text-align:center;">
+              <img src="${sprites[adversariaId].jogando}" id="spriteAdversaria"
+                style="width:80px;height:80px;image-rendering:pixelated;">
+              <div style="font-size:11px;font-weight:800;color:var(--pink-deep);">${adversariaObj.nome}</div>
+            </div>
+          </div>
+
+          <!-- Quadra -->
+          <div id="quadraVolei" style="width:100%;height:200px;background:linear-gradient(180deg,#1a3a6b,#2a5298);border-radius:12px;position:relative;overflow:hidden;cursor:pointer;">
+            
+            <!-- Linhas da quadra -->
+            <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,0.5);"></div>
+            <div style="position:absolute;bottom:0;left:50%;width:2px;height:100%;background:rgba(255,255,255,0.3);transform:translateX(-50%);"></div>
+            
+            <!-- Rede -->
+            <div style="position:absolute;left:50%;top:0;bottom:0;width:4px;background:white;transform:translateX(-50%);z-index:2;">
+              <div style="position:absolute;top:0;left:-20px;width:44px;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 8px,rgba(255,255,255,0.4) 8px,rgba(255,255,255,0.4) 10px);"></div>
+            </div>
+
+            <!-- Bola -->
+            <img src="assets/sprites/esportes/bola-volei.png" id="bolaVoleiAnim"
+              style="width:36px;height:36px;image-rendering:pixelated;position:absolute;left:25%;top:40%;transition:none;">
+
+            <!-- Indicador de timing -->
+            <div id="indicadorTiming" style="position:absolute;bottom:8px;left:8px;right:8px;height:6px;background:rgba(255,255,255,0.2);border-radius:4px;display:none;">
+              <div id="barraTiming" style="height:100%;width:0%;background:#ff8fc2;border-radius:4px;transition:width 0.05s linear;"></div>
+            </div>
+
+            <div id="mensagemVolei" style="position:absolute;top:8px;left:0;right:0;text-align:center;font-size:12px;font-weight:800;color:white;text-shadow:0 1px 3px rgba(0,0,0,0.8);"></div>
+          </div>
+
+          <div style="text-align:center;font-size:11px;color:var(--text-mid);">Toque na quadra ou no personagem pra rebater!</div>
+
+          <button class="steve-btn" id="btnServirBola" style="width:100%;">Servir bola</button>
+        </div>`;
+
+      document.getElementById("btnServirBola").addEventListener("click", servirBola);
+      document.getElementById("quadraVolei").addEventListener("click", tentarRebater);
+      document.getElementById("spriteJogador").addEventListener("click", tentarRebater);
+    }
+
+    function servirBola() {
+      if (bolaAtiva) return;
+      bolaAtiva = true;
+      bolaX = 25;
+      bolaY = 40;
+      bolaVX = 2 + Math.random() * 2;
+      bolaVY = 1 + Math.random() * 2;
+      podeBater = false;
+
+      const btnServir = document.getElementById("btnServirBola");
+      if (btnServir) btnServir.style.display = "none";
+
+      const timing = document.getElementById("indicadorTiming");
+      if (timing) timing.style.display = "block";
+
+      animarBola();
+    }
+
+    function animarBola() {
+      const bola = document.getElementById("bolaVoleiAnim");
+      const quadra = document.getElementById("quadraVolei");
+      if (!bola || !quadra) return;
+
+      const largura = quadra.offsetWidth;
+      const altura = quadra.offsetHeight;
+
+      bolaX += bolaVX;
+      bolaY += bolaVY;
+
+      // Rebate nas paredes
+      if (bolaY <= 0 || bolaY >= altura - 36) bolaVY *= -1;
+      if (bolaX <= 0) {
+        // Ponto da adversária
+        cancelAnimationFrame(animacaoId);
+        bolaAtiva = false;
+        pontarAdversaria();
+        return;
+      }
+
+      // Bola chegando no lado do jogador (esquerda)
+      if (bolaX < largura * 0.35 && bolaVX < 0) {
+        podeBater = true;
+        const barra = document.getElementById("barraTiming");
+        if (barra) {
+          barra.style.width = "0%";
+          setTimeout(() => { if (barra) barra.style.width = "100%"; }, 50);
+          setTimeout(() => { if (barra) barra.style.width = "0%"; podeBater = false; }, 1000);
+        }
+      }
+
+      // IA rebate quando bola chega no lado dela
+      if (bolaX > largura * 0.6 && bolaVX > 0) {
+        const iaRebate = Math.random() < dificuldadeIA();
+        if (iaRebate) {
+          bolaVX *= -1;
+          bolaVX -= 0.5;
+          if (document.getElementById("spriteAdversaria"))
+            document.getElementById("spriteAdversaria").src = sprites[adversariaId].feliz;
+          setTimeout(() => {
+            if (document.getElementById("spriteAdversaria"))
+              document.getElementById("spriteAdversaria").src = sprites[adversariaId].jogando;
+          }, 600);
+        } else {
+          // Bola passa = ponto do jogador
+          cancelAnimationFrame(animacaoId);
+          bolaAtiva = false;
+          pontarJogador();
+          return;
+        }
+      }
+
+      bola.style.left = bolaX + "px";
+      bola.style.top = bolaY + "px";
+
+      animacaoId = requestAnimationFrame(animarBola);
+    }
+
+    function tentarRebater() {
+      if (!bolaAtiva || !podeBater) return;
+      podeBater = false;
+      bolaVX = Math.abs(bolaVX) + 1;
+      bolaVY = (Math.random() - 0.5) * 4;
+
+      if (document.getElementById("spriteJogador"))
+        document.getElementById("spriteJogador").src = sprites[personagemId].feliz;
+      setTimeout(() => {
+        if (document.getElementById("spriteJogador"))
+          document.getElementById("spriteJogador").src = sprites[personagemId].jogando;
+      }, 600);
+    }
+
+    function pontarJogador() {
+      pontosJogador++;
+      tocarApito();
+      if (document.getElementById("mensagemVolei"))
+        document.getElementById("mensagemVolei").textContent = "Ponto seu!";
+      if (document.getElementById("placarVolei"))
+        document.getElementById("placarVolei").textContent = `${pontosJogador} x ${pontosAdversaria}`;
+      verificarSet();
+    }
+
+    function pontarAdversaria() {
+      pontosAdversaria++;
+      tocarApito();
+      if (document.getElementById("mensagemVolei"))
+        document.getElementById("mensagemVolei").textContent = "Ponto da adversária!";
+      if (document.getElementById("spriteJogador"))
+        document.getElementById("spriteJogador").src = sprites[personagemId].triste;
+      setTimeout(() => {
+        if (document.getElementById("spriteJogador"))
+          document.getElementById("spriteJogador").src = sprites[personagemId].jogando;
+      }, 1000);
+      if (document.getElementById("placarVolei"))
+        document.getElementById("placarVolei").textContent = `${pontosJogador} x ${pontosAdversaria}`;
+      verificarSet();
+    }
+
+    function verificarSet() {
+      setTimeout(() => {
+        if (pontosJogador >= 25 && pontosJogador - pontosAdversaria >= 2) {
+          setsJogador++;
+          pontosJogador = 0; pontosAdversaria = 0;
+          tocarApito();
+          if (setsJogador >= 3 || setsAdversaria >= 3) {
+            finalizarVolei();
+          } else {
+            if (document.getElementById("mensagemVolei"))
+              document.getElementById("mensagemVolei").textContent = `Set seu! ${setsJogador} x ${setsAdversaria}`;
+            setTimeout(() => renderVolei(), 2000);
+          }
+        } else if (pontosAdversaria >= 25 && pontosAdversaria - pontosJogador >= 2) {
+          setsAdversaria++;
+          pontosJogador = 0; pontosAdversaria = 0;
+          tocarApito();
+          if (setsJogador >= 3 || setsAdversaria >= 3) {
+            finalizarVolei();
+          } else {
+            if (document.getElementById("mensagemVolei"))
+              document.getElementById("mensagemVolei").textContent = `Set da adversária! ${setsJogador} x ${setsAdversaria}`;
+            setTimeout(() => renderVolei(), 2000);
+          }
+        } else {
+          // Próximo ponto
+          const btnServir = document.getElementById("btnServirBola");
+          if (btnServir) btnServir.style.display = "block";
+          const timing = document.getElementById("indicadorTiming");
+          if (timing) timing.style.display = "none";
+        }
+      }, 1500);
+    }
+
+    function finalizarVolei() {
+      cancelAnimationFrame(animacaoId);
+      const venceu = setsJogador >= 3;
+      const diff = Math.abs(setsJogador - setsAdversaria);
+      let recompensa = 0;
+
+      if (venceu) {
+        if (diff === 3) recompensa = 8000;
+        else if (diff === 2) recompensa = 5000;
+        else recompensa = 3000;
+        moedas += recompensa;
+        desbloquearConquista("craque_volei");
+      } else {
+        if (diff === 3) recompensa = -12000;
+        else if (diff === 2) recompensa = -8000;
+        else recompensa = -5000;
+        moedas = Math.max(0, moedas + recompensa);
+      }
+
+      atualizarStatus();
+      tocarApito();
+
+      mostrarResultado(
+        venceu ? `Vitória! ${setsJogador} x ${setsAdversaria}` : `Derrota! ${setsJogador} x ${setsAdversaria}`,
+        "", Math.abs(recompensa),
+        recompensa > 0 ? `+${recompensa} moedas!` : `${recompensa} moedas!`,
+        jogoEsportes
+      );
+    }
+
+    renderVolei();
+    tocarApito();
+  }
+
+  // FUTEBOL (PENALTIS)
+  function iniciarFutebol(personagemId, adversariaObj) {
+    const sprites = {
+      gatinha: {
+        jogando: "assets/sprites/esportes/gatinha-futebol-jogando.png",
+        feliz: "assets/sprites/esportes/gatinha-futebol-feliz.png",
+        triste: "assets/sprites/esportes/gatinha-futebol-triste.png",
+      },
+      kika: {
+        jogando: "assets/sprites/esportes/kika-futebol-jogando.png",
+        feliz: "assets/sprites/esportes/kika-futebol-feliz.png",
+        triste: "assets/sprites/esportes/kika-futebol-triste.png",
+      },
+    };
+
+    const adversariaId = adversariaObj.id;
+    let golsJogador = 0, golsAdversaria = 0;
+    let cobrancaAtual = 0;
+    const totalCobrancas = 5;
+    let aguardando = false;
+
+    function dificuldadeIA() {
+      const vantagem = golsJogador - golsAdversaria;
+      if (vantagem > 2) return 0.85;
+      if (vantagem > 0) return 0.70;
+      return 0.55;
+    }
+
+    function renderFutebol() {
+      arenaConteudo.innerHTML = `
+        <div class="pz-wrap" style="gap:8px;">
+
+          <!-- Placar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <div style="text-align:center;">
+              <img src="${sprites[personagemId].jogando}" id="spriteJogador" style="width:80px;height:80px;image-rendering:pixelated;">
+              <div style="font-size:11px;font-weight:800;color:var(--pink-deep);">${personagemId === "gatinha" ? "Gatinha" : "Kika"}</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:26px;font-weight:800;color:var(--pink-deep);" id="placarFutebol">${golsJogador} x ${golsAdversaria}</div>
+              <div style="font-size:10px;color:var(--text-mid);">Cobrança ${cobrancaAtual + 1}/${totalCobrancas}</div>
+            </div>
+            <div style="text-align:center;">
+              <img src="${sprites[adversariaId].jogando}" id="spriteAdversaria" style="width:80px;height:80px;image-rendering:pixelated;">
+              <div style="font-size:11px;font-weight:800;color:var(--pink-deep);">${adversariaObj.nome}</div>
+            </div>
+          </div>
+
+          <!-- Campo -->
+          <div style="width:100%;background:linear-gradient(180deg,#2d8a2d,#1f6b1f);border-radius:12px;padding:12px;position:relative;min-height:180px;">
+            
+            <!-- Trave -->
+            <div style="width:70%;margin:0 auto;border:4px solid white;border-bottom:none;height:60px;border-radius:4px 4px 0 0;position:relative;">
+              <!-- Goleiro -->
+              <img src="assets/sprites/esportes/goleiro-centro.png" id="goleiro" 
+                style="width:50px;height:50px;image-rendering:pixelated;position:absolute;bottom:0;left:50%;transform:translateX(-50%);transition:left 0.3s ease;">
+            </div>
+
+            <!-- Marcação de penalti -->
+            <div style="width:2px;height:20px;background:white;margin:4px auto;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:white;margin:0 auto;"></div>
+
+            <!-- Bola -->
+            <div style="text-align:center;margin-top:8px;">
+              <img src="assets/sprites/esportes/bola-futebol.png" id="bolaFutebol"
+                style="width:40px;height:40px;image-rendering:pixelated;transition:all 0.4s ease;">
+            </div>
+          </div>
+
+          <div id="mensagemFutebol" style="text-align:center;font-size:13px;font-weight:700;color:var(--pink-deep);min-height:20px;margin:4px 0;"></div>
+
+          <!-- Botões de chute -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;" id="botoesChute">
+            <button class="steve-btn" data-direcao="esquerda">Esquerda</button>
+            <button class="steve-btn" data-direcao="centro">Centro</button>
+            <button class="steve-btn" data-direcao="direita">Direita</button>
+          </div>
+
+        </div>`;
+
+      document.querySelectorAll("[data-direcao]").forEach(btn => {
+        btn.addEventListener("click", () => cobrarPenalti(btn.dataset.direcao));
+      });
+    }
+
+    function cobrarPenalti(direcaoEscolhida) {
+      if (aguardando) return;
+      aguardando = true;
+      document.querySelectorAll("[data-direcao]").forEach(b => b.disabled = true);
+
+      const direcoes = ["esquerda", "centro", "direita"];
+      const direcaoGoleiro = direcoes[Math.floor(Math.random() * direcoes.length)];
+      const marcouGol = direcaoEscolhida !== direcaoGoleiro;
+
+      // Anima bola
+      const bola = document.getElementById("bolaFutebol");
+      const goleiro = document.getElementById("goleiro");
+      const msg = document.getElementById("mensagemFutebol");
+
+      if (bola) {
+        const posicoes = { esquerda: "10%", centro: "calc(50% - 20px)", direita: "calc(80% - 20px)" };
+        bola.style.transition = "all 0.4s ease";
+        bola.style.marginLeft = posicoes[direcaoEscolhida];
+        bola.style.marginTop = "-80px";
+        bola.style.transform = "scale(0.6)";
+      }
+
+      // Anima goleiro
+      if (goleiro) {
+        const posGoleiro = { esquerda: "10%", centro: "50%", direita: "90%" };
+        goleiro.style.left = posGoleiro[direcaoGoleiro];
+        const spriteGoleiro = {
+          esquerda: "assets/sprites/esportes/goleiro-esquerda.png",
+          centro: "assets/sprites/esportes/goleiro-centro.png",
+          direita: "assets/sprites/esportes/goleiro-direita.png",
+        };
+        goleiro.src = spriteGoleiro[direcaoGoleiro];
+      }
+
+      setTimeout(() => {
+        if (marcouGol) {
+          golsJogador++;
+          tocarApito();
+          if (document.getElementById("spriteJogador"))
+            document.getElementById("spriteJogador").src = sprites[personagemId].feliz;
+          if (msg) msg.textContent = "GOOOL! Que chute incrível!";
+        } else {
+          if (document.getElementById("spriteJogador"))
+            document.getElementById("spriteJogador").src = sprites[personagemId].triste;
+          if (msg) msg.textContent = "Defendido! O goleiro adivinhou!";
+        }
+
+        if (document.getElementById("placarFutebol"))
+          document.getElementById("placarFutebol").textContent = `${golsJogador} x ${golsAdversaria}`;
+
+        // IA cobra
+        setTimeout(() => {
+          const iaAcertou = Math.random() < dificuldadeIA();
+          if (iaAcertou) {
+            golsAdversaria++;
+            tocarApito();
+            if (document.getElementById("spriteAdversaria"))
+              document.getElementById("spriteAdversaria").src = sprites[adversariaId].feliz;
+            if (msg) msg.textContent += " | Adversária marcou!";
+          } else {
+            if (msg) msg.textContent += " | Adversária errou!";
+          }
+
+          if (document.getElementById("placarFutebol"))
+            document.getElementById("placarFutebol").textContent = `${golsJogador} x ${golsAdversaria}`;
+
+          cobrancaAtual++;
+          aguardando = false;
+
+          setTimeout(() => {
+            if (cobrancaAtual >= totalCobrancas) {
+              finalizarFutebol();
+            } else {
+              renderFutebol();
+            }
+          }, 1500);
+        }, 1500);
+      }, 500);
+    }
+
+    function finalizarFutebol() {
+      const venceu = golsJogador > golsAdversaria;
+      const empate = golsJogador === golsAdversaria;
+      const diff = Math.abs(golsJogador - golsAdversaria);
+      let recompensa = 0;
+
+      if (empate) {
+        recompensa = -2000;
+        moedas = Math.max(0, moedas + recompensa);
+      } else if (venceu) {
+        recompensa = diff >= 4 ? 10000 : 5000;
+        moedas += recompensa;
+        desbloquearConquista("craque_futebol");
+      } else {
+        recompensa = diff >= 4 ? -15000 : -8000;
+        moedas = Math.max(0, moedas + recompensa);
+      }
+
+      atualizarStatus();
+      tocarApito();
+
+      const textoResultado = empate
+        ? `Empate! ${golsJogador} x ${golsAdversaria}`
+        : venceu
+        ? `Vitória! ${golsJogador} x ${golsAdversaria}`
+        : `Derrota! ${golsJogador} x ${golsAdversaria}`;
+
+      mostrarResultado(textoResultado, "", Math.abs(recompensa),
+        recompensa >= 0 ? `+${recompensa} moedas!` : `${recompensa} moedas!`,
+        jogoEsportes);
+    }
+
+    renderFutebol();
+    tocarApito();
+  }
+  setTimeout(() => telaSelecaoEsporte(), 300);
+}
+
 
 // MINIGAME: ESCONDE-ESCONDE DO FILHOTINHO
 function jogoEscondeEsconde() {

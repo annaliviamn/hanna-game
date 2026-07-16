@@ -363,10 +363,11 @@ textarea {
 
 .recurso-chip {
   display: flex; align-items: center; gap: 6px;
+  justify-content: flex-start;
   background: var(--pink-light);
   border: 1.5px solid var(--pink-mid);
   border-radius: 20px;
-  padding: 5px 12px;
+  padding: 5px 12px 5px 6px;
   font-weight: 800;
   font-size: 14px;
   color: var(--pink-deep);
