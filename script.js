@@ -8991,7 +8991,7 @@ function jogoEsportes() {
 
   function tocarApito() {
     somApito.currentTime = 0;
-    somApito.volume = parseFloat(volumeEfeitos.value);
+    somApito.volume = 0.3;
     somApito.play().catch(() => {});
   }
 
@@ -9438,11 +9438,13 @@ function jogoEsportes() {
       const msg = document.getElementById("mensagemFutebol");
 
       if (bola) {
-        const posicoes = { esquerda: "10%", centro: "calc(50% - 20px)", direita: "calc(80% - 20px)" };
+        const posicoes = { 
+          esquerda: "-60px", 
+          centro: "0px", 
+          direita: "60px" 
+        };
         bola.style.transition = "all 0.4s ease";
-        bola.style.marginLeft = posicoes[direcaoEscolhida];
-        bola.style.marginTop = "-80px";
-        bola.style.transform = "scale(0.6)";
+        bola.style.transform = `translateX(${posicoes[direcaoEscolhida]}) translateY(-80px) scale(0.6)`;
       }
 
       // Anima goleiro
@@ -9510,8 +9512,8 @@ function jogoEsportes() {
       let recompensa = 0;
 
       if (empate) {
-        recompensa = -2000;
-        moedas = Math.max(0, moedas + recompensa);
+        recompensa = 0;
+        mostrarMensagem("Empate! Ninguém ganha nada.");
       } else if (venceu) {
         recompensa = diff >= 4 ? 10000 : 5000;
         moedas += recompensa;
@@ -9728,6 +9730,7 @@ const PREMIOS_ROLETA = [
   { nome: "Caixa Misteriosa",sprite: "assets/shop/caixa.png",                         cor: "#ffd700", tipo: "caixa",   valor: "caixa"                     },
   { nome: "5000 Moedas",     sprite: "assets/sprites/hanna/hanna-rica.png",           cor: "#ffa500", tipo: "moedas",  valor: 5000                        },
   { nome: "Semente Dourada", sprite: "assets/sprites/hanna/hanna-semente-dourada.png",cor: "#ff6347", tipo: "dourada", valor: 1                           },
+  { nome: "Perdeu Tudo!", sprite: "assets/sprites/hanna/triste.png", cor: "#cc0000", tipo: "perdeu", valor: 0 },
 ];
 
 function verificarRoletaDiaria() {
@@ -9796,7 +9799,7 @@ function mostrarRoleta() {
     girando = true;
     document.getElementById("btnGirarRoleta").style.display = "none";
 
-    const pesos = [15, 15, 15, 15, 15, 10, 10, 5];
+    const pesos = [15, 15, 15, 15, 15, 10, 10, 5, 3];
     const pool = [];
     PREMIOS_ROLETA.forEach((p, i) => {
       for (let j = 0; j < pesos[i]; j++) pool.push(i);
@@ -9877,6 +9880,11 @@ function entregarPremioProleta(premio) {
         coleira: () => { felicidade = Math.min(100, felicidade + 40); vinculoGatinhas = Math.min(100, vinculoGatinhas + 5); mostrarMensagem("Coleirinha nova!"); },
       };
       if (efeitos[premio.valor]) efeitos[premio.valor]();
+      break;
+    case "perdeu":
+      const perdido = moedas;
+      moedas = 0;
+      mostrarMensagem(`PERDEU TUDO! -${perdido} moedas!`);
       break;
   }
   atualizarStatus();
