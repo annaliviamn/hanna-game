@@ -1330,92 +1330,203 @@
       <!-- Desbloqueado -->
       <div id="msnDesbloqueado" style="display:none;">
 
-        <!-- Status da conexão -->
+        <!-- Card de conexão -->
         <div class="msn-conexao-card">
           <img src="assets/sprites/personagens/anna-msn.png" class="msn-avatar">
           <div class="msn-conexao-info">
             <span class="msn-nome">Anna</span>
-            <span class="msn-status">online</span>
           </div>
           <div style="flex:1;"></div>
           <div class="msn-conexao-info" style="align-items:flex-end;">
             <span class="msn-nome">Kika</span>
-            <span class="msn-status" id="msnStatusKika">online</span>
           </div>
           <img src="assets/sprites/personagens/kika-msn.png" class="msn-avatar">
         </div>
 
-        <!-- Mimos -->
-        <div class="msn-categoria">Mimos</div>
-        <div class="msn-acoes-grid">
-          <button class="msn-btn-acao" id="msnCarinho">
-            <img src="assets/ui/icons/icon-carinho.png" class="msn-icon">
-            <span>Carinho</span>
-          </button>
-          <button class="msn-btn-acao" id="msnPetisco">
-            <img src="assets/ui/icons/icon-petisco.png" class="msn-icon">
-            <span>Petisco</span>
-          </button>
-          <button class="msn-btn-acao" id="msnBoaNnoite">
-            <img src="assets/ui/icons/icon-dormir.png" class="msn-icon">
-            <span>Boa noite</span>
-          </button>
-          <button class="msn-btn-acao" id="msnMoedas">
-            <img src="assets/ui/icons/icon-moeda.png" class="msn-icon">
-            <span>Mandar moedas</span>
-          </button>
-          <button class="msn-btn-acao" id="msnBanho">
-            <img src="assets/ui/icons/icon-banho.png" class="msn-icon">
-            <span>Banho</span>
-          </button>
-          <button class="msn-btn-acao" id="msnComida">
-            <img src="assets/ui/icons/icon-comida.png" class="msn-icon">
-            <span>Comida</span>
-          </button>
-          <button class="msn-btn-acao" id="msnCocarBarriga">
-            <img src="assets/ui/icons/icon-carinho.png" class="msn-icon">
-            <span>Coçar barriga</span>
-          </button>
-          <button class="msn-btn-acao" id="msnSementes">
-            <img src="assets/ui/icons/icon-semente.png" class="msn-icon">
-            <span>Sementes</span>
-          </button>
-          <button class="msn-btn-acao" id="msnSementeDourada">
-            <img src="assets/sprites/hanna/hanna-semente-dourada.png" class="msn-icon">
-            <span>Semente Rara</span>
-          </button>
+        <!-- Abas -->
+        <div class="msn-abas">
+          <button class="msn-aba ativo" data-aba="chat">Chat</button>
+          <button class="msn-aba" data-aba="cuidar">Cuidar</button>
+          <button class="msn-aba" data-aba="mimos">Mimos</button>
         </div>
 
-        <!-- Botão de Apagar Mensagem -->
-        <div style="display:flex; justify-content:flex-end; margin-bottom:4px;">
-          <button id="btnLimparConversa" class="msn-btn-figurinha">Limpar conversa</button>
-        </div>
-
-        <!-- Conversa -->
-        <div class="msn-categoria">Conversa</div>
-        <div id="msnConversa" class="msn-conversa-container"></div>
-
-        <!-- Figurinhas -->
-        <div id="msnFigurinhasPanel" style="display:none;">
-          <div class="msn-fig-categorias">
-            <button class="msn-fig-cat ativo" data-cat="hanna">Hanna</button>
-            <button class="msn-fig-cat" data-cat="gatinha">Gatinha</button>
-            <button class="msn-fig-cat" data-cat="juntas">Juntas</button>
-            <button class="msn-fig-cat" data-cat="nos">Nós</button>
-            <button class="msn-fig-cat" data-cat="pets">Pets</button>
-            <button class="msn-fig-cat" data-cat="filhote">Filhote</button>
+        <!-- ABA CHAT -->
+        <div id="msnAbaChat" class="msn-aba-conteudo">
+          <div style="display:flex; justify-content:flex-end; margin-bottom:4px;">
+            <button id="btnLimparConversa" class="msn-btn-figurinha">Limpar conversa</button>
           </div>
-          <div class="msn-fig-grid" id="msnFigGrid"></div>
+          <div id="msnConversa" class="msn-conversa-container"></div>
+          <div id="msnFigurinhasPanel" style="display:none;">
+            <div class="msn-fig-categorias">
+              <button class="msn-fig-cat ativo" data-cat="hanna">Hanna</button>
+              <button class="msn-fig-cat" data-cat="gatinha">Gatinha</button>
+              <button class="msn-fig-cat" data-cat="juntas">Juntas</button>
+              <button class="msn-fig-cat" data-cat="nos">Nós</button>
+              <button class="msn-fig-cat" data-cat="pets">Pets</button>
+              <button class="msn-fig-cat" data-cat="filhote">Filhote</button>
+            </div>
+            <div class="msn-fig-grid" id="msnFigGrid"></div>
+          </div>
+          <div class="msn-msg-area">
+            <div class="msn-figurinhas-btn-wrap">
+              <button id="btnAbrirFigurinhas" class="msn-btn-figurinha">Figurinhas</button>
+            </div>
+            <input type="text" id="msnInputMsg" class="input-cozy" placeholder="Digite uma mensagem..." maxlength="80">
+            <button id="msnEnviarMsg" class="msn-btn-enviar">Enviar</button>
+          </div>
         </div>
 
-        <!-- Mensagem -->
-        <div class="msn-categoria">Mensagem</div>
-        <div class="msn-msg-area">
-          <div class="msn-figurinhas-btn-wrap">
-            <button id="btnAbrirFigurinhas" class="msn-btn-figurinha">Figurinhas</button>
+        <!-- ABA CUIDAR -->
+        <div id="msnAbaCuidar" class="msn-aba-conteudo" style="display:none;">
+          
+          <!-- Stats da outra jogadora -->
+          <div class="msn-stats-card" id="msnStatsOutra">
+            <div class="msn-stats-titulo">Como tá a Hanna da Kika?</div>
+            <div class="msn-stats-grid">
+              <div class="msn-stat-item">
+                <span class="msn-stat-label">Fome</span>
+                <div class="msn-stat-barra"><div class="msn-stat-fill" id="msnStatFome" style="width:0%;background:#ff8fc2;"></div></div>
+                <span class="msn-stat-valor" id="msnStatFomeVal">0%</span>
+              </div>
+              <div class="msn-stat-item">
+                <span class="msn-stat-label">Felicidade</span>
+                <div class="msn-stat-barra"><div class="msn-stat-fill" id="msnStatFelicidade" style="width:0%;background:#ff5fa2;"></div></div>
+                <span class="msn-stat-valor" id="msnStatFelicidadeVal">0%</span>
+              </div>
+              <div class="msn-stat-item">
+                <span class="msn-stat-label">Energia</span>
+                <div class="msn-stat-barra"><div class="msn-stat-fill" id="msnStatEnergia" style="width:0%;background:#b57cff;"></div></div>
+                <span class="msn-stat-valor" id="msnStatEnergiaVal">0%</span>
+              </div>
+              <div class="msn-stat-item">
+                <span class="msn-stat-label">Higiene</span>
+                <div class="msn-stat-barra"><div class="msn-stat-fill" id="msnStatHigiene" style="width:0%;background:#8f5be8;"></div></div>
+                <span class="msn-stat-valor" id="msnStatHigieneVal">0%</span>
+              </div>
+              <div class="msn-stat-item">
+                <span class="msn-stat-label">Vínculo</span>
+                <div class="msn-stat-barra"><div class="msn-stat-fill" id="msnStatVinculo" style="width:0%;background:#ff69b4;"></div></div>
+                <span class="msn-stat-valor" id="msnStatVinculoVal">0%</span>
+              </div>
+            </div>
           </div>
-          <input type="text" id="msnInputMsg" class="input-cozy" placeholder="Digite uma mensagem..." maxlength="80">
-          <button id="msnEnviarMsg" class="msn-btn-enviar">Enviar</button>
+
+          <!-- Botões de cuidado -->
+          <div class="msn-categoria">Cuidar da Hanna da Kika</div>
+          <div class="msn-acoes-grid">
+            <button class="msn-btn-acao" id="msnCarinho">
+              <img src="assets/ui/icons/icon-carinho.png" class="msn-icon">
+              <span>Carinho</span>
+            </button>
+            <button class="msn-btn-acao" id="msnComida">
+              <img src="assets/ui/icons/icon-comida.png" class="msn-icon">
+              <span>Comida</span>
+            </button>
+            <button class="msn-btn-acao" id="msnBanho">
+              <img src="assets/ui/icons/icon-banho.png" class="msn-icon">
+              <span>Banho</span>
+            </button>
+            <button class="msn-btn-acao" id="msnPetisco">
+              <img src="assets/ui/icons/icon-petisco.png" class="msn-icon">
+              <span>Petisco</span>
+            </button>
+            <button class="msn-btn-acao" id="msnCocarBarriga">
+              <img src="assets/ui/icons/icon-carinho.png" class="msn-icon">
+              <span>Coçar barriga</span>
+            </button>
+            <button class="msn-btn-acao" id="msnBoaNnoite">
+              <img src="assets/ui/icons/icon-dormir.png" class="msn-icon">
+              <span>Boa noite</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ABA MIMOS -->
+        <div id="msnAbaMimos" class="msn-aba-conteudo" style="display:none;">
+
+          <!-- Saldo -->
+          <div class="msn-saldo">
+            <img src="assets/ui/icons/icon-moeda.png" style="width:20px;height:20px;image-rendering:pixelated;">
+            <span id="msnSaldoAtual">0</span> moedas disponíveis
+          </div>
+
+          <div class="msn-categoria">Pra Hanna</div>
+          <div class="msn-acoes-grid">
+            <button class="msn-btn-acao" id="msnMoedas">
+              <img src="assets/ui/icons/icon-moeda.png" class="msn-icon">
+              <span>1.000 moedas</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 1.000</span>
+            </button>
+            <button class="msn-btn-acao" id="msnSementes">
+              <img src="assets/ui/icons/icon-farm.png" class="msn-icon">
+              <span>10 sementes</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 4.000</span>
+            </button>
+            <button class="msn-btn-acao" id="msnAlmofada">
+              <img src="assets/shop/almofada.png" class="msn-icon">
+              <span>Almofada</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 1.100</span>
+            </button>
+            <button class="msn-btn-acao" id="msnNovelo">
+              <img src="assets/shop/novelo.png" class="msn-icon">
+              <span>Novelo</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 600</span>
+            </button>
+            <button class="msn-btn-acao" id="msnRatinho">
+              <img src="assets/shop/ratinho.png" class="msn-icon">
+              <span>Ratinho</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 900</span>
+            </button>
+            <button class="msn-btn-acao" id="msnPeixe">
+              <img src="assets/shop/peixe.png" class="msn-icon">
+              <span>Peixinho</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 400</span>
+            </button>
+            <button class="msn-btn-acao" id="msnColeira">
+              <img src="assets/shop/coleira.png" class="msn-icon">
+              <span>Coleira</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 1.250</span>
+            </button>
+          </div>
+
+          <div class="msn-categoria">Pra Gatinha</div>
+          <div class="msn-acoes-grid">
+            <button class="msn-btn-acao" id="msnFlorzinha">
+              <img src="assets/shop/presente-flor.png" class="msn-icon">
+              <span>Florzinha</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 10.000</span>
+            </button>
+            <button class="msn-btn-acao" id="msnChocolate">
+              <img src="assets/shop/presente-chocolate.png" class="msn-icon">
+              <span>Chocolate</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 20.000</span>
+            </button>
+            <button class="msn-btn-acao" id="msnCesta">
+              <img src="assets/shop/presente-cesta.png" class="msn-icon">
+              <span>Cesta</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 40.000</span>
+            </button>
+          </div>
+
+          <div class="msn-categoria">Pro Filhotinho</div>
+          <div class="msn-acoes-grid" id="msnMimosFilhote">
+            <button class="msn-btn-acao" id="msnMamadeira">
+              <img src="assets/shop/mamadeira.png" class="msn-icon">
+              <span>Mamadeira</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 60.000</span>
+            </button>
+            <button class="msn-btn-acao" id="msnBrinquedinho">
+              <img src="assets/shop/pelucia.png" class="msn-icon">
+              <span>Brinquedinho</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 50.000</span>
+            </button>
+            <button class="msn-btn-acao" id="msnGuizoMSN">
+              <img src="assets/shop/guizo.png" class="msn-icon">
+              <span>Guizo</span>
+              <span style="font-size:9px;color:var(--text-mid);">🪙 40.000</span>
+            </button>
+          </div>
+
         </div>
 
       </div>

@@ -1560,6 +1560,9 @@ async function verificarCaixaEntrada() {
 
   // Limpa a caixa
   await updateDoc(doc(db, "saves", uid), { caixaDeEntrada: [] });
+  
+  // Salva os stats atualizados imediatamente
+  _salvar();
 }
 
 function processarItemMSN(item) {
@@ -1616,10 +1619,61 @@ function processarItemMSN(item) {
       mostrarBannerMSN(spriteQuem, `${quem} te mandou ${item.valor} sementes!`);
       adicionarMensagemMSN(`${quem} te mandou ${item.valor} sementes!`, "recebido", null, item.de);
       break;
-    case "sementedourada":
-      sementesDouradas++;
-      mostrarBannerMSN(spriteQuem, `${quem} te mandou uma semente dourada!`);
-      adicionarMensagemMSN(`${quem} te mandou uma semente dourada!`, "recebido", null, item.de);
+    case "almofada":
+      energia = Math.min(100, energia + 20);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou uma almofada!`);
+      adicionarMensagemMSN(`${quem} mandou uma almofada!`, "recebido", null, item.de);
+      break;
+    case "novelo":
+      felicidade = Math.min(100, felicidade + 15);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou um novelo!`);
+      adicionarMensagemMSN(`${quem} mandou um novelo!`, "recebido", null, item.de);
+      break;
+    case "ratinho":
+      felicidade = Math.min(100, felicidade + 30);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou um ratinho!`);
+      adicionarMensagemMSN(`${quem} mandou um ratinho!`, "recebido", null, item.de);
+      break;
+    case "peixe":
+      fome = Math.min(100, fome + 20);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou um peixinho!`);
+      adicionarMensagemMSN(`${quem} mandou um peixinho!`, "recebido", null, item.de);
+      break;
+    case "coleira":
+      felicidade = Math.min(100, felicidade + 40);
+      vinculoGatinhas = Math.min(100, vinculoGatinhas + 5);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou uma coleira!`);
+      adicionarMensagemMSN(`${quem} mandou uma coleira!`, "recebido", null, item.de);
+      break;
+    case "florzinha":
+      vinculoGatinhas = Math.min(100, vinculoGatinhas + 10);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou uma florzinha pra gatinha!`);
+      adicionarMensagemMSN(`${quem} mandou uma florzinha pra gatinha!`, "recebido", null, item.de);
+      break;
+    case "chocolate":
+      vinculoGatinhas = Math.min(100, vinculoGatinhas + 20);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou um chocolate pra gatinha!`);
+      adicionarMensagemMSN(`${quem} mandou um chocolate pra gatinha!`, "recebido", null, item.de);
+      break;
+    case "cesta":
+      vinculoGatinhas = Math.min(100, vinculoGatinhas + 40);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou uma cesta especial pra gatinha!`);
+      adicionarMensagemMSN(`${quem} mandou uma cesta especial pra gatinha!`, "recebido", null, item.de);
+      break;
+    case "mamadeira":
+      cuidadosFilhote = Math.min(100, cuidadosFilhote + 40);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou uma mamadeira pro filhotinho!`);
+      adicionarMensagemMSN(`${quem} mandou uma mamadeira pro filhotinho!`, "recebido", null, item.de);
+      break;
+    case "brinquedinho":
+      cuidadosFilhote = Math.min(100, cuidadosFilhote + 35);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou um brinquedinho pro filhotinho!`);
+      adicionarMensagemMSN(`${quem} mandou um brinquedinho pro filhotinho!`, "recebido", null, item.de);
+      break;
+    case "guizo":
+      cuidadosFilhote = Math.min(100, cuidadosFilhote + 30);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou um guizo pro filhotinho!`);
+      adicionarMensagemMSN(`${quem} mandou um guizo pro filhotinho!`, "recebido", null, item.de);
       break;
     case "mensagem":
       mostrarBannerMSN(spriteQuem, `${quem} diz: "${item.texto}"`);
@@ -1633,6 +1687,7 @@ function processarItemMSN(item) {
 
   salvarNoHistoricoMSN(item);
   atualizarStatus();
+  _salvar();
 }
 
 async function salvarNoHistoricoMSN(item) {
@@ -1736,10 +1791,16 @@ async function carregarHistoricoMSN() {
   if (!snap.exists()) return;
 
   const historico = snap.data().historicoMSN || [];
-  const minhaUid = getMinhaUidStr();
+  const agora = Date.now();
+  const vintEquatroHoras = 24 * 60 * 60 * 1000;
+  const historicoFiltrado = historico.filter(item => agora - item.timestamp < vintEquatroHoras);
 
-  historico.sort((a, b) => a.timestamp - b.timestamp);
-  historico.slice(-50).forEach(item => {
+  if (historicoFiltrado.length < historico.length) {
+    await updateDoc(doc(db, "saves", uid), { historicoMSN: historicoFiltrado });
+  }
+
+  historicoFiltrado.sort((a, b) => a.timestamp - b.timestamp);
+  historicoFiltrado.slice(-50).forEach(item => {
     const tipo = item.de === minhaUid ? "enviado" : "recebido";
     const quem = item.de === minhaUid ? "Você" : (item.de === "anna" ? "Anna" : "Kika");
     
@@ -1807,11 +1868,12 @@ document.getElementById("msnSementes")?.addEventListener("click", () => {
   atualizarStatus();
 });
 
-document.getElementById("msnSementeDourada")?.addEventListener("click", () => {
-  if (sementesDouradas < 1) { mostrarMensagem("Você não tem sementes douradas!"); return; }
-  sementesDouradas--;
-  enviarAcaoMSN("sementedourada");
-  adicionarMensagemMSN("Você mandou uma semente dourada!", "enviado", null, getMinhaUidStr());
+document.getElementById("msnAlmofada")?.addEventListener("click", () => {
+  if (moedas < 1100) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 1100;
+  enviarAcaoMSN("almofada");
+  adicionarMensagemMSN("Você mandou uma almofada!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
   atualizarStatus();
 });
 
@@ -1821,6 +1883,138 @@ document.getElementById("msnEnviarMsg")?.addEventListener("click", () => {
   enviarAcaoMSN("mensagem", { texto });
   adicionarMensagemMSN(`Você: "${texto}"`, "enviado", null, getMinhaUidStr());
   document.getElementById("msnInputMsg").value = "";
+});
+
+// ABAS MSNHANNA
+document.querySelectorAll(".msn-aba").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".msn-aba").forEach(b => b.classList.remove("ativo"));
+    btn.classList.add("ativo");
+    const aba = btn.dataset.aba;
+    document.getElementById("msnAbaChat").style.display = aba === "chat" ? "block" : "none";
+    document.getElementById("msnAbaCuidar").style.display = aba === "cuidar" ? "block" : "none";
+    document.getElementById("msnAbaMimos").style.display = aba === "mimos" ? "block" : "none";
+    if (aba === "cuidar") carregarStatsOutra();
+    if (aba === "mimos") document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  });
+});
+
+// CARREGAR STATS DA OUTRA JOGADORA
+async function carregarStatsOutra() {
+  const outraUid = getOutraUid();
+  const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+  const db = getFirestore(getApp());
+  const snap = await getDoc(doc(db, "saves", outraUid));
+  if (!snap.exists()) return;
+  const d = snap.data();
+
+  document.getElementById("msnStatFome").style.width = (d.fome || 0) + "%";
+  document.getElementById("msnStatFomeVal").textContent = Math.floor(d.fome || 0) + "%";
+  document.getElementById("msnStatFelicidade").style.width = (d.felicidade || 0) + "%";
+  document.getElementById("msnStatFelicidadeVal").textContent = Math.floor(d.felicidade || 0) + "%";
+  document.getElementById("msnStatEnergia").style.width = (d.energia || 0) + "%";
+  document.getElementById("msnStatEnergiaVal").textContent = Math.floor(d.energia || 0) + "%";
+  document.getElementById("msnStatHigiene").style.width = (d.higiene || 0) + "%";
+  document.getElementById("msnStatHigieneVal").textContent = Math.floor(d.higiene || 0) + "%";
+  document.getElementById("msnStatVinculo").style.width = (d.vinculoGatinhas || 0) + "%";
+  document.getElementById("msnStatVinculoVal").textContent = Math.floor(d.vinculoGatinhas || 0) + "%";
+
+  // Atualiza título com nome da outra
+  const titulo = document.getElementById("msnStatsOutra")?.querySelector(".msn-stats-titulo");
+  const outraUidStr = outraUid === ANNA_UID ? "Anna" : "Kika";
+  if (titulo) titulo.textContent = `Como tá a Hanna da ${outraUidStr}?`;
+}
+
+// LISTENERS NOVOS MIMOS
+document.getElementById("msnNovelo")?.addEventListener("click", () => {
+  if (moedas < 600) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 600;
+  enviarAcaoMSN("novelo");
+  adicionarMensagemMSN("Você mandou um novelo!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
+});
+
+document.getElementById("msnRatinho")?.addEventListener("click", () => {
+  if (moedas < 900) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 900;
+  enviarAcaoMSN("ratinho");
+  adicionarMensagemMSN("Você mandou um ratinho!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
+});
+
+document.getElementById("msnPeixe")?.addEventListener("click", () => {
+  if (moedas < 400) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 400;
+  enviarAcaoMSN("peixe");
+  adicionarMensagemMSN("Você mandou um peixinho!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
+});
+
+document.getElementById("msnColeira")?.addEventListener("click", () => {
+  if (moedas < 1250) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 1250;
+  enviarAcaoMSN("coleira");
+  adicionarMensagemMSN("Você mandou uma coleira!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
+});
+
+document.getElementById("msnFlorzinha")?.addEventListener("click", () => {
+  if (moedas < 10000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 10000;
+  enviarAcaoMSN("florzinha");
+  adicionarMensagemMSN("Você mandou uma florzinha pra gatinha!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
+});
+
+document.getElementById("msnChocolate")?.addEventListener("click", () => {
+  if (moedas < 20000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 20000;
+  enviarAcaoMSN("chocolate");
+  adicionarMensagemMSN("Você mandou um chocolate pra gatinha!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
+});
+
+document.getElementById("msnCesta")?.addEventListener("click", () => {
+  if (moedas < 40000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 40000;
+  enviarAcaoMSN("cesta");
+  adicionarMensagemMSN("Você mandou uma cesta especial pra gatinha!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
+});
+
+document.getElementById("msnMamadeira")?.addEventListener("click", () => {
+  if (moedas < 60000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 60000;
+  enviarAcaoMSN("mamadeira");
+  adicionarMensagemMSN("Você mandou uma mamadeira pro filhotinho!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
+});
+
+document.getElementById("msnBrinquedinho")?.addEventListener("click", () => {
+  if (moedas < 50000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 50000;
+  enviarAcaoMSN("brinquedinho");
+  adicionarMensagemMSN("Você mandou um brinquedinho pro filhotinho!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
+});
+
+document.getElementById("msnGuizoMSN")?.addEventListener("click", () => {
+  if (moedas < 40000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 40000;
+  enviarAcaoMSN("guizo");
+  adicionarMensagemMSN("Você mandou um guizo pro filhotinho!", "enviado", null, getMinhaUidStr());
+  document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+  atualizarStatus();
 });
 
 document.getElementById("btnLimparConversa")?.addEventListener("click", async () => {

@@ -1190,6 +1190,112 @@ body.dark-mode .msn-btn-acao {
   color: #f4eaff;
 }
 
+/* ABAS MSNHANNA */
+.msn-abas {
+  display: flex;
+  gap: 4px;
+  margin: 10px 0 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+
+.msn-aba {
+  flex: 1;
+  padding: 8px 4px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple-deep);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.msn-aba.ativo {
+  background: var(--purple-main);
+  color: white;
+}
+
+.msn-aba-conteudo {
+  display: block;
+}
+
+/* STATS DA OUTRA JOGADORA */
+.msn-stats-card {
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid #d8a0d8;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.msn-stats-titulo {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--purple-deep);
+  margin-bottom: 8px;
+}
+
+.msn-stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.msn-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.msn-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-mid);
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.msn-stat-barra {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.msn-stat-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.msn-stat-valor {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-mid);
+  width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* SALDO */
+.msn-saldo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid #d8a0d8;
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--purple-deep);
+  margin-bottom: 8px;
+}
+
 /* HORÁRIO (período do dia — só overlay, background controlado por JS) */
 /* As classes .manha / .tarde / .noite no body ainda são usadas
    pelo overlay de período e outras regras, mas o background-image
