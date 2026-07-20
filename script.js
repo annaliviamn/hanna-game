@@ -1683,11 +1683,36 @@ function processarItemMSN(item) {
       mostrarBannerMSN(spriteQuem, `${quem} te mandou uma figurinha!`);
       adicionarMensagemMSN("", "recebido", item.src, item.de);
       break;
+    case "carta":
+      mostrarBannerMSN(spriteQuem, `${quem} te enviou uma cartinha especial! 💌`);
+      adicionarMensagemMSN(`${quem} te enviou uma cartinha especial! 💌`, "recebido", null, item.de);
+      adicionarCartaNoArquivo(item);
+      break;
   }
 
   salvarNoHistoricoMSN(item);
   atualizarStatus();
   _salvar();
+}
+
+function adicionarCartaNoArquivo(carta) {
+  const arquivo = document.getElementById("msnArquivoCartas");
+  if (!arquivo) return;
+  const quem = carta.de === getMinhaUidStr() ? "Você" : (carta.de === "anna" ? "Anna" : "Kika");
+  const data = new Date(carta.timestamp).toLocaleDateString("pt-BR");
+  const item = document.createElement("div");
+  item.style.cssText = `display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.1);
+    border:1.5px solid #c9a0f5;border-radius:12px;padding:10px 12px;cursor:pointer;`;
+  item.innerHTML = `
+    <img src="assets/sprites/personagens/carta-fechada.png" style="width:36px;height:36px;image-rendering:pixelated;">
+    <div style="flex:1;">
+      <div style="font-size:12px;font-weight:800;color:#c9a0f5;">De: ${quem}</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.5);">${data}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px;">${carta.texto.slice(0, 40)}...</div>
+    </div>
+  `;
+  item.addEventListener("click", () => abrirCartaAnimada(carta));
+  arquivo.prepend(item);
 }
 
 async function salvarNoHistoricoMSN(item) {
@@ -1726,7 +1751,6 @@ function adicionarMensagemMSN(texto, tipo, src = null, de = null) {
   } else if (de === "kika") {
     avatar = "assets/sprites/personagens/kika-msn.png";
   } else {
-    // fallback
     avatar = tipo === "enviado"
       ? "assets/sprites/personagens/anna-msn.png"
       : "assets/sprites/personagens/kika-msn.png";
@@ -1736,11 +1760,19 @@ function adicionarMensagemMSN(texto, tipo, src = null, de = null) {
     ? `<img src="${src}" style="width:60px;height:60px;object-fit:contain;image-rendering:pixelated;">`
     : texto;
 
+  const agora = new Date();
+  const hora = agora.getHours().toString().padStart(2, "0");
+  const min = agora.getMinutes().toString().padStart(2, "0");
+  const horario = `${hora}:${min}`;
+
   const item = document.createElement("div");
   item.className = `msn-recebido-item ${tipo}`;
   item.innerHTML = `
     <img src="${avatar}" class="msn-recebido-avatar">
-    <div class="msn-bolha">${conteudo}</div>
+    <div style="display:flex;flex-direction:column;gap:2px;${tipo === "enviado" ? "align-items:flex-end;" : ""}">
+      <div class="msn-bolha">${conteudo}</div>
+      <span style="font-size:9px;color:rgba(255,255,255,0.4);">${horario}</span>
+    </div>
   `;
 
   let pressTimer;
@@ -1780,10 +1812,12 @@ async function enviarAcaoMSN(tipo, extra = {}) {
 
 // Carregar histórico do Firestore
 async function carregarHistoricoMSN() {
+  const conversa = document.getElementById("msnConversa");
+  
   const uid = localStorage.getItem("hannaUid");
   if (!uid) return;
 
-  const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getFirestore, doc, getDoc, updateDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
   const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
   const db = getFirestore(getApp());
 
@@ -1800,9 +1834,10 @@ async function carregarHistoricoMSN() {
   }
 
   historicoFiltrado.sort((a, b) => a.timestamp - b.timestamp);
+  const minhaUid = getMinhaUidStr();
   historicoFiltrado.slice(-50).forEach(item => {
-    const tipo = item.de === minhaUid ? "enviado" : "recebido";
-    const quem = item.de === minhaUid ? "Você" : (item.de === "anna" ? "Anna" : "Kika");
+      const tipo = item.de === minhaUid ? "enviado" : "recebido";
+      const quem = item.de === minhaUid ? "Você" : (item.de === "anna" ? "Anna" : "Kika");
     
     switch(item.tipo) {
       case "carinho":        adicionarMensagemMSN(`${quem} mandou um carinho!`, tipo, null, item.de); break;
@@ -1816,6 +1851,7 @@ async function carregarHistoricoMSN() {
       case "sementedourada": adicionarMensagemMSN(`${quem} mandou uma semente dourada!`, tipo, null, item.de); break;
       case "mensagem":       adicionarMensagemMSN(`${quem}: "${item.texto}"`, tipo, null, item.de); break;
       case "figurinha":      adicionarMensagemMSN("", tipo, item.src, item.de); break;
+      case "carta":          adicionarMensagemMSN(`${quem}: enviou uma cartinha especial! 💌`, tipo, null, item.de); adicionarCartaNoArquivo(item); break;
     }
   });
 }
@@ -1925,6 +1961,334 @@ async function carregarStatsOutra() {
   const outraUidStr = outraUid === ANNA_UID ? "Anna" : "Kika";
   if (titulo) titulo.textContent = `Como tá a Hanna da ${outraUidStr}?`;
 }
+
+// SISTEMA DE CARTAS
+const MODELOS_CARTA = [
+  {
+    id: 1,
+    nome: "Romântico",
+    cor: "#ff8fc2",
+    sprites: [
+      "assets/sprites/hanna-gatinha/felizes.png",
+      "assets/sprites/hanna-gatinha/gatinhas-abraco.png",
+      "assets/sprites/hanna-gatinha/gatinhas-beijinho.png",
+    ]
+  },
+  {
+    id: 2,
+    nome: "Família",
+    cor: "#c9a0f5",
+    sprites: [
+      "assets/sprites/filhote/filhote.png",
+      "assets/sprites/filhote/filhote-curioso.png",
+      "assets/sprites/filhote/filhote-dramatico.png",
+    ]
+  },
+  {
+    id: 3,
+    nome: "Pets",
+    cor: "#ffb347",
+    sprites: [
+      "assets/sprites/pets/steve-visita.png",
+      "assets/sprites/pets/joao-visita.png",
+      "assets/sprites/pets/james-visita.png",
+    ]
+  },
+  {
+    id: 4,
+    nome: "Nós",
+    cor: "#ff5580",
+    sprites: [
+      "assets/sprites/personagens/anna-visita-1.png",
+      "assets/sprites/personagens/anna-visita-2.png",
+      "assets/sprites/personagens/kika-visita-1.png",
+      "assets/sprites/personagens/kika-visita-2.png",
+    ]
+  },
+  {
+    id: 5,
+    nome: "Nosso Encontro",
+    cor: "#87ceeb",
+    sprites: [
+      "assets/sprites/personagens/anna-msn.png",
+      "assets/sprites/hanna/animada.png",
+      "assets/sprites/personagens/kika-msn.png",
+      "assets/sprites/gatinha/gatinha-animada.png",
+    ]
+  },
+];
+
+let _modeloCartaSelecionado = 1;
+let _figurinhaCartaSelecionada = null;
+let _ultimaCartaEnviada = 0;
+
+function abrirTelaCriaCarta() {
+  if (moedas < 20000) { mostrarMensagem("Você precisa de 20.000 moedas!"); return; }
+
+  const agora = Date.now();
+  if (agora - _ultimaCartaEnviada < 24 * 60 * 60 * 1000) {
+    mostrarMensagem("Só uma cartinha por dia!");
+    return;
+  }
+
+  const overlay = document.createElement("div");
+  overlay.id = "overlayCartaMSN";
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    overflow-y: auto; padding: 16px; gap: 12px;
+  `;
+
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:400px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:15px;font-weight:800;color:#ff8fc2;">Escrever Cartinha</div>
+        <button onclick="document.getElementById('overlayCartaMSN').remove()" 
+          style="background:none;border:none;color:#ff8fc2;font-size:20px;cursor:pointer;">✕</button>
+      </div>
+
+      <!-- Modelos -->
+      <div style="font-size:11px;font-weight:700;color:#c9a0f5;margin-bottom:6px;">Escolha o modelo</div>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;">
+        ${MODELOS_CARTA.map(m => `
+          <div class="carta-modelo-thumb ${m.id === 1 ? 'selecionado' : ''}" 
+            data-modelo="${m.id}"
+            style="min-width:70px;height:70px;border-radius:12px;border:2px solid ${m.id === 1 ? '#ff8fc2' : 'rgba(255,255,255,0.2)'};
+            background:${m.cor}22;display:flex;flex-direction:column;align-items:center;justify-content:center;
+            cursor:pointer;flex-shrink:0;gap:4px;">
+            <img src="${m.sprites[0]}" style="width:36px;height:36px;image-rendering:pixelated;object-fit:contain;">
+            <div style="font-size:9px;font-weight:700;color:white;">${m.nome}</div>
+          </div>
+        `).join("")}
+      </div>
+
+      <!-- Texto -->
+      <div style="font-size:11px;font-weight:700;color:#c9a0f5;margin-bottom:6px;">Sua mensagem</div>
+      <textarea id="textoCarta" maxlength="300" placeholder="Escreva sua cartinha aqui..." 
+        style="width:100%;height:100px;background:rgba(255,255,255,0.1);border:1.5px solid #c9a0f5;
+        border-radius:12px;padding:10px;color:white;font-size:12px;resize:none;font-family:var(--font-body);"></textarea>
+      <div style="text-align:right;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:12px;">
+        <span id="contadorCarta">0</span>/300
+      </div>
+
+      <!-- Figurinha -->
+      <div style="font-size:11px;font-weight:700;color:#c9a0f5;margin-bottom:6px;">Anexar figurinha (opcional)</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <div id="previewFigurinhaCartaWrap" style="width:50px;height:50px;border:1.5px dashed #c9a0f5;border-radius:8px;
+          display:flex;align-items:center;justify-content:center;">
+          <span style="color:#c9a0f5;font-size:20px;">+</span>
+        </div>
+        <button id="btnEscolherFigurinhaCarta" class="msn-btn-figurinha">Escolher figurinha</button>
+        <button id="btnRemoverFigurinhaCartaBtn" class="msn-btn-figurinha" style="display:none;">Remover</button>
+      </div>
+
+      <!-- Seletor de figurinhas da carta -->
+      <div id="seletorFigurinhaCartaPanel" style="display:none;margin-bottom:12px;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="catsFigCarta">
+          <button class="msn-fig-cat ativo" data-cat="hanna">Hanna</button>
+          <button class="msn-fig-cat" data-cat="gatinha">Gatinha</button>
+          <button class="msn-fig-cat" data-cat="juntas">Juntas</button>
+          <button class="msn-fig-cat" data-cat="nos">Nós</button>
+          <button class="msn-fig-cat" data-cat="pets">Pets</button>
+          <button class="msn-fig-cat" data-cat="filhote">Filhote</button>
+        </div>
+        <div class="msn-fig-grid" id="msnFigGridCarta"></div>
+      </div>
+
+      <!-- Botão enviar -->
+      <button id="btnEnviarCarta" class="msn-btn-enviar" style="width:100%;">
+        Enviar Cartinha — 🪙 20.000
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // Contador de caracteres
+  document.getElementById("textoCarta").addEventListener("input", (e) => {
+    document.getElementById("contadorCarta").textContent = e.target.value.length;
+  });
+
+  // Seleção de modelo
+  document.querySelectorAll(".carta-modelo-thumb").forEach(el => {
+    el.addEventListener("click", () => {
+      document.querySelectorAll(".carta-modelo-thumb").forEach(t => {
+        t.style.border = "2px solid rgba(255,255,255,0.2)";
+      });
+      el.style.border = `2px solid #ff8fc2`;
+      _modeloCartaSelecionado = parseInt(el.dataset.modelo);
+    });
+  });
+
+  // Seletor de figurinha
+  document.getElementById("btnEscolherFigurinhaCarta").addEventListener("click", () => {
+    const panel = document.getElementById("seletorFigurinhaCartaPanel");
+    panel.style.display = panel.style.display === "none" ? "block" : "none";
+    if (panel.style.display === "block") renderizarFigurinhasCarta("hanna");
+  });
+
+  document.getElementById("btnRemoverFigurinhaCartaBtn").addEventListener("click", () => {
+    _figurinhaCartaSelecionada = null;
+    document.getElementById("previewFigurinhaCartaWrap").innerHTML = `<span style="color:#c9a0f5;font-size:20px;">+</span>`;
+    document.getElementById("btnRemoverFigurinhaCartaBtn").style.display = "none";
+  });
+
+  document.querySelectorAll("#catsFigCarta .msn-fig-cat").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#catsFigCarta .msn-fig-cat").forEach(b => b.classList.remove("ativo"));
+      btn.classList.add("ativo");
+      renderizarFigurinhasCarta(btn.dataset.cat);
+    });
+  });
+
+  // Enviar carta
+  document.getElementById("btnEnviarCarta").addEventListener("click", enviarCarta);
+}
+
+function renderizarFigurinhasCarta(cat) {
+  const grid = document.getElementById("msnFigGridCarta");
+  if (!grid) return;
+  grid.innerHTML = "";
+  (figurinhas[cat] || []).forEach(src => {
+    const img = document.createElement("img");
+    img.src = src;
+    img.className = "msn-fig-item";
+    img.addEventListener("click", () => {
+      _figurinhaCartaSelecionada = src;
+      document.getElementById("previewFigurinhaCartaWrap").innerHTML = 
+        `<img src="${src}" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;">`;
+      document.getElementById("btnRemoverFigurinhaCartaBtn").style.display = "block";
+      document.getElementById("seletorFigurinhaCartaPanel").style.display = "none";
+    });
+    grid.appendChild(img);
+  });
+}
+
+async function enviarCarta() {
+  const texto = document.getElementById("textoCarta").value.trim();
+  if (!texto) { mostrarMensagem("Escreve algo na cartinha!"); return; }
+  if (moedas < 20000) { mostrarMensagem("Moedas insuficientes!"); return; }
+
+  moedas -= 20000;
+  _ultimaCartaEnviada = Date.now();
+  atualizarStatus();
+
+  const minhaUidStr = getMinhaUidStr();
+  const payload = {
+    tipo: "carta",
+    de: minhaUidStr,
+    timestamp: Date.now(),
+    modelo: _modeloCartaSelecionado,
+    texto,
+    figurinha: _figurinhaCartaSelecionada || null,
+  };
+
+  const { getFirestore, doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+  const db = getFirestore(getApp());
+
+  await updateDoc(doc(db, "saves", getOutraUid()), {
+    caixaDeEntrada: arrayUnion(payload)
+  });
+
+  const uid = localStorage.getItem("hannaUid");
+  if (uid) {
+    await updateDoc(doc(db, "saves", uid), {
+      historicoMSN: arrayUnion(payload)
+    });
+  }
+
+  document.getElementById("overlayCartaMSN")?.remove();
+  adicionarMensagemMSN("Você enviou uma cartinha especial! 💌", "enviado", null, minhaUidStr);
+  mostrarMensagem("Cartinha enviada! 💌");
+  _salvar();
+}
+
+function abrirCartaAnimada(carta) {
+  const modelo = MODELOS_CARTA.find(m => m.id === carta.modelo) || MODELOS_CARTA[0];
+  const quemEnviou = carta.de === "anna" ? "anna" : "kika";
+  const quemRecebeu = carta.de === "anna" ? "kika" : "anna";
+
+  const spriteRemetente = `assets/sprites/personagens/${quemEnviou}-escrevendo.png`;
+  const spriteDestinatario = `assets/sprites/personagens/${quemRecebeu}-recebendo.png`;
+
+  const overlay = document.createElement("div");
+  overlay.id = "overlayCartaAnimada";
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+  `;
+
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:380px;background:${modelo.cor}22;border:2px solid ${modelo.cor};
+      border-radius:20px;padding:20px;position:relative;min-height:300px;">
+      
+      <!-- Remetente superior esquerdo -->
+      <img src="${spriteRemetente}" 
+        style="position:absolute;top:-20px;left:-20px;width:70px;height:70px;image-rendering:pixelated;
+        border-radius:50%;border:3px solid ${modelo.cor};background:#1a1a2e;">
+
+      <!-- Sprites animadas de fundo -->
+      <div id="spritesCartaFundo" style="display:flex;justify-content:center;gap:8px;margin:20px 0 16px;flex-wrap:wrap;">
+        ${modelo.sprites.map(s => `
+          <img src="${s}" style="width:56px;height:56px;image-rendering:pixelated;object-fit:contain;
+            animation:idleFloat 3s ease-in-out infinite;">
+        `).join("")}
+      </div>
+
+      <!-- Texto digitado -->
+      <div id="textoCartaAnimado" style="font-size:13px;color:white;line-height:1.6;
+        min-height:60px;margin-bottom:12px;font-style:italic;text-align:center;"></div>
+
+      <!-- Figurinha anexada -->
+      ${carta.figurinha ? `
+        <div style="text-align:center;margin-bottom:12px;">
+          <img src="${carta.figurinha}" style="width:80px;height:80px;image-rendering:pixelated;object-fit:contain;">
+        </div>
+      ` : ""}
+
+      <!-- Destinatário inferior direito -->
+      <img src="${spriteDestinatario}"
+        style="position:absolute;bottom:-20px;right:-20px;width:70px;height:70px;image-rendering:pixelated;
+        border-radius:50%;border:3px solid ${modelo.cor};background:#1a1a2e;">
+
+      <!-- Botões -->
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;">
+        <button id="btnReplayCarta" class="msn-btn-figurinha">Replay</button>
+        <button id="btnFecharCarta" class="msn-btn-figurinha">Fechar</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  function digitarTexto() {
+    const el = document.getElementById("textoCartaAnimado");
+    if (!el) return;
+    el.textContent = "";
+    let i = 0;
+    const intervalo = setInterval(() => {
+      if (i < carta.texto.length) {
+        el.textContent += carta.texto[i];
+        i++;
+      } else {
+        clearInterval(intervalo);
+      }
+    }, 40);
+  }
+
+  digitarTexto();
+
+  document.getElementById("btnReplayCarta").addEventListener("click", digitarTexto);
+  document.getElementById("btnFecharCarta").addEventListener("click", () => overlay.remove());
+}
+
+// Listener do botão de abrir criação de carta
+document.getElementById("btnAbrirCarta")?.addEventListener("click", abrirTelaCriaCarta);
 
 // LISTENERS NOVOS MIMOS
 document.getElementById("msnNovelo")?.addEventListener("click", () => {
@@ -2079,6 +2443,11 @@ const figurinhas = {
     "assets/sprites/personagens/kika-olhando.png",
     "assets/sprites/personagens/kika-pegando.png",
     "assets/sprites/personagens/chat-msn.png",
+    "assets/sprites/personagens/kika-carinho-anna.png",
+    "assets/sprites/personagens/kika-anna-fofoca.png",
+    "assets/sprites/personagens/anna-cafune-kika.png",
+    "assets/sprites/personagens/kanna-dormindo.png",
+    "assets/sprites/personagens/kanna-brincando.png",
   ],
   pets: [
     "assets/sprites/pets/steve-visita.png",
@@ -6510,12 +6879,17 @@ navFarm.onclick = () => {
 
 };
 
+let _historicoCarregado = false;
+
 navLembretes.onclick = () => {
   abrirTela(telaLembretes);
   tocarTrilha("lembretes");
   atualizarMSN();
   verificarCaixaEntrada();
-  if (msnDesbloqueado) carregarHistoricoMSN();
+  if (msnDesbloqueado && !_historicoCarregado) {
+    carregarHistoricoMSN();
+    _historicoCarregado = true;
+  }
 };
 
 navLoja.onclick = () => {
