@@ -2066,7 +2066,7 @@ function abrirTelaCriaCarta() {
 
       <!-- Texto -->
       <div style="font-size:11px;font-weight:700;color:#c9a0f5;margin-bottom:6px;">Sua mensagem</div>
-      <textarea id="textoCarta" maxlength="300" placeholder="Escreva sua cartinha aqui..." 
+      <textarea id="textoCarta" maxlength="800" placeholder="Escreva sua cartinha aqui..." 
         style="width:100%;height:100px;background:rgba(255,255,255,0.1);border:1.5px solid #c9a0f5;
         border-radius:12px;padding:10px;color:white;font-size:12px;resize:none;font-family:var(--font-body);"></textarea>
       <div style="text-align:right;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:12px;">
@@ -7595,6 +7595,11 @@ function mostrarVisitaPet(sprite, fala, duracao = 8000, pet = null, nomeExibicao
 
   momentoConjuntoAtivo = true;
   estadoVisual.momentoConjunto = true;
+  // Esconde filhotinho durante visitas
+  if (filhoteDesbloqueado) {
+    const fc = document.getElementById("filhoteContainer");
+    if (fc) fc.style.display = "none";
+  }
   estadoVisual.spriteConjunta  = sprite;
   renderizarGatinhas();
 
@@ -7609,6 +7614,11 @@ function mostrarVisitaPet(sprite, fala, duracao = 8000, pet = null, nomeExibicao
     momentoConjuntoAtivo = false;
     estadoVisual.momentoConjunto = false;
     estadoVisual.spriteConjunta  = null;
+    // Mostra filhotinho novamente
+    if (filhoteDesbloqueado) {
+      const fc = document.getElementById("filhoteContainer");
+      if (fc) fc.style.display = "flex";
+    }
     renderizarGatinhas();
     atualizarStatus();
   }, duracao);
