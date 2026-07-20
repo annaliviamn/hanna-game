@@ -1741,7 +1741,7 @@ function mostrarBannerMSN(sprite, texto) {
   }, 5000);
 }
 
-function adicionarMensagemMSN(texto, tipo, src = null, de = null) {
+function adicionarMensagemMSN(texto, tipo, src = null, de = null, timestamp = null) {
   const conversa = document.getElementById("msnConversa");
   if (!conversa) return;
 
@@ -1760,7 +1760,7 @@ function adicionarMensagemMSN(texto, tipo, src = null, de = null) {
     ? `<img src="${src}" style="width:60px;height:60px;object-fit:contain;image-rendering:pixelated;">`
     : texto;
 
-  const agora = new Date();
+  const agora = timestamp ? new Date(timestamp) : new Date();
   const hora = agora.getHours().toString().padStart(2, "0");
   const min = agora.getMinutes().toString().padStart(2, "0");
   const horario = `${hora}:${min}`;
@@ -1840,18 +1840,18 @@ async function carregarHistoricoMSN() {
       const quem = item.de === minhaUid ? "Você" : (item.de === "anna" ? "Anna" : "Kika");
     
     switch(item.tipo) {
-      case "carinho":        adicionarMensagemMSN(`${quem} mandou um carinho!`, tipo, null, item.de); break;
-      case "petisco":        adicionarMensagemMSN(`${quem} mandou um petisco!`, tipo, null, item.de); break;
-      case "boanoite":       adicionarMensagemMSN(`${quem} desejou boa noite!`, tipo, null, item.de); break;
-      case "banho":          adicionarMensagemMSN(`${quem} deu um banho!`, tipo, null, item.de); break;
-      case "comida":         adicionarMensagemMSN(`${quem} mandou comida!`, tipo, null, item.de); break;
-      case "cocarbarriga":   adicionarMensagemMSN(`${quem} coçou a barriga!`, tipo, null, item.de); break;
-      case "moedas":         adicionarMensagemMSN(`${quem} mandou ${item.valor} moedas!`, tipo, null, item.de); break;
-      case "sementes":       adicionarMensagemMSN(`${quem} mandou ${item.valor} sementes!`, tipo, null, item.de); break;
-      case "sementedourada": adicionarMensagemMSN(`${quem} mandou uma semente dourada!`, tipo, null, item.de); break;
-      case "mensagem":       adicionarMensagemMSN(`${quem}: "${item.texto}"`, tipo, null, item.de); break;
-      case "figurinha":      adicionarMensagemMSN("", tipo, item.src, item.de); break;
-      case "carta":          adicionarMensagemMSN(`${quem}: enviou uma cartinha especial! 💌`, tipo, null, item.de); adicionarCartaNoArquivo(item); break;
+      case "carinho":        adicionarMensagemMSN(`${quem} mandou um carinho!`, tipo, null, item.de, item.timestamp); break;
+      case "petisco":        adicionarMensagemMSN(`${quem} mandou um petisco!`, tipo, null, item.de, item.timestamp); break;
+      case "boanoite":       adicionarMensagemMSN(`${quem} desejou boa noite!`, tipo, null, item.de, item.timestamp); break;
+      case "banho":          adicionarMensagemMSN(`${quem} deu um banho!`, tipo, null, item.de, item.timestamp); break;
+      case "comida":         adicionarMensagemMSN(`${quem} mandou comida!`, tipo, null, item.de, item.timestamp); break;
+      case "cocarbarriga":   adicionarMensagemMSN(`${quem} coçou a barriga!`, tipo, null, item.de, item.timestamp); break;
+      case "moedas":         adicionarMensagemMSN(`${quem} mandou ${item.valor} moedas!`, tipo, null, item.de, item.timestamp); break;
+      case "sementes":       adicionarMensagemMSN(`${quem} mandou ${item.valor} sementes!`, tipo, null, item.de, item.timestamp); break;
+      case "sementedourada": adicionarMensagemMSN(`${quem} mandou uma semente dourada!`, tipo, null, item.de, item.timestamp); break;
+      case "mensagem":       adicionarMensagemMSN(`${quem}: "${item.texto}"`, tipo, null, item.de, item.timestamp); break;
+      case "figurinha":      adicionarMensagemMSN("", tipo, item.src, item.de, item.timestamp); break;
+      case "carta":          adicionarMensagemMSN(`${quem}: enviou uma cartinha especial! 💌`, tipo, null, item.de, item.timestamp); adicionarCartaNoArquivo(item); break;
     }
   });
 }
@@ -2070,7 +2070,7 @@ function abrirTelaCriaCarta() {
         style="width:100%;height:100px;background:rgba(255,255,255,0.1);border:1.5px solid #c9a0f5;
         border-radius:12px;padding:10px;color:white;font-size:12px;resize:none;font-family:var(--font-body);"></textarea>
       <div style="text-align:right;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:12px;">
-        <span id="contadorCarta">0</span>/300
+        <span id="contadorCarta">0</span>/800
       </div>
 
       <!-- Figurinha -->
