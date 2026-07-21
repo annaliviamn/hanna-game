@@ -2448,6 +2448,9 @@ const figurinhas = {
     "assets/sprites/personagens/anna-cafune-kika.png",
     "assets/sprites/personagens/kanna-dormindo.png",
     "assets/sprites/personagens/kanna-brincando.png",
+    "assets/sprites/personagens/kanna-rindo.png",
+    "assets/sprites/personagens/anna-beija-kika.png",
+    "assets/sprites/personagens/kika-beija-anna.png",
   ],
   pets: [
     "assets/sprites/pets/steve-visita.png",
