@@ -554,6 +554,8 @@ const CONQUISTAS = {
   esconde_mestre:     { nome: "Achou!",                 desc: "Encontrou o filhotinho 7 vezes no Esconde-Esconde!", sprite: "assets/sprites/filhote/filhote-pego.png", secao: "momentos" },
   craque_volei:       { nome: "Craque do Vôlei",    desc: "Venceu uma partida de vôlei!",   sprite: "assets/sprites/esportes/hanna-volei-feliz.png",   secao: "minigames" },
   craque_futebol:     { nome: "Craque do Futebol",  desc: "Venceu uma partida de futebol!", sprite: "assets/sprites/esportes/gatinha-futebol-feliz.png", secao: "minigames" },
+  forca_competitiva: { nome: "Meu lado competitivo falou mais alto", desc: "Ganhou uma partida de forca! Eu gosto de você, mas a vitória é minha!", sprite: "assets/sprites/hanna/comemorando.png", secao: "minigames" },
+  forca_derrotada:   { nome: "Parabéns meu bem, você mereceu", desc: "Perdeu uma partida de forca, mas foi com elegância!", sprite: "assets/sprites/hanna/triste.png", secao: "minigames" },
   // Visitas e semente
   visita_steve:       { nome: "Visita Surpresa",        desc: "Steve Rogers apareceu de visita pela primeira vez!",     sprite: "assets/sprites/pets/steve-feliz.png",       secao: "progressao" },
   visita_joao:        { nome: "Visita do Tonton",       desc: "João Antônio veio fazer bagunça pela primeira vez!",     sprite: "assets/sprites/pets/joao-feliz.png",   secao: "progressao" },
@@ -1509,17 +1511,27 @@ function getOutraUid() {
   return uid === ANNA_UID ? KIKA_UID : ANNA_UID;
 }
 let msnDesbloqueado = localStorage.getItem("msnDesbloqueado") === "true";
+let _msnChatAberto = false;
 
 function atualizarMSN() {
-  const bloqueado    = document.getElementById("msnBloqueado");
+  const bloqueado = document.getElementById("msnBloqueado");
   const desbloqueado = document.getElementById("msnDesbloqueado");
   if (!bloqueado || !desbloqueado) return;
   if (msnDesbloqueado) {
-    bloqueado.style.display    = "none";
+    bloqueado.style.display = "none";
     desbloqueado.style.display = "block";
   } else {
-    bloqueado.style.display    = "block";
+    bloqueado.style.display = "block";
     desbloqueado.style.display = "none";
+  }
+
+  // Exibe mensagens pendentes
+  const pendentes = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
+  if (pendentes.length > 0) {
+    pendentes.forEach(m => {
+      adicionarMensagemMSN(m.texto, m.tipo, m.src, m.de, m.timestamp);
+    });
+    localStorage.removeItem("msnPendentes");
   }
 }
 
@@ -1578,115 +1590,148 @@ function processarItemMSN(item) {
     ? "assets/sprites/personagens/anna-msn.png"
     : "assets/sprites/personagens/kika-msn.png";
 
+  // Se MSNHanna não tiver aberto, guarda pra mostrar depois
+  const conversa = document.getElementById("msnConversa");
+  const msnVisivel = _msnChatAberto;
+
+  if (!conversa || !msnVisivel) {
+  const pendentes = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
+  pendentes.push({
+    texto: item.tipo === "mensagem" ? `${quem}: "${item.texto}"` : `${quem} te enviou algo!`,
+    tipo: "recebido",
+    src: item.src || null,
+    de: item.de,
+    timestamp: item.timestamp
+  });
+  localStorage.setItem("msnPendentes", JSON.stringify(pendentes));
+  salvarNoHistoricoMSN(item);
+  atualizarStatus();
+  _salvar();
+  return;
+}
+
   switch(item.tipo) {
     case "carinho":
       felicidade = Math.min(100, felicidade + 15);
       mostrarBannerMSN(spriteQuem, `${quem} te mandou um carinho!`);
-      adicionarMensagemMSN(`${quem} te mandou um carinho!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} te mandou um carinho!`, "recebido", null, item.de, item.timestamp);
       break;
     case "petisco":
       fome = Math.min(100, fome + 10);
       vinculoGatinhas = Math.min(100, vinculoGatinhas + 5);
       mostrarBannerMSN(spriteQuem, `${quem} mandou um petisco pra gatinha!`);
-      adicionarMensagemMSN(`${quem} mandou um petisco pra gatinha!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou um petisco pra gatinha!`, "recebido", null, item.de, item.timestamp);
       break;
     case "boanoite":
       mostrarBannerMSN(spriteQuem, `${quem} deseja boa noite pra vocês!`);
-      adicionarMensagemMSN(`${quem} deseja boa noite pra vocês!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} deseja boa noite pra vocês!`, "recebido", null, item.de, item.timestamp);
       break;
     case "banho":
       higiene = Math.min(100, higiene + 20);
       mostrarBannerMSN(spriteQuem, `${quem} deu um banho na Hanna!`);
-      adicionarMensagemMSN(`${quem} deu um banho na Hanna!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} deu um banho na Hanna!`, "recebido", null, item.de, item.timestamp);
       break;
     case "comida":
       fome = Math.min(100, fome + 15);
       mostrarBannerMSN(spriteQuem, `${quem} mandou comida pra Hanna!`);
-      adicionarMensagemMSN(`${quem} mandou comida pra Hanna!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou comida pra Hanna!`, "recebido", null, item.de, item.timestamp);
       break;
     case "cocarbarriga":
       felicidade = Math.min(100, felicidade + 20);
       mostrarBannerMSN(spriteQuem, `${quem} coçou a barriga da Hanna!`);
-      adicionarMensagemMSN(`${quem} coçou a barriga da Hanna!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} coçou a barriga da Hanna!`, "recebido", null, item.de, item.timestamp);
       break;
     case "moedas":
       moedas += item.valor || 0;
       mostrarBannerMSN(spriteQuem, `${quem} te mandou ${item.valor} moedas!`);
-      adicionarMensagemMSN(`${quem} te mandou ${item.valor} moedas!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} te mandou ${item.valor} moedas!`, "recebido", null, item.de, item.timestamp);
       break;
     case "sementes":
       sementes += item.valor || 0;
       mostrarBannerMSN(spriteQuem, `${quem} te mandou ${item.valor} sementes!`);
-      adicionarMensagemMSN(`${quem} te mandou ${item.valor} sementes!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} te mandou ${item.valor} sementes!`, "recebido", null, item.de, item.timestamp);
       break;
-    case "almofada":
-      energia = Math.min(100, energia + 20);
-      mostrarBannerMSN(spriteQuem, `${quem} mandou uma almofada!`);
-      adicionarMensagemMSN(`${quem} mandou uma almofada!`, "recebido", null, item.de);
+    case "sementedourada":
+      sementesDouradas++;
+      mostrarBannerMSN(spriteQuem, `${quem} te mandou uma semente dourada!`);
+      adicionarMensagemMSN(`${quem} te mandou uma semente dourada!`, "recebido", null, item.de, item.timestamp);
       break;
     case "novelo":
       felicidade = Math.min(100, felicidade + 15);
       mostrarBannerMSN(spriteQuem, `${quem} mandou um novelo!`);
-      adicionarMensagemMSN(`${quem} mandou um novelo!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou um novelo!`, "recebido", null, item.de, item.timestamp);
       break;
     case "ratinho":
       felicidade = Math.min(100, felicidade + 30);
       mostrarBannerMSN(spriteQuem, `${quem} mandou um ratinho!`);
-      adicionarMensagemMSN(`${quem} mandou um ratinho!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou um ratinho!`, "recebido", null, item.de, item.timestamp);
       break;
     case "peixe":
       fome = Math.min(100, fome + 20);
       mostrarBannerMSN(spriteQuem, `${quem} mandou um peixinho!`);
-      adicionarMensagemMSN(`${quem} mandou um peixinho!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou um peixinho!`, "recebido", null, item.de, item.timestamp);
       break;
     case "coleira":
       felicidade = Math.min(100, felicidade + 40);
       vinculoGatinhas = Math.min(100, vinculoGatinhas + 5);
       mostrarBannerMSN(spriteQuem, `${quem} mandou uma coleira!`);
-      adicionarMensagemMSN(`${quem} mandou uma coleira!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou uma coleira!`, "recebido", null, item.de, item.timestamp);
+      break;
+    case "almofada":
+      energia = Math.min(100, energia + 20);
+      mostrarBannerMSN(spriteQuem, `${quem} mandou uma almofada!`);
+      adicionarMensagemMSN(`${quem} mandou uma almofada!`, "recebido", null, item.de, item.timestamp);
       break;
     case "florzinha":
       vinculoGatinhas = Math.min(100, vinculoGatinhas + 10);
       mostrarBannerMSN(spriteQuem, `${quem} mandou uma florzinha pra gatinha!`);
-      adicionarMensagemMSN(`${quem} mandou uma florzinha pra gatinha!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou uma florzinha pra gatinha!`, "recebido", null, item.de, item.timestamp);
       break;
     case "chocolate":
       vinculoGatinhas = Math.min(100, vinculoGatinhas + 20);
       mostrarBannerMSN(spriteQuem, `${quem} mandou um chocolate pra gatinha!`);
-      adicionarMensagemMSN(`${quem} mandou um chocolate pra gatinha!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou um chocolate pra gatinha!`, "recebido", null, item.de, item.timestamp);
       break;
     case "cesta":
       vinculoGatinhas = Math.min(100, vinculoGatinhas + 40);
       mostrarBannerMSN(spriteQuem, `${quem} mandou uma cesta especial pra gatinha!`);
-      adicionarMensagemMSN(`${quem} mandou uma cesta especial pra gatinha!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou uma cesta especial pra gatinha!`, "recebido", null, item.de, item.timestamp);
       break;
     case "mamadeira":
       cuidadosFilhote = Math.min(100, cuidadosFilhote + 40);
       mostrarBannerMSN(spriteQuem, `${quem} mandou uma mamadeira pro filhotinho!`);
-      adicionarMensagemMSN(`${quem} mandou uma mamadeira pro filhotinho!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou uma mamadeira pro filhotinho!`, "recebido", null, item.de, item.timestamp);
       break;
     case "brinquedinho":
       cuidadosFilhote = Math.min(100, cuidadosFilhote + 35);
       mostrarBannerMSN(spriteQuem, `${quem} mandou um brinquedinho pro filhotinho!`);
-      adicionarMensagemMSN(`${quem} mandou um brinquedinho pro filhotinho!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou um brinquedinho pro filhotinho!`, "recebido", null, item.de, item.timestamp);
       break;
     case "guizo":
       cuidadosFilhote = Math.min(100, cuidadosFilhote + 30);
       mostrarBannerMSN(spriteQuem, `${quem} mandou um guizo pro filhotinho!`);
-      adicionarMensagemMSN(`${quem} mandou um guizo pro filhotinho!`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} mandou um guizo pro filhotinho!`, "recebido", null, item.de, item.timestamp);
       break;
     case "mensagem":
       mostrarBannerMSN(spriteQuem, `${quem} diz: "${item.texto}"`);
-      adicionarMensagemMSN(`${quem}: "${item.texto}"`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem}: "${item.texto}"`, "recebido", null, item.de, item.timestamp);
       break;
     case "figurinha":
       mostrarBannerMSN(spriteQuem, `${quem} te mandou uma figurinha!`);
-      adicionarMensagemMSN("", "recebido", item.src, item.de);
+      adicionarMensagemMSN("", "recebido", item.src, item.de, item.timestamp);
       break;
     case "carta":
       mostrarBannerMSN(spriteQuem, `${quem} te enviou uma cartinha especial! 💌`);
-      adicionarMensagemMSN(`${quem} te enviou uma cartinha especial! 💌`, "recebido", null, item.de);
+      adicionarMensagemMSN(`${quem} te enviou uma cartinha especial! 💌`, "recebido", null, item.de, item.timestamp);
       adicionarCartaNoArquivo(item);
+      break;
+    case "convite_forca":
+      mostrarBannerMSN(spriteQuem, `${quem} te desafiou pra uma partida de Amores & Rivais!`);
+      adicionarMensagemMSN(`${quem} te desafiou pra uma partida de Amores & Rivais! 🎯`, "recebido", null, item.de, item.timestamp);
+      break;
+    case "resultado_forca":
+      mostrarBannerMSN(spriteQuem, item.texto);
+      adicionarMensagemMSN(item.texto, "recebido", null, item.de, item.timestamp);
       break;
   }
 
@@ -2385,8 +2430,8 @@ document.getElementById("btnLimparConversa")?.addEventListener("click", async ()
   if (!confirm("Apagar toda a conversa?")) return;
   
   // Limpa visualmente
-  const conversa = document.getElementById("msnConversa");
-  if (conversa) conversa.innerHTML = "";
+  const el = document.getElementById("msnConversa");
+  if (el) el.innerHTML = "";
 
   // Limpa no Firestore
   const uid = localStorage.getItem("hannaUid");
@@ -2870,6 +2915,11 @@ function dispararMomentoJuntas() {
   const momento = momentosFiltrados[Math.floor(Math.random() * momentosFiltrados.length)];
 
   momentoConjuntoAtivo = true;
+  // Esconde filhotinho
+  if (filhoteDesbloqueado) {
+    const fc = document.getElementById("filhoteContainer");
+    if (fc) fc.style.display = "none";
+  }
 
   estadoVisual.momentoConjunto = true;
 
@@ -2884,22 +2934,18 @@ function dispararMomentoJuntas() {
   mostrarMensagem(momento.fala);
 
   setTimeout(() => {
-
-    momentoConjuntoAtivo = false;
-
-    estadoVisual.momentoConjunto = false;
-
-    estadoVisual.spriteConjunta = null;
-
-    renderizarGatinhas();
-
-    //atualizarStatus();
-
-    gatinhaFalaEl &&
-    gatinhaFalaEl.classList.remove("visivel");
-
-    agendarMomentoJuntas();
-
+      momentoConjuntoAtivo = false;
+      estadoVisual.momentoConjunto = false;
+      estadoVisual.spriteConjunta = null;
+      // Mostra filhotinho novamente
+      if (filhoteDesbloqueado) {
+        const fc = document.getElementById("filhoteContainer");
+        if (fc) fc.style.display = "flex";
+      }
+      renderizarGatinhas();
+      gatinhaFalaEl &&
+      gatinhaFalaEl.classList.remove("visivel");
+      agendarMomentoJuntas();
   }, 5000);
 }
 
@@ -3209,7 +3255,7 @@ function renderizarGatinhas() {
   }
 
   // Mostra filhotinho quando acorda
-  if (filhoteDesbloqueado) {
+  if (filhoteDesbloqueado && !momentoConjuntoAtivo) {
     filhoteContainer.style.display = "flex";
   }
 
@@ -4504,37 +4550,37 @@ if (_emailSalvo && _senhaSalva) {
 const slotsPlantacao = document.querySelectorAll(".slotPlantacao");
 const valorPlantas = {
 
-    flor: 35,
+    flor: 350,
 
-    rosa: 55,
+    rosa: 550,
 
-    batata: 75,
+    batata: 750,
 
-    morango: 85,
+    morango: 850,
 
-    tomate: 95,
+    tomate: 950,
 
-    cenoura: 110,
+    cenoura: 1100,
 
-    brocolis: 110,
+    brocolis: 1500,
 
-    abobora: 180,
+    abobora: 1800,
 
-    mandioca: 220,
+    mandioca: 2200,
 
-    lavanda: 260,
+    lavanda: 2600,
 
-    babosa: 300,
+    babosa: 3000,
 
-    margarida: 350,
+    margarida: 3500,
 
-    melancia: 420,
+    melancia: 4200,
 
-    melao: 550,
+    melao: 5500,
 
-    girassol: 3500,
+    girassol: 35000,
 
-    "flor-aurora": 100000
+    "flor-aurora": 1000000
 
 };
 const fazenda = (() => {
@@ -6119,7 +6165,7 @@ inputNomeGatinha.placeholder =
 if (btnVoltarLembretes) {
 
     btnVoltarLembretes.addEventListener("click", () => {
-
+      _msnChatAberto = false;
         abrirTela(telaJogo);
 
         tocarTrilha("casa");
@@ -6567,6 +6613,7 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
     else if (jogo === "recados")      jogoRecados();
     else if (jogo === "esconde")      jogoEscondeEsconde();
     else if (jogo === "esportes") jogoEsportes();
+    else if (jogo === "forca") jogoForca();
   });
 });
 
@@ -6885,6 +6932,7 @@ navFarm.onclick = () => {
 let _historicoCarregado = false;
 
 navLembretes.onclick = () => {
+  _msnChatAberto = true;
   abrirTela(telaLembretes);
   tocarTrilha("lembretes");
   atualizarMSN();
@@ -7502,6 +7550,11 @@ function iniciarMomentosEspeciais() {
         momentoConjuntoAtivo = true;
         estadoVisual.momentoConjunto = true;
         estadoVisual.spriteConjunta = momento.sprite;
+        // Esconde filhotinho
+        if (filhoteDesbloqueado) {
+          const fc = document.getElementById("filhoteContainer");
+          if (fc) fc.style.display = "none";
+        }
         renderizarGatinhas();
 
         mostrarMensagem(
@@ -7509,18 +7562,23 @@ function iniciarMomentosEspeciais() {
         );
 
         setTimeout(() => {
-            momentoConjuntoAtivo = false;
-            estadoVisual.momentoConjunto = false;
-            estadoVisual.spriteConjunta = null;
-            renderizarGatinhas();
-            atualizarStatus();
+          momentoConjuntoAtivo = false;
+          estadoVisual.momentoConjunto = false;
+          estadoVisual.spriteConjunta = null;
+          // Mostra filhotinho novamente
+          if (filhoteDesbloqueado) {
+            const fc = document.getElementById("filhoteContainer");
+            if (fc) fc.style.display = "flex";
+          }
+          renderizarGatinhas();
+          atualizarStatus();
         }, 6000);
 
     }, 120000);
 
 }
 
-// ── BANNER DE NOTIFICAÇÃO DE VISITA ──────────
+// BANNER DE NOTIFICAÇÃO DE VISITA
 const somCampainha = criarAudio("assets/music/som-campainha.mp3");
 
 let _visitaPendente = null;
@@ -10124,6 +10182,328 @@ function jogoEsportes() {
   setTimeout(() => telaSelecaoEsporte(), 300);
 }
 
+// AMORES & RIVAIS — FORCA
+function jogoForca() {
+  abrirArena("Amores & Rivais");
+
+  setTimeout(() => {
+    telaSelecaoForca();
+  }, 300);
+
+  async function carregarPlacar() {
+    const uid = localStorage.getItem("hannaUid");
+    if (!uid) return { anna: 0, kika: 0, titulo: null };
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+    const snap = await getDoc(doc(db, "saves", uid));
+    if (!snap.exists()) return { anna: 0, kika: 0, titulo: null };
+    return snap.data().forcaPlacar || { anna: 0, kika: 0, titulo: null };
+  }
+
+  async function telaSelecaoForca() {
+    const placar = await carregarPlacar();
+    const minhaUid = getMinhaUidStr();
+    const outraUid = minhaUid === "anna" ? "kika" : "anna";
+    const minhasVitorias = placar[minhaUid] || 0;
+    const outrasVitorias = placar[outraUid] || 0;
+    const titulo = placar.titulo;
+    const temTitulo = titulo === minhaUid;
+
+    // Verifica se tem partida esperando
+    const uid = localStorage.getItem("hannaUid");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+    const snap = await getDoc(doc(db, "saves", uid));
+    const partida = snap.exists() ? snap.data().forcaPartidaAtiva : null;
+    const temPartida = partida && partida.de !== minhaUid;
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:16px;">
+
+        <!-- Placar -->
+        <div style="background:rgba(255,255,255,0.1);border:1.5px solid #ff8fc2;border-radius:16px;padding:16px;">
+          <div style="text-align:center;font-size:11px;font-weight:800;color:#ff8fc2;margin-bottom:12px;">PLACAR</div>
+          <div style="display:flex;justify-content:space-around;align-items:center;">
+            <div style="text-align:center;">
+              <img src="assets/sprites/personagens/anna-competitiva.png" style="width:64px;height:64px;image-rendering:pixelated;border-radius:50%;border:2px solid #ff8fc2;">
+              <div style="font-size:12px;font-weight:800;color:#ff8fc2;margin-top:4px;">Anna</div>
+              <div style="font-size:24px;font-weight:800;color:white;">${placar.anna || 0}</div>
+              ${titulo === "anna" ? '<div style="font-size:9px;color:#ffd700;">👑 Campeã</div>' : ""}
+            </div>
+            <div style="font-size:28px;color:rgba(255,255,255,0.3);">x</div>
+            <div style="text-align:center;">
+              <img src="assets/sprites/personagens/kika-competitiva.png" style="width:64px;height:64px;image-rendering:pixelated;border-radius:50%;border:2px solid #ff8fc2;">
+              <div style="font-size:12px;font-weight:800;color:#ff8fc2;margin-top:4px;">Kika</div>
+              <div style="font-size:24px;font-weight:800;color:white;">${placar.kika || 0}</div>
+              ${titulo === "kika" ? '<div style="font-size:9px;color:#ffd700;">👑 Campeã</div>' : ""}
+            </div>
+          </div>
+        </div>
+
+        <!-- Partida esperando -->
+        ${temPartida ? `
+          <div style="background:rgba(255,140,0,0.2);border:1.5px solid #ffb347;border-radius:12px;padding:12px;text-align:center;">
+            <div style="font-size:12px;font-weight:800;color:#ffb347;margin-bottom:8px;">Você foi desafiada!</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-bottom:10px;">${partida.de === "anna" ? "Anna" : "Kika"} criou uma palavra pra você adivinhar!</div>
+            ${partida.dica ? `<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;">Dica: "${partida.dica}"</div>` : ""}
+            <button class="steve-btn" id="btnJogarForca" style="width:100%;">Aceitar desafio!</button>
+          </div>
+        ` : ""}
+
+        <!-- Criar partida -->
+        <div style="font-size:11px;font-weight:700;color:#ff8fc2;margin-bottom:6px;">Criar desafio pra ${minhaUid === "anna" ? "Kika" : "Anna"}</div>
+        <input type="text" id="inputPalavraForca" class="input-cozy" 
+          placeholder="Digite a palavra secreta..." maxlength="20"
+          style="text-transform:uppercase;">
+        <input type="text" id="inputDicaForca" class="input-cozy" 
+          placeholder="Dica opcional..." maxlength="50" style="margin-top:8px;">
+        <button class="msn-btn-enviar" id="btnCriarForca" style="width:100%;margin-top:8px;">
+          Enviar desafio!
+        </button>
+
+      </div>`;
+
+    if (temPartida) {
+      document.getElementById("btnJogarForca")?.addEventListener("click", () => {
+        iniciarJogoForca(partida);
+      });
+    }
+
+    document.getElementById("btnCriarForca")?.addEventListener("click", async () => {
+      const palavra = document.getElementById("inputPalavraForca").value.trim().toUpperCase();
+      const dica = document.getElementById("inputDicaForca").value.trim();
+      if (palavra.length < 3) { mostrarMensagem("Palavra muito curta!"); return; }
+
+      const minhaUidStr = getMinhaUidStr();
+      const payload = {
+        palavra,
+        dica,
+        de: minhaUidStr,
+        timestamp: Date.now(),
+        letrasErradas: [],
+        letrasAcertadas: [],
+        resultado: null,
+      };
+
+      const { getFirestore: gf, doc: d, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+      const { getApp: ga } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+      const db2 = gf(ga());
+
+      // Salva no save da outra
+      await updateDoc(d(db2, "saves", getOutraUid()), {
+        forcaPartidaAtiva: payload,
+        caixaDeEntrada: arrayUnion({
+          tipo: "convite_forca",
+          de: minhaUidStr,
+          timestamp: Date.now(),
+          texto: `${minhaUidStr === "anna" ? "Anna" : "Kika"} te desafiou pra uma partida de Amores & Rivais!`,
+        })
+      });
+
+      mostrarMensagem("Desafio enviado!");
+      const outraStr = getMinhaUidStr() === "anna" ? "Kika" : "Anna";
+      const payloadEnviado = {
+        tipo: "convite_forca",
+        de: getMinhaUidStr(),
+        timestamp: Date.now(),
+        texto: `Você desafiou ${outraStr} pra uma partida de Amores & Rivais!`
+      };
+      salvarNoHistoricoMSN(payloadEnviado);
+      const pendentesCriar = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
+      pendentesCriar.push({
+        texto: `Você desafiou ${outraStr} pra uma partida de Amores & Rivais!`,
+        tipo: "enviado",
+        src: null,
+        de: getMinhaUidStr(),
+        timestamp: Date.now()
+      });
+      localStorage.setItem("msnPendentes", JSON.stringify(pendentesCriar));
+      document.getElementById("inputPalavraForca").value = "";
+      document.getElementById("inputDicaForca").value = "";
+    });
+  }
+
+  function iniciarJogoForca(partida) {
+    const palavra = partida.palavra.toUpperCase();
+    let letrasErradas = [];
+    let letrasAcertadas = [];
+    const maxErros = 6;
+
+    const PARTES_HANNA = [
+      "assets/sprites/hanna/neutra.png",
+      "assets/sprites/hanna/curiosa.png",
+      "assets/sprites/hanna/sonolenta.png",
+      "assets/sprites/hanna/triste.png",
+      "assets/sprites/hanna/brava.png",
+      "assets/sprites/hanna/vergonha.png",
+      "assets/sprites/hanna/chorando-felicidade.png",
+    ];
+
+    function renderForca() {
+      const erros = letrasErradas.length;
+      const palavraExibida = palavra.split("").map(l => 
+        l === " " ? " " : letrasAcertadas.includes(l) ? l : "_"
+      ).join(" ");
+      const ganhou = palavra.split("").filter(l => l !== " ").every(l => letrasAcertadas.includes(l));
+      const perdeu = erros >= maxErros;
+
+      const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+      arenaConteudo.innerHTML = `
+        <div class="pz-wrap" style="gap:12px;">
+
+          <!-- Sprite da Hanna reagindo -->
+          <div style="text-align:center;">
+            <img src="${PARTES_HANNA[Math.min(erros, PARTES_HANNA.length-1)]}" 
+              style="width:80px;height:80px;image-rendering:pixelated;">
+            <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px;">${erros}/${maxErros} erros</div>
+          </div>
+
+          <!-- Forca desenhada em CSS -->
+          <div style="display:flex;justify-content:center;margin:8px 0;">
+            <div style="position:relative;width:120px;height:120px;">
+              <!-- Base -->
+              <div style="position:absolute;bottom:0;left:10px;right:10px;height:4px;background:#ff8fc2;border-radius:2px;"></div>
+              <!-- Poste vertical -->
+              <div style="position:absolute;bottom:4px;left:30px;width:4px;height:100px;background:#ff8fc2;"></div>
+              <!-- Poste horizontal -->
+              <div style="position:absolute;top:0;left:30px;width:60px;height:4px;background:#ff8fc2;"></div>
+              <!-- Corda -->
+              <div style="position:absolute;top:4px;right:34px;width:2px;height:20px;background:#ff8fc2;"></div>
+              <!-- Cabeça -->
+              ${erros >= 1 ? '<div style="position:absolute;top:24px;right:24px;width:20px;height:20px;border-radius:50%;border:3px solid #ff8fc2;"></div>' : ""}
+              <!-- Corpo -->
+              ${erros >= 2 ? '<div style="position:absolute;top:44px;right:31px;width:3px;height:25px;background:#ff8fc2;"></div>' : ""}
+              <!-- Braço esquerdo -->
+              ${erros >= 3 ? '<div style="position:absolute;top:48px;right:34px;width:20px;height:3px;background:#ff8fc2;transform:rotate(30deg);"></div>' : ""}
+              <!-- Braço direito -->
+              ${erros >= 4 ? '<div style="position:absolute;top:48px;right:14px;width:20px;height:3px;background:#ff8fc2;transform:rotate(-30deg);"></div>' : ""}
+              <!-- Perna esquerda -->
+              ${erros >= 5 ? '<div style="position:absolute;top:68px;right:34px;width:20px;height:3px;background:#ff8fc2;transform:rotate(50deg);"></div>' : ""}
+              <!-- Perna direita -->
+              ${erros >= 6 ? '<div style="position:absolute;top:68px;right:14px;width:20px;height:3px;background:#ff8fc2;transform:rotate(-50deg);"></div>' : ""}
+            </div>
+          </div>
+
+          ${partida.dica ? `<div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.5);">Dica: "${partida.dica}"</div>` : ""}
+
+          <!-- Palavra -->
+          <div style="text-align:center;font-size:22px;font-weight:800;color:white;letter-spacing:8px;font-family:monospace;">
+            ${palavraExibida}
+          </div>
+
+          <!-- Letras erradas -->
+          ${letrasErradas.length > 0 ? `
+            <div style="text-align:center;font-size:11px;color:#ff5580;">
+              Erradas: ${letrasErradas.join(" ")}
+            </div>
+          ` : ""}
+
+          <!-- Teclado -->
+          ${!ganhou && !perdeu ? `
+            <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;" id="tecladoForca">
+              ${letras.map(l => `
+                <button class="steve-btn" data-letra="${l}"
+                  style="width:32px;height:32px;padding:0;font-size:11px;font-weight:800;
+                  ${letrasAcertadas.includes(l) ? "background:#2d8a2d;opacity:0.5;" : ""}
+                  ${letrasErradas.includes(l) ? "background:#cc0000;opacity:0.5;" : ""}"
+                  ${letrasAcertadas.includes(l) || letrasErradas.includes(l) ? "disabled" : ""}>
+                  ${l}
+                </button>
+              `).join("")}
+            </div>
+          ` : ""}
+
+          <!-- Resultado -->
+          ${ganhou ? `
+            <div style="text-align:center;padding:16px;background:rgba(45,138,45,0.3);border-radius:12px;border:1.5px solid #2d8a2d;">
+              <img src="assets/sprites/hanna/comemorando.png" style="width:80px;height:80px;image-rendering:pixelated;">
+              <div style="font-size:16px;font-weight:800;color:#2d8a2d;margin:8px 0;">Acertou! 🎉</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7);">Meu lado competitivo falou mais alto! +10.000 moedas</div>
+              <button class="msn-btn-enviar" id="btnFinalizarForca" style="width:100%;margin-top:12px;">Continuar</button>
+            </div>
+          ` : ""}
+          ${perdeu ? `
+            <div style="text-align:center;padding:16px;background:rgba(204,0,0,0.3);border-radius:12px;border:1.5px solid #cc0000;">
+              <img src="assets/sprites/hanna/triste.png" style="width:80px;height:80px;image-rendering:pixelated;">
+              <div style="font-size:16px;font-weight:800;color:#cc0000;margin:8px 0;">Não foi dessa vez!</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.7);">A palavra era: <strong>${palavra}</strong></div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);">Parabéns meu bem, você mereceu 😅</div>
+              <button class="msn-btn-enviar" id="btnFinalizarForca" style="width:100%;margin-top:12px;">Continuar</button>
+            </div>
+          ` : ""}
+        </div>`;
+
+      // Listeners do teclado
+      document.querySelectorAll("[data-letra]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const letra = btn.dataset.letra;
+          if (palavra.includes(letra)) {
+            letrasAcertadas.push(letra);
+          } else {
+            letrasErradas.push(letra);
+          }
+          renderForca();
+        });
+      });
+
+      // Finalizar
+      document.getElementById("btnFinalizarForca")?.addEventListener("click", async () => {
+        const venceu = ganhou;
+        const minhaUidStr = getMinhaUidStr();
+
+        if (venceu) {
+          moedas += 10000;
+          desbloquearConquista("forca_competitiva");
+        } else {
+          desbloquearConquista("forca_derrotada");
+        }
+
+        // Atualiza placar
+        const { getFirestore, doc, getDoc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+        const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+        const db = getFirestore(getApp());
+        const uid = localStorage.getItem("hannaUid");
+
+        const snap = await getDoc(doc(db, "saves", uid));
+        const placarAtual = snap.data().forcaPlacar || { anna: 0, kika: 0, titulo: null };
+
+        if (venceu) placarAtual[minhaUidStr] = (placarAtual[minhaUidStr] || 0) + 1;
+        placarAtual.titulo = placarAtual.anna > placarAtual.kika ? "anna" : 
+                             placarAtual.kika > placarAtual.anna ? "kika" : placarAtual.titulo;
+
+        // Salva placar nos dois saves
+        await updateDoc(doc(db, "saves", uid), {
+          forcaPlacar: placarAtual,
+          forcaPartidaAtiva: null,
+        });
+        await updateDoc(doc(db, "saves", getOutraUid()), {
+          forcaPlacar: placarAtual,
+        });
+
+        // Notifica a outra
+        await updateDoc(doc(db, "saves", getOutraUid()), {
+          caixaDeEntrada: arrayUnion({
+            tipo: "resultado_forca",
+            de: minhaUidStr,
+            timestamp: Date.now(),
+            texto: venceu 
+              ? `${minhaUidStr === "anna" ? "Anna" : "Kika"} adivinhou sua palavra! Meu lado competitivo falou mais alto!`
+              : `${minhaUidStr === "anna" ? "Anna" : "Kika"} não conseguiu adivinhar. Parabéns meu bem, você mereceu!`,
+          })
+        });
+
+        atualizarStatus();
+        _salvar();
+        telaSelecaoForca();
+      });
+    }
+
+    renderForca();
+  }
+}
 
 // MINIGAME: ESCONDE-ESCONDE DO FILHOTINHO
 function jogoEscondeEsconde() {
