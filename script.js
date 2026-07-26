@@ -1528,6 +1528,7 @@ function atualizarMSN() {
   // Exibe mensagens pendentes
   const pendentes = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
   if (pendentes.length > 0) {
+    pendentes.sort((a, b) => a.timestamp - b.timestamp);
     pendentes.forEach(m => {
       adicionarMensagemMSN(m.texto, m.tipo, m.src, m.de, m.timestamp);
     });
@@ -6911,22 +6912,16 @@ btnBanho.addEventListener("click", () => {
 
 
 // NAVBAR
-
 navHome.onclick = () => {
-
-    abrirTela(telaJogo);
-
-    tocarTrilha("casa");
-
+  _msnChatAberto = false;
+  abrirTela(telaJogo);
+  tocarTrilha("casa");
 };
 
-
 navFarm.onclick = () => {
-
-    abrirTela(telaFazenda);
-
-    tocarTrilha("fazenda");
-
+  _msnChatAberto = false;
+  abrirTela(telaFazenda);
+  tocarTrilha("fazenda");
 };
 
 let _historicoCarregado = false;
@@ -6944,43 +6939,25 @@ navLembretes.onclick = () => {
 };
 
 navLoja.onclick = () => {
-
-    abrirTela(telaLoja);
-
-    tocarTrilha("loja");
-
+  _msnChatAberto = false;
+  abrirTela(telaLoja);
+  tocarTrilha("loja");
 };
-
-
-// NAV GAMES
 
 navGames.onclick = () => {
-
-    // GARANTE NAVBAR VISÍVEL
-
-    document.querySelector(".bottomNav")
-    .style.display = "flex";
-
-    abrirTela(telaMinigames);
-
-    animarTela(telaMinigames);
-
-    tocarTrilha("minigames");
-
-    window.scrollTo(0, 0);
-
+  _msnChatAberto = false;
+  document.querySelector(".bottomNav").style.display = "flex";
+  abrirTela(telaMinigames);
+  animarTela(telaMinigames);
+  tocarTrilha("minigames");
+  window.scrollTo(0, 0);
 };
 
-// NAV CONFIG
-
 navConfig.onclick = () => {
-
-    abrirTela(telaConfig);
-
-    animarTela(telaConfig);
-
-    window.scrollTo(0, 0);
-
+  _msnChatAberto = false;
+  abrirTela(telaConfig);
+  animarTela(telaConfig);
+  window.scrollTo(0, 0);
 };
 
 function animacoesAleatoriasHanna() {
