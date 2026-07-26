@@ -1871,8 +1871,8 @@ async function carregarHistoricoMSN() {
 
   const historico = snap.data().historicoMSN || [];
   const agora = Date.now();
-  const vintEquatroHoras = 24 * 60 * 60 * 1000;
-  const historicoFiltrado = historico.filter(item => agora - item.timestamp < vintEquatroHoras);
+  const quarentaOitoHoras = 48 * 60 * 60 * 1000;
+  const historicoFiltrado = historico.filter(item => agora - item.timestamp < quarentaOitoHoras);
 
   if (historicoFiltrado.length < historico.length) {
     await updateDoc(doc(db, "saves", uid), { historicoMSN: historicoFiltrado });
@@ -2566,8 +2566,8 @@ document.querySelectorAll(".msn-fig-cat").forEach(btn => {
   });
 });
 
-// Verifica caixa de entrada a cada 30 segundos
-setInterval(verificarCaixaEntrada, 30 * 1000);
+// Verifica caixa de entrada a cada 15 segundos
+setInterval(verificarCaixaEntrada, 15 * 1000);
 
 // SONS (silencia erro se arquivo ausente)
 function criarAudio(src) {
