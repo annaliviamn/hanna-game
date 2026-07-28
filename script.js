@@ -10500,6 +10500,11 @@ function jogoForca() {
 
       // Finalizar
       document.getElementById("btnFinalizarForca")?.addEventListener("click", async () => {
+        const btn = document.getElementById("btnFinalizarForca");
+        if (btn) btn.disabled = true;
+        const { getFirestore, doc, getDoc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+        const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+        const db = getFirestore(getApp());
         const venceu = ganhou;
         const minhaUidStr = getMinhaUidStr();
 
@@ -10553,7 +10558,14 @@ function jogoForca() {
 
         atualizarStatus();
         _salvar();
-        telaSelecaoForca();
+        
+        // Limpa a partida ativa
+        const uid = localStorage.getItem("hannaUid");
+        await updateDoc(doc(db, "saves", uid), {
+          forcaPartidaAtiva: null,
+        });
+        
+        await telaSelecaoForca();
       });
     }
 
