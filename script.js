@@ -1513,10 +1513,48 @@ function getOutraUid() {
 let msnDesbloqueado = localStorage.getItem("msnDesbloqueado") === "true";
 let _msnChatAberto = false;
 
+// Hanna Impostos
+let ultimaPagamentoContas = Number(localStorage.getItem("ultimaPagamentoContas")) || 0;
+let internetPaga = localStorage.getItem("internetPaga") !== "false";
+let aguaPaga = localStorage.getItem("aguaPaga") !== "false";
+let luzPaga = localStorage.getItem("luzPaga") !== "false";
+let ultimoPagamentoIPTU = Number(localStorage.getItem("ultimoPagamentoIPTU")) || 0;
+let iptuPago = localStorage.getItem("iptuPago") !== "false";
+
 function atualizarMSN() {
   const bloqueado = document.getElementById("msnBloqueado");
   const desbloqueado = document.getElementById("msnDesbloqueado");
   if (!bloqueado || !desbloqueado) return;
+
+  // Internet cortada
+  if (!internetPaga) {
+    bloqueado.style.display = "block";
+    desbloqueado.style.display = "none";
+    bloqueado.innerHTML = `
+      <div class="msn-locked-card" style="flex-direction:column; align-items:center; text-align:center; gap:16px; padding:24px;">
+        <img src="assets/sprites/hanna/hanna-sem-sinal.png" style="width:80px; image-rendering:pixelated;">
+        <div>
+          <h3 class="msn-titulo">Sem sinal!</h3>
+          <p class="msn-desc">A internet foi cortada por falta de pagamento. Pague 5.000 moedas pra reconectar!</p>
+        </div>
+        <div class="msn-locked-footer" style="flex-direction:column; gap:8px; width:100%;">
+          <span class="preco-chip">5.000 moedas</span>
+          <button id="btnPagarInternet" class="btn-comprar" style="width:100%;">Pagar agora</button>
+        </div>
+      </div>`;
+
+    document.getElementById("btnPagarInternet")?.addEventListener("click", () => {
+      if (moedas < 5000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+      moedas -= 5000;
+      internetPaga = true;
+      localStorage.setItem("internetPaga", "true");
+      atualizarStatus();
+      atualizarMSN();
+      mostrarMensagem("Internet reconectada!");
+    });
+    return;
+  }
+
   if (msnDesbloqueado) {
     bloqueado.style.display = "none";
     desbloqueado.style.display = "block";
@@ -3686,6 +3724,11 @@ function _salvar() {
   localStorage.setItem("ultimaRoleta", ultimaRoleta);
   localStorage.setItem("mensagemEspecialComprada", _mensagemEspecialComprada ? "true" : "false");
   localStorage.setItem("msnDesbloqueado", msnDesbloqueado ? "true" : "false");
+  localStorage.setItem("ultimaPagamentoContas", ultimaPagamentoContas);
+  localStorage.setItem("internetPaga", internetPaga ? "true" : "false");
+  localStorage.setItem("aguaPaga", aguaPaga ? "true" : "false");
+  localStorage.setItem("luzPaga", luzPaga ? "true" : "false");
+  localStorage.setItem("ultimoPagamentoIPTU", ultimoPagamentoIPTU);
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -3712,7 +3755,9 @@ function _salvar() {
           lembretes: JSON.stringify(lembretes),
           ultimaRoleta: ultimaRoleta,
           mensagemEspecialComprada: _mensagemEspecialComprada,
-          msnDesbloqueado,
+          msnDesbloqueado, ultimaPagamentoContas,
+          internetPaga, aguaPaga, luzPaga,
+          ultimoPagamentoIPTU,
         });
       }).catch(() => {});
     }
@@ -4262,6 +4307,12 @@ function carregarDadosNoJogo(dados) {
   annaDesbloqueada = dados.annaDesbloqueada === true || dados.annaDesbloqueada === "true";
   kikaDesbloqueada = dados.kikaDesbloqueada === true || dados.kikaDesbloqueada === "true";
 
+  ultimaPagamentoContas = Number(dados.ultimaPagamentoContas) || 0;
+  internetPaga = dados.internetPaga !== false && dados.internetPaga !== "false";
+  aguaPaga = dados.aguaPaga !== false && dados.aguaPaga !== "false";
+  luzPaga = dados.luzPaga !== false && dados.luzPaga !== "false";
+  ultimoPagamentoIPTU = Number(dados.ultimoPagamentoIPTU) || 0;
+
   if (dados.conquistas) {
     try { conquistasDesbloqueadas = JSON.parse(dados.conquistas); } catch(e) {}
   }
@@ -4384,6 +4435,7 @@ function entrarNoJogo() {
 
     atualizarStatus();
     verificarRoletaDiaria();
+    verificarContas();
     atualizarBtnEsconde();
     atualizarBtnsLoja();
     atualizarConfigGatinha();
@@ -6840,11 +6892,29 @@ document.getElementById("btnVoltarFazenda")
 
 
 // BANHO
-
 btnBanho.addEventListener("click", () => {
-
   if (dormindo || momentoConjuntoAtivo) {
-    mostrarFalaHanna("Zzz... 💤");
+    mostrarFalaHanna("Zzz...");
+    return;
+  }
+
+  // Água ou luz cortada
+  if (!aguaPaga || !luzPaga) {
+    const hannaBanho = document.getElementById("hannaBanho");
+    hannaBanho.src = "assets/sprites/hanna/sem-banho.png";
+    hannaBanho.classList.add("sem-agua"); // ← adiciona aqui
+    telaBanho.style.display = "flex";
+    hannaSprite.style.display = "none";
+    if (hannaBanho) hannaBanho.style.display = "block";
+    mostrarMensagem("Sem água ou luz! Pague as contas primeiro!");
+    setTimeout(() => {
+      telaBanho.style.display = "none";
+      hannaBanho.src = "assets/sprites/hanna/banho.png";
+      hannaBanho.classList.remove("sem-agua"); // ← adiciona aqui
+      hannaSprite.style.display = "block";
+      if (hannaBanho) hannaBanho.style.display = "none";
+      atualizarStatus();
+    }, 3000);
     return;
   }
 
@@ -6961,6 +7031,7 @@ navConfig.onclick = () => {
   _msnChatAberto = false;
   abrirTela(telaConfig);
   animarTela(telaConfig);
+  atualizarStatusContas();
   window.scrollTo(0, 0);
 };
 
@@ -10433,9 +10504,19 @@ function jogoForca() {
         const minhaUidStr = getMinhaUidStr();
 
         if (venceu) {
-          moedas += 10000;
+          moedas += 5000;
           desbloquearConquista("forca_competitiva");
+          // Notifica a vencedora que ganhou moedas
+          await updateDoc(doc(db, "saves", getOutraUid()), {
+            caixaDeEntrada: arrayUnion({
+              tipo: "resultado_forca",
+              de: minhaUidStr,
+              timestamp: Date.now(),
+              texto: `${minhaUidStr === "anna" ? "Anna" : "Kika"} adivinhou sua palavra e ganhou 5.000 moedas suas!`,
+            })
+          });
         } else {
+          moedas = Math.max(0, moedas - 5000);
           desbloquearConquista("forca_derrotada");
         }
 
@@ -10888,3 +10969,101 @@ function atualizarCardGravidez() {
     card.style.display = "none";
   }, 5000);
 }
+
+// VERIFICAR CONTAS DA HANNA
+function verificarContas() {
+  const agora = Date.now();
+  const umaSemana = 7 * 24 * 60 * 60 * 1000;
+  const umMes = 30 * 24 * 60 * 60 * 1000;
+
+  // Verifica se as contas semanais venceram
+  if (agora - ultimaPagamentoContas >= umaSemana) {
+    internetPaga = false;
+    aguaPaga = false;
+    luzPaga = false;
+    localStorage.setItem("internetPaga", "false");
+    localStorage.setItem("aguaPaga", "false");
+    localStorage.setItem("luzPaga", "false");
+    mostrarMensagem("As contas da Hanna venceram! Acesse as Configurações pra pagar.");
+  }
+
+  // Verifica IPTU mensal
+  if (agora - ultimoPagamentoIPTU >= umMes) {
+    localStorage.setItem("iptuPago", "false");
+  }
+  atualizarStatus();
+  _salvar();
+}
+
+// CONTAS DA HANNA
+function atualizarStatusContas() {
+  const verde = "#2d8a2d";
+  const vermelho = "#cc0000";
+
+  const statusInternet = document.getElementById("statusInternet");
+  const statusAgua = document.getElementById("statusAgua");
+  const statusLuz = document.getElementById("statusLuz");
+  const statusIPTU = document.getElementById("statusIPTU");
+  const btnInternet = document.getElementById("btnPagarInternet");
+  const btnAgua = document.getElementById("btnPagarAgua");
+  const btnLuz = document.getElementById("btnPagarLuz");
+  const btnIPTU = document.getElementById("btnPagarIPTU");
+
+  if (statusInternet) statusInternet.style.background = internetPaga ? verde : vermelho;
+  if (statusAgua) statusAgua.style.background = aguaPaga ? verde : vermelho;
+  if (statusLuz) statusLuz.style.background = luzPaga ? verde : vermelho;
+  if (statusIPTU) statusIPTU.style.background = iptuPago ? verde : vermelho;
+
+  if (btnInternet) btnInternet.style.display = internetPaga ? "none" : "block";
+  if (btnAgua) btnAgua.style.display = aguaPaga ? "none" : "block";
+  if (btnLuz) btnLuz.style.display = luzPaga ? "none" : "block";
+  if (btnIPTU) btnIPTU.style.display = iptuPago ? "none" : "block";
+}
+
+document.getElementById("btnPagarInternet")?.addEventListener("click", () => {
+  if (moedas < 5000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 5000;
+  internetPaga = true;
+  localStorage.setItem("internetPaga", "true");
+  ultimaPagamentoContas = Date.now();
+  localStorage.setItem("ultimaPagamentoContas", ultimaPagamentoContas);
+  atualizarStatusContas();
+  atualizarStatus();
+  _salvar();
+  mostrarMensagem("Internet paga! Sinal reconectado.");
+});
+
+document.getElementById("btnPagarAgua")?.addEventListener("click", () => {
+  if (moedas < 2000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 2000;
+  aguaPaga = true;
+  localStorage.setItem("aguaPaga", "true");
+  atualizarStatusContas();
+  atualizarStatus();
+  _salvar();
+  mostrarMensagem("Conta de água paga!");
+});
+
+document.getElementById("btnPagarLuz")?.addEventListener("click", () => {
+  if (moedas < 3000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 3000;
+  luzPaga = true;
+  localStorage.setItem("luzPaga", "true");
+  atualizarStatusContas();
+  atualizarStatus();
+  _salvar();
+  mostrarMensagem("Conta de luz paga!");
+});
+
+document.getElementById("btnPagarIPTU")?.addEventListener("click", () => {
+  if (moedas < 10000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 10000;
+  iptuPago = true;
+  ultimoPagamentoIPTU = Date.now();
+  localStorage.setItem("iptuPago", "true");
+  localStorage.setItem("ultimoPagamentoIPTU", ultimoPagamentoIPTU);
+  atualizarStatusContas();
+  atualizarStatus();
+  _salvar();
+  mostrarMensagem("IPTU pago! Até o mês que vem...");
+});

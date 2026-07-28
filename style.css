@@ -1749,6 +1749,9 @@ body.dark-mode .bottomNav {
 
 }
 
+#hannaBanho.sem-agua {
+  animation: none;
+}
 
 /* BOLHAS */
 
