@@ -1920,11 +1920,20 @@ async function carregarHistoricoMSN() {
     await updateDoc(doc(db, "saves", uid), { historicoMSN: historicoFiltrado });
   }
 
-  historicoFiltrado.sort((a, b) => a.timestamp - b.timestamp);
+  // Limpa o container
+  if (conversa) conversa.innerHTML = "";
+
+  // Junta histórico com pendentes e ordena tudo junto
+  const pendentes = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
+  const tudo = [...historicoFiltrado, ...pendentes];
+  tudo.sort((a, b) => a.timestamp - b.timestamp);
+  localStorage.removeItem("msnPendentes");
+  _pendentesMostradas = true;
+
   const minhaUid = getMinhaUidStr();
-  historicoFiltrado.slice(-50).forEach(item => {
-      const tipo = item.de === minhaUid ? "enviado" : "recebido";
-      const quem = item.de === minhaUid ? "Você" : (item.de === "anna" ? "Anna" : "Kika");
+  tudo.slice(-50).forEach(item => {
+    const tipo = item.de === minhaUid ? "enviado" : "recebido";
+    const quem = item.de === minhaUid ? "Você" : (item.de === "anna" ? "Anna" : "Kika");
     
     switch(item.tipo) {
       case "carinho":        adicionarMensagemMSN(`${quem} mandou um carinho!`, tipo, null, item.de, item.timestamp); break;
