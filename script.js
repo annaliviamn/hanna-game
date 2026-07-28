@@ -1525,14 +1525,17 @@ function atualizarMSN() {
     desbloqueado.style.display = "none";
   }
 
-  // Exibe mensagens pendentes
-  const pendentes = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
-  if (pendentes.length > 0) {
-    pendentes.sort((a, b) => a.timestamp - b.timestamp);
-    pendentes.forEach(m => {
-      adicionarMensagemMSN(m.texto, m.tipo, m.src, m.de, m.timestamp);
-    });
-    localStorage.removeItem("msnPendentes");
+  // Exibe mensagens pendentes (só uma vez por sessão)
+  if (!_pendentesMostradas) {
+    const pendentes = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
+    if (pendentes.length > 0) {
+      pendentes.sort((a, b) => a.timestamp - b.timestamp);
+      pendentes.forEach(m => {
+        adicionarMensagemMSN(m.texto, m.tipo, m.src, m.de, m.timestamp);
+      });
+      localStorage.removeItem("msnPendentes");
+    }
+    _pendentesMostradas = true;
   }
 }
 
@@ -6925,6 +6928,7 @@ navFarm.onclick = () => {
 };
 
 let _historicoCarregado = false;
+let _pendentesMostradas = false;
 
 navLembretes.onclick = () => {
   _msnChatAberto = true;
@@ -10168,14 +10172,11 @@ function jogoForca() {
   }, 300);
 
   async function carregarPlacar() {
-    const uid = localStorage.getItem("hannaUid");
-    if (!uid) return { anna: 0, kika: 0, titulo: null };
     const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
     const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
     const db = getFirestore(getApp());
-    const snap = await getDoc(doc(db, "saves", uid));
-    if (!snap.exists()) return { anna: 0, kika: 0, titulo: null };
-    return snap.data().forcaPlacar || { anna: 0, kika: 0, titulo: null };
+    const snap = await getDoc(doc(db, "forcaPlacar", "placar"));
+    return snap.exists() ? snap.data() : { anna: 0, kika: 0, titulo: null };
   }
 
   async function telaSelecaoForca() {
@@ -10207,14 +10208,14 @@ function jogoForca() {
               <img src="assets/sprites/personagens/anna-competitiva.png" style="width:64px;height:64px;image-rendering:pixelated;border-radius:50%;border:2px solid #ff8fc2;">
               <div style="font-size:12px;font-weight:800;color:#ff8fc2;margin-top:4px;">Anna</div>
               <div style="font-size:24px;font-weight:800;color:white;">${placar.anna || 0}</div>
-              ${titulo === "anna" ? '<div style="font-size:9px;color:#ffd700;">👑 Campeã</div>' : ""}
+              ${titulo === "anna" ? '<div style="font-size:9px;color:#ffd700;">Campeã</div>' : ""}
             </div>
             <div style="font-size:28px;color:rgba(255,255,255,0.3);">x</div>
             <div style="text-align:center;">
               <img src="assets/sprites/personagens/kika-competitiva.png" style="width:64px;height:64px;image-rendering:pixelated;border-radius:50%;border:2px solid #ff8fc2;">
               <div style="font-size:12px;font-weight:800;color:#ff8fc2;margin-top:4px;">Kika</div>
               <div style="font-size:24px;font-weight:800;color:white;">${placar.kika || 0}</div>
-              ${titulo === "kika" ? '<div style="font-size:9px;color:#ffd700;">👑 Campeã</div>' : ""}
+              ${titulo === "kika" ? '<div style="font-size:9px;color:#ffd700;">Campeã</div>' : ""}
             </div>
           </div>
         </div>
@@ -10326,7 +10327,7 @@ function jogoForca() {
       const ganhou = palavra.split("").filter(l => l !== " ").every(l => letrasAcertadas.includes(l));
       const perdeu = erros >= maxErros;
 
-      const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+      const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇÑ".split("");
 
       arenaConteudo.innerHTML = `
         <div class="pz-wrap" style="gap:12px;">
@@ -10397,7 +10398,7 @@ function jogoForca() {
           ${ganhou ? `
             <div style="text-align:center;padding:16px;background:rgba(45,138,45,0.3);border-radius:12px;border:1.5px solid #2d8a2d;">
               <img src="assets/sprites/hanna/comemorando.png" style="width:80px;height:80px;image-rendering:pixelated;">
-              <div style="font-size:16px;font-weight:800;color:#2d8a2d;margin:8px 0;">Acertou! 🎉</div>
+              <div style="font-size:16px;font-weight:800;color:#2d8a2d;margin:8px 0;">Acertou!</div>
               <div style="font-size:12px;color:rgba(255,255,255,0.7);">Meu lado competitivo falou mais alto! +10.000 moedas</div>
               <button class="msn-btn-enviar" id="btnFinalizarForca" style="width:100%;margin-top:12px;">Continuar</button>
             </div>
@@ -10407,7 +10408,7 @@ function jogoForca() {
               <img src="assets/sprites/hanna/triste.png" style="width:80px;height:80px;image-rendering:pixelated;">
               <div style="font-size:16px;font-weight:800;color:#cc0000;margin:8px 0;">Não foi dessa vez!</div>
               <div style="font-size:12px;color:rgba(255,255,255,0.7);">A palavra era: <strong>${palavra}</strong></div>
-              <div style="font-size:11px;color:rgba(255,255,255,0.5);">Parabéns meu bem, você mereceu 😅</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);">Parabéns meu bem, você mereceu</div>
               <button class="msn-btn-enviar" id="btnFinalizarForca" style="width:100%;margin-top:12px;">Continuar</button>
             </div>
           ` : ""}
@@ -10438,26 +10439,23 @@ function jogoForca() {
           desbloquearConquista("forca_derrotada");
         }
 
-        // Atualiza placar
-        const { getFirestore, doc, getDoc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
-        const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
-        const db = getFirestore(getApp());
-        const uid = localStorage.getItem("hannaUid");
-
-        const snap = await getDoc(doc(db, "saves", uid));
-        const placarAtual = snap.data().forcaPlacar || { anna: 0, kika: 0, titulo: null };
+        // Lê placar centralizado
+        const placarRef = doc(db, "forcaPlacar", "placar");
+        const placarSnap = await getDoc(placarRef);
+        const placarAtual = placarSnap.exists() 
+          ? placarSnap.data() 
+          : { anna: 0, kika: 0, titulo: null };
 
         if (venceu) placarAtual[minhaUidStr] = (placarAtual[minhaUidStr] || 0) + 1;
         placarAtual.titulo = placarAtual.anna > placarAtual.kika ? "anna" : 
-                             placarAtual.kika > placarAtual.anna ? "kika" : placarAtual.titulo;
+                            placarAtual.kika > placarAtual.anna ? "kika" : placarAtual.titulo;
 
-        // Salva placar nos dois saves
-        await updateDoc(doc(db, "saves", uid), {
-          forcaPlacar: placarAtual,
-          forcaPartidaAtiva: null,
-        });
-        await updateDoc(doc(db, "saves", getOutraUid()), {
-          forcaPlacar: placarAtual,
+        // Salva placar centralizado
+        await updateDoc(placarRef, placarAtual).catch(async () => {
+          const { getFirestore: gf2, doc: d2, setDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+          const { getApp: ga2 } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+          const db2 = gf2(ga2());
+          await setDoc(d2(db2, "forcaPlacar", "placar"), placarAtual);
         });
 
         // Notifica a outra
