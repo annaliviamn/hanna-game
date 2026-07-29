@@ -488,19 +488,9 @@ function criarParticulas(emoji = "💖", quantidade = 6) {
 
         }
 
-        p.style.left =
-        (
-            rect.left +
-            rect.width / 2 +
-            ajusteX +
-            (Math.random() * 50 - 25)
-        )
-        + "px";
+        p.style.left = (rect.left + rect.width / 2 + (Math.random() * 50 - 25)) + "px";
 
-        p.style.top =
-        (rect.top + 40 +
-        (Math.random() * 30 - 15))
-        + "px";
+        p.style.top = (rect.top + window.scrollY + 20 + (Math.random() * 30 - 15)) + "px";
 
         container.appendChild(p);
 
@@ -4692,6 +4682,49 @@ function restaurarSlotsVisuais() {
   });
 }
 
+// Clique nos slots pra colher
+slotsPlantacao.forEach((slotHTML, idx) => {
+  slotHTML.addEventListener("click", () => {
+    const slot = fazenda[idx];
+    if (!slot.pronta) return;
+
+    const valor = valorPlantas[slot.flor] || 0;
+    moedas += valor;
+
+    // Mostra valor no slot
+    const rect = slotHTML.getBoundingClientRect();
+    const feedbackEl = document.createElement("div");
+    feedbackEl.textContent = `+${valor}`;
+    feedbackEl.style.cssText = `
+      position: fixed;
+      left: ${rect.left + rect.width / 2}px;
+      top: ${rect.top}px;
+      color: #ff8c00;
+      font-size: 14px;
+      font-weight: 800;
+      pointer-events: none;
+      z-index: 9999;
+      animation: subirFade 1.5s ease forwards;
+    `;
+    document.body.appendChild(feedbackEl);
+    setTimeout(() => feedbackEl.remove(), 1500);
+
+    mostrarMensagem(`Colheu ${slot.flor}! +${valor} moedas.`);
+    falarFazenda(`+${valor} moedinhas!`, "assets/sprites/hanna/animada.png");
+
+    // Reseta o slot
+    slot.plantada = false;
+    slot.pronta = false;
+    slot.flor = "";
+    slot.tempoFim = 0;
+    salvarFazenda();
+
+    const sprite = slotHTML.querySelector("img");
+    if (sprite) sprite.src = "assets/farm/vazio.png";
+
+    atualizarStatus();
+  });
+});
 
 // HANNA NA FAZENDA
 const hannaFazendaSprite = document.getElementById("hannaFazendaSprite");

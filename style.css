@@ -1717,7 +1717,6 @@ body.dark-mode .bottomNav {
 }
 
 /* TELA BANHO */
-
 #telaBanho {
   position: absolute;
   inset: 0;
@@ -1732,7 +1731,6 @@ body.dark-mode .bottomNav {
 
 
 /* IMAGEM */
-
 #hannaBanho {
 
     width: 400px;
@@ -1754,7 +1752,6 @@ body.dark-mode .bottomNav {
 }
 
 /* BOLHAS */
-
 .bolhas {
 
     position: absolute;
@@ -1764,7 +1761,6 @@ body.dark-mode .bottomNav {
     overflow: hidden;
 
 }
-
 
 .bolha {
 
@@ -1788,9 +1784,7 @@ body.dark-mode .bottomNav {
 
 }
 
-
 /* POSIÇÕES DIFERENTES */
-
 .bolha:nth-child(1) {
 
     left: 10%;
@@ -1849,7 +1843,6 @@ body.dark-mode .bottomNav {
 
 
 /* ANIMAÇÃO */
-
 @keyframes subirBolha {
 
     0% {
@@ -1908,6 +1901,11 @@ body.dark-mode .bottomNav {
 
     }
 
+}
+
+@keyframes subirFade {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-40px); }
 }
 
 /* MINIGAMES — adicione ao final do seu style.css */
