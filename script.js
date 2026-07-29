@@ -4615,37 +4615,37 @@ if (_emailSalvo && _senhaSalva) {
 const slotsPlantacao = document.querySelectorAll(".slotPlantacao");
 const valorPlantas = {
 
-    flor: 350,
+    flor: 35,
 
-    rosa: 550,
+    rosa: 55,
 
-    batata: 750,
+    batata: 1000,
 
-    morango: 850,
+    morango: 85,
 
-    tomate: 950,
+    tomate: 95,
 
-    cenoura: 1100,
+    cenoura: 30,
 
-    brocolis: 1500,
+    brocolis: 20,
 
-    abobora: 1800,
+    abobora: 35,
 
-    mandioca: 2200,
+    mandioca: 65,
 
-    lavanda: 2600,
+    lavanda: 28,
 
-    babosa: 3000,
+    babosa: 25,
 
-    margarida: 3500,
+    margarida: 20,
 
-    melancia: 4200,
+    melancia: 78,
 
-    melao: 5500,
+    melao: 80,
 
-    girassol: 35000,
+    girassol: 5000,
 
-    "flor-aurora": 1000000
+    "flor-aurora": 100000
 
 };
 const fazenda = (() => {
