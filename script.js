@@ -7256,6 +7256,7 @@ navLoja.onclick = () => {
   _msnChatAberto = false;
   abrirTela(telaLoja);
   tocarTrilha("loja");
+  atualizarBtnsLoja();
 };
 
 navGames.onclick = () => {
