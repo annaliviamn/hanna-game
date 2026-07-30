@@ -1,6 +1,6 @@
 // ── FIREBASE CONFIG ──────────────────────────────────────────
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, deleteField } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -308,3 +308,5 @@ export function listaAleatoriaCaca(banco) {
   const listas = banco.cacapalavras || BANCO_LOCAL.cacapalavras;
   return listas[Math.floor(Math.random() * listas.length)];
 }
+
+export { deleteField };

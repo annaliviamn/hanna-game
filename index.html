@@ -1167,6 +1167,126 @@
         </div>
       </div>
 
+      <!-- Pedido de Casamento -->
+      <div class="item-loja item-premium" id="cardPedidoCasamento" style="display:none;">
+        <div class="item-loja-icon-wrap"><img src="assets/sprites/casamento/item-aliancas.png" class="iconeLoja"></div>
+        <div class="item-loja-info">
+          <h3>Pedido de Casamento</h3>
+          <p class="item-desc">O próximo passo da vida de vocês. Com alianças de ouro e muito amor, faça o pedido mais especial.</p>
+          <p>Evento único e irrepetível</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">🪙 100.000</span>
+            <button id="btnPedidoCasamento" class="btn-comprar">Pedir em Casamento</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Planejar Casamento -->
+      <div class="item-loja item-premium" id="cardPlanejarCasamento" style="display:none;">
+        <div class="item-loja-icon-wrap"><img src="assets/sprites/casamento/altar-base.png" class="iconeLoja"></div>
+        <div class="item-loja-info">
+          <h3>Planejar Casamento</h3>
+          <p class="item-desc">Escolha a data e comece a preparar o dia mais especial! Você tem 15 dias pra deixar tudo perfeito.</p>
+          <p>Inicia contagem regressiva de 15 dias</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">🪙 500.000</span>
+            <button id="btnPlanejarCasamento" class="btn-comprar">Planejar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO PREPARATIVOS DO CASAMENTO -->
+      <div id="secaoCasamento" style="display:none;">
+
+        <div class="categoriaLoja" style="background:linear-gradient(135deg,#ff8fc2,#c9a0f5);color:white;border-radius:12px;padding:10px 16px;text-align:center;font-size:14px;letter-spacing:1px;">
+          Preparativos do Casamento
+        </div>
+
+        <div style="background:linear-gradient(135deg,rgba(255,143,194,0.1),rgba(201,160,245,0.1));border:2px solid #ff8fc2;border-radius:16px;padding:4px;margin-top:4px;">
+          <div class="loja-grid">
+
+            <!-- Flores -->
+            <div class="item-loja" style="border-color:#ff8fc2;">
+              <div class="item-loja-icon-wrap"><img src="assets/sprites/casamento/item-flores-casamento.png" class="iconeLoja"></div>
+              <div class="item-loja-info">
+                <h3>Flores</h3>
+                <p class="item-desc">Arranjos florais pra enfeitar o altar e todo o espaço.</p>
+                <div class="item-loja-footer">
+                  <span class="preco-chip">🪙 25.000</span>
+                  <button id="btnCasamentoFlores" class="btn-comprar">Comprar</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Decoração -->
+            <div class="item-loja" style="border-color:#ff8fc2;">
+              <div class="item-loja-icon-wrap"><img src="assets/sprites/casamento/item-decoracao.png" class="iconeLoja"></div>
+              <div class="item-loja-info">
+                <h3>Decoração</h3>
+                <p class="item-desc">Luzes, fitas e enfeites pra deixar o ambiente dos sonhos.</p>
+                <div class="item-loja-footer">
+                  <span class="preco-chip">🪙 50.000</span>
+                  <button id="btnCasamentoDecoracao" class="btn-comprar">Comprar</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Comida -->
+            <div class="item-loja" style="border-color:#ff8fc2;">
+              <div class="item-loja-icon-wrap"><img src="assets/sprites/casamento/item-comida-casamento.png" class="iconeLoja"></div>
+              <div class="item-loja-info">
+                <h3>Banquete</h3>
+                <p class="item-desc">Um banquete delicioso pra celebrar com os convidados!</p>
+                <div class="item-loja-footer">
+                  <span class="preco-chip">🪙 75.000</span>
+                  <button id="btnCasamentoComida" class="btn-comprar">Comprar</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vestido Hanna -->
+            <div class="item-loja" style="border-color:#ff8fc2;">
+              <div class="item-loja-icon-wrap"><img src="assets/sprites/casamento/item-vestido-hanna.png" class="iconeLoja"></div>
+              <div class="item-loja-info">
+                <h3>Vestido da Hanna</h3>
+                <p class="item-desc">O vestido mais lindo pra nossa gatinha branca.</p>
+                <div class="item-loja-footer">
+                  <span class="preco-chip">🪙 50.000</span>
+                  <button id="btnCasamentoVestidoHanna" class="btn-comprar">Comprar</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vestido Gatinha -->
+            <div class="item-loja" style="border-color:#ff8fc2;">
+              <div class="item-loja-icon-wrap"><img src="assets/sprites/casamento/item-vestido-gatinha.png" class="iconeLoja"></div>
+              <div class="item-loja-info">
+                <h3>Vestido da Gatinha</h3>
+                <p class="item-desc">O vestido mais elegante pra nossa gatinha pretinha.</p>
+                <div class="item-loja-footer">
+                  <span class="preco-chip">🪙 50.000</span>
+                  <button id="btnCasamentoVestidoGatinha" class="btn-comprar">Comprar</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Altar Decorado -->
+            <div class="item-loja" style="border-color:#c9a0f5;box-shadow:0 0 14px rgba(201,160,245,0.4);">
+              <div class="item-loja-icon-wrap"><img src="assets/sprites/casamento/altar-decorado.png" class="iconeLoja"></div>
+              <div class="item-loja-info">
+                <h3>Altar dos Sonhos</h3>
+                <p class="item-desc">O altar mais especial e decorado pra coroar esse dia único.</p>
+                <div class="item-loja-footer">
+                  <span class="preco-chip">🪙 100.000</span>
+                  <button id="btnCasamentoAltar" class="btn-comprar">Comprar</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
       <!-- MSNHanna — conexão entre jogadoras -->
       <div class="item-loja item-premium">
         <div class="item-loja-icon-wrap"><img src="assets/sprites/personagens/chat-msn.png" class="iconeLoja"></div>

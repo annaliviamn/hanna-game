@@ -5810,3 +5810,9 @@ button {
   font-style: italic;
   line-height: 1.4;
 }
+
+/* Borda Card Imagem Casamento */
+@keyframes brilhoCasamento {
+  0%, 100% { box-shadow: 0 0 15px #ff8fc2, 0 0 30px rgba(255,143,194,0.5); }
+  50% { box-shadow: 0 0 25px #ff8fc2, 0 0 50px rgba(255,143,194,0.8), 0 0 80px rgba(255,143,194,0.3); }
+}

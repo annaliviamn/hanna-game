@@ -557,6 +557,7 @@ const CONQUISTAS = {
   pedido_aceito:    { nome: "Namoradas!",         desc: "A gatinha pretinha e a Hanna ficaram juntas para sempre!", sprite: "assets/sprites/hanna-gatinha/momento-especial.png", secao: "momentos" },
   esperando_filhote: { nome: "Novidade em Casa!", desc: "A gatinha ficou gravida! O filhotinho chega em 9 dias.", sprite: "assets/sprites/gatinha/gatinha-animada-especial.png", secao: "momentos" },
   familia_completa: { nome: "Família Completa",   desc: "O filhotinho chegou! A família está completa.",           sprite: "assets/sprites/filhote/filhote.png",                secao: "momentos" },
+  ate_que_a_morte: { nome: "Até que a morte nos separe", desc: "Realizou o casamento mais especial!", sprite: "assets/sprites/casamento/casamento-perfeito.png", secao: "progressao" },
 };
 
 const TOTAL_CONQUISTAS = Object.keys(CONQUISTAS).length;
@@ -1502,6 +1503,20 @@ function getOutraUid() {
 }
 let msnDesbloqueado = localStorage.getItem("msnDesbloqueado") === "true";
 let _msnChatAberto = false;
+
+// Variáveis Casamento da Hanna
+let casamentoProposto = localStorage.getItem("casamentoProposto") === "true";
+let casamentoPlanejado = localStorage.getItem("casamentoPlanejado") === "true";
+let dataCasamento = Number(localStorage.getItem("dataCasamento")) || 0;
+let casamentoRealizado = localStorage.getItem("casamentoRealizado") === "true";
+
+// Itens do casamento comprados
+let casamentoFlores = localStorage.getItem("casamentoFlores") === "true";
+let casamentoDecoracao = localStorage.getItem("casamentoDecoracao") === "true";
+let casamentoComida = localStorage.getItem("casamentoComida") === "true";
+let casamentoVestidoHanna = localStorage.getItem("casamentoVestidoHanna") === "true";
+let casamentoVestidoGatinha = localStorage.getItem("casamentoVestidoGatinha") === "true";
+let casamentoAltarDecorado = localStorage.getItem("casamentoAltarDecorado") === "true";
 
 // Hanna Impostos
 let ultimaPagamentoContas = Number(localStorage.getItem("ultimaPagamentoContas")) || 0;
@@ -3683,6 +3698,7 @@ function atualizarStatus() {
     atualizarGatinha();
   }
   atualizarCardGravidez();
+  atualizarBalãoCasamento();
   _salvar();
 }
 
@@ -3728,6 +3744,16 @@ function _salvar() {
   localStorage.setItem("aguaPaga", aguaPaga ? "true" : "false");
   localStorage.setItem("luzPaga", luzPaga ? "true" : "false");
   localStorage.setItem("ultimoPagamentoIPTU", ultimoPagamentoIPTU);
+  localStorage.setItem("casamentoProposto", casamentoProposto ? "true" : "false");
+  localStorage.setItem("casamentoPlanejado", casamentoPlanejado ? "true" : "false");
+  localStorage.setItem("dataCasamento", dataCasamento);
+  localStorage.setItem("casamentoRealizado", casamentoRealizado ? "true" : "false");
+  localStorage.setItem("casamentoFlores", casamentoFlores ? "true" : "false");
+  localStorage.setItem("casamentoDecoracao", casamentoDecoracao ? "true" : "false");
+  localStorage.setItem("casamentoComida", casamentoComida ? "true" : "false");
+  localStorage.setItem("casamentoVestidoHanna", casamentoVestidoHanna ? "true" : "false");
+  localStorage.setItem("casamentoVestidoGatinha", casamentoVestidoGatinha ? "true" : "false");
+  localStorage.setItem("casamentoAltarDecorado", casamentoAltarDecorado ? "true" : "false");
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -3736,7 +3762,7 @@ function _salvar() {
     const uid = localStorage.getItem("hannaUid");
     if (uid && !_bloqueioSaveNuvem) {
       _ultimoSaveNuvem = agora;
-      import("./firebase.js").then(({ salvarProgressoNuvem }) => {
+      import("./firebase.js").then(({ salvarProgressoNuvem, deleteField }) => {
         salvarProgressoNuvem({
           fome, felicidade, energia, higiene, sementes, moedas,
           amizade, vinculoGatinhas, dormindo,
@@ -3756,7 +3782,11 @@ function _salvar() {
           mensagemEspecialComprada: _mensagemEspecialComprada,
           msnDesbloqueado, ultimaPagamentoContas,
           internetPaga, aguaPaga, luzPaga,
-          ultimoPagamentoIPTU,
+          ultimoPagamentoIPTU, forcaPlacar: deleteField(),
+          casamentoProposto, casamentoPlanejado, dataCasamento,
+          casamentoRealizado, casamentoFlores, casamentoDecoracao,
+          casamentoComida, casamentoVestidoHanna, casamentoVestidoGatinha,
+          casamentoAltarDecorado,
         });
       }).catch(() => {});
     }
@@ -4311,6 +4341,17 @@ function carregarDadosNoJogo(dados) {
   aguaPaga = dados.aguaPaga !== false && dados.aguaPaga !== "false";
   luzPaga = dados.luzPaga !== false && dados.luzPaga !== "false";
   ultimoPagamentoIPTU = Number(dados.ultimoPagamentoIPTU) || 0;
+
+  casamentoProposto = dados.casamentoProposto === true || dados.casamentoProposto === "true";
+  casamentoPlanejado = dados.casamentoPlanejado === true || dados.casamentoPlanejado === "true";
+  dataCasamento = Number(dados.dataCasamento) || 0;
+  casamentoRealizado = dados.casamentoRealizado === true || dados.casamentoRealizado === "true";
+  casamentoFlores = dados.casamentoFlores === true || dados.casamentoFlores === "true";
+  casamentoDecoracao = dados.casamentoDecoracao === true || dados.casamentoDecoracao === "true";
+  casamentoComida = dados.casamentoComida === true || dados.casamentoComida === "true";
+  casamentoVestidoHanna = dados.casamentoVestidoHanna === true || dados.casamentoVestidoHanna === "true";
+  casamentoVestidoGatinha = dados.casamentoVestidoGatinha === true || dados.casamentoVestidoGatinha === "true";
+  casamentoAltarDecorado = dados.casamentoAltarDecorado === true || dados.casamentoAltarDecorado === "true";
 
   if (dados.conquistas) {
     try { conquistasDesbloqueadas = JSON.parse(dados.conquistas); } catch(e) {}
@@ -5681,6 +5722,147 @@ btnAlmofada.addEventListener("click", () => {
   atualizarStatus();
 });
 
+// CASAMENTO
+function atualizarBtnsCasamento() {
+  const cardPedido = document.getElementById("cardPedidoCasamento");
+  const cardPlanejar = document.getElementById("cardPlanejarCasamento");
+
+  // Pedido de casamento aparece só se namoro aceito e casamento não proposto ainda
+  if (cardPedido) {
+    cardPedido.style.display = pedidoAceito && !casamentoProposto ? "flex" : "none";
+  }
+
+  // Planejar casamento aparece só se proposto e ainda não planejado
+  if (cardPlanejar) {
+    cardPlanejar.style.display = casamentoProposto && !casamentoPlanejado && !casamentoRealizado ? "flex" : "none";
+  }
+}
+
+// Pedido de casamento
+document.getElementById("btnPedidoCasamento")?.addEventListener("click", () => {
+  if (moedas < 100000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 100000;
+  casamentoProposto = true;
+  localStorage.setItem("casamentoProposto", "true");
+  atualizarStatus();
+  atualizarBtnsCasamento();
+  _salvar();
+  abrirCenaPedidoCasamento();
+});
+
+// Planejar casamento
+document.getElementById("btnPlanejarCasamento")?.addEventListener("click", () => {
+  if (moedas < 500000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 500000;
+  casamentoPlanejado = true;
+  dataCasamento = Date.now() + 15 * 24 * 60 * 60 * 1000;
+  localStorage.setItem("casamentoPlanejado", "true");
+  localStorage.setItem("dataCasamento", dataCasamento);
+  atualizarStatus();
+  atualizarBtnsCasamento();
+  _salvar();
+  mostrarMensagem("O grande dia foi marcado! Faltam 15 dias!");
+});
+
+// PREPARATIVOS DO CASAMENTO
+function atualizarItensCasamento() {
+  const secao = document.getElementById("secaoCasamento");
+  if (secao) {
+    secao.style.display = casamentoPlanejado && !casamentoRealizado ? "block" : "none";
+  }
+
+  const cinzarBtnCasamento = (id, comprado, texto = "Comprado!") => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    if (comprado) {
+      btn.textContent = texto;
+      btn.classList.add("btn-adotado");
+      btn.style.opacity = "0.5";
+      btn.style.cursor = "not-allowed";
+      btn.disabled = true;
+    }
+  };
+
+  cinzarBtnCasamento("btnCasamentoFlores", casamentoFlores);
+  cinzarBtnCasamento("btnCasamentoDecoracao", casamentoDecoracao);
+  cinzarBtnCasamento("btnCasamentoComida", casamentoComida);
+  cinzarBtnCasamento("btnCasamentoVestidoHanna", casamentoVestidoHanna);
+  cinzarBtnCasamento("btnCasamentoVestidoGatinha", casamentoVestidoGatinha);
+  cinzarBtnCasamento("btnCasamentoAltar", casamentoAltarDecorado);
+}
+
+document.getElementById("btnCasamentoFlores")?.addEventListener("click", () => {
+  if (moedas < 25000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 25000;
+  casamentoFlores = true;
+  localStorage.setItem("casamentoFlores", "true");
+  somCompra.currentTime = 0; somCompra.volume = parseFloat(volumeEfeitos.value); somCompra.play().catch(() => {});
+  mostrarMensagem("Flores do casamento compradas!");
+  atualizarItensCasamento();
+  atualizarStatus();
+  _salvar();
+});
+
+document.getElementById("btnCasamentoDecoracao")?.addEventListener("click", () => {
+  if (moedas < 50000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 50000;
+  casamentoDecoracao = true;
+  localStorage.setItem("casamentoDecoracao", "true");
+  somCompra.currentTime = 0; somCompra.volume = parseFloat(volumeEfeitos.value); somCompra.play().catch(() => {});
+  mostrarMensagem("Decoração do casamento comprada!");
+  atualizarItensCasamento();
+  atualizarStatus();
+  _salvar();
+});
+
+document.getElementById("btnCasamentoComida")?.addEventListener("click", () => {
+  if (moedas < 75000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 75000;
+  casamentoComida = true;
+  localStorage.setItem("casamentoComida", "true");
+  somCompra.currentTime = 0; somCompra.volume = parseFloat(volumeEfeitos.value); somCompra.play().catch(() => {});
+  mostrarMensagem("Banquete do casamento reservado!");
+  atualizarItensCasamento();
+  atualizarStatus();
+  _salvar();
+});
+
+document.getElementById("btnCasamentoVestidoHanna")?.addEventListener("click", () => {
+  if (moedas < 50000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 50000;
+  casamentoVestidoHanna = true;
+  localStorage.setItem("casamentoVestidoHanna", "true");
+  somCompra.currentTime = 0; somCompra.volume = parseFloat(volumeEfeitos.value); somCompra.play().catch(() => {});
+  mostrarMensagem("Vestido da Hanna comprado!");
+  atualizarItensCasamento();
+  atualizarStatus();
+  _salvar();
+});
+
+document.getElementById("btnCasamentoVestidoGatinha")?.addEventListener("click", () => {
+  if (moedas < 50000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 50000;
+  casamentoVestidoGatinha = true;
+  localStorage.setItem("casamentoVestidoGatinha", "true");
+  somCompra.currentTime = 0; somCompra.volume = parseFloat(volumeEfeitos.value); somCompra.play().catch(() => {});
+  mostrarMensagem("Vestido da Gatinha comprado!");
+  atualizarItensCasamento();
+  atualizarStatus();
+  _salvar();
+});
+
+document.getElementById("btnCasamentoAltar")?.addEventListener("click", () => {
+  if (moedas < 100000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 100000;
+  casamentoAltarDecorado = true;
+  localStorage.setItem("casamentoAltarDecorado", "true");
+  somCompra.currentTime = 0; somCompra.volume = parseFloat(volumeEfeitos.value); somCompra.play().catch(() => {});
+  mostrarMensagem("Altar dos sonhos comprado!");
+  atualizarItensCasamento();
+  atualizarStatus();
+  _salvar();
+});
+
 // Itens da Loja Filhotinho
 btnMamadeira.addEventListener("click", () => {
   if (moedas < 60000) { mostrarAlertaLoja("Moedas insuficientes"); return; }
@@ -6116,6 +6298,22 @@ function atualizarBtnsLoja() {
       btnMsg.textContent = "Ouvir novamente";
     }
   }
+
+  // MSNHanna — cinza se já comprado
+  if (msnDesbloqueado) {
+    const btnMSN = document.getElementById("btnComprarMSN");
+    if (btnMSN) {
+      btnMSN.textContent = "Já conectadas!";
+      btnMSN.classList.add("btn-adotado");
+      btnMSN.style.opacity = "0.5";
+      btnMSN.style.cursor = "not-allowed";
+    }
+  }
+
+  // Casamento
+  atualizarBtnsCasamento();
+  atualizarItensCasamento();
+
 }
 
 btnGatinha.addEventListener("click", () => {
@@ -11121,3 +11319,203 @@ document.getElementById("btnPagarIPTU")?.addEventListener("click", () => {
   _salvar();
   mostrarMensagem("IPTU pago! Até o mês que vem...");
 });
+
+// Evento de Casamento
+function abrirCenaPedidoCasamento() {
+  const overlay = document.createElement("div");
+  overlay.id = "overlayCasamento";
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px; padding: 24px;
+  `;
+
+  overlay.innerHTML = `
+    <div style="text-align:center; max-width:360px; width:100%;">
+      
+      <!-- Sprite da cena do pedido -->
+      <img src="assets/sprites/casamento/cena-pedido.png" 
+        style="width:280px;height:280px;object-fit:contain;image-rendering:pixelated;margin-bottom:16px;
+        border-radius:20px;
+        border:3px solid #ff8fc2;
+        box-shadow: 0 0 15px #ff8fc2, 0 0 30px rgba(255,143,194,0.5), 0 0 60px rgba(255,143,194,0.2);
+        animation: brilhoCasamento 2s ease-in-out infinite;">
+
+      <!-- Texto digitado -->
+      <div style="background:rgba(255,255,255,0.1);border:1.5px solid #ff8fc2;
+        border-radius:16px;padding:16px;margin-bottom:16px;">
+        <p id="textoCenaCasamento" style="font-size:13px;color:white;line-height:1.6;
+          font-style:italic;text-align:center;min-height:60px;"></p>
+      </div>
+
+      <button id="btnFecharCenaCasamento" class="msn-btn-enviar" style="width:100%;display:none;">
+        Que comecem os preparativos!
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const texto = "Minha vida ficou mais linda desde que você entrou nela... Quero que cada dia ao seu lado seja especial. Você toparia passar o resto da vida comigo?";
+  const el = document.getElementById("textoCenaCasamento");
+  let i = 0;
+  const intervalo = setInterval(() => {
+    if (i < texto.length) {
+      el.textContent += texto[i];
+      i++;
+    } else {
+      clearInterval(intervalo);
+      document.getElementById("btnFecharCenaCasamento").style.display = "block";
+    }
+  }, 35);
+
+  document.getElementById("btnFecharCenaCasamento")?.addEventListener("click", () => {
+    overlay.remove();
+    mostrarMensagem("Pedido de casamento feito! Agora planeje o grande dia na loja!");
+  });
+}
+
+// BALÃO DE CONTAGEM REGRESSIVA DO CASAMENTO
+const falasCasamento = [
+  // Muitos dias (10-15)
+  { dias: [10,11,12,13,14,15], falas: [
+    "Faltam {X} dias pro nosso grande dia!",
+    "Já escolhemos as flores?",
+    "Precisamos comprar os vestidos logo!",
+    "Sonhei com o nosso casamento essa noite...",
+  ]},
+  // Meio (5-9)
+  { dias: [5,6,7,8,9], falas: [
+    "Tá chegando! Ainda falta tanta coisa...",
+    "E a comida? Não esquece da comida!",
+    "Faltam {X} dias e eu já tô nervosa!",
+    "Será que vai ficar lindo?",
+  ]},
+  // Últimos dias (1-4)
+  { dias: [1,2,3,4], falas: [
+    "É quase hora! Estou tão nervosa!",
+    "Falta {X} dia(s) e ainda tem coisa pra comprar!",
+    "Tô tremendo de ansiedade!",
+    "Vai ser o dia mais lindo das nossas vidas!",
+  ]},
+  // Hoje
+  { dias: [0], falas: [
+    "É HOJE! É HOJE!",
+    "Chegou o grande dia!",
+    "Tô pronta! Você tá pronta?!",
+  ]},
+];
+
+function atualizarBalãoCasamento() {
+  const card = document.getElementById("cardGravidez");
+  if (!casamentoPlanejado || casamentoRealizado || !dataCasamento) return;
+
+  const agora = Date.now();
+  const diasRestantes = Math.max(0, Math.ceil((dataCasamento - agora) / (24 * 60 * 60 * 1000)));
+
+  const grupo = falasCasamento.find(g => g.dias.includes(diasRestantes)) || falasCasamento[0];
+  let fala = grupo.falas[Math.floor(Math.random() * grupo.falas.length)];
+  fala = fala.replace("{X}", diasRestantes);
+
+  // Reutiliza o card da gravidez se não tiver grávida
+  if (dataGravidez === 0 || filhoteDesbloqueado) {
+    if (card) {
+      const falaEl = document.getElementById("gravidezFala");
+      if (falaEl) falaEl.textContent = `"${fala}"`;
+      card.style.display = "block";
+      setTimeout(() => { if (card) card.style.display = "none"; }, 5000);
+    }
+  }
+
+  // Verifica se chegou o dia
+  if (diasRestantes === 0 && agora >= dataCasamento) {
+    abrirCenaCasamento();
+  }
+}
+
+function abrirCenaCasamento() {
+  if (casamentoRealizado) return;
+  casamentoRealizado = true;
+  localStorage.setItem("casamentoRealizado", "true");
+  _salvar();
+
+  // Define qual sprite usar baseado nos itens comprados
+  const itensComprados = [
+    casamentoFlores, casamentoDecoracao, casamentoComida,
+    casamentoVestidoHanna, casamentoVestidoGatinha, casamentoAltarDecorado
+  ].filter(Boolean).length;
+
+  let spriteCasamento;
+  if (itensComprados >= 5) {
+    spriteCasamento = "assets/sprites/casamento/casamento-perfeito.png";
+  } else if (itensComprados >= 2) {
+    spriteCasamento = "assets/sprites/casamento/casamento-simples.png";
+  } else {
+    spriteCasamento = "assets/sprites/casamento/casamento-tenebroso.png";
+  }
+
+  const overlay = document.createElement("div");
+  overlay.id = "overlayCenaCasamento";
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; padding: 24px;
+  `;
+
+  overlay.innerHTML = `
+    <div style="text-align:center; max-width:380px; width:100%;">
+      
+      <div style="font-size:16px;font-weight:800;color:#ff8fc2;margin-bottom:12px;letter-spacing:1px;">
+        O Grande Dia Chegou!
+      </div>
+
+      <img src="${spriteCasamento}" 
+        style="width:320px;height:320px;object-fit:contain;image-rendering:pixelated;
+        border-radius:20px;border:3px solid #ff8fc2;
+        box-shadow: 0 0 25px #ff8fc2, 0 0 50px rgba(255,143,194,0.5);
+        animation: brilhoCasamento 2s ease-in-out infinite;
+        margin-bottom:16px;">
+
+      <div style="background:rgba(255,255,255,0.1);border:1.5px solid #ff8fc2;
+        border-radius:16px;padding:16px;margin-bottom:16px;">
+        <p id="textoCenaCasamentoFinal" style="font-size:13px;color:white;line-height:1.6;
+          font-style:italic;text-align:center;min-height:60px;"></p>
+      </div>
+
+      <button id="btnFecharCenaCasamentoFinal" class="msn-btn-enviar" style="width:100%;display:none;">
+        Que comecem as comemorações!
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const texto = itensComprados >= 5
+    ? "Que dia perfeito! Cada detalhe ficou exatamente como sonhamos. Obrigada por tornar esse momento inesquecível..."
+    : itensComprados >= 2
+    ? "Nem tudo saiu como planejado, mas o amor é o que importa. Casamos e isso é o que mais importa!"
+    : "Bom... o casamento foi... simples. Mas nos amamos e isso vale mais que qualquer decoração! 😂";
+
+  const el = document.getElementById("textoCenaCasamentoFinal");
+  let i = 0;
+  const intervalo = setInterval(() => {
+    if (i < texto.length) {
+      el.textContent += texto[i];
+      i++;
+    } else {
+      clearInterval(intervalo);
+      document.getElementById("btnFecharCenaCasamentoFinal").style.display = "block";
+    }
+  }, 40);
+
+  document.getElementById("btnFecharCenaCasamentoFinal")?.addEventListener("click", () => {
+    overlay.remove();
+    desbloquearConquista("ate_que_a_morte");
+    mostrarMensagem("Casadas! Parabéns!");
+    atualizarStatus();
+  });
+}
