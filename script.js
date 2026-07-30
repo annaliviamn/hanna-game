@@ -7257,6 +7257,7 @@ navLoja.onclick = () => {
   abrirTela(telaLoja);
   tocarTrilha("loja");
   atualizarBtnsLoja();
+  setTimeout(() => atualizarItensCasamento(), 500);
 };
 
 navGames.onclick = () => {
