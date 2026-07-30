@@ -5760,6 +5760,7 @@ document.getElementById("btnPlanejarCasamento")?.addEventListener("click", () =>
   localStorage.setItem("dataCasamento", dataCasamento);
   atualizarStatus();
   atualizarBtnsCasamento();
+  atualizarItensCasamento();
   _salvar();
   mostrarMensagem("O grande dia foi marcado! Faltam 15 dias!");
 });
