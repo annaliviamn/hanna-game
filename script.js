@@ -557,6 +557,7 @@ const CONQUISTAS = {
   pedido_aceito:    { nome: "Namoradas!",         desc: "A gatinha pretinha e a Hanna ficaram juntas para sempre!", sprite: "assets/sprites/hanna-gatinha/momento-especial.png", secao: "momentos" },
   esperando_filhote: { nome: "Novidade em Casa!", desc: "A gatinha ficou gravida! O filhotinho chega em 9 dias.", sprite: "assets/sprites/gatinha/gatinha-animada-especial.png", secao: "momentos" },
   familia_completa: { nome: "Família Completa",   desc: "O filhotinho chegou! A família está completa.",           sprite: "assets/sprites/filhote/filhote.png",                secao: "momentos" },
+  aonde_quer_que_eu_va: { nome: "Aonde quer que eu vá, levo você", desc: "Fez todos os 10 dates especiais!", sprite: "assets/sprites/date/date-cover.png", secao: "momentos" },
   ate_que_a_morte: { nome: "Até que a morte nos separe", desc: "Realizou o casamento mais especial!", sprite: "assets/sprites/casamento/casamento-perfeito.png", secao: "progressao" },
 };
 
@@ -4646,33 +4647,33 @@ if (_emailSalvo && _senhaSalva) {
 const slotsPlantacao = document.querySelectorAll(".slotPlantacao");
 const valorPlantas = {
 
-    flor: 35,
+    flor: 350,
 
-    rosa: 55,
+    rosa: 550,
 
     batata: 1000,
 
-    morango: 85,
+    morango: 850,
 
-    tomate: 95,
+    tomate: 950,
 
-    cenoura: 30,
+    cenoura: 300,
 
-    brocolis: 20,
+    brocolis: 200,
 
-    abobora: 35,
+    abobora: 350,
 
-    mandioca: 65,
+    mandioca: 650,
 
-    lavanda: 28,
+    lavanda: 280,
 
-    babosa: 25,
+    babosa: 250,
 
-    margarida: 20,
+    margarida: 200,
 
-    melancia: 78,
+    melancia: 780,
 
-    melao: 80,
+    melao: 800,
 
     girassol: 5000,
 
@@ -5682,7 +5683,7 @@ btnVarinha.addEventListener("click", () => {
 
 btnRobo.addEventListener("click", () => {
   if (moedas < 12500) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -5703,7 +5704,7 @@ btnRobo.addEventListener("click", () => {
 
 btnAlmofada.addEventListener("click", () => {
   if (moedas < 1100) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -5721,6 +5722,363 @@ btnAlmofada.addEventListener("click", () => {
   mostrarMensagem("A Hanna descansou fofinha.");
   atualizarStatus();
 });
+
+// SISTEMA DE DATES
+const DATES = [
+  {
+    id: "caminhada-praia",
+    nome: "Caminhada na Praia",
+    sprite: "assets/sprites/date/caminhada-praia.png",
+    falas: [
+      { quem: "anna", texto: "Meu bem, olha esse pôr do sol... tô com vontade de te empurrar na água agora." },
+      { quem: "kika", texto: "Baby não ousa... mas tá lindo demais né?" },
+    ]
+  },
+  {
+    id: "cinema",
+    nome: "Cinema",
+    sprite: "assets/sprites/date/cinema.png",
+    falas: [
+      { quem: "anna", texto: "Neneres, você tá assistindo o filme ou eu?" },
+      { quem: "kika", texto: "As duas coisas... mas você é mais interessante." },
+    ]
+  },
+  {
+    id: "filminho",
+    nome: "Filminho em Casa",
+    sprite: "assets/sprites/date/filminho.png",
+    falas: [
+      { quem: "anna", texto: "Mi amore, qual série a gente começa e nunca termina dessa vez?" },
+      { quem: "kika", texto: "Bebê para, vou escolher algo curto dessa vez!" },
+    ]
+  },
+  {
+    id: "jantar-familia",
+    nome: "Jantar com as Gatinhas",
+    sprite: "assets/sprites/date/jantar-familia.png",
+    falas: [
+      { quem: "anna", texto: () => `Neném, a Hanna tá nos olhando com ciúmes!` },
+      { quem: "kika", texto: () => `A ${nomeGatinha} também... acho que elas querem atenção.` },
+    ]
+  },
+  {
+    id: "jantar-romantico",
+    nome: "Jantar Romântico",
+    sprite: "assets/sprites/date/jantar-romantico.png",
+    falas: [
+      { quem: "anna", texto: "Meu bem, você sabia que eu ensaiei esse encontro umas 10 vezes?" },
+      { quem: "kika", texto: "Eu também... mas não vou admitir isso em voz alta." },
+    ]
+  },
+  {
+    id: "jogando-juntas",
+    nome: "Jogando Juntas",
+    sprite: "assets/sprites/date/jogando-juntas.png",
+    falas: [
+      { quem: "anna", texto: "Meu bem, pode ganhar de mim hoje, tô de bom humor." },
+      { quem: "kika", texto: "Baby não precisa me dar moral não... eu já ia ganhar mesmo." },
+    ]
+  },
+  {
+    id: "karaoke",
+    nome: "Karaokê",
+    sprite: "assets/sprites/date/karaoke.png",
+    falas: [
+      { quem: "anna", texto: "Neneres, você vai cantar ou vou ter que fazer um show sozinha aqui?" },
+      { quem: "kika", texto: "Eu canto baixinho... mas só porque quero ouvir você." },
+    ]
+  },
+  {
+    id: "piquenique",
+    nome: "Piquenique",
+    sprite: "assets/sprites/date/piquenique.png",
+    falas: [
+      { quem: "anna", texto: "Mi amore, trouxe tudo favorito seu. Inclusive eu." },
+      { quem: "kika", texto: "Baby você é impossível... mas eu amo isso em você." },
+    ]
+  },
+  {
+    id: "show",
+    nome: "Show",
+    sprite: "assets/sprites/date/show.png",
+    subtipos: [
+      {
+        nome: "Show de Banda",
+        falas: [
+          { quem: "anna", texto: "Meu bem, a gente vai ficar rouca gritando {BANDA} essa noite!" },
+          { quem: "kika", texto: "Bebê... já tô sem voz e o show nem começou." },
+        ]
+      },
+      {
+        nome: "Show Pop",
+        falas: [
+          { quem: "anna", texto: "Neném, {ARTISTA} tá arrasando demais, não consigo parar de gritar!" },
+          { quem: "kika", texto: "Baby, eu também... e não me arrependo nada." },
+        ]
+      },
+      {
+        nome: "Show de Pagode",
+        falas: [
+          { quem: "anna", texto: "Mi amore, canta junto comigo! {ARTISTA} é obrigatório!" },
+          { quem: "kika", texto: "Bebê... tô cantando desde o começo, você é que não tava prestando atenção." },
+        ]
+      }
+    ]
+  },
+  {
+    id: "teatro",
+    nome: "Teatro",
+    sprite: "assets/sprites/date/teatro.png",
+    falas: [
+      { quem: "anna", texto: "Neném, tô mais interessada em você do que na peça." },
+      { quem: "kika", texto: "Baby para... as pessoas vão perceber que você é apaixonada." },
+      { quem: "anna", texto: "Ah, problema deles rs" },
+    ]
+  },
+];
+
+let datesRealizados = JSON.parse(localStorage.getItem("datesRealizados") || "[]");
+
+document.getElementById("btnAbrirDate")?.addEventListener("click", () => {
+  if (moedas < 15000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  abrirTelaDate();
+});
+
+function abrirTelaDate() {
+  const overlay = document.createElement("div");
+  overlay.id = "overlayDate";
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; overflow-y: auto; padding: 16px; gap: 12px;
+  `;
+
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:400px;padding-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:15px;font-weight:800;color:#ff8fc2;">Escolha o Date</div>
+        <button onclick="document.getElementById('overlayDate').remove()" 
+          style="background:none;border:none;color:#ff8fc2;font-size:20px;cursor:pointer;">✕</button>
+      </div>
+
+      <p style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:12px;text-align:center;">
+        Um encontro especial melhora os stats de todas as gatinhas em 50%! Pode repetir sempre que quiser.
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${DATES.map(d => `
+          <div style="background:rgba(255,255,255,0.08);border:1.5px solid ${datesRealizados.includes(d.id) ? "#2d8a2d" : "#ff8fc2"};
+            border-radius:12px;padding:14px 16px;cursor:pointer;
+            display:flex;justify-content:space-between;align-items:center;" 
+            data-date="${d.id}" class="date-card">
+            <div>
+              <div style="font-size:13px;font-weight:800;color:#ff8fc2;">${d.nome}</div>
+              ${datesRealizados.includes(d.id) ? '<div style="font-size:9px;color:#2d8a2d;">Realizado!</div>' : ""}
+            </div>
+            <span style="font-size:11px;color:rgba(255,255,255,0.5);">🪙 15.000</span>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  document.querySelectorAll(".date-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const dateId = card.dataset.date;
+      const date = DATES.find(d => d.id === dateId);
+      if (!date) return;
+      if (date.subtipos) {
+        abrirEscolhaSubtipoDate(date);
+      } else {
+        confirmarEIniciarDate(date, date.falas);
+      }
+    });
+  });
+}
+
+function abrirEscolhaSubtipoDate(date) {
+  const overlay = document.getElementById("overlayDate");
+  if (!overlay) return;
+
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:400px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:15px;font-weight:800;color:#ff8fc2;">Que tipo de show?</div>
+        <button id="btnVoltarSubtipo" style="background:none;border:none;color:#ff8fc2;font-size:13px;cursor:pointer;">Voltar</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${date.subtipos.map((s, i) => `
+          <div style="background:rgba(255,255,255,0.08);border:1.5px solid #ff8fc2;border-radius:12px;
+            padding:16px;cursor:pointer;" data-subtipo="${i}">
+            <div style="font-size:13px;font-weight:800;color:#ff8fc2;">${s.nome}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+
+  document.getElementById("btnVoltarSubtipo")?.addEventListener("click", () => {
+    overlay.remove();
+    abrirTelaDate();
+  });
+
+  overlay.querySelectorAll("[data-subtipo]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.subtipo);
+      abrirInputNomeArtista(date, idx);
+    });
+  });
+}
+
+function abrirInputNomeArtista(date, subtipoIdx) {
+  const overlay = document.getElementById("overlayDate");
+  if (!overlay) return;
+
+  const subtipo = date.subtipos[subtipoIdx];
+  const label = subtipoIdx === 0 ? "banda" : "artista";
+
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:400px;">
+      <div style="font-size:15px;font-weight:800;color:#ff8fc2;margin-bottom:16px;">${subtipo.nome}</div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:12px;">
+        Qual ${label} vocês vão ver?
+      </p>
+      <input type="text" id="inputNomeArtista" class="input-cozy" 
+        placeholder="Digite o nome..." maxlength="30" style="margin-bottom:12px;">
+      <button class="msn-btn-enviar" id="btnConfirmarArtista" style="width:100%;">Ir ao Show!</button>
+      <button id="btnVoltarArtista" style="background:none;border:none;color:#ff8fc2;
+        font-size:12px;cursor:pointer;margin-top:8px;width:100%;">Voltar</button>
+    </div>
+  `;
+
+  document.getElementById("btnVoltarArtista")?.addEventListener("click", () => {
+    overlay.remove();
+    abrirTelaDate();
+  });
+
+  document.getElementById("btnConfirmarArtista")?.addEventListener("click", () => {
+    const nomeArtista = document.getElementById("inputNomeArtista").value.trim();
+    if (!nomeArtista) { mostrarMensagem("Digite o nome!"); return; }
+
+    const falas = subtipo.falas.map(f => ({
+      quem: f.quem,
+      texto: f.texto.replace("{BANDA}", nomeArtista).replace("{ARTISTA}", nomeArtista)
+    }));
+
+    confirmarEIniciarDate(date, falas);
+  });
+}
+
+function confirmarEIniciarDate(date, falas) {
+  if (moedas < 15000) { mostrarMensagem("Moedas insuficientes!"); return; }
+  moedas -= 15000;
+  atualizarStatus();
+
+  if (!datesRealizados.includes(date.id)) {
+    datesRealizados.push(date.id);
+    localStorage.setItem("datesRealizados", JSON.stringify(datesRealizados));
+  }
+
+  if (datesRealizados.length >= 10) {
+    desbloquearConquista("aonde_quer_que_eu_va");
+  }
+
+  document.getElementById("overlayDate")?.remove();
+  abrirCenaDate(date, falas);
+  _salvar();
+}
+
+function abrirCenaDate(date, falas) {
+  const overlay = document.createElement("div");
+  overlay.id = "overlayCenaDate";
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 16px; gap: 12px;
+  `;
+
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:380px;text-align:center;">
+      <img src="${date.sprite}" 
+        style="width:300px;height:300px;object-fit:cover;border-radius:20px;
+        border:3px solid #ff8fc2;
+        box-shadow: 0 0 25px #ff8fc2, 0 0 50px rgba(255,143,194,0.5);
+        animation: brilhoCasamento 2s ease-in-out infinite;
+        margin-bottom:12px;">
+
+      <div style="background:rgba(255,255,255,0.1);border:1.5px solid #ff8fc2;
+        border-radius:16px;padding:14px;margin-bottom:12px;min-height:90px;text-align:left;">
+        <div id="remetenteDate" style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"></div>
+        <p id="textoDate" style="font-size:13px;color:white;line-height:1.6;font-style:italic;margin:0;"></p>
+      </div>
+
+      <button id="btnProximaFalaDate" class="msn-btn-enviar" style="width:100%;" disabled>...</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  let falaAtual = 0;
+
+  function mostrarFala() {
+    const fala = falas[falaAtual];
+    const textoFala = typeof fala.texto === "function" ? fala.texto() : fala.texto;
+    const remetente = document.getElementById("remetenteDate");
+    const texto = document.getElementById("textoDate");
+    const btn = document.getElementById("btnProximaFalaDate");
+
+    if (remetente) remetente.innerHTML = `
+      <img src="${fala.quem === "anna" 
+        ? "assets/sprites/personagens/anna-msn.png" 
+        : "assets/sprites/personagens/kika-msn.png"}" 
+        style="width:28px;height:28px;image-rendering:pixelated;border-radius:50%;border:2px solid #ff8fc2;">
+      <span style="font-size:11px;font-weight:800;color:#ff8fc2;">
+        ${fala.quem === "anna" ? "Anna" : "Kika"}
+      </span>
+    `;
+
+    if (texto) texto.textContent = "";
+    if (btn) btn.disabled = true;
+
+    let i = 0;
+    const intervalo = setInterval(() => {
+      if (i < textoFala.length) {
+        if (texto) texto.textContent += textoFala[i];
+        i++;
+      } else {
+        clearInterval(intervalo);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = falaAtual < falas.length - 1 ? "Continuar" : "Finalizar";
+        }
+      }
+    }, 35);
+  }
+
+  document.getElementById("btnProximaFalaDate")?.addEventListener("click", () => {
+    falaAtual++;
+    if (falaAtual < falas.length) {
+      mostrarFala();
+    } else {
+      fome = Math.min(100, fome + 50);
+      felicidade = Math.min(100, felicidade + 50);
+      energia = Math.min(100, energia + 50);
+      higiene = Math.min(100, higiene + 50);
+      vinculoGatinhas = Math.min(100, vinculoGatinhas + 50);
+      if (filhoteDesbloqueado) cuidadosFilhote = Math.min(100, cuidadosFilhote + 50);
+      atualizarStatus();
+      overlay.remove();
+      mostrarMensagem("Que date incrível! As gatinhas adoraram!");
+    }
+  });
+
+  mostrarFala();
+}
 
 // CASAMENTO
 function atualizarBtnsCasamento() {
