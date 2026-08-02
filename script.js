@@ -1505,6 +1505,10 @@ function getOutraUid() {
 let msnDesbloqueado = localStorage.getItem("msnDesbloqueado") === "true";
 let _msnChatAberto = false;
 
+// Variáveis Loja Itens VIP
+let annaVIP = localStorage.getItem("annaVIP") === "true";
+let kikaVIP = localStorage.getItem("kikaVIP") === "true";
+
 // Variáveis Casamento da Hanna
 let casamentoProposto = localStorage.getItem("casamentoProposto") === "true";
 let casamentoPlanejado = localStorage.getItem("casamentoPlanejado") === "true";
@@ -3755,6 +3759,8 @@ function _salvar() {
   localStorage.setItem("casamentoVestidoHanna", casamentoVestidoHanna ? "true" : "false");
   localStorage.setItem("casamentoVestidoGatinha", casamentoVestidoGatinha ? "true" : "false");
   localStorage.setItem("casamentoAltarDecorado", casamentoAltarDecorado ? "true" : "false");
+  localStorage.setItem("annaVIP", annaVIP ? "true" : "false");
+  localStorage.setItem("kikaVIP", kikaVIP ? "true" : "false");
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -3787,7 +3793,7 @@ function _salvar() {
           casamentoProposto, casamentoPlanejado, dataCasamento,
           casamentoRealizado, casamentoFlores, casamentoDecoracao,
           casamentoComida, casamentoVestidoHanna, casamentoVestidoGatinha,
-          casamentoAltarDecorado,
+          casamentoAltarDecorado, annaVIP, kikaVIP,
         });
       }).catch(() => {});
     }
@@ -4336,6 +4342,8 @@ function carregarDadosNoJogo(dados) {
   jamesDesbloqueado    = dados.jamesDesbloqueado === true || dados.jamesDesbloqueado === "true";
   annaDesbloqueada = dados.annaDesbloqueada === true || dados.annaDesbloqueada === "true";
   kikaDesbloqueada = dados.kikaDesbloqueada === true || dados.kikaDesbloqueada === "true";
+  annaVIP = dados.annaVIP === true || dados.annaVIP === "true";
+  kikaVIP = dados.kikaVIP === true || dados.kikaVIP === "true";
 
   ultimaPagamentoContas = Number(dados.ultimaPagamentoContas) || 0;
   internetPaga = dados.internetPaga !== false && dados.internetPaga !== "false";
@@ -6565,6 +6573,58 @@ if (pedidoAceito) {
   }
 }
 
+// UPGRADE VIP ANNA E KIKA
+function atualizarUpgradesVIP() {
+  const wrapAnna = document.getElementById("wrapUpgradeAnna");
+  const wrapKika = document.getElementById("wrapUpgradeKika");
+  const btnUpgradeAnna = document.getElementById("btnUpgradeAnna");
+  const btnUpgradeKika = document.getElementById("btnUpgradeKika");
+
+  // Mostra upgrade da Anna se ela tiver desbloqueada
+  if (wrapAnna) wrapAnna.style.display = annaDesbloqueada ? "block" : "none";
+  if (wrapKika) wrapKika.style.display = kikaDesbloqueada ? "block" : "none";
+
+  // Cinza se já VIP
+  if (annaVIP && btnUpgradeAnna) {
+    btnUpgradeAnna.textContent = "Já é VIP!";
+    btnUpgradeAnna.classList.add("btn-adotado");
+    btnUpgradeAnna.style.opacity = "0.5";
+    btnUpgradeAnna.style.cursor = "not-allowed";
+    btnUpgradeAnna.disabled = true;
+  }
+  if (kikaVIP && btnUpgradeKika) {
+    btnUpgradeKika.textContent = "Já é VIP!";
+    btnUpgradeKika.classList.add("btn-adotado");
+    btnUpgradeKika.style.opacity = "0.5";
+    btnUpgradeKika.style.cursor = "not-allowed";
+    btnUpgradeKika.disabled = true;
+  }
+}
+
+document.getElementById("btnUpgradeAnna")?.addEventListener("click", () => {
+  if (moedas < 200000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 200000;
+  annaVIP = true;
+  localStorage.setItem("annaVIP", "true");
+  somCompra.currentTime = 0; somCompra.volume = parseFloat(volumeEfeitos.value); somCompra.play().catch(() => {});
+  mostrarMensagem("Anna agora é VIP! Visitas especiais desbloqueadas!");
+  atualizarUpgradesVIP();
+  atualizarStatus();
+  _salvar();
+});
+
+document.getElementById("btnUpgradeKika")?.addEventListener("click", () => {
+  if (moedas < 200000) { mostrarAlertaLoja("Moedas insuficientes!"); return; }
+  moedas -= 200000;
+  kikaVIP = true;
+  localStorage.setItem("kikaVIP", "true");
+  somCompra.currentTime = 0; somCompra.volume = parseFloat(volumeEfeitos.value); somCompra.play().catch(() => {});
+  mostrarMensagem("Kika agora é VIP! Visitas especiais desbloqueadas!");
+  atualizarUpgradesVIP();
+  atualizarStatus();
+  _salvar();
+});
+
 // Bloqueia esconde-esconde se filhotinho não nasceu
 function atualizarBtnEsconde() {
   const btnEsconde = document.getElementById("btnEsconde");
@@ -6668,6 +6728,9 @@ function atualizarBtnsLoja() {
       btnMSN.style.cursor = "not-allowed";
     }
   }
+
+  // Visitas VIP
+  atualizarUpgradesVIP();
 
   // Casamento
   atualizarBtnsCasamento();
@@ -8444,6 +8507,33 @@ function dispararVisita(personagem) {
         "assets/sprites/personagens/anna-visita-3.png",
       ],
       nomeExibicao: "Anna chegou!",
+      vip: annaVIP ? {
+        visitas: [
+          {
+            sprite: "assets/sprites/personagens/anna-vip-flores.png",
+            falas: [
+              { quem: "anna", texto: "Meu bem, trouxe flores e bombons... e também vim eu, que já é presente demais." },
+              { quem: "kika", texto: "Baby você é impossível... mas eu amei tudo isso." },
+            ]
+          },
+          {
+            sprite: "assets/sprites/personagens/anna-vip-surpresa.png",
+            falas: [
+              { quem: "anna", texto: "Neném, fecha os olhos! Promete que não espia?" },
+              { quem: "kika", texto: "Baby... a Hanna já tá farejando tudo aqui." },
+              { quem: "anna", texto: "Ela tá proibida de contar rs" },
+            ]
+          },
+          {
+            sprite: "assets/sprites/personagens/anna-vip-serenata.png",
+            falas: [
+              { quem: "anna", texto: "Mi amore, preparei algo especial... pode rir só depois que eu terminar!" },
+              { quem: "kika", texto: "Bebê... tô tentando não chorar aqui." },
+              { quem: "anna", texto: "Boa, chora que eu canto mais bonito!" },
+            ]
+          },
+        ]
+      } : null,
     },
     kika: {
       falas: [
@@ -8460,16 +8550,125 @@ function dispararVisita(personagem) {
         "assets/sprites/personagens/kika-visita-3.png",
       ],
       nomeExibicao: "Kika chegou!",
+      vip: kikaVIP ? {
+        visitas: [
+          {
+            sprite: "assets/sprites/personagens/kika-vip-presente.png",
+            falas: [
+              { quem: "kika", texto: "Trouxe uma coisinha pra você... porque sim." },
+              { quem: "anna", texto: "Ai meu bem, você me mata de amor assim..." },
+              { quem: "kika", texto: "Para, você tá exagerando." },
+              { quem: "anna", texto: "Tô nada, você é perfeita." },
+            ]
+          },
+          {
+            sprite: "assets/sprites/personagens/kika-vip-jogo.png",
+            falas: [
+              { quem: "kika", texto: "Baby, pega o controle. Mas já aviso que você vai perder." },
+              { quem: "anna", texto: "Meu bem, tô adorando esse seu lado humilde rs" },
+            ]
+          },
+          {
+            sprite: "assets/sprites/personagens/kika-vip-cafune.png",
+            falas: [
+              { quem: "kika", texto: "Dorme, bebê... tô aqui." },
+              { quem: "anna", texto: "Neném..." },
+              { quem: "kika", texto: "Essa daqui sonha comigo. Que bom." },
+            ]
+          },
+        ]
+      } : null,
     },
   };
 
   const info = dados[personagem];
   if (!info) return;
 
+  // Verifica se dispara visita VIP (30% de chance se VIP desbloqueado)
+  if (info.vip && Math.random() < 0.3) {
+    const visitaVIP = info.vip.visitas[Math.floor(Math.random() * info.vip.visitas.length)];
+    mostrarVisitaVIP(visitaVIP, personagem, info.nomeExibicao);
+    return;
+  }
+
   const fala = info.falas[Math.floor(Math.random() * info.falas.length)];
   const sprite = info.sprites[Math.floor(Math.random() * info.sprites.length)];
-
   mostrarVisitaPet(sprite, fala, 15000, personagem, info.nomeExibicao);
+}
+
+// Recompensa aleatória VIP
+function recompensaVIP() {
+  const pool = [
+    () => { moedas += Math.floor(Math.random() * 2500) + 500; mostrarMensagem("Ganhou moedas de presente!"); },
+    () => { sementes += Math.floor(Math.random() * 10) + 5; mostrarMensagem("Ganhou sementes!"); },
+    () => { felicidade = Math.min(100, felicidade + 30); mostrarMensagem("A Hanna ficou super feliz!"); },
+    () => { fome = Math.min(100, fome + 30); mostrarMensagem("Que petisco gostoso!"); },
+    () => { energia = Math.min(100, energia + 30); mostrarMensagem("Que visita revigorante!"); },
+    () => { vinculoGatinhas = Math.min(100, vinculoGatinhas + 20); mostrarMensagem("O vínculo das gatinhas aumentou!"); },
+    () => { if (filhoteDesbloqueado) cuidadosFilhote = Math.min(100, cuidadosFilhote + 25); mostrarMensagem("O filhotinho adorou a visita!"); },
+  ];
+  const recompensa = pool[Math.floor(Math.random() * pool.length)];
+  recompensa();
+  atualizarStatus();
+  _salvar();
+}
+
+// Visita VIP com falas
+function mostrarVisitaVIP(visita, personagem, nomeExibicao) {
+  if (telaJogo.style.display !== "block") {
+    mostrarBannerVisita(visita.sprite, nomeExibicao, () => {
+      mostrarVisitaVIP(visita, personagem, nomeExibicao);
+    });
+    return;
+  }
+
+  if (dormindo || momentoConjuntoAtivo) return;
+
+  momentoConjuntoAtivo = true;
+  estadoVisual.momentoConjunto = true;
+  estadoVisual.spriteConjunta = visita.sprite;
+  if (filhoteDesbloqueado) {
+    const fc = document.getElementById("filhoteContainer");
+    if (fc) fc.style.display = "none";
+  }
+  renderizarGatinhas();
+
+  // Mostra falas em sequência
+  let falaAtual = 0;
+  
+  function proximaFala() {
+    if (falaAtual >= visita.falas.length) {
+      // Acabaram as falas — mostra recompensa
+      setTimeout(() => {
+        momentoConjuntoAtivo = false;
+        estadoVisual.momentoConjunto = false;
+        estadoVisual.spriteConjunta = null;
+        if (filhoteDesbloqueado) {
+          const fc = document.getElementById("filhoteContainer");
+          if (fc) fc.style.display = "flex";
+        }
+        renderizarGatinhas();
+        recompensaVIP();
+      }, 1000);
+      return;
+    }
+
+    const fala = visita.falas[falaAtual];
+    const visitaFalaEl = document.getElementById("visitaFala");
+    if (visitaFalaEl) {
+      visitaFalaEl.textContent = `${fala.quem === "anna" ? "Anna" : "Kika"}: "${fala.texto}"`;
+      visitaFalaEl.classList.add("visivel");
+      setTimeout(() => {
+        visitaFalaEl.classList.remove("visivel");
+        setTimeout(() => {
+          falaAtual++;
+          proximaFala();
+        }, 500);
+      }, 3000);
+    }
+  }
+
+  proximaFala();
 }
 
 //   JOGO — MISSÃO DO STEVE (Stealth)
