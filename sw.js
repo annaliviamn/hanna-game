@@ -1,4 +1,4 @@
-const CACHE_NAME = "hanna-cache-v60";
+const CACHE_NAME = "hanna-cache-v61";
 const ASSETS = [
   "./",
   "./index.html",
@@ -27,11 +27,24 @@ self.addEventListener("activate", (e) => {
 
 // NETWORK FIRST — tenta buscar da rede, cai no cache se offline
 self.addEventListener("fetch", (e) => {
+  // Só intercepta requisições GET (POST do Firebase passa direto, sem cache)
+  if (e.request.method !== "GET") {
+    return; // deixa a requisição seguir normal, sem passar pelo Service Worker
+  }
+
+  // Ignora chamadas pro Firebase (Auth/Firestore) — nunca devem ser cacheadas
+  if (e.request.url.includes("googleapis.com") || e.request.url.includes("firebaseio.com") || e.request.url.includes("firestore.googleapis.com")) {
+    return;
+  }
+
   e.respondWith(
     fetch(e.request)
       .then(response => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        // Só cacheia respostas completas e válidas (200), nunca parciais (206) ou erros
+        if (response.status === 200 && response.type === "basic") {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        }
         return response;
       })
       .catch(() => caches.match(e.request))

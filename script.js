@@ -12079,3 +12079,43 @@ function abrirCenaCasamento() {
     atualizarStatus();
   });
 }
+
+// AUTO-LOGIN (mantém sessão salva ao reabrir o app)
+(async () => {
+  const emailSalvo = localStorage.getItem("hannaEmail");
+  const senhaSalva = localStorage.getItem("hannaSenhaTexto");
+
+  if (!emailSalvo || !senhaSalva) return; // sem conta salva, mostra tela de login normal
+
+  mostrarLoading();
+
+  const { entrarComConta } = await import("./firebase.js");
+  const resultado = await entrarComConta(emailSalvo, senhaSalva);
+
+  if (!resultado.ok) {
+    // credenciais salvas pararam de funcionar (ex: senha trocada) — volta pro login manual
+    document.getElementById("telaLoading").style.display = "none";
+    telaInicial.style.display = "block";
+    telaInicial.classList.remove("fadeOut");
+    mostrarFeedbackLogin("Sessão expirada, faça login novamente.", true);
+    return;
+  }
+
+  localStorage.clear();
+
+  if (resultado.dados) {
+    carregarDadosNoJogo(resultado.dados);
+    compensarTempoOffline();
+    restaurarSlotsVisuais();
+    setTimeout(() => reagendarCrescimentoOffline(), 600);
+  }
+  _bloqueioSaveNuvem = true;
+  _salvar();
+  setTimeout(() => { _bloqueioSaveNuvem = false; }, 60000);
+
+  localStorage.setItem("hannaUid", resultado.uid);
+  localStorage.setItem("hannaEmail", emailSalvo);
+  localStorage.setItem("hannaSenhaTexto", senhaSalva);
+
+  entrarNoJogo();
+})();
