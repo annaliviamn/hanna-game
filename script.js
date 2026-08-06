@@ -12085,37 +12085,44 @@ function abrirCenaCasamento() {
   const emailSalvo = localStorage.getItem("hannaEmail");
   const senhaSalva = localStorage.getItem("hannaSenhaTexto");
 
-  if (!emailSalvo || !senhaSalva) return; // sem conta salva, mostra tela de login normal
+  if (!emailSalvo || !senhaSalva) return;
 
   mostrarLoading();
 
-  const { entrarComConta } = await import("./firebase.js");
-  const resultado = await entrarComConta(emailSalvo, senhaSalva);
+  try {
+    const { entrarComConta } = await import("./firebase.js");
+    const resultado = await entrarComConta(emailSalvo, senhaSalva);
 
-  if (!resultado.ok) {
-    // credenciais salvas pararam de funcionar (ex: senha trocada) — volta pro login manual
+    if (!resultado.ok) {
+      document.getElementById("telaLoading").style.display = "none";
+      telaInicial.style.display = "block";
+      telaInicial.classList.remove("fadeOut");
+      mostrarFeedbackLogin("Sessão expirada, faça login novamente.", true);
+      return;
+    }
+
+    localStorage.clear();
+    // Restaura AS CREDENCIAIS IMEDIATAMENTE, antes de qualquer risco de erro
+    localStorage.setItem("hannaUid", resultado.uid);
+    localStorage.setItem("hannaEmail", emailSalvo);
+    localStorage.setItem("hannaSenhaTexto", senhaSalva);
+
+    if (resultado.dados) {
+      carregarDadosNoJogo(resultado.dados);
+      compensarTempoOffline();
+      restaurarSlotsVisuais();
+      setTimeout(() => reagendarCrescimentoOffline(), 600);
+    }
+    _bloqueioSaveNuvem = true;
+    _salvar();
+    setTimeout(() => { _bloqueioSaveNuvem = false; }, 60000);
+
+    entrarNoJogo();
+  } catch (erro) {
+    console.error("Erro no auto-login:", erro);
     document.getElementById("telaLoading").style.display = "none";
     telaInicial.style.display = "block";
     telaInicial.classList.remove("fadeOut");
-    mostrarFeedbackLogin("Sessão expirada, faça login novamente.", true);
-    return;
+    mostrarFeedbackLogin("Erro ao entrar automaticamente. Tente logar manualmente.", true);
   }
-
-  localStorage.clear();
-
-  if (resultado.dados) {
-    carregarDadosNoJogo(resultado.dados);
-    compensarTempoOffline();
-    restaurarSlotsVisuais();
-    setTimeout(() => reagendarCrescimentoOffline(), 600);
-  }
-  _bloqueioSaveNuvem = true;
-  _salvar();
-  setTimeout(() => { _bloqueioSaveNuvem = false; }, 60000);
-
-  localStorage.setItem("hannaUid", resultado.uid);
-  localStorage.setItem("hannaEmail", emailSalvo);
-  localStorage.setItem("hannaSenhaTexto", senhaSalva);
-
-  entrarNoJogo();
 })();
