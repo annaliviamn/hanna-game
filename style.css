@@ -410,6 +410,32 @@ textarea {
   object-fit: cover;
 }
 
+.icone-trocar-perfil-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icone-trocar-perfil {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--pink-light);
+  border: 1.5px solid var(--pink-mid);
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.icone-trocar-perfil img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Status Hanna, Gatinha e Filhote */
 .barraContainer { margin: 10px 0; }
 .barraTitulo {
@@ -428,6 +454,57 @@ textarea {
 #barraEnergia { height:100%; border-radius:20px; background: linear-gradient(90deg,#b57cff,#d4aaff); transition:.5s; }
 #barraHigiene { height:100%; border-radius:20px; background: linear-gradient(90deg,#8f5be8,#b784ff); transition:.5s; }
 #barraCuidadosFilhote { height:100%; border-radius:20px; background: linear-gradient(90deg,#ffb347,#ffd580); transition:.5s; }
+
+/* Cuidados Anna e Kika */
+#telaCuidadosAnna, #telaCuidadosKika {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+/* Anna — azul, verde militar, cinza */
+#barraFomeAnna {
+  height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg,#3a6b52,#5c8f73);
+  transition: .5s;
+}
+#barraHigieneAnna {
+  height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg,#2c4a6e,#4a7ba6);
+  transition: .5s;
+}
+#barraBanheiroAnna {
+  height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg,#4a7ba6,#7ba8d6);
+  transition: .5s;
+}
+#barraSonoAnna {
+  height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg,#2c4a3e,#3a6b52);
+  transition: .5s;
+}
+
+/* Kika — amarelo, rosa, vermelho */
+#barraFomeKika {
+  height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg,#ffb347,#ffd580);
+  transition: .5s;
+}
+#barraHigieneKika {
+  height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg,#ff5fa2,#ff8fc2);
+  transition: .5s;
+}
+#barraBanheiroKika {
+  height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg,#f5c518,#ffdd5c);
+  transition: .5s;
+}
+#barraSonoKika {
+  height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg,#ff6f91,#ff9eb5);
+  transition: .5s;
+}
 
 /* SECTION LABEL */
 .section-label {
@@ -739,7 +816,11 @@ textarea {
   display: flex; align-items: center; justify-content: center;
 }
 
-.iconeLoja { width: 58px; image-rendering: pixelated; }
+.iconeLoja {
+  width: 58px;
+  image-rendering: pixelated;
+  object-fit: contain; /* garante que a imagem inteira apareça, sem cortar */
+}
 
 .item-loja-info {
     flex: 1;
@@ -796,12 +877,19 @@ textarea {
 
 .item-loja-footer {
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
     margin-top: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    width: 100%;
+}
+
+.item-loja-footer .preco-chip,
+.item-loja-footer .btn-comprar {
+  min-width: 0;
 }
 
 .item-loja.item-premium {
@@ -830,6 +918,9 @@ textarea {
   padding: 4px 10px;
   font-size: 12px; font-weight: 800;
   color: #8a6020;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .btn-comprar {
@@ -1729,6 +1820,19 @@ body.dark-mode .bottomNav {
   overflow: hidden;
 }
 
+#telaBanhoAnna,
+#telaBanheiroAnna,
+#telaDormirAnna,
+#telaBanhoKika,
+#telaBanheiroKika,
+#telaDormirKika {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
 
 /* IMAGEM */
 #hannaBanho {
@@ -1906,6 +2010,54 @@ body.dark-mode .bottomNav {
 @keyframes subirFade {
   0%   { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-40px); }
+}
+
+.fundo-quarto-personagem {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  image-rendering: pixelated;
+  z-index: 1;
+}
+
+.sprite-personagem {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - 100px); /* centraliza sem precisar de transform */
+  z-index: 2;
+  width: 200px;
+  image-rendering: pixelated;
+  animation: idleFloat 4.5s ease-in-out infinite;
+}
+
+.sprite-personagem {
+  animation: idleFloat 4.5s ease-in-out infinite;
+}
+
+.sprite-tela-cheia {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 3;
+}
+
+.cenario-personagem {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 320px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--pink-mid);
 }
 
 /* MINIGAMES — adicione ao final do seu style.css */
@@ -5815,4 +5967,178 @@ button {
 @keyframes brilhoCasamento {
   0%, 100% { box-shadow: 0 0 15px #ff8fc2, 0 0 30px rgba(255,143,194,0.5); }
   50% { box-shadow: 0 0 25px #ff8fc2, 0 0 50px rgba(255,143,194,0.8), 0 0 80px rgba(255,143,194,0.3); }
+}
+
+/* Tamanho Hannacoin */
+.icone-hannacoin {
+  width: 28px;   /* era 20px, aumenta aqui */
+  height: 28px;
+  image-rendering: pixelated;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* Cards Anna e Kika */
+#btnComprarAnnaJogavel,
+#btnComprarKikaJogavel {
+  flex: 0 0 auto;
+  padding: 0 24px;
+  min-width: 140px;
+  box-sizing: border-box;
+}
+
+/* Modal troca de Perfil */
+#modalTrocarPerfil {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-perfil-conteudo {
+  background: var(--bg-card);
+  border: 1.5px solid var(--pink-mid);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+}
+
+.modal-perfil-conteudo h3 {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--pink-deep);
+  margin-bottom: 16px;
+}
+
+.perfis-grid {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.perfil-opcao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.perfil-opcao img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1.5px solid var(--pink-mid);
+  background: var(--pink-light);
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.perfil-opcao span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-mid);
+}
+
+/* Layout Perfil Anna Jogável */
+.status-anna {
+  border-color: #2c4a3e; /* verde militar */
+}
+
+.status-anna .barra {
+  background: #1a2a3a; /* azul escuro de fundo */
+}
+
+.status-anna .barraContainer > .barra > div {
+  background: linear-gradient(90deg, #2c4a3e, #3a6b52); /* verde militar */
+}
+
+.btn-anna {
+  background: linear-gradient(135deg, #1a2a3a, #2c4a3e);
+  border: 1.5px solid #2c4a3e;
+  color: #fff;
+}
+
+.btn-anna:hover {
+  filter: brightness(1.15);
+}
+
+/* Layout Perfil Kika Jogável */
+.status-kika {
+  border-color: #f5c518; /* amarelo */
+}
+
+.status-kika .barraContainer > .barra > div {
+  background: linear-gradient(90deg, #f5c518, #ff6f91); /* amarelo pra rosa */
+}
+
+.btn-kika {
+  background: linear-gradient(135deg, #ff4d8a, #ff1f6e);
+  border: 1.5px solid #ff1f6e;
+  color: #fff;
+}
+
+.btn-kika:hover {
+  filter: brightness(1.1);
+}
+
+/* Falas Anna e Kika */
+#annaFala {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 4;
+  background: linear-gradient(135deg, #d5e8ff, #c9f0dc);
+  border: 2px solid #4a7ba6;
+  border-radius: 14px 14px 14px 4px;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #2c4a6e;
+  box-shadow: 0 2px 8px rgba(74,123,166,0.15);
+  white-space: normal;
+  opacity: 0;
+  transition: opacity .3s, transform .3s;
+  pointer-events: none;
+  max-width: 110px;
+  text-align: center;
+}
+
+#annaFala.visivel {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+#kikaFala {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 4;
+  background: linear-gradient(135deg, #fff0d5, #ffd5e8);
+  border: 2px solid #ff4d8a;
+  border-radius: 14px 14px 14px 4px;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #d6336c;
+  box-shadow: 0 2px 8px rgba(255,77,138,0.15);
+  white-space: normal;
+  opacity: 0;
+  transition: opacity .3s, transform .3s;
+  pointer-events: none;
+  max-width: 110px;
+  text-align: center;
+}
+
+#kikaFala.visivel {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }

@@ -3096,10 +3096,36 @@ function atualizarGatinha() {
 const _uidTemp = localStorage.getItem("hannaUid");
 const _emailTemp = localStorage.getItem("hannaEmail");
 const _senhaTemp = localStorage.getItem("hannaSenhaTexto");
+const _annaJogavelTemp = localStorage.getItem("annaJogavelDesbloqueada");
+const _kikaJogavelTemp = localStorage.getItem("kikaJogavelDesbloqueada");
+const _fomeAnnaTemp = localStorage.getItem("fomeAnna");
+const _higieneAnnaTemp = localStorage.getItem("higieneAnna");
+const _banheiroAnnaTemp = localStorage.getItem("banheiroAnna");
+const _sonoAnnaTemp = localStorage.getItem("sonoAnna");
+const _fomeKikaTemp = localStorage.getItem("fomeKika");
+const _higieneKikaTemp = localStorage.getItem("higieneKika");
+const _banheiroKikaTemp = localStorage.getItem("banheiroKika");
+const _sonoKikaTemp = localStorage.getItem("sonoKika");
+const _dormindoAnnaTemp = localStorage.getItem("dormindoAnna");
+const _dormindoKikaTemp = localStorage.getItem("dormindoKika");
+
 localStorage.clear();
+
 if (_uidTemp) localStorage.setItem("hannaUid", _uidTemp);
 if (_emailTemp) localStorage.setItem("hannaEmail", _emailTemp);
 if (_senhaTemp) localStorage.setItem("hannaSenhaTexto", _senhaTemp);
+if (_annaJogavelTemp) localStorage.setItem("annaJogavelDesbloqueada", _annaJogavelTemp);
+if (_kikaJogavelTemp) localStorage.setItem("kikaJogavelDesbloqueada", _kikaJogavelTemp);
+if (_fomeAnnaTemp) localStorage.setItem("fomeAnna", _fomeAnnaTemp);
+if (_higieneAnnaTemp) localStorage.setItem("higieneAnna", _higieneAnnaTemp);
+if (_banheiroAnnaTemp) localStorage.setItem("banheiroAnna", _banheiroAnnaTemp);
+if (_sonoAnnaTemp) localStorage.setItem("sonoAnna", _sonoAnnaTemp);
+if (_fomeKikaTemp) localStorage.setItem("fomeKika", _fomeKikaTemp);
+if (_higieneKikaTemp) localStorage.setItem("higieneKika", _higieneKikaTemp);
+if (_banheiroKikaTemp) localStorage.setItem("banheiroKika", _banheiroKikaTemp);
+if (_sonoKikaTemp) localStorage.setItem("sonoKika", _sonoKikaTemp);
+if (_dormindoAnnaTemp) localStorage.setItem("dormindoAnna", _dormindoAnnaTemp);
+if (_dormindoKikaTemp) localStorage.setItem("dormindoKika", _dormindoKikaTemp);
 
 
 let fome        = Number(localStorage.getItem("fome"))        || 40;
@@ -3131,6 +3157,18 @@ localStorage.getItem("dormindo") === "true";
 
 let lembretes =
 JSON.parse(localStorage.getItem("lembretes")) || [];
+
+// Stats da Anna
+let fomeAnna     = Number(localStorage.getItem("fomeAnna"))     || 100;
+let higieneAnna  = Number(localStorage.getItem("higieneAnna"))  || 100;
+let banheiroAnna = Number(localStorage.getItem("banheiroAnna")) || 100;
+let sonoAnna     = Number(localStorage.getItem("sonoAnna"))     || 100;
+
+// Stats da Kika
+let fomeKika     = Number(localStorage.getItem("fomeKika"))     || 100;
+let higieneKika  = Number(localStorage.getItem("higieneKika"))  || 100;
+let banheiroKika = Number(localStorage.getItem("banheiroKika")) || 100;
+let sonoKika     = Number(localStorage.getItem("sonoKika"))     || 100;
 
 // NOME DA GATINHA — só exibe se foi adotada e já tem nome
 nomeDaGatinhaTexto.textContent = (gatinhaDesbloqueada && nomeGatinha) ? nomeGatinha : "";
@@ -3436,58 +3474,32 @@ function iniciarFalasIdle() {
 
   };
 
-    setInterval(() => {
+  setInterval(() => {
+    if (perfilAtivo !== "hanna") return; // só fala se a Hanna estiver na tela
 
-      if (
-          telaPedido.style.display === "flex" ||
-          telaPedidoReal.style.display === "flex" ||
-          telaMinigames.style.display === "block"
-      ) return;
+    if (
+        telaPedido.style.display === "flex" ||
+        telaPedidoReal.style.display === "flex" ||
+        telaMinigames.style.display === "block"
+    ) return;
 
-      let listaAtual =
-      frasesIdle.normal;
+    let listaAtual = frasesIdle.normal;
 
-      // PRIORIDADES
+    if (fome < 30) {
+        listaAtual = frasesIdle.fome;
+    }
+    else if (energia < 30) {
+        listaAtual = frasesIdle.cansada;
+    }
+    else if (felicidade < 40) {
+        listaAtual = frasesIdle.triste;
+    }
+    else if (amizade > 3.5) {
+        listaAtual = frasesIdle.apaixonada;
+    }
 
-      if (fome < 30) {
-
-          listaAtual =
-          frasesIdle.fome;
-
-      }
-
-      else if (energia < 30) {
-
-          listaAtual =
-          frasesIdle.cansada;
-
-      }
-
-      else if (felicidade < 40) {
-
-          listaAtual =
-          frasesIdle.triste;
-
-      }
-
-      else if (amizade > 3.5) {
-
-          listaAtual =
-          frasesIdle.apaixonada;
-
-      }
-
-      const frase =
-
-      listaAtual[
-          Math.floor(
-              Math.random() *
-              listaAtual.length
-          )
-      ];
-
-      mostrarFalaHanna(frase);
-
+    const frase = listaAtual[Math.floor(Math.random() * listaAtual.length)];
+    mostrarFalaHanna(frase);
   }, 90000);
 }
 
@@ -3592,7 +3604,6 @@ function atualizarIconeStatusHanna() {
   }
 }
 
-
 // ATUALIZAR STATUS
 function atualizarStatus() {
 
@@ -3632,6 +3643,11 @@ function atualizarStatus() {
 
   sementesTexto.textContent = sementes;
   moedasTexto.textContent   = moedas;
+
+  const moedasAnnaEl = document.getElementById("moedasAnna");
+  const moedasKikaEl = document.getElementById("moedasKika");
+  if (moedasAnnaEl) moedasAnnaEl.textContent = moedas;
+  if (moedasKikaEl) moedasKikaEl.textContent = moedas;
 
   const sementesFazendaEl = document.getElementById("sementesFazenda");
   if (sementesFazendaEl) sementesFazendaEl.textContent = sementes;
@@ -3761,6 +3777,8 @@ function _salvar() {
   localStorage.setItem("casamentoAltarDecorado", casamentoAltarDecorado ? "true" : "false");
   localStorage.setItem("annaVIP", annaVIP ? "true" : "false");
   localStorage.setItem("kikaVIP", kikaVIP ? "true" : "false");
+  localStorage.setItem("annaJogavelDesbloqueada", annaJogavelDesbloqueada ? "true" : "false");
+  localStorage.setItem("kikaJogavelDesbloqueada", kikaJogavelDesbloqueada ? "true" : "false");
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -3794,6 +3812,7 @@ function _salvar() {
           casamentoRealizado, casamentoFlores, casamentoDecoracao,
           casamentoComida, casamentoVestidoHanna, casamentoVestidoGatinha,
           casamentoAltarDecorado, annaVIP, kikaVIP,
+          annaJogavelDesbloqueada, kikaJogavelDesbloqueada,
         });
       }).catch(() => {});
     }
@@ -4161,7 +4180,6 @@ let dormirInterval;
 
 
 // FUNÇÃO DE DORMIR
-
 function iniciarSono() {
 
     dormindo = true;
@@ -4308,6 +4326,36 @@ setInterval(() => {
       cuidadosFilhote = Math.max(0, cuidadosFilhote - 1.5);
     }
   }
+  
+  // Decay isolado da Anna (só corre enquanto a tela dela tá ativa)
+  if (perfilAtivo === "anna") {
+    fomeAnna     = Math.max(0, fomeAnna     - 1.5);
+    higieneAnna  = Math.max(0, higieneAnna  - 0.8);
+    banheiroAnna = Math.max(0, banheiroAnna - 1);
+    if (!dormindoAnna) {
+      sonoAnna = Math.max(0, sonoAnna - 0.5);
+    }
+    localStorage.setItem("fomeAnna", fomeAnna);
+    localStorage.setItem("higieneAnna", higieneAnna);
+    localStorage.setItem("banheiroAnna", banheiroAnna);
+    localStorage.setItem("sonoAnna", sonoAnna);
+    atualizarStatusAnna();
+  }
+
+  // Decay isolado da Kika (só corre enquanto a tela dela tá ativa)
+  if (perfilAtivo === "kika") {
+    fomeKika     = Math.max(0, fomeKika     - 1.5);
+    higieneKika  = Math.max(0, higieneKika  - 0.8);
+    banheiroKika = Math.max(0, banheiroKika - 1);
+    if (!dormindoKika) {
+      sonoKika = Math.max(0, sonoKika - 0.5);
+    }
+    localStorage.setItem("fomeKika", fomeKika);
+    localStorage.setItem("higieneKika", higieneKika);
+    localStorage.setItem("banheiroKika", banheiroKika);
+    localStorage.setItem("sonoKika", sonoKika);
+    atualizarStatusKika();
+  }
 }, 60000); // 1 min
 
 // Carregar dados do Jogo
@@ -4344,6 +4392,8 @@ function carregarDadosNoJogo(dados) {
   kikaDesbloqueada = dados.kikaDesbloqueada === true || dados.kikaDesbloqueada === "true";
   annaVIP = dados.annaVIP === true || dados.annaVIP === "true";
   kikaVIP = dados.kikaVIP === true || dados.kikaVIP === "true";
+  annaJogavelDesbloqueada = dados.annaJogavelDesbloqueada === true || dados.annaJogavelDesbloqueada === "true";
+  kikaJogavelDesbloqueada = dados.kikaJogavelDesbloqueada === true || dados.kikaJogavelDesbloqueada === "true";
 
   ultimaPagamentoContas = Number(dados.ultimaPagamentoContas) || 0;
   internetPaga = dados.internetPaga !== false && dados.internetPaga !== "false";
@@ -4497,6 +4547,11 @@ function entrarNoJogo() {
     // Inicia sistema de visitas (fila central)
     iniciarSistemaVisitas();
 
+    // dentro de entrarNoJogo(), no final:
+    if (btnTrocarPerfil) {
+      btnTrocarPerfil.style.display = (annaJogavelDesbloqueada || kikaJogavelDesbloqueada) ? "flex" : "none";
+    }
+
   }, 500);
 }
 
@@ -4543,7 +4598,34 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   localStorage.setItem("hannaEmail", email);
   localStorage.setItem("hannaSenhaTexto", senha);
 
+  const _annaJogavelTemp = localStorage.getItem("annaJogavelDesbloqueada");
+  const _kikaJogavelTemp = localStorage.getItem("kikaJogavelDesbloqueada");
+  const _fomeAnnaTemp = localStorage.getItem("fomeAnna");
+  const _higieneAnnaTemp = localStorage.getItem("higieneAnna");
+  const _banheiroAnnaTemp = localStorage.getItem("banheiroAnna");
+  const _sonoAnnaTemp = localStorage.getItem("sonoAnna");
+  const _fomeKikaTemp = localStorage.getItem("fomeKika");
+  const _higieneKikaTemp = localStorage.getItem("higieneKika");
+  const _banheiroKikaTemp = localStorage.getItem("banheiroKika");
+  const _sonoKikaTemp = localStorage.getItem("sonoKika");
+  const _dormindoAnnaTemp = localStorage.getItem("dormindoAnna");
+  const _dormindoKikaTemp = localStorage.getItem("dormindoKika");
+
   localStorage.clear();
+
+  if (_annaJogavelTemp) localStorage.setItem("annaJogavelDesbloqueada", _annaJogavelTemp);
+  if (_kikaJogavelTemp) localStorage.setItem("kikaJogavelDesbloqueada", _kikaJogavelTemp);
+  if (_fomeAnnaTemp) localStorage.setItem("fomeAnna", _fomeAnnaTemp);
+  if (_higieneAnnaTemp) localStorage.setItem("higieneAnna", _higieneAnnaTemp);
+  if (_banheiroAnnaTemp) localStorage.setItem("banheiroAnna", _banheiroAnnaTemp);
+  if (_sonoAnnaTemp) localStorage.setItem("sonoAnna", _sonoAnnaTemp);
+  if (_fomeKikaTemp) localStorage.setItem("fomeKika", _fomeKikaTemp);
+  if (_higieneKikaTemp) localStorage.setItem("higieneKika", _higieneKikaTemp);
+  if (_banheiroKikaTemp) localStorage.setItem("banheiroKika", _banheiroKikaTemp);
+  if (_sonoKikaTemp) localStorage.setItem("sonoKika", _sonoKikaTemp);
+  if (_dormindoAnnaTemp) localStorage.setItem("dormindoAnna", _dormindoAnnaTemp);
+  if (_dormindoKikaTemp) localStorage.setItem("dormindoKika", _dormindoKikaTemp);
+
   if (resultado.dados) {
     carregarDadosNoJogo(resultado.dados);
     compensarTempoOffline();
@@ -6304,7 +6386,7 @@ function abrirCaixa() {
 btnCaixa.addEventListener("click", () => {
 
   if (moedas < 5000) {
-    mostrarAlertaLoja("⚠️ Moedas insuficientes");
+    mostrarAlertaLoja("Moedas insuficientes");
     return;
   }
 
@@ -6517,6 +6599,10 @@ comprarPet(btnJames, "jamesDesbloqueado", "James", () => { jamesDesbloqueado = t
 let annaDesbloqueada = localStorage.getItem("annaDesbloqueada") === "true";
 let kikaDesbloqueada = localStorage.getItem("kikaDesbloqueada") === "true";
 
+// Desbloquear personagens jogáveis
+let annaJogavelDesbloqueada = localStorage.getItem("annaJogavelDesbloqueada") === "true";
+let kikaJogavelDesbloqueada = localStorage.getItem("kikaJogavelDesbloqueada") === "true";
+
 const btnAnna = document.getElementById("btnAnna");
 const btnKika = document.getElementById("btnKika");
 
@@ -6623,6 +6709,33 @@ document.getElementById("btnUpgradeKika")?.addEventListener("click", () => {
   atualizarUpgradesVIP();
   atualizarStatus();
   _salvar();
+});
+
+// Personagens novos jogáveis
+document.getElementById("btnComprarAnnaJogavel").addEventListener("click", () => {
+  if (moedas < 150000) {
+    mostrarMensagem("Moedas insuficientes!");
+    return;
+  }
+  moedas -= 150000;
+  annaJogavelDesbloqueada = true;
+  localStorage.setItem("annaJogavelDesbloqueada", "true");
+  mostrarMensagem("Anna Jogável desbloqueada!");
+  atualizarStatus();
+  atualizarBtnsLoja(); // esconde o card depois de comprado
+});
+
+document.getElementById("btnComprarKikaJogavel").addEventListener("click", () => {
+  if (moedas < 150000) {
+    mostrarMensagem("Moedas insuficientes!");
+    return;
+  }
+  moedas -= 150000;
+  kikaJogavelDesbloqueada = true;
+  localStorage.setItem("kikaJogavelDesbloqueada", "true");
+  mostrarMensagem("Kika Jogável desbloqueada!");
+  atualizarStatus();
+  atualizarBtnsLoja();
 });
 
 // Bloqueia esconde-esconde se filhotinho não nasceu
@@ -6735,6 +6848,22 @@ function atualizarBtnsLoja() {
   // Casamento
   atualizarBtnsCasamento();
   atualizarItensCasamento();
+
+  // Ícone de troca de perfil — aparece se pelo menos 1 personagem tá desbloqueado
+  const btnTrocarPerfil = document.getElementById("btnTrocarPerfil");
+  if (btnTrocarPerfil) {
+    btnTrocarPerfil.style.display = (annaJogavelDesbloqueada || kikaJogavelDesbloqueada) ? "flex" : "none";
+  }
+
+  // Personagens Jogáveis (Anna e Kika)
+  const cardAnnaJogavel = document.getElementById("cardAnnaJogavel");
+  const cardKikaJogavel = document.getElementById("cardKikaJogavel");
+  if (cardAnnaJogavel) {
+    cardAnnaJogavel.style.display = annaJogavelDesbloqueada ? "none" : "flex";
+  }
+  if (cardKikaJogavel) {
+    cardKikaJogavel.style.display = kikaJogavelDesbloqueada ? "none" : "flex";
+  }
 
 }
 
@@ -7621,30 +7750,489 @@ btnBanho.addEventListener("click", () => {
 
 });
 
+function atualizarStatusAnna() {
+  document.getElementById("barraFomeAnna").style.width = fomeAnna + "%";
+  document.getElementById("fomeAnnaPorcentagem").textContent = Math.floor(fomeAnna) + "%";
 
+  document.getElementById("barraHigieneAnna").style.width = higieneAnna + "%";
+  document.getElementById("higieneAnnaPorcentagem").textContent = Math.floor(higieneAnna) + "%";
 
-// ABRIR FAZENDA
+  document.getElementById("barraBanheiroAnna").style.width = banheiroAnna + "%";
+  document.getElementById("banheiroAnnaPorcentagem").textContent = Math.floor(banheiroAnna) + "%";
 
-//if (btnAbrirFazenda) {
-    //btnAbrirFazenda.onclick = () => {
+  document.getElementById("barraSonoAnna").style.width = sonoAnna + "%";
+  document.getElementById("sonoAnnaPorcentagem").textContent = Math.floor(sonoAnna) + "%";
 
-        //abrirTela(telaFazenda);
+  // Sprite reativa baseada na média dos stats
+  const mediaAnna = (fomeAnna + higieneAnna + banheiroAnna + sonoAnna) / 4;
+  const annaSpriteEl = document.getElementById("annaSprite");
+  if (!dormindoAnna) {
+    if (mediaAnna >= 70) {
+      annaSpriteEl.src = "assets/sprites/personagens/anna-jogavel/feliz.png";
+    } else if (mediaAnna <= 30) {
+      annaSpriteEl.src = "assets/sprites/personagens/anna-jogavel/triste.png";
+    } else {
+      annaSpriteEl.src = "assets/sprites/personagens/anna-jogavel/neutra.png";
+    }
+  }
+}
 
-        //animarTela(telaFazenda);
+// COMIDA DA ANNA
+const btnComidaAnna = document.getElementById("btnComidaAnna");
+if (btnComidaAnna) {
+  btnComidaAnna.addEventListener("click", () => {
+    fomeAnna = Math.min(100, fomeAnna + 30);
+    localStorage.setItem("fomeAnna", fomeAnna);
 
-        //tocarTrilha("fazenda");
+    document.getElementById("annaSprite").src = "assets/sprites/personagens/anna-jogavel/comendo.png";
 
-        //balaoFazenda.classList.remove("fade-out-balao");
+    setTimeout(() => {
+      atualizarStatusAnna(); // já escolhe a sprite certa sozinha
+    }, 2000);
 
-        //void balaoFazenda.offsetWidth;
+    mostrarMensagem("A Anna comeu algo gostoso!");
+  });
+}
 
-        //setTimeout(() => {
-            //balaoFazenda.classList.add("fade-out-balao");
-        //}, //4000);
+// BANHO DA ANNA
+const btnBanhoAnna = document.getElementById("btnBanhoAnna");
+if (btnBanhoAnna) {
+  btnBanhoAnna.addEventListener("click", () => {
+    higieneAnna = Math.min(100, higieneAnna + 40);
+    localStorage.setItem("higieneAnna", higieneAnna);
 
-    //};
-//}
+    document.getElementById("telaBanhoAnna").style.display = "flex";
+    document.getElementById("annaSprite").style.display = "none";
 
+    setTimeout(() => {
+      document.getElementById("telaBanhoAnna").style.display = "none";
+      document.getElementById("annaSprite").style.display = "block";
+      atualizarStatusAnna();
+    }, 3000);
+
+    mostrarMensagem("A Anna está tomando banho.");
+  });
+}
+
+// BANHEIRO DA ANNA
+const btnBanheiroAnna = document.getElementById("btnBanheiroAnna");
+if (btnBanheiroAnna) {
+  btnBanheiroAnna.addEventListener("click", () => {
+    banheiroAnna = Math.min(100, banheiroAnna + 40);
+    localStorage.setItem("banheiroAnna", banheiroAnna);
+
+    document.getElementById("telaBanheiroAnna").style.display = "flex";
+    document.getElementById("annaSprite").style.display = "none";
+
+    setTimeout(() => {
+      document.getElementById("telaBanheiroAnna").style.display = "none";
+      document.getElementById("annaSprite").style.display = "block";
+      atualizarStatusAnna();
+    }, 2000);
+
+    mostrarMensagem("A Anna foi ao banheiro.");
+  });
+}
+
+let dormindoAnna = localStorage.getItem("dormindoAnna") === "true";
+let dormirIntervalAnna;
+
+function iniciarSonoAnna() {
+  dormindoAnna = true;
+  localStorage.setItem("dormindoAnna", "true");
+
+  document.getElementById("telaDormirAnna").style.display = "flex";
+  document.getElementById("annaSprite").style.display = "none";
+
+  clearInterval(dormirIntervalAnna);
+
+  dormirIntervalAnna = setInterval(() => {
+    sonoAnna = Math.min(100, sonoAnna + 7);
+    localStorage.setItem("sonoAnna", sonoAnna);
+
+    if (sonoAnna >= 100) {
+      sonoAnna = 100;
+      dormindoAnna = false;
+      clearInterval(dormirIntervalAnna);
+      localStorage.setItem("dormindoAnna", "false");
+
+      document.getElementById("telaDormirAnna").style.display = "none";
+      document.getElementById("annaSprite").style.display = "block";
+
+      mostrarMensagem("A Anna acordou descansada.");
+    }
+
+    atualizarStatusAnna();
+  }, 7000);
+}
+
+// DORMIR DA ANNA
+const btnDormirAnna = document.getElementById("btnDormirAnna");
+if (btnDormirAnna) {
+  btnDormirAnna.addEventListener("click", () => {
+    if (dormindoAnna) return;
+    iniciarSonoAnna();
+    mostrarMensagem("A Anna foi dormir.");
+  });
+}
+
+// TRABALHAR DA ANNA
+const btnTrabalharAnna = document.getElementById("btnTrabalharAnna");
+if (btnTrabalharAnna) {
+  btnTrabalharAnna.addEventListener("click", () => {
+    const hoje = new Date().toDateString();
+    const ultimoTrabalho = localStorage.getItem("ultimoTrabalhoAnna");
+
+    if (ultimoTrabalho === hoje) {
+      mostrarMensagem("A Anna já trabalhou hoje!");
+      return;
+    }
+
+    document.getElementById("annaSprite").src = "assets/sprites/personagens/anna-jogavel/trabalhando.png";
+    mostrarMensagem("A Anna foi trabalhar...");
+
+    setTimeout(() => {
+      fomeAnna = Math.max(0, fomeAnna - 20);
+      banheiroAnna = Math.max(0, banheiroAnna - 15);
+      sonoAnna = Math.max(0, sonoAnna - 25);
+
+      moedas += 10000; // salário
+      localStorage.setItem("moedas", moedas);
+      localStorage.setItem("ultimoTrabalhoAnna", hoje);
+      localStorage.setItem("fomeAnna", fomeAnna);
+      localStorage.setItem("banheiroAnna", banheiroAnna);
+      localStorage.setItem("sonoAnna", sonoAnna);
+
+      atualizarStatusAnna();
+      atualizarStatus(); // atualiza o saldo de moedas em todas as telas
+      mostrarMensagem("A Anna terminou o trabalho e ganhou 10.000 hannacoins!");
+    }, 8 * 60 * 1000); // 8 minutos
+  });
+}
+
+// XAMEGO (compartilhado entre Anna e Kika)
+const xamegoCenas = [
+  { sprite: "assets/sprites/personagens/anna-beija-kika.png", frase: "Um beijinho no meu xuxuzinho" },
+  { sprite: "assets/sprites/personagens/anna-cafune-kika.png", frase: "Meu bem, você é incrível!" },
+  { sprite: "assets/sprites/personagens/kika-beija-anna.png", frase: "Beijinho no meu bebê" },
+  { sprite: "assets/sprites/personagens/kika-carinho-anna.png", frase: "Um carinho daqueles que aquece o coração" },
+  { sprite: "assets/sprites/personagens/kanna-brincando.png", frase: "Kanna aprontando" },
+  { sprite: "assets/sprites/personagens/kanna-rindo.png", frase: "Duas rindo à toa, ninguém segura esse amor" },
+  { sprite: "assets/sprites/personagens/kika-anna-fofoca.png", frase: "Cosplay de Steve, compartilhando fatos hehe" }
+];
+
+function ativarXamego(personagemAtual) {
+  const cena = xamegoCenas[Math.floor(Math.random() * xamegoCenas.length)];
+  const spriteEl = document.getElementById(personagemAtual === "anna" ? "annaSprite" : "kikaSprite");
+
+  spriteEl.src = cena.sprite;
+  mostrarMensagem(cena.frase);
+
+  setTimeout(() => {
+    if (personagemAtual === "anna") atualizarStatusAnna();
+    else atualizarStatusKika();
+  }, 3000);
+}
+
+const btnXamegoAnna = document.getElementById("btnXamegoAnna");
+if (btnXamegoAnna) {
+  btnXamegoAnna.addEventListener("click", () => ativarXamego("anna"));
+}
+
+const expressoesAnna = [
+  { sprite: "assets/sprites/personagens/anna-jogavel/apaixonada.png", frase: "Me peguei pensando no meu xuxu" },
+  { sprite: "assets/sprites/personagens/anna-jogavel/aprontona.png", frase: "Tô aprontando alguma, hehe" },
+  { sprite: "assets/sprites/personagens/anna-jogavel/ligacao.png", frase: "Quarta é Kanna day!" },
+  { sprite: "assets/sprites/personagens/anna-jogavel/pensativa.png", frase: "Hmm, pensando em algo..." }
+];
+
+function mostrarFalaAnna(texto) {
+  const falaEl = document.getElementById("annaFala");
+  falaEl.textContent = texto;
+  falaEl.classList.add("visivel");
+  setTimeout(() => { falaEl.classList.remove("visivel"); }, 2000);
+}
+
+const annaSpriteEl2 = document.getElementById("annaSprite");
+annaSpriteEl2.addEventListener("click", () => {
+  if (dormindoAnna) return;
+
+  const expressao = expressoesAnna[Math.floor(Math.random() * expressoesAnna.length)];
+  annaSpriteEl2.src = expressao.sprite;
+  mostrarFalaAnna(expressao.frase);
+
+  setTimeout(() => { atualizarStatusAnna(); }, 2000);
+});
+
+// FUNÇÕES DA KIKA
+const expressoesKika = [
+  { sprite: "assets/sprites/personagens/kika-jogavel/apaixonada.png", frase: "Ai, que amor" },
+  { sprite: "assets/sprites/personagens/kika-jogavel/pensativa.png", frase: "Hmm, deixa eu pensar..." },
+  { sprite: "assets/sprites/personagens/kika-jogavel/fofuxo.png", frase: "Vem cá Cook" },
+  { sprite: "assets/sprites/personagens/kika-jogavel/ligacao.png", frase: "Me deu saudades da linda" }
+];
+
+function mostrarFalaKika(texto) {
+  const falaEl = document.getElementById("kikaFala");
+  falaEl.textContent = texto;
+  falaEl.classList.add("visivel");
+  setTimeout(() => { falaEl.classList.remove("visivel"); }, 2000);
+}
+
+const kikaSpriteEl2 = document.getElementById("kikaSprite");
+kikaSpriteEl2.addEventListener("click", () => {
+  if (dormindoKika) return;
+
+  const expressao = expressoesKika[Math.floor(Math.random() * expressoesKika.length)];
+  kikaSpriteEl2.src = expressao.sprite;
+  mostrarFalaKika(expressao.frase);
+
+  setTimeout(() => { atualizarStatusKika(); }, 2000);
+});
+
+function atualizarStatusKika() {
+  document.getElementById("barraFomeKika").style.width = fomeKika + "%";
+  document.getElementById("fomeKikaPorcentagem").textContent = Math.floor(fomeKika) + "%";
+
+  document.getElementById("barraHigieneKika").style.width = higieneKika + "%";
+  document.getElementById("higieneKikaPorcentagem").textContent = Math.floor(higieneKika) + "%";
+
+  document.getElementById("barraBanheiroKika").style.width = banheiroKika + "%";
+  document.getElementById("banheiroKikaPorcentagem").textContent = Math.floor(banheiroKika) + "%";
+
+  document.getElementById("barraSonoKika").style.width = sonoKika + "%";
+  document.getElementById("sonoKikaPorcentagem").textContent = Math.floor(sonoKika) + "%";
+
+  const mediaKika = (fomeKika + higieneKika + banheiroKika + sonoKika) / 4;
+  const kikaSpriteEl = document.getElementById("kikaSprite");
+  if (!dormindoKika) {
+    if (mediaKika >= 70) {
+      kikaSpriteEl.src = "assets/sprites/personagens/kika-jogavel/feliz.png";
+    } else if (mediaKika <= 30) {
+      kikaSpriteEl.src = "assets/sprites/personagens/kika-jogavel/triste.png";
+    } else {
+      kikaSpriteEl.src = "assets/sprites/personagens/kika-jogavel/neutra.png";
+    }
+  }
+}
+
+// COMIDA DA KIKA
+const btnComidaKika = document.getElementById("btnComidaKika");
+if (btnComidaKika) {
+  btnComidaKika.addEventListener("click", () => {
+    fomeKika = Math.min(100, fomeKika + 30);
+    localStorage.setItem("fomeKika", fomeKika);
+
+    document.getElementById("kikaSprite").src = "assets/sprites/personagens/kika-jogavel/comendo.png";
+
+    setTimeout(() => {
+      atualizarStatusKika();
+    }, 2000);
+
+    mostrarMensagem("A Kika comeu algo gostoso!");
+  });
+}
+
+// BANHO DA KIKA
+const btnBanhoKika = document.getElementById("btnBanhoKika");
+if (btnBanhoKika) {
+  btnBanhoKika.addEventListener("click", () => {
+    higieneKika = Math.min(100, higieneKika + 40);
+    localStorage.setItem("higieneKika", higieneKika);
+
+    document.getElementById("telaBanhoKika").style.display = "flex";
+    document.getElementById("kikaSprite").style.display = "none";
+
+    setTimeout(() => {
+      document.getElementById("telaBanhoKika").style.display = "none";
+      document.getElementById("kikaSprite").style.display = "block";
+      atualizarStatusKika();
+    }, 3000);
+
+    mostrarMensagem("A Kika está tomando banho.");
+  });
+}
+
+// BANHEIRO DA KIKA
+const btnBanheiroKika = document.getElementById("btnBanheiroKika");
+if (btnBanheiroKika) {
+  btnBanheiroKika.addEventListener("click", () => {
+    banheiroKika = Math.min(100, banheiroKika + 40);
+    localStorage.setItem("banheiroKika", banheiroKika);
+
+    document.getElementById("telaBanheiroKika").style.display = "flex";
+    document.getElementById("kikaSprite").style.display = "none";
+
+    setTimeout(() => {
+      document.getElementById("telaBanheiroKika").style.display = "none";
+      document.getElementById("kikaSprite").style.display = "block";
+      atualizarStatusKika();
+    }, 2000);
+
+    mostrarMensagem("A Kika foi ao banheiro.");
+  });
+}
+
+// SONO DA KIKA (sistema unificado, igual Hanna/Anna)
+let dormindoKika = localStorage.getItem("dormindoKika") === "true";
+let dormirIntervalKika;
+
+function iniciarSonoKika() {
+  dormindoKika = true;
+  localStorage.setItem("dormindoKika", "true");
+
+  document.getElementById("telaDormirKika").style.display = "flex";
+  document.getElementById("kikaSprite").style.display = "none";
+
+  clearInterval(dormirIntervalKika);
+
+  dormirIntervalKika = setInterval(() => {
+    sonoKika = Math.min(100, sonoKika + 7);
+    localStorage.setItem("sonoKika", sonoKika);
+
+    if (sonoKika >= 100) {
+      sonoKika = 100;
+      dormindoKika = false;
+      clearInterval(dormirIntervalKika);
+      localStorage.setItem("dormindoKika", "false");
+
+      document.getElementById("telaDormirKika").style.display = "none";
+      document.getElementById("kikaSprite").style.display = "block";
+
+      mostrarMensagem("A Kika acordou descansada.");
+    }
+
+    atualizarStatusKika();
+  }, 7000);
+}
+
+const btnDormirKika = document.getElementById("btnDormirKika");
+if (btnDormirKika) {
+  btnDormirKika.addEventListener("click", () => {
+    if (dormindoKika) return;
+    iniciarSonoKika();
+    mostrarMensagem("A Kika foi dormir.");
+  });
+}
+
+// TRABALHAR DA KIKA
+const btnTrabalharKika = document.getElementById("btnTrabalharKika");
+if (btnTrabalharKika) {
+  btnTrabalharKika.addEventListener("click", () => {
+    const hoje = new Date().toDateString();
+    const ultimoTrabalho = localStorage.getItem("ultimoTrabalhoKika");
+
+    if (ultimoTrabalho === hoje) {
+      mostrarMensagem("A Kika já trabalhou hoje!");
+      return;
+    }
+
+    document.getElementById("kikaSprite").src = "assets/sprites/personagens/kika-jogavel/trabalhando.png";
+    mostrarMensagem("A Kika foi trabalhar...");
+
+    setTimeout(() => {
+      fomeKika = Math.max(0, fomeKika - 20);
+      banheiroKika = Math.max(0, banheiroKika - 15);
+      sonoKika = Math.max(0, sonoKika - 25);
+
+      moedas += 10000;
+      localStorage.setItem("moedas", moedas);
+      localStorage.setItem("ultimoTrabalhoKika", hoje);
+      localStorage.setItem("fomeKika", fomeKika);
+      localStorage.setItem("banheiroKika", banheiroKika);
+      localStorage.setItem("sonoKika", sonoKika);
+
+      atualizarStatusKika();
+      atualizarStatus();
+      mostrarMensagem("A Kika terminou o trabalho e ganhou 10.000 hannacoins!");
+    }, 8 * 60 * 1000);
+  });
+}
+
+// XAMEGO DA KIKA (reaproveita a mesma função central já criada)
+const btnXamegoKika = document.getElementById("btnXamegoKika");
+if (btnXamegoKika) {
+  btnXamegoKika.addEventListener("click", () => ativarXamego("kika"));
+}
+
+const btnTrocarPerfil = document.getElementById("btnTrocarPerfil");
+const modalTrocarPerfil = document.getElementById("modalTrocarPerfil");
+
+btnTrocarPerfil.addEventListener("click", () => {
+  document.getElementById("perfilAnna").style.display = annaJogavelDesbloqueada ? "flex" : "none";
+  document.getElementById("perfilKika").style.display = kikaJogavelDesbloqueada ? "flex" : "none";
+  modalTrocarPerfil.style.display = "flex";
+});
+
+const btnTrocarPerfilAnna = document.getElementById("btnTrocarPerfilAnna");
+if (btnTrocarPerfilAnna) {
+  btnTrocarPerfilAnna.addEventListener("click", () => {
+    document.getElementById("perfilAnna").style.display = annaJogavelDesbloqueada ? "flex" : "none";
+    document.getElementById("perfilKika").style.display = kikaJogavelDesbloqueada ? "flex" : "none";
+    modalTrocarPerfil.style.display = "flex";
+  });
+}
+
+const btnTrocarPerfilKika = document.getElementById("btnTrocarPerfilKika");
+if (btnTrocarPerfilKika) {
+  btnTrocarPerfilKika.addEventListener("click", () => {
+    document.getElementById("perfilAnna").style.display = annaJogavelDesbloqueada ? "flex" : "none";
+    document.getElementById("perfilKika").style.display = kikaJogavelDesbloqueada ? "flex" : "none";
+    modalTrocarPerfil.style.display = "flex";
+  });
+}
+
+modalTrocarPerfil.addEventListener("click", (e) => {
+  if (e.target === modalTrocarPerfil) {
+    modalTrocarPerfil.style.display = "none";
+  }
+});
+
+let perfilAtivo = "hanna"; // hanna | anna | kika
+
+function atualizarFundoQuarto(personagem) {
+  const hora = new Date().getHours();
+  const periodo = (hora >= 6 && hora < 18) ? "dia" : "noite";
+  const idFundo = personagem === "Anna" ? "fundoQuartoAnna" : "fundoQuartoKika";
+  const pasta = personagem === "Anna" ? "anna-jogavel" : "kika-jogavel";
+  document.getElementById(idFundo).src = `assets/sprites/personagens/${pasta}/quarto-${periodo}.png`;
+}
+
+function trocarPerfil(novoPerfil) {
+  if (perfilAtivo === novoPerfil) {
+    modalTrocarPerfil.style.display = "none";
+    return;
+  }
+
+  document.getElementById("painelHanna").style.display = "none";
+  document.getElementById("telaCuidadosAnna").style.display = "none";
+  document.getElementById("telaCuidadosKika").style.display = "none";
+
+  if (novoPerfil === "hanna") {
+    document.getElementById("painelHanna").style.display = "block";
+  } else if (novoPerfil === "anna") {
+    document.getElementById("telaCuidadosAnna").style.display = "block";
+    atualizarFundoQuarto("Anna");
+  } else if (novoPerfil === "kika") {
+    document.getElementById("telaCuidadosKika").style.display = "block";
+    atualizarFundoQuarto("Kika");
+  }
+
+  perfilAtivo = novoPerfil;
+
+  const avatares = {
+    hanna: "assets/sprites/hanna/hanna.png",
+    anna: "assets/sprites/personagens/anna-jogavel/feliz.png",
+    kika: "assets/sprites/personagens/kika-jogavel/feliz.png"
+  };
+  document.getElementById("avatarPerfilAtivo").src = avatares[novoPerfil];
+
+  modalTrocarPerfil.style.display = "none";
+}
+
+document.getElementById("perfilHanna").addEventListener("click", () => trocarPerfil("hanna"));
+document.getElementById("perfilAnna").addEventListener("click", () => trocarPerfil("anna"));
+document.getElementById("perfilKika").addEventListener("click", () => trocarPerfil("kika"));
 
 // NAVBAR
 navHome.onclick = () => {
@@ -8119,7 +8707,7 @@ function mensagemHorario() {
     } else if (hora < 18) {
         mostrarFalaHanna("Boa tarde neném!");
     } else {
-        mostrarFalaHanna("Boa noite meu amor 🌙");
+        mostrarFalaHanna("Boa noite meu amor");
     }
 
 }
@@ -8143,6 +8731,8 @@ function mostrarAlertaLoja(texto) {
 function iniciarMomentosEspeciais() {
 
     setInterval(() => {
+
+      if (perfilAtivo !== "hanna") return; // só ativa se a Hanna estiver na tela
 
       // Verifica evento do filhotinho
         verificarEventoFilhote();
@@ -12101,11 +12691,37 @@ function abrirCenaCasamento() {
       return;
     }
 
+    const _annaJogavelTemp = localStorage.getItem("annaJogavelDesbloqueada");
+    const _kikaJogavelTemp = localStorage.getItem("kikaJogavelDesbloqueada");
+    const _fomeAnnaTemp = localStorage.getItem("fomeAnna");
+    const _higieneAnnaTemp = localStorage.getItem("higieneAnna");
+    const _banheiroAnnaTemp = localStorage.getItem("banheiroAnna");
+    const _sonoAnnaTemp = localStorage.getItem("sonoAnna");
+    const _fomeKikaTemp = localStorage.getItem("fomeKika");
+    const _higieneKikaTemp = localStorage.getItem("higieneKika");
+    const _banheiroKikaTemp = localStorage.getItem("banheiroKika");
+    const _sonoKikaTemp = localStorage.getItem("sonoKika");
+    const _dormindoAnnaTemp = localStorage.getItem("dormindoAnna");
+    const _dormindoKikaTemp = localStorage.getItem("dormindoKika");
+
     localStorage.clear();
+
     // Restaura AS CREDENCIAIS IMEDIATAMENTE, antes de qualquer risco de erro
     localStorage.setItem("hannaUid", resultado.uid);
     localStorage.setItem("hannaEmail", emailSalvo);
     localStorage.setItem("hannaSenhaTexto", senhaSalva);
+    if (_annaJogavelTemp) localStorage.setItem("annaJogavelDesbloqueada", _annaJogavelTemp);
+    if (_kikaJogavelTemp) localStorage.setItem("kikaJogavelDesbloqueada", _kikaJogavelTemp);
+    if (_fomeAnnaTemp) localStorage.setItem("fomeAnna", _fomeAnnaTemp);
+    if (_higieneAnnaTemp) localStorage.setItem("higieneAnna", _higieneAnnaTemp);
+    if (_banheiroAnnaTemp) localStorage.setItem("banheiroAnna", _banheiroAnnaTemp);
+    if (_sonoAnnaTemp) localStorage.setItem("sonoAnna", _sonoAnnaTemp);
+    if (_fomeKikaTemp) localStorage.setItem("fomeKika", _fomeKikaTemp);
+    if (_higieneKikaTemp) localStorage.setItem("higieneKika", _higieneKikaTemp);
+    if (_banheiroKikaTemp) localStorage.setItem("banheiroKika", _banheiroKikaTemp);
+    if (_sonoKikaTemp) localStorage.setItem("sonoKika", _sonoKikaTemp);
+    if (_dormindoAnnaTemp) localStorage.setItem("dormindoAnna", _dormindoAnnaTemp);
+    if (_dormindoKikaTemp) localStorage.setItem("dormindoKika", _dormindoKikaTemp);
 
     if (resultado.dados) {
       carregarDadosNoJogo(resultado.dados);

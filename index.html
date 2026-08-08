@@ -119,187 +119,363 @@
 <div id="telaJogo" style="display:none;">
 
   <div class="game-scroll">
+    <div id="painelHanna">
 
-    <!-- Cenário -->
-    <div id="cenarioHanna">
+      <!-- Cenário -->
+      <div id="cenarioHanna">
 
-      <!-- Balão de fala das visitas dos pets -->
-      <div id="visitaFala"></div>
+        <!-- Balão de fala das visitas dos pets -->
+        <div id="visitaFala"></div>
 
-      <div id="overlayPeriodo"></div>
+        <div id="overlayPeriodo"></div>
 
-        <p id="mensagem"></p>
+          <p id="mensagem"></p>
 
-        <div id="zzzContainer" style="display:none;">
-            <span class="zzz z1">Z</span>
-            <span class="zzz z2">Z</span>
-            <span class="zzz z3">Z</span>
-        </div>
+          <div id="zzzContainer" style="display:none;">
+              <span class="zzz z1">Z</span>
+              <span class="zzz z2">Z</span>
+              <span class="zzz z3">Z</span>
+          </div>
 
-        <!-- Banho: overlay dentro do cenário -->
-        <div id="telaBanho">
-            <div class="bolhas">
-                <span class="bolha"></span>
-                <span class="bolha"></span>
-                <span class="bolha"></span>
-                <span class="bolha"></span>
-                <span class="bolha"></span>
+          <!-- Banho: overlay dentro do cenário -->
+          <div id="telaBanho">
+              <div class="bolhas">
+                  <span class="bolha"></span>
+                  <span class="bolha"></span>
+                  <span class="bolha"></span>
+                  <span class="bolha"></span>
+                  <span class="bolha"></span>
+              </div>
+              <img src="assets/sprites/hanna/banho.png" id="hannaBanho">
+          </div>
+
+        <div class="personagens-wrap">
+              <div id="hannaContainer">
+                <div id="hannaFala"></div>
+                <img src="assets/sprites/hanna/neutra.png"
+                alt="Hanna"
+                id="hannaSprite">
+              </div>
+
+              <img src="" id="spriteConjunta" style="display:none;">
+
+              <!-- FILHOTINHO -->
+              <div id="filhoteContainer" style="display:none;">
+                <div id="filhoteFala"></div>
+                <span id="nomeFilhoteTexto"></span>
+                <img src="assets/sprites/filhote/filhote.png"
+                alt="Filhotinho"
+                id="filhoteSprite">
+              </div>
+
+              <div id="gatinhaContainer" style="display:none;">
+                <div id="gatinhaFala"></div>
+                <span id="nomeGatinha"></span>
+                <img src="assets/sprites/gatinha/gatinha.png"
+                alt="Gatinha"
+                id="gatinhaSprite">
+              </div>
+
+              <img
+                src="assets/events/noite-feliz.png"
+                id="eventoNoite"
+                style="display:none;"
+              >
+
+          </div>
+      </div>
+
+      <!-- Fala gravidez discreta -->
+      <div id="cardGravidez" style="display:none;">
+        <p id="gravidezFala" style="text-align:center; font-size:12px; color:var(--pink-deep); font-style:italic; padding: 16px 12px 4px;"></p>
+      </div>
+
+      <!-- Status -->
+      <div class="status-card">
+        <div class="recursos-row">
+          <div class="recurso-chip"><img src="assets/ui/icons/icon-farm.png" style="width:28px;height:28px;image-rendering:pixelated;"><span id="sementes">0</span></div>
+          <div class="recurso-chip"><img src="assets/ui/icons/icon-moeda.png" style="width:32px;height:32px;image-rendering:pixelated;"><span id="moedas">0</span></div>
+
+          <!-- Ícone de troca de perfil -->
+          <div class="icone-trocar-perfil-wrapper" id="btnTrocarPerfil" style="display:none;">
+            <div class="icone-trocar-perfil">
+              <img src="assets/ui/icons/icon-trocar-perfil.png" id="avatarPerfilAtivo">
             </div>
-            <img src="assets/sprites/hanna/banho.png" id="hannaBanho">
-        </div>
-        
-      <div class="personagens-wrap">
-            <div id="hannaContainer">
-              <div id="hannaFala"></div>
-              <img src="assets/sprites/hanna/neutra.png"
-              alt="Hanna"
-              id="hannaSprite">
+          </div>
+
+          <div class="icone-status-wrapper">
+            <span id="textoStatusHanna" class="texto-status-hanna"></span>
+            <div class="icone-status-hanna">
+              <img id="spriteStatusHanna" src="assets/status/hanna-status-feliz.png" alt="Status da Hanna">
             </div>
-
-            <img src="" id="spriteConjunta" style="display:none;">
-
-            <!-- FILHOTINHO -->
-            <div id="filhoteContainer" style="display:none;">
-              <div id="filhoteFala"></div>
-              <span id="nomeFilhoteTexto"></span>
-              <img src="assets/sprites/filhote/filhote.png"
-              alt="Filhotinho"
-              id="filhoteSprite">
-            </div>
-
-            <div id="gatinhaContainer" style="display:none;">
-              <div id="gatinhaFala"></div>
-              <span id="nomeGatinha"></span>
-              <img src="assets/sprites/gatinha/gatinha.png"
-              alt="Gatinha"
-              id="gatinhaSprite">
-            </div>
-
-            <img
-              src="assets/events/noite-feliz.png"
-              id="eventoNoite"
-              style="display:none;"
-            >
-
-        </div>
-    </div>
-
-    <!-- Fala gravidez discreta -->
-    <div id="cardGravidez" style="display:none;">
-      <p id="gravidezFala" style="text-align:center; font-size:12px; color:var(--pink-deep); font-style:italic; padding: 16px 12px 4px;"></p>
-    </div>
-
-    <!-- Status -->
-    <div class="status-card">
-      <div class="recursos-row">
-        <div class="recurso-chip"><img src="assets/ui/icons/icon-farm.png" style="width:28px;height:28px;image-rendering:pixelated;"><span id="sementes">0</span></div>
-        <div class="recurso-chip"><img src="assets/ui/icons/icon-moeda.png" style="width:32px;height:32px;image-rendering:pixelated;"><span id="moedas">0</span></div>
-
-        <div class="icone-status-wrapper">
-          <span id="textoStatusHanna" class="texto-status-hanna"></span>
-          <div class="icone-status-hanna">
-            <img id="spriteStatusHanna" src="assets/status/hanna-status-feliz.png" alt="Status da Hanna">
           </div>
         </div>
-      </div>
 
-      <div class="barraContainer">
-        <div class="barraTitulo"><span>Fome</span><span id="fomePorcentagem">100%</span></div>
-        <div class="barra"><div id="barraFome"></div></div>
-      </div>
-
-      <div class="barraContainer">
-        <div class="barraTitulo"><span>Felicidade</span><span id="felicidadePorcentagem">100%</span></div>
-        <div class="barra"><div id="barraFelicidade"></div></div>
-      </div>
-
-      <div class="barraContainer">
-        <div class="barraTitulo"><span>Energia</span><span id="energiaPorcentagem">100%</span></div>
-        <div class="barra"><div id="barraEnergia"></div></div>
-      </div>
-
-      <div class="barraContainer">
-        <div class="barraTitulo">
-          <span>Higiene</span>
-          <span id="higienePorcentagem">100%</span>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Fome</span><span id="fomePorcentagem">100%</span></div>
+          <div class="barra"><div id="barraFome"></div></div>
         </div>
-        <div class="barra"><div id="barraHigiene"></div></div>
-      </div>
 
-      <div class="barraContainer" id="vinculoContainer" style="display:none;">
-        <div class="barraTitulo">
-          <span>
-            Vínculo
-            <span id="vinculoTexto">Desconhecidas 🤍</span>
-          </span>
-          <span id="vinculoPorcentagem">0%</span>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Felicidade</span><span id="felicidadePorcentagem">100%</span></div>
+          <div class="barra"><div id="barraFelicidade"></div></div>
         </div>
-        <div class="barra"><div id="barraVinculo"></div></div>
-      </div>
 
-      <div class="barraContainer" id="cuidadosFilhoteContainer" style="display:none;">
-        <div class="barraTitulo">
-          <span>Cuidados de <span id="nomeFilhoteBar">?</span></span>
-          <span id="cuidadosFilhotePorcentagem">0%</span>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Energia</span><span id="energiaPorcentagem">100%</span></div>
+          <div class="barra"><div id="barraEnergia"></div></div>
         </div>
-        <div class="barra"><div id="barraCuidadosFilhote"></div></div>
+
+        <div class="barraContainer">
+          <div class="barraTitulo">
+            <span>Higiene</span>
+            <span id="higienePorcentagem">100%</span>
+          </div>
+          <div class="barra"><div id="barraHigiene"></div></div>
+        </div>
+
+        <div class="barraContainer" id="vinculoContainer" style="display:none;">
+          <div class="barraTitulo">
+            <span>
+              Vínculo
+              <span id="vinculoTexto">Desconhecidas 🤍</span>
+            </span>
+            <span id="vinculoPorcentagem">0%</span>
+          </div>
+          <div class="barra"><div id="barraVinculo"></div></div>
+        </div>
+
+        <div class="barraContainer" id="cuidadosFilhoteContainer" style="display:none;">
+          <div class="barraTitulo">
+            <span>Cuidados de <span id="nomeFilhoteBar">?</span></span>
+            <span id="cuidadosFilhotePorcentagem">0%</span>
+          </div>
+          <div class="barra"><div id="barraCuidadosFilhote"></div></div>
+        </div>
       </div>
-    </div>
 
-    <!-- Ações rápidas -->
-    <div class="section-label">✦ Interagir</div>
-    <div class="botoes-grid">
-        <button class="btn-acao btn-rosa" id="btnCarinho">
+      <!-- Ações rápidas -->
+      <div class="section-label">✦ Interagir</div>
+      <div class="botoes-grid">
+          <button class="btn-acao btn-rosa" id="btnCarinho">
+              <img src="assets/ui/icons/icon-carinho.png" class="iconeBotao">
+              <span class="btn-text">Carinho</span>
+          </button>
 
-            <img src="assets/ui/icons/icon-carinho.png" class="iconeBotao">
+          <button class="btn-acao btn-laranja" id="btnComida">
+              <img src="assets/ui/icons/icon-comida.png" class="iconeBotao">
+              <span class="btn-text">Comida</span>
+          </button>
 
-            <span class="btn-text">Carinho</span>
+          <button class="btn-acao btn-amarelo" id="btnDormir">
+              <img src="assets/ui/icons/icon-dormir.png" class="iconeBotao">
+              <span class="btn-text">Dormir</span>
+          </button>
 
+          <button class="btn-acao btn-verde" id="btnPetisco">
+              <img src="assets/ui/icons/icon-petisco.png" class="iconeBotao">
+              <span class="btn-text">Petisco</span>
+          </button>
+
+          <button class="btn-acao btn-azul" id="btnBanho">
+              <img src="assets/ui/icons/icon-banho.png" class="iconeBotao">
+              <span class="btn-text">Banho</span>
+          </button>
+
+          <button class="btn-acao btn-games" id="btnCocarBarriga">
+              <img src="assets/ui/icons/carinho-barriga.png" class="iconeBotao">
+              <span class="btn-text">Coçar Barriga</span>
+          </button>
+      
+      </div>
+
+    </div><!-- fim painelHanna -->
+
+    <!-- Tela de cuidados da Anna -->
+    <div id="telaCuidadosAnna" style="display:none;">
+
+      <!-- Submoldura: cenário fixo (quarto + sprite + overlays) -->
+      <div class="cenario-personagem">
+        <img src="assets/sprites/personagens/anna-jogavel/quarto-dia.png" id="fundoQuartoAnna" class="fundo-quarto-personagem">
+        <div id="annaFala"></div>
+        <img src="assets/sprites/personagens/anna-jogavel/neutra.png" id="annaSprite" class="sprite-personagem">
+
+        <div id="telaBanhoAnna" style="display:none;">
+          <img src="assets/sprites/personagens/anna-jogavel/banho.png" id="annaBanho" class="sprite-tela-cheia">
+        </div>
+
+        <div id="telaBanheiroAnna" style="display:none;">
+          <img src="assets/sprites/personagens/anna-jogavel/banheiro.png" id="annaBanheiro" class="sprite-tela-cheia">
+        </div>
+
+        <div id="telaDormirAnna" style="display:none;">
+          <img src="assets/sprites/personagens/anna-jogavel/dormindo.png" id="annaDormindo" class="sprite-tela-cheia">
+        </div>
+      </div><!-- fim cenario-personagem -->
+
+      <!-- Status da Anna -->
+      <div class="status-card status-anna">
+        <div class="recursos-row">
+          <div class="recurso-chip"><img src="assets/ui/icons/icon-moeda.png" style="width:32px;height:32px;image-rendering:pixelated;"><span id="moedasAnna">0</span></div>
+          <div class="icone-trocar-perfil-wrapper" id="btnTrocarPerfilAnna">
+            <div class="icone-trocar-perfil">
+              <img src="assets/sprites/personagens/anna-jogavel/neutra.png" id="avatarPerfilAtivoAnna">
+            </div>
+          </div>
+        </div>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Fome</span><span id="fomeAnnaPorcentagem">100%</span></div>
+          <div class="barra"><div id="barraFomeAnna"></div></div>
+        </div>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Higiene</span><span id="higieneAnnaPorcentagem">100%</span></div>
+          <div class="barra"><div id="barraHigieneAnna"></div></div>
+        </div>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Banheiro</span><span id="banheiroAnnaPorcentagem">100%</span></div>
+          <div class="barra"><div id="barraBanheiroAnna"></div></div>
+        </div>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Sono</span><span id="sonoAnnaPorcentagem">100%</span></div>
+          <div class="barra"><div id="barraSonoAnna"></div></div>
+        </div>
+      </div>
+
+      <!-- Ações da Anna -->
+      <div class="section-label">✦ Interagir</div>
+      <div class="botoes-grid">
+        <button class="btn-acao btn-anna" id="btnComidaAnna">
+          <img src="assets/sprites/personagens/anna-jogavel/comendo.png" class="iconeBotao">
+          <span class="btn-text">Comida</span>
         </button>
-
-        <button class="btn-acao btn-laranja" id="btnComida">
-
-            <img src="assets/ui/icons/icon-comida.png" class="iconeBotao">
-
-            <span class="btn-text">Comida</span>
-
+        <button class="btn-acao btn-anna" id="btnBanhoAnna">
+          <img src="assets/ui/icons/icon-banho.png" class="iconeBotao">
+          <span class="btn-text">Banho</span>
         </button>
-
-        <button class="btn-acao btn-amarelo" id="btnDormir">
-
-            <img src="assets/ui/icons/icon-dormir.png" class="iconeBotao">
-
-            <span class="btn-text">Dormir</span>
-
+        <button class="btn-acao btn-anna" id="btnBanheiroAnna">
+          <img src="assets/ui/icons/icon-banheiro.png" class="iconeBotao">
+          <span class="btn-text">Banheiro</span>
         </button>
-
-        <button class="btn-acao btn-verde" id="btnPetisco">
-
-            <img src="assets/ui/icons/icon-petisco.png" class="iconeBotao">
-
-            <span class="btn-text">Petisco</span>
-
+        <button class="btn-acao btn-anna" id="btnDormirAnna">
+          <img src="assets/ui/icons/icon-dormir.png" class="iconeBotao">
+          <span class="btn-text">Dormir</span>
         </button>
-
-        <button class="btn-acao btn-azul" id="btnBanho">
-
-            <img src="assets/ui/icons/icon-banho.png" class="iconeBotao">
-
-            <span class="btn-text">Banho</span>
-
+        <button class="btn-acao btn-anna" id="btnTrabalharAnna">
+          <img src="assets/sprites/personagens/anna-jogavel/trabalhando.png" class="iconeBotao">
+          <span class="btn-text">Trabalhar</span>
         </button>
-
-        <button class="btn-acao btn-games" id="btnCocarBarriga">
-
-            <img src="assets/ui/icons/carinho-barriga.png" class="iconeBotao">
-
-            <span class="btn-text">Coçar Barriga</span>
-
+        <button class="btn-acao btn-anna" id="btnXamegoAnna">
+          <img src="assets/sprites/personagens/anna-beija-kika.png" class="iconeBotao">
+          <span class="btn-text">Xamego</span>
         </button>
-     
-    </div>
+      </div>
+
+    </div><!-- fim telaCuidadosAnna -->
+
+    <!-- Tela de cuidados da Kika -->
+    <div id="telaCuidadosKika" style="display:none;">
+
+      <!-- Submoldura: cenário fixo (quarto + sprite + overlays) -->
+      <div class="cenario-personagem">
+        <img src="assets/sprites/personagens/kika-jogavel/quarto-dia.png" id="fundoQuartoKika" class="fundo-quarto-personagem">
+        <div id="kikaFala"></div>
+        <img src="assets/sprites/personagens/kika-jogavel/neutra.png" id="kikaSprite" class="sprite-personagem">
+
+        <div id="telaBanhoKika" style="display:none;">
+          <img src="assets/sprites/personagens/kika-jogavel/banho.png" id="kikaBanho" class="sprite-tela-cheia">
+        </div>
+
+        <div id="telaBanheiroKika" style="display:none;">
+          <img src="assets/sprites/personagens/kika-jogavel/banheiro.png" id="kikaBanheiro" class="sprite-tela-cheia">
+        </div>
+
+        <div id="telaDormirKika" style="display:none;">
+          <img src="assets/sprites/personagens/kika-jogavel/dormindo.png" id="kikaDormindo" class="sprite-tela-cheia">
+        </div>
+      </div><!-- fim cenario-personagem -->
+
+      <!-- Status da Kika -->
+      <div class="status-card status-kika">
+        <div class="recursos-row">
+          <div class="recurso-chip"><img src="assets/ui/icons/icon-moeda.png" style="width:32px;height:32px;image-rendering:pixelated;"><span id="moedasKika">0</span></div>
+          <div class="icone-trocar-perfil-wrapper" id="btnTrocarPerfilKika">
+            <div class="icone-trocar-perfil">
+              <img src="assets/sprites/personagens/kika-jogavel/neutra.png" id="avatarPerfilAtivoKika">
+            </div>
+          </div>
+        </div>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Fome</span><span id="fomeKikaPorcentagem">100%</span></div>
+          <div class="barra"><div id="barraFomeKika"></div></div>
+        </div>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Higiene</span><span id="higieneKikaPorcentagem">100%</span></div>
+          <div class="barra"><div id="barraHigieneKika"></div></div>
+        </div>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Banheiro</span><span id="banheiroKikaPorcentagem">100%</span></div>
+          <div class="barra"><div id="barraBanheiroKika"></div></div>
+        </div>
+        <div class="barraContainer">
+          <div class="barraTitulo"><span>Sono</span><span id="sonoKikaPorcentagem">100%</span></div>
+          <div class="barra"><div id="barraSonoKika"></div></div>
+        </div>
+      </div>
+
+      <!-- Ações da Kika -->
+      <div class="section-label">✦ Interagir</div>
+      <div class="botoes-grid">
+        <button class="btn-acao btn-kika" id="btnComidaKika">
+          <img src="assets/sprites/personagens/kika-jogavel/comendo.png" class="iconeBotao">
+          <span class="btn-text">Comida</span>
+        </button>
+        <button class="btn-acao btn-kika" id="btnBanhoKika">
+          <img src="assets/ui/icons/icon-banho.png" class="iconeBotao">
+          <span class="btn-text">Banho</span>
+        </button>
+        <button class="btn-acao btn-kika" id="btnBanheiroKika">
+          <img src="assets/ui/icons/icon-banheiro.png" class="iconeBotao">
+          <span class="btn-text">Banheiro</span>
+        </button>
+        <button class="btn-acao btn-kika" id="btnDormirKika">
+          <img src="assets/ui/icons/icon-dormir.png" class="iconeBotao">
+          <span class="btn-text">Dormir</span>
+        </button>
+        <button class="btn-acao btn-kika" id="btnTrabalharKika">
+          <img src="assets/sprites/personagens/kika-jogavel/trabalhando.png" class="iconeBotao">
+          <span class="btn-text">Trabalhar</span>
+        </button>
+        <button class="btn-acao btn-kika" id="btnXamegoKika">
+          <img src="assets/sprites/personagens/anna-beija-kika.png" class="iconeBotao">
+          <span class="btn-text">Xamego</span>
+        </button>
+      </div>
+
+    </div><!-- fim telaCuidadosKika -->
 
   </div><!-- fim game-scroll -->
+</div><!-- fim telaJogo -->
+
+
+<!-- Modal de troca de perfil -->
+<div id="modalTrocarPerfil" style="display:none;">
+  <div class="modal-perfil-conteudo">
+    <h3>Quem você quer cuidar?</h3>
+    <div class="perfis-grid">
+      <button class="perfil-opcao" id="perfilHanna">
+        <img src="assets/sprites/hanna/hanna.png">
+        <span>Hanna & Família</span>
+      </button>
+      <button class="perfil-opcao" id="perfilAnna" style="display:none;">
+        <img src="assets/sprites/personagens/anna-jogavel/neutra.png">
+        <span>Anna</span>
+      </button>
+      <button class="perfil-opcao" id="perfilKika" style="display:none;">
+        <img src="assets/sprites/personagens/kika-jogavel/neutra.png">
+        <span>Kika</span>
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Bottom Navigatin -->
@@ -779,7 +955,8 @@
       </span>
 
       <div class="saldo-loja">
-        🪙 <span id="saldoLoja">0</span>
+        <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin">
+        <span id="saldoLoja">0</span>
       </div>
 
     </div>
@@ -794,7 +971,9 @@
           <p class="item-desc">Um mimo especial pra deixar a Hanna se sentindo linda.</p>
           <p>+10 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 1.250</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 1.250 hannacoins
+            </span>
             <button id="btnUrsinho" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -808,7 +987,9 @@
           <p class="item-desc">O petisco favorito da Hanna. Ela vai devorar em segundos.</p>
           <p>+30 fome</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 400</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 400 hannacoins
+            </span>
             <button id="btnMorango" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -822,7 +1003,9 @@
           <p class="item-desc">Horas de entretenimento garantidas. A Hanna adora uma bagunça.</p>
           <p>+20 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 600</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 600 hannacoins
+            </span>
             <button id="btnNovelo" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -836,7 +1019,9 @@
           <p class="item-desc">Uma iguaria felina. Fome? Que fome?</p>
           <p>+50 fome</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 900</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 900 hannacoins
+            </span>
             <button id="btnSashimi" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -850,7 +1035,9 @@
           <p class="item-desc">O brinquedo perfeito pra uma tarde cheia de energia.</p>
           <p>+25 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 900</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 900 hannacoins
+            </span>
             <button id="btnRatinho" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -864,7 +1051,9 @@
           <p class="item-desc">Um snack que agrada fome e coração ao mesmo tempo.</p>
           <p>+25 fome • +25 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 1.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 1.000 hannacoins
+            </span>
             <button id="btnBiscoito" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -878,7 +1067,9 @@
           <p class="item-desc">Um cantinho macio e quentinho pra Hanna repor as energias.</p>
           <p>+20 energia</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 1.100</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 1.100 hannacoins
+            </span>
             <button id="btnAlmofada" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -892,7 +1083,9 @@
           <p class="item-desc">Doce, fofo e irresistível. Exatamente como a Hanna.</p>
           <p>+45 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 1.250</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 1.250 hannacoins
+            </span>
             <button id="btnDonut" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -906,7 +1099,9 @@
           <p class="item-desc">O melhor do mercado. A Hanna merece o premium.</p>
           <p>+70 fome</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 1.500</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 1.500 hannacoins
+            </span>
             <button id="btnAtum" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -920,7 +1115,9 @@
           <p class="item-desc">Magia de verdade. A Hanna fica completamente hipnotizada.</p>
           <p>+40 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 1.750</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 1.750 hannacoins
+            </span>
             <button id="btnVarinha" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -934,7 +1131,9 @@
           <p class="item-desc">Tecnologia felina de ponta. O brinquedo mais sofisticado da loja.</p>
           <p>+50 felicidade</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 1.250</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 1.250 hannacoins
+            </span>
             <button id="btnRobo" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -948,7 +1147,9 @@
           <p class="item-desc">10 sementes pra encher a fazenda de uma vez. Pra quem não quer esperar!</p>
           <p>+10 sementes</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 4.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 4.000 hannacoins
+            </span>
             <button id="btnPackSementes" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -967,7 +1168,9 @@
           </p>
           <p>🎲 3–4 recompensas • 🌱 Chance rara</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 5.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 5.000 hannacoins
+            </span>
             <button id="btnCaixa" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -1028,7 +1231,9 @@
           <p class="item-desc">Uma florzinha fofa da Hanna pra gatinha pretinha. Simples, mas cheio de carinho.</p>
           <p>+10% vínculo • 1 vez a cada 8 horas</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 10.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 10.000 hannacoins
+            </span>
             <button id="btnPresenteFlor" class="btn-comprar">Presentear</button>
           </div>
         </div>
@@ -1042,7 +1247,9 @@
           <p class="item-desc">Um presente mais elaborado. A gatinha vai ficar com o coração quentinho.</p>
           <p>+20% vínculo • 1 vez a cada 8 horas</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 20.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 20.000 hannacoins
+            </span>
             <button id="btnPresenteChocolate" class="btn-comprar">Presentear</button>
           </div>
         </div>
@@ -1056,7 +1263,9 @@
           <p class="item-desc">Uma cesta cheia de flores, mimos e surpresas. O presente mais especial da loja.</p>
           <p>+40% vínculo • 1 vez a cada 8 horas</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 40.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 40.000 hannacoins
+            </span>
             <button id="btnPresenteCesta" class="btn-comprar">Presentear</button>
           </div>
         </div>
@@ -1077,7 +1286,9 @@
           <p class="item-desc">Uma companheira pra vida toda. Com vínculo alto, momentos especiais acontecem.</p>
           <p>Uma companheira para a Hanna</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 25.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 25.000 hannacoins
+            </span>
             <button id="btnGatinha" class="btn-comprar">Adotar</button>
           </div>
         </div>
@@ -1091,7 +1302,9 @@
           <p class="item-desc">Fofoqueiro, aprontão mas extremamente fiel. Aparece de visita com novidades quentinhas!</p>
           <p>Visitas surpresa na casa</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 50.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 50.000 hannacoins
+            </span>
             <button id="btnSteve" class="btn-comprar">Receber Visita</button>
           </div>
         </div>
@@ -1105,7 +1318,9 @@
           <p class="item-desc">O aprontão oficial. Ama derrubar as coisas e não deita pro Cook de jeito nenhum!</p>
           <p>Visitas surpresa na casa</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 50.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 50.000 hannacoins
+            </span>
             <button id="btnJoao" class="btn-comprar">Receber Visita</button>
           </div>
         </div>
@@ -1119,7 +1334,9 @@
           <p class="item-desc">O gordinho mais fofo do pedaço. Ama roubar comida e encrencar com o irmão!</p>
           <p>Visitas surpresa na casa</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 50.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 50.000 hannacoins
+            </span>
             <button id="btnJames" class="btn-comprar">Receber Visita</button>
           </div>
         </div>
@@ -1133,13 +1350,17 @@
           <p class="item-desc">A desenvolvedora do jogo em pessoa! Aparece de surpresa pra ver como as gatinhas tão.</p>
           <p>Visitas surpresa na casa</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 100.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 100.000 hannacoins
+            </span>
             <button id="btnAnna" class="btn-comprar">Receber Visita</button>
           </div>
           <div id="wrapUpgradeAnna" style="display:none;margin-top:8px;">
             <div class="item-loja-footer">
-              <span class="preco-chip">🪙 200.000</span>
-              <button id="btnUpgradeAnna" class="btn-comprar">Fazer Upgrade VIP</button>
+              <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 200.000 hannacoins
+            </span>
+            <button id="btnUpgradeAnna" class="btn-comprar">Upgrade</button>
             </div>
           </div>
         </div>
@@ -1153,14 +1374,54 @@
           <p class="item-desc">A pessoa mais especial do mundo! Aparece de surpresa com muito amor pras gatinhas.</p>
           <p>Visitas surpresa na casa</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 100.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 100.000 hannacoins
+            </span>
             <button id="btnKika" class="btn-comprar">Receber Visita</button>
           </div>
           <div id="wrapUpgradeKika" style="display:none;margin-top:8px;">
             <div class="item-loja-footer">
-              <span class="preco-chip">🪙 200.000</span>
-              <button id="btnUpgradeKika" class="btn-comprar">Fazer Upgrade VIP</button>
+              <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 200.000 hannacoins
+            </span>
+            <button id="btnUpgradeKika" class="btn-comprar">Upgrade</button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anna Jogável — 150.000 -->
+      <div class="item-loja item-premium" id="cardAnnaJogavel" style="display: none;">
+        <div class="item-loja-icon-wrap">
+          <img src="assets/sprites/personagens/anna-jogavel/neutra.png" class="iconeLoja">
+        </div>
+        <div class="item-loja-info">
+          <h3>Anna Jogável</h3>
+          <p class="item-desc">Desbloqueie a Anna como personagem jogável, com sua própria tela de cuidados.</p>
+          <p>Cuide, trabalhe e viva com ela</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 150.000 hannacoins
+            </span>
+            <button id="btnComprarAnnaJogavel" class="btn-comprar">Desbloquear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kika Jogável — 150.000 -->
+      <div class="item-loja item-premium" id="cardKikaJogavel" style="display: none;">
+        <div class="item-loja-icon-wrap">
+          <img src="assets/sprites/personagens/kika-jogavel/neutra.png" class="iconeLoja">
+        </div>
+        <div class="item-loja-info">
+          <h3>Kika Jogável</h3>
+          <p class="item-desc">Desbloqueie a Kika como personagem jogável, com sua própria tela de cuidados.</p>
+          <p>Cuide, trabalhe e viva com ela</p>
+          <div class="item-loja-footer">
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 150.000 hannacoins
+            </span>
+            <button id="btnComprarKikaJogavel" class="btn-comprar">Desbloquear</button>
           </div>
         </div>
       </div>
@@ -1173,7 +1434,9 @@
           <p class="item-desc">Um momento muito especial. Só pra quem cuidou bem da Hanna e tem vínculo verdadeiro.</p>
           <p>Vínculo 80% + 70.000 moedas</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 70.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 70.000 hannacoins
+            </span>
             <button id="btnPedidoEspecial" class="btn-comprar">Comprar</button>
           </div>
         </div>
@@ -1187,7 +1450,9 @@
           <p class="item-desc">O próximo passo da vida de vocês. Com alianças de ouro e muito amor, faça o pedido mais especial.</p>
           <p>Evento único e irrepetível</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 100.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 100.000 hannacoins
+            </span>
             <button id="btnPedidoCasamento" class="btn-comprar">Pedir em Casamento</button>
           </div>
         </div>
@@ -1201,7 +1466,9 @@
           <p class="item-desc">Escolha a data e comece a preparar o dia mais especial! Você tem 15 dias pra deixar tudo perfeito.</p>
           <p>Inicia contagem regressiva de 15 dias</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 500.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 500.000 hannacoins
+            </span>
             <button id="btnPlanejarCasamento" class="btn-comprar">Planejar</button>
           </div>
         </div>
@@ -1224,7 +1491,9 @@
                 <h3>Flores</h3>
                 <p class="item-desc">Arranjos florais pra enfeitar o altar e todo o espaço.</p>
                 <div class="item-loja-footer">
-                  <span class="preco-chip">🪙 25.000</span>
+                  <span class="preco-chip">
+                    <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 25.000 hannacoins
+                  </span>
                   <button id="btnCasamentoFlores" class="btn-comprar">Comprar</button>
                 </div>
               </div>
@@ -1237,7 +1506,9 @@
                 <h3>Decoração</h3>
                 <p class="item-desc">Luzes, fitas e enfeites pra deixar o ambiente dos sonhos.</p>
                 <div class="item-loja-footer">
-                  <span class="preco-chip">🪙 50.000</span>
+                  <span class="preco-chip">
+                    <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 50.000 hannacoins
+                  </span>
                   <button id="btnCasamentoDecoracao" class="btn-comprar">Comprar</button>
                 </div>
               </div>
@@ -1250,7 +1521,9 @@
                 <h3>Banquete</h3>
                 <p class="item-desc">Um banquete delicioso pra celebrar com os convidados!</p>
                 <div class="item-loja-footer">
-                  <span class="preco-chip">🪙 75.000</span>
+                  <span class="preco-chip">
+                    <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 75.000 hannacoins
+                  </span>
                   <button id="btnCasamentoComida" class="btn-comprar">Comprar</button>
                 </div>
               </div>
@@ -1263,7 +1536,9 @@
                 <h3>Vestido da Hanna</h3>
                 <p class="item-desc">O vestido mais lindo pra nossa gatinha branca.</p>
                 <div class="item-loja-footer">
-                  <span class="preco-chip">🪙 50.000</span>
+                  <span class="preco-chip">
+                    <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 50.000 hannacoins
+                  </span>
                   <button id="btnCasamentoVestidoHanna" class="btn-comprar">Comprar</button>
                 </div>
               </div>
@@ -1276,7 +1551,9 @@
                 <h3>Vestido da Gatinha</h3>
                 <p class="item-desc">O vestido mais elegante pra nossa gatinha pretinha.</p>
                 <div class="item-loja-footer">
-                  <span class="preco-chip">🪙 50.000</span>
+                  <span class="preco-chip">
+                    <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 50.000 hannacoins
+                  </span>
                   <button id="btnCasamentoVestidoGatinha" class="btn-comprar">Comprar</button>
                 </div>
               </div>
@@ -1289,7 +1566,9 @@
                 <h3>Altar dos Sonhos</h3>
                 <p class="item-desc">O altar mais especial e decorado pra coroar esse dia único.</p>
                 <div class="item-loja-footer">
-                  <span class="preco-chip">🪙 100.000</span>
+                  <span class="preco-chip">
+                    <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 100.000 hannacoins
+                  </span>
                   <button id="btnCasamentoAltar" class="btn-comprar">Comprar</button>
                 </div>
               </div>
@@ -1307,7 +1586,9 @@
           <p class="item-desc">Conecte-se com outra jogadora! Mande mimos, figurinhas e mensagens de longe.</p>
           <p>Conexão especial entre jogadoras</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 1.000.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 1.000.000 hannacoins
+            </span>
             <button id="btnComprarMSN" class="btn-comprar">Desbloquear</button>
           </div>
         </div>
@@ -1321,7 +1602,9 @@
           <p class="item-desc">Um encontro especial faz bem pra todo mundo! Os pets ficam mais felizes quando as donas estão bem.</p>
           <p>Melhora todos os stats em 50% e pode repetir sempre!</p>
           <div class="item-loja-footer">
-            <span class="preco-chip">🪙 15.000</span>
+            <span class="preco-chip">
+              <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 15.000 hannacoins
+            </span>
             <button id="btnAbrirDate" class="btn-comprar">Escolher Date</button>
           </div>
         </div>
@@ -1338,7 +1621,9 @@
             <p class="item-desc">A conquista final do jogo está escondida aqui. Um item raro, uma mensagem muito especial. Separe os fones de ouvido e um lencinho antes de abrir.</p>
             <p>Item especial — ouça quantas vezes quiser</p>
             <div class="item-loja-footer">
-              <span class="preco-chip">🪙 1.000.000</span>
+              <span class="preco-chip">
+                <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 1.000.000 hannacoins
+              </span>
               <button id="btnMensagemEspecial" class="btn-comprar">Obter</button>
             </div>
           </div>
@@ -1358,7 +1643,9 @@
             <p class="item-desc">Um leitinho quentinho pra saciar o filhotinho. Ele fica tão satisfeito!</p>
             <p>+40 nos cuidados</p>
             <div class="item-loja-footer">
-              <span class="preco-chip">🪙 60.000</span>
+              <span class="preco-chip">
+                <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 60.000 hannacoins
+              </span>
               <button id="btnMamadeira" class="btn-comprar">Comprar</button>
             </div>
           </div>
@@ -1372,7 +1659,9 @@
             <p class="item-desc">Ele enlouquece com o brinquedinho! Fica pulando atrás por horas.</p>
             <p>+35 nos cuidados</p>
             <div class="item-loja-footer">
-              <span class="preco-chip">🪙 50.000</span>
+              <span class="preco-chip">
+                <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 50.000 hannacoins
+              </span>
               <button id="btnPelucia" class="btn-comprar">Comprar</button>
             </div>
           </div>
@@ -1386,7 +1675,9 @@
             <p class="item-desc">Ele enlouquece com o barulhinho! Fica brincando por horas.</p>
             <p>+30 nos cuidados</p>
             <div class="item-loja-footer">
-              <span class="preco-chip">🪙 40.000</span>
+              <span class="preco-chip">
+                <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 40.000 hannacoins
+              </span>
               <button id="btnGuizo" class="btn-comprar">Comprar</button>
             </div>
           </div>
@@ -1400,7 +1691,9 @@
             <p class="item-desc">O decay dos cuidados fica pausado por 30 minutos. Aproveita pra descansar também!</p>
             <p>Pausa o decay por 30 min</p>
             <div class="item-loja-footer">
-              <span class="preco-chip">🪙 80.000</span>
+              <span class="preco-chip">
+                <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 80.000 hannacoins
+              </span>
               <button id="btnCaminha" class="btn-comprar">Comprar</button>
             </div>
           </div>
@@ -1414,7 +1707,9 @@
             <p class="item-desc">Um dia mágico! Os cuidados do filhotinho vão a 100% de uma vez. Que mãe dedicada!</p>
             <p>Cuidados 100% instantâneo</p>
             <div class="item-loja-footer">
-              <span class="preco-chip">🪙 150.000</span>
+              <span class="preco-chip">
+                <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 150.000 hannacoins
+              </span>
               <button id="btnDiaPerfeitoFilhote" class="btn-comprar">Comprar</button>
             </div>
           </div>
@@ -1434,7 +1729,9 @@
               <div class="item-loja-footer" style="flex-direction:column; gap:8px; align-items:stretch;">
                 <input type="text" id="inputNovoNomeFilhote" class="input-cozy" placeholder="Novo nome..." maxlength="12">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span class="preco-chip">🪙 5.000</span>
+                  <span class="preco-chip">
+                    <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 5.000 hannacoins
+                  </span>
                   <button id="btnTrocarNomeFilhote" class="btn-comprar">Confirmar</button>
                 </div>
               </div>
@@ -1456,7 +1753,9 @@
                   <option value="gatinha">Pretinho com orelhas brancas</option>
                 </select>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span class="preco-chip">🪙 25.000</span>
+                  <span class="preco-chip">
+                    <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 25.000 hannacoins
+                  </span>
                   <button id="btnTrocarVersaoFilhote" class="btn-comprar">Confirmar</button>
                 </div>
               </div>
@@ -1471,7 +1770,9 @@
               <p class="item-desc">Mudou de ideia sobre o gênero do filhotinho? Sem problema!</p>
               <p id="generoAtualTexto">Gênero atual: —</p>
               <div class="item-loja-footer">
-                <span class="preco-chip">🪙 15.000</span>
+                <span class="preco-chip">
+                  <img src="assets/sprites/hanna/hannacoin.png" alt="Hannacoins" class="icone-hannacoin"> 15.000 hannacoins
+                </span>
                 <button id="btnTrocarGeneroFilhote" class="btn-comprar">Trocar</button>
               </div>
             </div>
