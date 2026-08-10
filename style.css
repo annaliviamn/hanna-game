@@ -6448,3 +6448,12 @@ button {
   font-size: 11px;
   cursor: pointer;
 }
+
+/* Bilhete secreto */
+.bilhete-texto {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-mid);
+  font-style: italic;
+  min-height: 80px;
+}

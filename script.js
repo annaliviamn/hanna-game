@@ -3787,6 +3787,10 @@ function _salvar() {
   localStorage.setItem("kikaVIP", kikaVIP ? "true" : "false");
   localStorage.setItem("annaJogavelDesbloqueada", annaJogavelDesbloqueada ? "true" : "false");
   localStorage.setItem("kikaJogavelDesbloqueada", kikaJogavelDesbloqueada ? "true" : "false");
+  localStorage.setItem("inventarioMina", localStorage.getItem("inventarioMina") || "{}");
+  localStorage.setItem("nivelMina", nivelMina);
+  localStorage.setItem("maiorNivelMina", maiorNivelMina);
+  localStorage.setItem("picaretaAtual", picaretaAtual);
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -3821,6 +3825,8 @@ function _salvar() {
           casamentoComida, casamentoVestidoHanna, casamentoVestidoGatinha,
           casamentoAltarDecorado, annaVIP, kikaVIP,
           annaJogavelDesbloqueada, kikaJogavelDesbloqueada,
+          inventarioMina: localStorage.getItem("inventarioMina") || "{}",
+          nivelMina, maiorNivelMina, picaretaAtual,
         });
       }).catch(() => {});
     }
@@ -4402,6 +4408,15 @@ function carregarDadosNoJogo(dados) {
   kikaVIP = dados.kikaVIP === true || dados.kikaVIP === "true";
   annaJogavelDesbloqueada = dados.annaJogavelDesbloqueada === true || dados.annaJogavelDesbloqueada === "true";
   kikaJogavelDesbloqueada = dados.kikaJogavelDesbloqueada === true || dados.kikaJogavelDesbloqueada === "true";
+  if (dados.inventarioMina) {
+    localStorage.setItem("inventarioMina", typeof dados.inventarioMina === "string" ? dados.inventarioMina : JSON.stringify(dados.inventarioMina));
+  }
+  nivelMina = Number(dados.nivelMina) || nivelMina || 1;
+  maiorNivelMina = Number(dados.maiorNivelMina) || maiorNivelMina || 1;
+  picaretaAtual = dados.picaretaAtual || picaretaAtual || "base";
+  localStorage.setItem("nivelMina", nivelMina);
+  localStorage.setItem("maiorNivelMina", maiorNivelMina);
+  localStorage.setItem("picaretaAtual", picaretaAtual);
 
   ultimaPagamentoContas = Number(dados.ultimaPagamentoContas) || 0;
   internetPaga = dados.internetPaga !== false && dados.internetPaga !== "false";
@@ -12807,6 +12822,123 @@ let maiorNivelMina = Number(localStorage.getItem("maiorNivelMina")) || 1;
 let picaretaAtual = localStorage.getItem("picaretaAtual") || "base";
 let itensSessaoMina = {};
 
+const textosBilhete = [
+  "Meu bem, é impressionante o quão empenhada você é para descobrir cada detalhe no nosso espaço seguro que é a nossa Hanninha, e é justamente por isso que você é a nossa QA Engineer, porque quem mais poderia desbravar nosso jogo com tanto empenho e amor, não é mesmo?!",
+  "E falando em amor, esse é mais um dos easter eggs que eu apronto pra poder deixar um sorriso no seu rosto e fazer os olhinhos castanhos brilharem!",
+  "Mas isso não só porque eu gosto de vê-los assim, mas porque a sua felicidade me contagia, e você feliz = eu feliz também hehe.",
+  "E tudo o que eu mais almejo é te ver feliz, e deixar você bobinha pensando nas coisas que eu apronto haha.",
+  "Bom, eu queria aproveitar e te dizer umas coisas, Hanna não é só mais um jogo, ela é o meu eu e você jogável, um pedaço de nós que traz conforto, alegria, surpresas, amor, um tico de rivalidade,",
+  "mas também traz uma maneira de nos conectarmos apesar da distância, de demonstrar amor em um date dentro do game, um presente, um filhotinho kkkk.",
+  "Tudo o que já planejei dentro desse jogo é algo que sonho em viver com você, te fazer rir, se sentir amada, te fazer feliz e principalmente você ser você mesma,",
+  "até porque foi justamente por você ser você que eu me apaixonei,",
+  "também como não apaixona pela sua voz falando comigo no telefone, sua risada gostosa e nem se fala do sotaque… ele é o meu ponto fraco, eu gamo DEMAIS!",
+  "A nossa química e sintonia vem justamente pela sua e minha essência, que eu não trocaria isso por NADA,",
+  "até porque é isso que torna \"Kanna\" tão único, e eu torço demais por esse shipp hehe.",
+  "Xuxu, agora para finalizar esse bilhete, obrigada por ser essa luz, inspiração, meu amorzinho e essa pessoa incrível e única que você é!",
+  "Eu te amo em todas as nossas versões, seja real, virtual, de gato kkkk.",
+  "Espero que goste desse novo update e principalmente deste bilhete. Com amor, da sua bela loirinha brasiliense aka baby."
+];
+
+function podeGanharBilheteHoje() {
+  const hoje = new Date().toDateString();
+  const ultimoBilhete = localStorage.getItem("ultimoBilheteData");
+  return ultimoBilhete !== hoje;
+}
+
+function sortearPedacoBilhete() {
+  const bilhetesEncontrados = JSON.parse(localStorage.getItem("bilhetesEncontrados") || "[]");
+  const faltantes = [];
+  for (let i = 1; i <= 14; i++) {
+    if (!bilhetesEncontrados.includes(i)) faltantes.push(i);
+  }
+  if (faltantes.length === 0) return null;
+  return faltantes[Math.floor(Math.random() * faltantes.length)];
+}
+
+function montarTextoComReticencias(numero, texto) {
+  let resultado = texto;
+  if (numero > 1) resultado = "... " + resultado;
+  if (numero < 14) resultado = resultado + " ...";
+  return resultado;
+}
+
+function ganharPedacoBilhete() {
+  if (!podeGanharBilheteHoje()) return;
+
+  const numero = sortearPedacoBilhete();
+  if (!numero) return; // já achou todos os 14
+
+  // 8% de chance por pedra normal quebrada
+  if (Math.random() > 0.08) return;
+
+  const hoje = new Date().toDateString();
+  localStorage.setItem("ultimoBilheteData", hoje);
+
+  let bilhetesEncontrados = JSON.parse(localStorage.getItem("bilhetesEncontrados") || "[]");
+  bilhetesEncontrados.push(numero);
+  localStorage.setItem("bilhetesEncontrados", JSON.stringify(bilhetesEncontrados));
+
+  abrirModalBilhete(numero);
+}
+
+function abrirModalBilhete(numero) {
+  const titulo = numero === 14 ? "Bilhete Secreto Final" : `Bilhete Secreto ${numero}`;
+  document.getElementById("bilheteTituloModal").textContent = titulo;
+
+  const textoFinal = montarTextoComReticencias(numero, textosBilhete[numero - 1]);
+  const elTexto = document.getElementById("bilheteTextoConteudo");
+  elTexto.textContent = "";
+  document.getElementById("modalBilheteMina").style.display = "flex";
+
+  let i = 0;
+  const intervalo = setInterval(() => {
+    elTexto.textContent += textoFinal[i];
+    i++;
+    if (i >= textoFinal.length) clearInterval(intervalo);
+  }, 30);
+}
+
+document.getElementById("btnFecharBilheteMina").addEventListener("click", () => {
+  document.getElementById("modalBilheteMina").style.display = "none";
+});
+
+function renderizarBilheteMina() {
+  const container = document.getElementById("invBilheteConteudo");
+  container.innerHTML = "";
+
+  const bilhetesEncontrados = JSON.parse(localStorage.getItem("bilhetesEncontrados") || "[]");
+
+  for (let i = 1; i <= 14; i++) {
+    const encontrado = bilhetesEncontrados.includes(i);
+    const slot = document.createElement("div");
+    slot.className = "inventario-slot" + (encontrado ? "" : " bloqueado");
+    slot.style.cursor = encontrado ? "pointer" : "default";
+    slot.innerHTML = `<span style="font-size:16px; font-weight:800;">${i}</span>`;
+
+    if (encontrado) {
+      slot.addEventListener("click", () => abrirModalBilheteSemDigitar(i));
+    }
+
+    container.appendChild(slot);
+  }
+}
+
+function abrirModalBilheteSemDigitar(numero) {
+  const titulo = numero === 14 ? "Bilhete Secreto Final" : `Bilhete Secreto ${numero}`;
+  document.getElementById("bilheteTituloModal").textContent = titulo;
+  document.getElementById("bilheteTextoConteudo").textContent = montarTextoComReticencias(numero, textosBilhete[numero - 1]);
+  document.getElementById("modalBilheteMina").style.display = "flex";
+}
+
+document.getElementById("invAbaBilhete").addEventListener("click", () => {
+  document.querySelectorAll(".inventario-aba-btn").forEach(b => b.classList.remove("ativa"));
+  document.getElementById("invAbaBilhete").classList.add("ativa");
+  document.getElementById("invMochilaConteudo").style.display = "none";
+  document.getElementById("invColecaoConteudo").style.display = "none";
+  document.getElementById("invBilheteConteudo").style.display = "grid";
+  renderizarBilheteMina();
+});
+
 const cliquesPorPicareta = {
   base: 4,
   bronze: 3,
@@ -12863,7 +12995,8 @@ function gerarPedrasMina() {
 
   const colunas = 6;
   const linhas = 6;
-  const celulaTamanho = 420 / colunas; // ajusta conforme o max-width do cenario-mina
+  const larguraReal = cenario.clientWidth;
+  const celulaTamanho = larguraReal / colunas; // ajusta conforme o max-width do cenario-mina
 
   // Sorteia entre 8 e 14 pedras
   const totalPedras = 16 + Math.floor(Math.random() * 10); // entre 16 e 25
@@ -12898,8 +13031,8 @@ function gerarPedrasMina() {
     pedra.dataset.temEscada = (index === indiceEscada) ? "true" : "false";
 
     // Posição com pequena variação aleatória dentro da célula (evita grid "robótico")
-    const offsetX = Math.random() * (celulaTamanho - 56);
-    const offsetY = Math.random() * (celulaTamanho - 56);
+    const offsetX = Math.random() * Math.max(0, celulaTamanho - 48);
+    const offsetY = Math.random() * Math.max(0, celulaTamanho - 48);
     pedra.style.left = (celula.coluna * celulaTamanho + offsetX) + "px";
     pedra.style.top = (celula.linha * celulaTamanho + offsetY) + "px";
 
@@ -12976,6 +13109,10 @@ function processarQuebraPedra(pedra) {
     if (Math.random() < 0.20) {
       itemGanho = sortearItemComPeso();
     }
+  }
+
+  if (tipoPedra === "normal") {
+    ganharPedacoBilhete();
   }
 
   pedra.remove();
@@ -13344,17 +13481,19 @@ document.getElementById("btnFecharInventarioMina").addEventListener("click", () 
 });
 
 document.getElementById("invAbaMochila").addEventListener("click", () => {
+  document.querySelectorAll(".inventario-aba-btn").forEach(b => b.classList.remove("ativa"));
   document.getElementById("invAbaMochila").classList.add("ativa");
-  document.getElementById("invAbaColecao").classList.remove("ativa");
   document.getElementById("invMochilaConteudo").style.display = "grid";
   document.getElementById("invColecaoConteudo").style.display = "none";
+  document.getElementById("invBilheteConteudo").style.display = "none";
 });
 
 document.getElementById("invAbaColecao").addEventListener("click", () => {
+  document.querySelectorAll(".inventario-aba-btn").forEach(b => b.classList.remove("ativa"));
   document.getElementById("invAbaColecao").classList.add("ativa");
-  document.getElementById("invAbaMochila").classList.remove("ativa");
   document.getElementById("invColecaoConteudo").style.display = "grid";
   document.getElementById("invMochilaConteudo").style.display = "none";
+  document.getElementById("invBilheteConteudo").style.display = "none";
 });
 
 // SISTEMA DE ENERGIA NA MINA

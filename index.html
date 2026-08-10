@@ -2237,10 +2237,12 @@
           <div class="inventario-abas">
             <button class="inventario-aba-btn ativa" id="invAbaMochila">Mochila</button>
             <button class="inventario-aba-btn" id="invAbaColecao">Coleção</button>
+            <button class="inventario-aba-btn" id="invAbaBilhete">Bilhete</button>
           </div>
 
           <div id="invMochilaConteudo" class="inventario-grid"></div>
           <div id="invColecaoConteudo" class="inventario-grid" style="display:none;"></div>
+          <div id="invBilheteConteudo" class="inventario-grid" style="display:none;"></div>
 
           <button id="btnFecharInventarioMina" class="btn-fechar-modal">Fechar</button>
         </div>
@@ -2252,6 +2254,15 @@
           <h3 style="text-align:center; color:var(--pink-deep); font-size:14px; margin-bottom:10px;">Escolha o andar</h3>
           <div id="elevadorListaAndares" class="inventario-abas" style="flex-wrap: wrap;"></div>
           <button id="btnFecharElevadorMina" class="btn-fechar-modal">Fechar</button>
+        </div>
+      </div>
+
+      <!-- Modal Bilhete Secreto -->
+      <div id="modalBilheteMina" style="display:none;">
+        <div class="modal-inventario-conteudo">
+          <h3 id="bilheteTituloModal" style="text-align:center; color:var(--pink-deep); font-size:14px; margin-bottom:10px;"></h3>
+          <p id="bilheteTextoConteudo" class="bilhete-texto"></p>
+          <button id="btnFecharBilheteMina" class="btn-fechar-modal">Fechar</button>
         </div>
       </div>
 
