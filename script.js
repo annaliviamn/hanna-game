@@ -3178,6 +3178,12 @@ let higieneKika  = Number(localStorage.getItem("higieneKika"))  || 100;
 let banheiroKika = Number(localStorage.getItem("banheiroKika")) || 100;
 let sonoKika     = Number(localStorage.getItem("sonoKika"))     || 100;
 
+// SISTEMA DE MINERAÇÃO
+let nivelMina = Number(localStorage.getItem("nivelMina")) || 1;
+let maiorNivelMina = Number(localStorage.getItem("maiorNivelMina")) || 1;
+let picaretaAtual = localStorage.getItem("picaretaAtual") || "base";
+let itensSessaoMina = {};
+
 // NOME DA GATINHA — só exibe se foi adotada e já tem nome
 nomeDaGatinhaTexto.textContent = (gatinhaDesbloqueada && nomeGatinha) ? nomeGatinha : "";
 
@@ -12815,12 +12821,6 @@ function trocarAbaFazenda(abaAtiva) {
 abaFazendaBtn.addEventListener("click", () => trocarAbaFazenda("fazenda"));
 abaMinerarBtn.addEventListener("click", () => trocarAbaFazenda("minerar"));
 abaForjaBtn.addEventListener("click", () => trocarAbaFazenda("forja"));
-
-// SISTEMA DE MINERAÇÃO
-let nivelMina = Number(localStorage.getItem("nivelMina")) || 1;
-let maiorNivelMina = Number(localStorage.getItem("maiorNivelMina")) || 1;
-let picaretaAtual = localStorage.getItem("picaretaAtual") || "base";
-let itensSessaoMina = {};
 
 const textosBilhete = [
   "Meu bem, é impressionante o quão empenhada você é para descobrir cada detalhe no nosso espaço seguro que é a nossa Hanninha, e é justamente por isso que você é a nossa QA Engineer, porque quem mais poderia desbravar nosso jogo com tanto empenho e amor, não é mesmo?!",
