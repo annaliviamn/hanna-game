@@ -3108,6 +3108,10 @@ const _banheiroKikaTemp = localStorage.getItem("banheiroKika");
 const _sonoKikaTemp = localStorage.getItem("sonoKika");
 const _dormindoAnnaTemp = localStorage.getItem("dormindoAnna");
 const _dormindoKikaTemp = localStorage.getItem("dormindoKika");
+const _inventarioMinaTemp = localStorage.getItem("inventarioMina");
+const _nivelMinaTemp = localStorage.getItem("nivelMina");
+const _maiorNivelMinaTemp = localStorage.getItem("maiorNivelMina");
+const _picaretaAtualTemp = localStorage.getItem("picaretaAtual");
 
 localStorage.clear();
 
@@ -3126,6 +3130,10 @@ if (_banheiroKikaTemp) localStorage.setItem("banheiroKika", _banheiroKikaTemp);
 if (_sonoKikaTemp) localStorage.setItem("sonoKika", _sonoKikaTemp);
 if (_dormindoAnnaTemp) localStorage.setItem("dormindoAnna", _dormindoAnnaTemp);
 if (_dormindoKikaTemp) localStorage.setItem("dormindoKika", _dormindoKikaTemp);
+if (_inventarioMinaTemp) localStorage.setItem("inventarioMina", _inventarioMinaTemp);
+if (_nivelMinaTemp) localStorage.setItem("nivelMina", _nivelMinaTemp);
+if (_maiorNivelMinaTemp) localStorage.setItem("maiorNivelMina", _maiorNivelMinaTemp);
+if (_picaretaAtualTemp) localStorage.setItem("picaretaAtual", _picaretaAtualTemp);
 
 
 let fome        = Number(localStorage.getItem("fome"))        || 40;
@@ -4610,6 +4618,10 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   const _sonoKikaTemp = localStorage.getItem("sonoKika");
   const _dormindoAnnaTemp = localStorage.getItem("dormindoAnna");
   const _dormindoKikaTemp = localStorage.getItem("dormindoKika");
+  const _inventarioMinaTemp = localStorage.getItem("inventarioMina");
+  const _nivelMinaTemp = localStorage.getItem("nivelMina");
+  const _maiorNivelMinaTemp = localStorage.getItem("maiorNivelMina");
+  const _picaretaAtualTemp = localStorage.getItem("picaretaAtual");
 
   localStorage.clear();
 
@@ -4625,6 +4637,10 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   if (_sonoKikaTemp) localStorage.setItem("sonoKika", _sonoKikaTemp);
   if (_dormindoAnnaTemp) localStorage.setItem("dormindoAnna", _dormindoAnnaTemp);
   if (_dormindoKikaTemp) localStorage.setItem("dormindoKika", _dormindoKikaTemp);
+  if (_inventarioMinaTemp) localStorage.setItem("inventarioMina", _inventarioMinaTemp);
+  if (_nivelMinaTemp) localStorage.setItem("nivelMina", _nivelMinaTemp);
+  if (_maiorNivelMinaTemp) localStorage.setItem("maiorNivelMina", _maiorNivelMinaTemp);
+  if (_picaretaAtualTemp) localStorage.setItem("picaretaAtual", _picaretaAtualTemp);
 
   if (resultado.dados) {
     carregarDadosNoJogo(resultado.dados);
@@ -12703,6 +12719,10 @@ function abrirCenaCasamento() {
     const _sonoKikaTemp = localStorage.getItem("sonoKika");
     const _dormindoAnnaTemp = localStorage.getItem("dormindoAnna");
     const _dormindoKikaTemp = localStorage.getItem("dormindoKika");
+    const _inventarioMinaTemp = localStorage.getItem("inventarioMina");
+    const _nivelMinaTemp = localStorage.getItem("nivelMina");
+    const _maiorNivelMinaTemp = localStorage.getItem("maiorNivelMina");
+    const _picaretaAtualTemp = localStorage.getItem("picaretaAtual");
 
     localStorage.clear();
 
@@ -12722,6 +12742,10 @@ function abrirCenaCasamento() {
     if (_sonoKikaTemp) localStorage.setItem("sonoKika", _sonoKikaTemp);
     if (_dormindoAnnaTemp) localStorage.setItem("dormindoAnna", _dormindoAnnaTemp);
     if (_dormindoKikaTemp) localStorage.setItem("dormindoKika", _dormindoKikaTemp);
+    if (_inventarioMinaTemp) localStorage.setItem("inventarioMina", _inventarioMinaTemp);
+    if (_nivelMinaTemp) localStorage.setItem("nivelMina", _nivelMinaTemp);
+    if (_maiorNivelMinaTemp) localStorage.setItem("maiorNivelMina", _maiorNivelMinaTemp);
+    if (_picaretaAtualTemp) localStorage.setItem("picaretaAtual", _picaretaAtualTemp);
 
     if (resultado.dados) {
       carregarDadosNoJogo(resultado.dados);
@@ -12742,3 +12766,606 @@ function abrirCenaCasamento() {
     mostrarFeedbackLogin("Erro ao entrar automaticamente. Tente logar manualmente.", true);
   }
 })();
+
+// Abas (Fazenda / Mina) 
+const abaFazendaBtn = document.getElementById("abaFazendaBtn");
+const abaMinerarBtn = document.getElementById("abaMinerarBtn");
+const abaForjaBtn = document.getElementById("abaForjaBtn");
+const areaFazendaConteudo = document.getElementById("areaFazendaConteudo");
+const areaMinerarConteudo = document.getElementById("areaMinerarConteudo");
+const areaForjaConteudo = document.getElementById("areaForjaConteudo");
+
+function trocarAbaFazenda(abaAtiva) {
+  [abaFazendaBtn, abaMinerarBtn, abaForjaBtn].forEach(b => b.classList.remove("ativa"));
+  [areaFazendaConteudo, areaMinerarConteudo, areaForjaConteudo].forEach(a => a.style.display = "none");
+
+  if (abaAtiva === "fazenda") {
+    abaFazendaBtn.classList.add("ativa");
+    areaFazendaConteudo.style.display = "block";
+  } else if (abaAtiva === "minerar") {
+    abaMinerarBtn.classList.add("ativa");
+    areaMinerarConteudo.style.display = "block";
+    itensSessaoMina = {};
+    atualizarBotaoElevador();
+    if (document.querySelectorAll(".pedra-mina").length === 0) {
+      gerarPedrasMina();
+    }
+  } else if (abaAtiva === "forja") {
+    abaForjaBtn.classList.add("ativa");
+    areaForjaConteudo.style.display = "block";
+    renderizarForjaVender();
+  }
+}
+
+abaFazendaBtn.addEventListener("click", () => trocarAbaFazenda("fazenda"));
+abaMinerarBtn.addEventListener("click", () => trocarAbaFazenda("minerar"));
+abaForjaBtn.addEventListener("click", () => trocarAbaFazenda("forja"));
+
+// SISTEMA DE MINERAÇÃO
+let nivelMina = Number(localStorage.getItem("nivelMina")) || 1;
+let maiorNivelMina = Number(localStorage.getItem("maiorNivelMina")) || 1;
+let picaretaAtual = localStorage.getItem("picaretaAtual") || "base";
+let itensSessaoMina = {};
+
+const cliquesPorPicareta = {
+  base: 4,
+  bronze: 3,
+  prata: 2,
+  ouro: 2,
+  diamante: 1
+};
+
+const tiposDeItem = [
+  "minerio-bronze", "minerio-prata", "minerio-ouro", "minerio-diamante",
+  "minerio-ametista", "minerio-esmeralda", "minerio-rubi", "minerio-topazio",
+  "minerio-kanna"
+];
+
+const precosVendaMina = {
+  "minerio-bronze": 1500,
+  "minerio-prata": 2500,
+  "minerio-ouro": 3500,
+  "minerio-diamante": 5000,
+  "minerio-ametista": 1500,
+  "minerio-esmeralda": 2500,
+  "minerio-rubi": 3500,
+  "minerio-topazio": 4000,
+  "minerio-kanna": 5000,
+  "anel-diamante": 20000,
+  "anel-esmeralda": 15000,
+  "colar-ametista": 18000,
+  "colar-rubi": 22000,
+  "pulseira-topazio": 25000,
+  "joia-kanna": 100000
+};
+
+const receitasUpgrade = [
+  { de: "base", para: "bronze", minerio: "minerio-bronze", qtd: 10, custo: 5000 },
+  { de: "bronze", para: "prata", minerio: "minerio-prata", qtd: 12, custo: 7000 },
+  { de: "prata", para: "ouro", minerio: "minerio-ouro", qtd: 15, custo: 9000 },
+  { de: "ouro", para: "diamante", minerio: "minerio-diamante", qtd: 18, custo: 11000 }
+];
+
+const receitasJoias = [
+  { joia: "anel-esmeralda", minerio: "minerio-esmeralda", qtd: 5, custo: 3000 },
+  { joia: "colar-ametista", minerio: "minerio-ametista", qtd: 5, custo: 3000 },
+  { joia: "colar-rubi", minerio: "minerio-rubi", qtd: 5, custo: 4000 },
+  { joia: "pulseira-topazio", minerio: "minerio-topazio", qtd: 5, custo: 4000 },
+  { joia: "anel-diamante", minerio: "minerio-diamante", qtd: 5, custo: 6000 },
+  { joia: "joia-kanna", minerio: "minerio-kanna", qtd: 5, custo: 10000 }
+];
+
+function gerarPedrasMina() {
+  const cenario = document.getElementById("cenarioMina");
+
+  // Remove pedras antigas (mantém só o fundo)
+  document.querySelectorAll(".pedra-mina").forEach(p => p.remove());
+
+  const colunas = 6;
+  const linhas = 6;
+  const celulaTamanho = 420 / colunas; // ajusta conforme o max-width do cenario-mina
+
+  // Sorteia entre 8 e 14 pedras
+  const totalPedras = 16 + Math.floor(Math.random() * 10); // entre 16 e 25
+
+  // Sorteia quais células da grade vão ter pedra (sem repetir)
+  const celulasDisponiveis = [];
+  for (let l = 0; l < linhas; l++) {
+    for (let c = 0; c < colunas; c++) {
+      celulasDisponiveis.push({ linha: l, coluna: c });
+    }
+  }
+  celulasDisponiveis.sort(() => Math.random() - 0.5);
+  const celulasEscolhidas = celulasDisponiveis.slice(0, totalPedras);
+
+  // Sorteia qual célula terá a escada
+  const indiceEscada = Math.floor(Math.random() * celulasEscolhidas.length);
+
+  celulasEscolhidas.forEach((celula, index) => {
+    const pedra = document.createElement("img");
+
+    // 15% de chance de ser uma pedra com minério visível (bronze/prata/ouro)
+    const chanceMinerioVisivel = Math.random();
+    let tipoPedra = "normal";
+    if (chanceMinerioVisivel < 0.05) tipoPedra = "ouro";
+    else if (chanceMinerioVisivel < 0.10) tipoPedra = "prata";
+    else if (chanceMinerioVisivel < 0.15) tipoPedra = "bronze";
+
+    pedra.src = `assets/sprites/mina/pedra-${tipoPedra === "normal" ? "normal" : tipoPedra}.png`;
+    pedra.className = "pedra-mina";
+    pedra.dataset.tipoPedra = tipoPedra;
+    pedra.dataset.cliquesRestantes = cliquesPorPicareta[picaretaAtual];
+    pedra.dataset.temEscada = (index === indiceEscada) ? "true" : "false";
+
+    // Posição com pequena variação aleatória dentro da célula (evita grid "robótico")
+    const offsetX = Math.random() * (celulaTamanho - 56);
+    const offsetY = Math.random() * (celulaTamanho - 56);
+    pedra.style.left = (celula.coluna * celulaTamanho + offsetX) + "px";
+    pedra.style.top = (celula.linha * celulaTamanho + offsetY) + "px";
+
+    pedra.addEventListener("click", () => clicarPedra(pedra));
+
+    cenario.appendChild(pedra);
+  });
+}
+
+function clicarPedra(pedra) {
+  if (energia <= 0) {
+    mostrarMensagem("A Hanna está exausta demais pra continuar minerando! Deixe ela descansar.");
+    document.getElementById("minaEnergiaAviso").style.display = "flex";
+    return;
+  }
+
+  let restantes = Number(pedra.dataset.cliquesRestantes) - 1;
+  pedra.dataset.cliquesRestantes = restantes;
+
+  const multiplicadorEnergia = 1 + Math.floor(nivelMina / 5) * 0.1;
+  energia = Math.max(0, energia - (0.1 * multiplicadorEnergia));
+  localStorage.setItem("energia", energia);
+  atualizarStatus();
+
+  if (energia <= 5 && energia > 0) {
+    document.getElementById("minaEnergiaAviso").style.display = "flex";
+  }
+
+  if (restantes > 0) {
+    pedra.style.transform = "scale(0.85)";
+    setTimeout(() => { pedra.style.transform = ""; }, 100);
+    return;
+  }
+
+  pedra.src = "assets/sprites/mina/pedra-quebrada.png";
+  pedra.style.pointerEvents = "none";
+
+  setTimeout(() => {
+    processarQuebraPedra(pedra);
+  }, 500);
+}
+
+const itensComPeso = [
+  { item: "minerio-ametista", peso: 30 },
+  { item: "minerio-esmeralda", peso: 25 },
+  { item: "minerio-rubi", peso: 20 },
+  { item: "minerio-topazio", peso: 15 },
+  { item: "minerio-diamante", peso: 8 },
+  { item: "minerio-kanna", peso: 2 }
+];
+
+function sortearItemComPeso() {
+  const pesoTotal = itensComPeso.reduce((soma, i) => soma + i.peso, 0);
+  let sorteio = Math.random() * pesoTotal;
+
+  for (const entrada of itensComPeso) {
+    if (sorteio < entrada.peso) return entrada.item;
+    sorteio -= entrada.peso;
+  }
+  return itensComPeso[0].item;
+}
+
+function processarQuebraPedra(pedra) {
+  const tipoPedra = pedra.dataset.tipoPedra;
+  const temEscada = pedra.dataset.temEscada === "true";
+  const leftPedra = pedra.style.left;
+  const topPedra = pedra.style.top;
+
+  let itemGanho = null;
+
+  if (tipoPedra !== "normal") {
+    itemGanho = `minerio-${tipoPedra}`;
+  } else {
+    if (Math.random() < 0.20) {
+      itemGanho = sortearItemComPeso();
+    }
+  }
+
+  pedra.remove();
+
+  if (itemGanho) {
+    mostrarFlashItemMina(itemGanho, leftPedra, topPedra);
+    darItemMina(itemGanho);
+  }
+
+  if (temEscada) {
+    mostrarEscadaMina(leftPedra, topPedra);
+  }
+}
+
+function mostrarFlashItemMina(item, left, top) {
+  const cenario = document.getElementById("cenarioMina");
+  const flash = document.createElement("img");
+  flash.src = `assets/sprites/mina/itens/${item}.png`;
+  flash.className = "pedra-mina flash-item-mina";
+  flash.style.left = left;
+  flash.style.top = top;
+  flash.style.width = "32px";
+  flash.style.height = "32px";
+  flash.style.pointerEvents = "none";
+  cenario.appendChild(flash);
+
+  setTimeout(() => { flash.remove(); }, 900);
+}
+
+function darItemMina(item) {
+  let inventarioMina = JSON.parse(localStorage.getItem("inventarioMina") || "{}");
+  inventarioMina[item] = (inventarioMina[item] || 0) + 1;
+  localStorage.setItem("inventarioMina", JSON.stringify(inventarioMina));
+
+  itensSessaoMina[item] = (itensSessaoMina[item] || 0) + 1;
+
+  mostrarMensagem(`Você encontrou: ${item.replace("minerio-", "").replace("-", " ")}!`);
+}
+
+function getQtdItemMina(item) {
+  const inventarioMina = JSON.parse(localStorage.getItem("inventarioMina") || "{}");
+  return inventarioMina[item] || 0;
+}
+
+function mostrarEscadaMina(left, top) {
+  const cenario = document.getElementById("cenarioMina");
+  const escada = document.createElement("img");
+  escada.src = "assets/sprites/mina/escada.png";
+  escada.className = "pedra-mina";
+  escada.style.left = left;
+  escada.style.top = top;
+  escada.style.width = "40px";
+  escada.style.height = "40px";
+  escada.addEventListener("click", descerNivelMina);
+  cenario.appendChild(escada);
+}
+
+function descerNivelMina() {
+  nivelMina++;
+  localStorage.setItem("nivelMina", nivelMina);
+
+  if (nivelMina > maiorNivelMina) {
+    maiorNivelMina = nivelMina;
+    localStorage.setItem("maiorNivelMina", maiorNivelMina);
+  }
+
+  document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina}`;
+
+  const cenario = document.getElementById("cenarioMina");
+  cenario.style.transition = "opacity 0.4s";
+  cenario.style.opacity = "0";
+
+  setTimeout(() => {
+    gerarPedrasMina();
+    cenario.style.opacity = "1";
+  }, 400);
+}
+
+function atualizarBotaoElevador() {
+  const btnElevador = document.getElementById("btnElevadorMina");
+  if (maiorNivelMina >= 5) {
+    btnElevador.style.display = "inline-flex";
+  } else {
+    btnElevador.style.display = "none";
+  }
+}
+
+function abrirElevadorMina() {
+  const container = document.getElementById("elevadorListaAndares");
+  container.innerHTML = "";
+
+  const totalCheckpoints = Math.floor(maiorNivelMina / 5);
+
+  for (let i = 1; i <= totalCheckpoints; i++) {
+    const andar = i * 5;
+    const btn = document.createElement("button");
+    btn.className = "forja-sub-aba";
+    btn.textContent = `Nível ${andar}`;
+    btn.addEventListener("click", () => teletransportarMina(andar));
+    container.appendChild(btn);
+  }
+
+  document.getElementById("modalElevadorMina").style.display = "flex";
+}
+
+function teletransportarMina(andar) {
+  nivelMina = andar;
+  localStorage.setItem("nivelMina", nivelMina);
+  document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina}`;
+  document.getElementById("modalElevadorMina").style.display = "none";
+  gerarPedrasMina();
+  mostrarMensagem(`Você desceu direto pro nível ${andar}!`);
+}
+
+document.getElementById("btnElevadorMina").addEventListener("click", abrirElevadorMina);
+document.getElementById("btnFecharElevadorMina").addEventListener("click", () => {
+  document.getElementById("modalElevadorMina").style.display = "none";
+});
+
+// Gera as pedras quando a aba Minerar é aberta pela primeira vez
+abaMinerarBtn.addEventListener("click", () => {
+  document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina}`;
+  itensSessaoMina = {};
+  if (document.querySelectorAll(".pedra-mina").length === 0) {
+    gerarPedrasMina();
+  }
+});
+
+// FORJA: VENDER
+
+function renderizarForjaVender() {
+  const container = document.getElementById("forjaVenderConteudo");
+  container.innerHTML = "";
+
+  let temItem = false;
+
+  Object.keys(precosVendaMina).forEach(item => {
+    const qtd = getQtdItemMina(item);
+    if (qtd <= 0) return;
+    temItem = true;
+
+    const preco = precosVendaMina[item];
+    const card = document.createElement("div");
+    card.className = "forja-item-card";
+    card.innerHTML = `
+      <img src="assets/sprites/mina/itens/${item}.png">
+      <div class="forja-item-info">
+        <strong>${item.replace(/-/g, " ")}</strong>
+        <span>Você tem: ${qtd} | ${preco.toLocaleString()} hannacoins cada</span>
+      </div>
+      <button class="forja-item-btn" data-item="${item}">Vender 1</button>
+    `;
+    container.appendChild(card);
+  });
+
+  if (!temItem) {
+    container.innerHTML = `<p style="text-align:center; color:var(--text-light); font-size:12px;">Nada pra vender ainda. Vá minerar!</p>`;
+  }
+
+  container.querySelectorAll(".forja-item-btn").forEach(btn => {
+    btn.addEventListener("click", () => venderItemMina(btn.dataset.item));
+  });
+}
+
+function venderItemMina(item) {
+  let inventarioMina = JSON.parse(localStorage.getItem("inventarioMina") || "{}");
+  if ((inventarioMina[item] || 0) <= 0) return;
+
+  inventarioMina[item]--;
+  localStorage.setItem("inventarioMina", JSON.stringify(inventarioMina));
+
+  moedas += precosVendaMina[item];
+  localStorage.setItem("moedas", moedas);
+  atualizarStatus();
+
+  mostrarMensagem(`Vendido! +${precosVendaMina[item].toLocaleString()} hannacoins`);
+  renderizarForjaVender();
+}
+
+// FORJA: UPGRADE DE PICARETA
+
+function renderizarForjaUpgrade() {
+  const container = document.getElementById("forjaUpgradeConteudo");
+  container.innerHTML = "";
+
+  const receita = receitasUpgrade.find(r => r.de === picaretaAtual);
+
+  if (!receita) {
+    container.innerHTML = `<p style="text-align:center; color:var(--text-light); font-size:12px;">Sua picareta já está no nível máximo! 💎</p>`;
+    return;
+  }
+
+  const qtdMinerio = getQtdItemMina(receita.minerio);
+  const temMinerio = qtdMinerio >= receita.qtd;
+  const temMoedas = moedas >= receita.custo;
+  const podeUpar = temMinerio && temMoedas;
+
+  const card = document.createElement("div");
+  card.className = "forja-item-card";
+  card.innerHTML = `
+    <img src="assets/sprites/mina/picaretas/picareta-${receita.para}.png">
+    <div class="forja-item-info">
+      <strong>Picareta de ${receita.para}</strong>
+      <span>Precisa: ${receita.qtd}x ${receita.minerio.replace("minerio-", "")} (tem ${qtdMinerio}) + ${receita.custo.toLocaleString()} hannacoins</span>
+    </div>
+    <button class="forja-item-btn" id="btnUparPicareta" ${podeUpar ? "" : "disabled"}>Upar</button>
+  `;
+  container.appendChild(card);
+
+  document.getElementById("btnUparPicareta").addEventListener("click", () => uparPicareta(receita));
+}
+
+function uparPicareta(receita) {
+  let inventarioMina = JSON.parse(localStorage.getItem("inventarioMina") || "{}");
+  if ((inventarioMina[receita.minerio] || 0) < receita.qtd || moedas < receita.custo) return;
+
+  inventarioMina[receita.minerio] -= receita.qtd;
+  localStorage.setItem("inventarioMina", JSON.stringify(inventarioMina));
+
+  moedas -= receita.custo;
+  localStorage.setItem("moedas", moedas);
+  atualizarStatus();
+
+  picaretaAtual = receita.para;
+  localStorage.setItem("picaretaAtual", picaretaAtual);
+
+  mostrarMensagem(`Picareta upada para ${receita.para}! ⛏️`);
+  renderizarForjaUpgrade();
+}
+
+// FORJA: CRIAR JOIAS
+
+function renderizarForjaJoias() {
+  const container = document.getElementById("forjaJoiasConteudo");
+  container.innerHTML = "";
+
+  receitasJoias.forEach(receita => {
+    const qtdMinerio = getQtdItemMina(receita.minerio);
+    const temMinerio = qtdMinerio >= receita.qtd;
+    const temMoedas = moedas >= receita.custo;
+    const podeCriar = temMinerio && temMoedas;
+
+    const card = document.createElement("div");
+    card.className = "forja-item-card";
+    card.innerHTML = `
+      <img src="assets/sprites/mina/itens/${receita.joia}.png">
+      <div class="forja-item-info">
+        <strong>${receita.joia.replace(/-/g, " ")}</strong>
+        <span>Precisa: ${receita.qtd}x ${receita.minerio.replace("minerio-", "")} (tem ${qtdMinerio}) + ${receita.custo.toLocaleString()} hannacoins</span>
+      </div>
+      <button class="forja-item-btn" data-joia="${receita.joia}" ${podeCriar ? "" : "disabled"}>Criar</button>
+    `;
+    container.appendChild(card);
+  });
+
+  container.querySelectorAll(".forja-item-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const receita = receitasJoias.find(r => r.joia === btn.dataset.joia);
+      criarJoia(receita);
+    });
+  });
+}
+
+function criarJoia(receita) {
+  let inventarioMina = JSON.parse(localStorage.getItem("inventarioMina") || "{}");
+  if ((inventarioMina[receita.minerio] || 0) < receita.qtd || moedas < receita.custo) return;
+
+  inventarioMina[receita.minerio] -= receita.qtd;
+  inventarioMina[receita.joia] = (inventarioMina[receita.joia] || 0) + 1;
+  localStorage.setItem("inventarioMina", JSON.stringify(inventarioMina));
+
+  moedas -= receita.custo;
+  localStorage.setItem("moedas", moedas);
+  atualizarStatus();
+
+  mostrarMensagem(`Você criou: ${receita.joia.replace(/-/g, " ")}! ✨`);
+  renderizarForjaJoias();
+}
+
+// SUB-ABAS DA FORJA
+
+document.getElementById("forjaAbaVender").addEventListener("click", () => {
+  document.querySelectorAll(".forja-sub-aba").forEach(b => b.classList.remove("ativa"));
+  document.getElementById("forjaAbaVender").classList.add("ativa");
+  document.getElementById("forjaVenderConteudo").style.display = "block";
+  document.getElementById("forjaUpgradeConteudo").style.display = "none";
+  document.getElementById("forjaJoiasConteudo").style.display = "none";
+  renderizarForjaVender();
+});
+
+document.getElementById("forjaAbaUpgrade").addEventListener("click", () => {
+  document.querySelectorAll(".forja-sub-aba").forEach(b => b.classList.remove("ativa"));
+  document.getElementById("forjaAbaUpgrade").classList.add("ativa");
+  document.getElementById("forjaVenderConteudo").style.display = "none";
+  document.getElementById("forjaUpgradeConteudo").style.display = "block";
+  document.getElementById("forjaJoiasConteudo").style.display = "none";
+  renderizarForjaUpgrade();
+});
+
+document.getElementById("forjaAbaJoias").addEventListener("click", () => {
+  document.querySelectorAll(".forja-sub-aba").forEach(b => b.classList.remove("ativa"));
+  document.getElementById("forjaAbaJoias").classList.add("ativa");
+  document.getElementById("forjaVenderConteudo").style.display = "none";
+  document.getElementById("forjaUpgradeConteudo").style.display = "none";
+  document.getElementById("forjaJoiasConteudo").style.display = "block";
+  renderizarForjaJoias();
+});
+
+// INVENTÁRIO DA MINA
+
+const todosItensMina = [
+  "minerio-bronze", "minerio-prata", "minerio-ouro", "minerio-diamante",
+  "minerio-ametista", "minerio-esmeralda", "minerio-rubi", "minerio-topazio", "minerio-kanna"
+];
+
+function abrirInventarioMina() {
+  renderizarMochilaMina();
+  renderizarColecaoMina();
+  document.getElementById("modalInventarioMina").style.display = "flex";
+}
+
+function renderizarMochilaMina() {
+  const container = document.getElementById("invMochilaConteudo");
+  container.innerHTML = "";
+
+  todosItensMina.forEach(item => {
+    const qtd = getQtdItemMina(item);
+    if (qtd <= 0) return;
+
+    const slot = document.createElement("div");
+    slot.className = "inventario-slot";
+    slot.innerHTML = `
+      <img src="assets/sprites/mina/itens/${item}.png">
+      <span class="qtd-badge">${qtd}</span>
+    `;
+    container.appendChild(slot);
+  });
+
+  if (container.innerHTML === "") {
+    container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:var(--text-light); font-size:12px;">Sua mochila está vazia. Vá minerar!</p>`;
+  }
+}
+
+function renderizarColecaoMina() {
+  const container = document.getElementById("invColecaoConteudo");
+  container.innerHTML = "";
+
+  todosItensMina.forEach(item => {
+    const qtd = getQtdItemMina(item);
+    const encontrado = qtd > 0;
+
+    const slot = document.createElement("div");
+    slot.className = "inventario-slot" + (encontrado ? "" : " bloqueado");
+    slot.innerHTML = `<img src="assets/sprites/mina/itens/${item}.png">`;
+    container.appendChild(slot);
+  });
+}
+
+const btnInventarioMina = document.getElementById("btnInventarioMina");
+if (btnInventarioMina) {
+  btnInventarioMina.addEventListener("click", abrirInventarioMina);
+}
+
+document.getElementById("btnFecharInventarioMina").addEventListener("click", () => {
+  document.getElementById("modalInventarioMina").style.display = "none";
+});
+
+document.getElementById("invAbaMochila").addEventListener("click", () => {
+  document.getElementById("invAbaMochila").classList.add("ativa");
+  document.getElementById("invAbaColecao").classList.remove("ativa");
+  document.getElementById("invMochilaConteudo").style.display = "grid";
+  document.getElementById("invColecaoConteudo").style.display = "none";
+});
+
+document.getElementById("invAbaColecao").addEventListener("click", () => {
+  document.getElementById("invAbaColecao").classList.add("ativa");
+  document.getElementById("invAbaMochila").classList.remove("ativa");
+  document.getElementById("invColecaoConteudo").style.display = "grid";
+  document.getElementById("invMochilaConteudo").style.display = "none";
+});
+
+// SISTEMA DE ENERGIA NA MINA
+function perderItensSessaoMina() {
+  let inventarioMina = JSON.parse(localStorage.getItem("inventarioMina") || "{}");
+  for (const item in itensSessaoMina) {
+    inventarioMina[item] = Math.max(0, (inventarioMina[item] || 0) - itensSessaoMina[item]);
+  }
+  localStorage.setItem("inventarioMina", JSON.stringify(inventarioMina));
+  itensSessaoMina = {};
+
+  abaFazendaBtn.click();
+  document.getElementById("minaEnergiaAviso").style.display = "none";
+}

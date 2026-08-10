@@ -2095,11 +2095,26 @@
 
     </div>
 
+    <!-- Aba para Mineração -->
+    <div class="abas-fazenda">
+      <button class="aba-fazenda-btn ativa" id="abaFazendaBtn">
+        <img src="assets/sprites/hanna/hanna-fazenda-icon.png" class="icone-aba">
+        Fazenda
+      </button>
+      <button class="aba-fazenda-btn" id="abaMinerarBtn">
+        <img src="assets/sprites/mina/picaretas/picareta-base.png" class="icone-aba">
+        Minerar
+      </button>
+      <button class="aba-fazenda-btn" id="abaForjaBtn">
+        <img src="assets/sprites/mina/itens/minerio-ouro.png" class="icone-aba">
+        Forja
+      </button>
+    </div>
+
   </div>
 
   <!-- Fazenda Cozy -->
-
-  <div class="fazenda-area">
+  <div class="fazenda-area" id="areaFazendaConteudo">
 
       <!-- Card da Hanna -->
 
@@ -2190,6 +2205,71 @@
           </div>
 
       </div>
+    </div>
+
+    <!-- Área da Mina -->
+    <div id="areaMinerarConteudo" style="display:none;">
+
+      <div class="mina-header">
+        <span id="minaNivelTexto">Nível 1</span>
+        <button class="mina-elevador-btn" id="btnElevadorMina" style="display:none;">
+          <img src="assets/sprites/mina/elevador.png" class="icone-aba">
+          Elevador
+        </button>
+        <div class="mina-energia-aviso" id="minaEnergiaAviso" style="display:none;">
+          <img src="assets/sprites/mina/hanna-cansada.png" class="hanna-cansada-icon">
+          A Hanna está cansada!
+        </div>
+      </div>
+
+      <div class="cenario-mina" id="cenarioMina">
+        <img src="assets/sprites/mina/cenarios/cenario-mina.png" id="fundoMina" class="fundo-mina">
+      </div>
+
+      <button class="mina-inventario-btn" id="btnInventarioMina">
+        <img src="assets/sprites/mina/icon-inventario.png" class="icone-aba">
+        Inventário
+      </button>
+
+      <!-- Modal Inventário da Mina -->
+      <div id="modalInventarioMina" style="display:none;">
+        <div class="modal-inventario-conteudo">
+          <div class="inventario-abas">
+            <button class="inventario-aba-btn ativa" id="invAbaMochila">Mochila</button>
+            <button class="inventario-aba-btn" id="invAbaColecao">Coleção</button>
+          </div>
+
+          <div id="invMochilaConteudo" class="inventario-grid"></div>
+          <div id="invColecaoConteudo" class="inventario-grid" style="display:none;"></div>
+
+          <button id="btnFecharInventarioMina" class="btn-fechar-modal">Fechar</button>
+        </div>
+      </div>
+
+      <!-- Modal Elevador da Mina -->
+      <div id="modalElevadorMina" style="display:none;">
+        <div class="modal-inventario-conteudo">
+          <h3 style="text-align:center; color:var(--pink-deep); font-size:14px; margin-bottom:10px;">Escolha o andar</h3>
+          <div id="elevadorListaAndares" class="inventario-abas" style="flex-wrap: wrap;"></div>
+          <button id="btnFecharElevadorMina" class="btn-fechar-modal">Fechar</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Área da Forja -->
+    <div id="areaForjaConteudo" style="display:none;">
+
+      <div class="forja-abas">
+        <button class="forja-sub-aba ativa" id="forjaAbaVender">Vender</button>
+        <button class="forja-sub-aba" id="forjaAbaUpgrade">Picareta</button>
+        <button class="forja-sub-aba" id="forjaAbaJoias">Joias</button>
+      </div>
+
+      <div id="forjaVenderConteudo" class="forja-lista"></div>
+      <div id="forjaUpgradeConteudo" class="forja-lista" style="display:none;"></div>
+      <div id="forjaJoiasConteudo" class="forja-lista" style="display:none;"></div>
+
     </div>
 </div>  
 

@@ -4159,7 +4159,6 @@ body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 /* TOPO DA FAZENDA */
-
 .topo-fazenda {
 
     display: flex;
@@ -4173,7 +4172,6 @@ body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 /* TÍTULO */
-
 .fazenda-titulo {
 
     font-family: var(--font-pixel);
@@ -4188,7 +4186,6 @@ body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 /* QUANTIDADE DE SEMENTES */
-
 .sementes-chip {
 
     width: fit-content;
@@ -4268,6 +4265,15 @@ body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
 
     transform: translateY(4px);
 
+}
+
+/* Aba da Fazenda e Mina */
+.icone-aba {
+  width: 20px;
+  height: 20px;
+  image-rendering: pixelated;
+  vertical-align: middle;
+  margin-right: 4px;
 }
 
 /* BOTÃO PLANTAR */
@@ -6141,4 +6147,304 @@ button {
 #kikaFala.visivel {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* Abas das Minas e Fazenda */
+.abas-fazenda {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.aba-fazenda-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--pink-mid);
+  background: var(--bg-card);
+  color: var(--text-mid);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.aba-fazenda-btn.ativa {
+  background: var(--pink-mid);
+  color: #fff;
+}
+
+/* Minas */
+.mina-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: var(--pink-deep);
+}
+
+.mina-energia-aviso {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #d9534f;
+  font-weight: 700;
+}
+
+.hanna-cansada-icon {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+}
+
+.cenario-mina {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--pink-mid);
+}
+
+.fundo-mina {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  z-index: 1;
+}
+
+.pedra-mina {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  z-index: 2;
+  image-rendering: pixelated;
+  transition: transform 0.15s;
+}
+
+.pedra-mina:active {
+  transform: scale(0.9);
+}
+
+.flash-item-mina {
+  animation: flashItemMina 0.9s ease-out forwards;
+}
+
+@keyframes flashItemMina {
+  0% { transform: scale(0.5) translateY(0); opacity: 1; }
+  60% { transform: scale(1.2) translateY(-15px); opacity: 1; }
+  100% { transform: scale(1) translateY(-30px); opacity: 0; }
+}
+
+/* Inventário Hanna */
+#modalInventarioMina {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-inventario-conteudo {
+  background: var(--bg-card);
+  border: 1.5px solid var(--pink-mid);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  width: 90%;
+  max-width: 380px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.inventario-abas {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.inventario-aba-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1.5px solid var(--pink-mid);
+  background: var(--pink-light);
+  color: var(--text-mid);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.inventario-aba-btn.ativa {
+  background: var(--pink-mid);
+  color: #fff;
+}
+
+.inventario-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.inventario-slot {
+  position: relative;
+  aspect-ratio: 1/1;
+  background: var(--pink-light);
+  border: 1.5px solid var(--pink-mid);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inventario-slot img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.inventario-slot.bloqueado img {
+  filter: grayscale(100%) brightness(0.5);
+}
+
+.inventario-slot .qtd-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: var(--pink-deep);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 1px 4px;
+}
+
+.btn-fechar-modal {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: var(--radius-sm, 8px);
+  border: none;
+  background: var(--pink-mid);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mina-inventario-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 420px;
+  margin: 12px auto 0;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--pink-mid);
+  background: var(--pink-light);
+  color: var(--text-mid);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Forja da Mina */
+.forja-abas {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.forja-sub-aba {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1.5px solid var(--pink-mid);
+  background: var(--pink-light);
+  color: var(--text-mid);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.forja-sub-aba.ativa {
+  background: var(--pink-mid);
+  color: #fff;
+}
+
+.forja-item-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--pink-mid);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.forja-item-card img {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+}
+
+.forja-item-info {
+  flex: 1;
+}
+
+.forja-item-info strong {
+  display: block;
+  font-size: 13px;
+  color: var(--pink-deep);
+}
+
+.forja-item-info span {
+  font-size: 11px;
+  color: var(--text-mid);
+}
+
+.forja-item-btn {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm, 8px);
+  border: none;
+  background: var(--pink-mid);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.forja-item-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Botões Elevador */
+.mina-elevador-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1.5px solid var(--pink-mid);
+  background: var(--pink-light);
+  color: var(--text-mid);
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
 }
