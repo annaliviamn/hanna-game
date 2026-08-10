@@ -12862,13 +12862,12 @@ function montarTextoComReticencias(numero, texto) {
   return resultado;
 }
 
-function ganharPedacoBilhete() {
+function ganharPedacoBilhete(leftPedra, topPedra) {
   if (!podeGanharBilheteHoje()) return;
 
   const numero = sortearPedacoBilhete();
-  if (!numero) return; // já achou todos os 14
+  if (!numero) return;
 
-  // 8% de chance por pedra normal quebrada
   if (Math.random() > 0.08) return;
 
   const hoje = new Date().toDateString();
@@ -12878,7 +12877,11 @@ function ganharPedacoBilhete() {
   bilhetesEncontrados.push(numero);
   localStorage.setItem("bilhetesEncontrados", JSON.stringify(bilhetesEncontrados));
 
-  abrirModalBilhete(numero);
+  mostrarFlashItemMina("pedaco-bilhete", leftPedra, topPedra);
+
+  setTimeout(() => {
+    abrirModalBilhete(numero);
+  }, 900);
 }
 
 function abrirModalBilhete(numero) {
@@ -12913,7 +12916,7 @@ function renderizarBilheteMina() {
     const slot = document.createElement("div");
     slot.className = "inventario-slot" + (encontrado ? "" : " bloqueado");
     slot.style.cursor = encontrado ? "pointer" : "default";
-    slot.innerHTML = `<span style="font-size:16px; font-weight:800;">${i}</span>`;
+    slot.innerHTML = `<img src="assets/sprites/mina/itens/pedaco-bilhete.png">`;
 
     if (encontrado) {
       slot.addEventListener("click", () => abrirModalBilheteSemDigitar(i));
@@ -13112,7 +13115,7 @@ function processarQuebraPedra(pedra) {
   }
 
   if (tipoPedra === "normal") {
-    ganharPedacoBilhete();
+    ganharPedacoBilhete(leftPedra, topPedra);
   }
 
   pedra.remove();
