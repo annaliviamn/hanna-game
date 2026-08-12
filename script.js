@@ -7988,7 +7988,7 @@ const expressoesAnna = [
   { sprite: "assets/sprites/personagens/anna-jogavel/apaixonada.png", frase: "Me peguei pensando no meu xuxu" },
   { sprite: "assets/sprites/personagens/anna-jogavel/aprontona.png", frase: "Tô aprontando alguma, hehe" },
   { sprite: "assets/sprites/personagens/anna-jogavel/ligacao.png", frase: "Quarta é Kanna day!" },
-  { sprite: "assets/sprites/personagens/anna-jogavel/pensativa.png", frase: "Hmm, pensando em algo..." }
+  { sprite: "assets/sprites/personagens/anna-jogavel/pensativa.png", frase: "Hmm, pensando em algo..." },
   { sprite: "assets/sprites/personagens/anna-jogavel/pets.png", frase: "Boa Tivinho! haha" },
   { sprite: "assets/sprites/personagens/anna-jogavel/musica.png", frase: "Waiting for the end to comeee" },
   { sprite: "assets/sprites/personagens/anna-jogavel/tiktok.png", frase: "haha me sinto igual uma idiota rindo disso" }
@@ -8017,7 +8017,7 @@ const expressoesKika = [
   { sprite: "assets/sprites/personagens/kika-jogavel/apaixonada.png", frase: "Ai, que amor" },
   { sprite: "assets/sprites/personagens/kika-jogavel/pensativa.png", frase: "Hmm, deixa eu pensar..." },
   { sprite: "assets/sprites/personagens/kika-jogavel/fofuxo.png", frase: "Vem cá Cook" },
-  { sprite: "assets/sprites/personagens/kika-jogavel/ligacao.png", frase: "Me deu saudades da linda" }
+  { sprite: "assets/sprites/personagens/kika-jogavel/ligacao.png", frase: "Me deu saudades da linda" },
   { sprite: "assets/sprites/personagens/kika-jogavel/pets.png", frase: "O imenso e o aprontão" },
   { sprite: "assets/sprites/personagens/kika-jogavel/musica.png", frase: "Pare de dizer que não me amaaaa, que não vai voltaaaar" },
   { sprite: "assets/sprites/personagens/kika-jogavel/reels.png", frase: "kkkkkk" }
