@@ -6210,6 +6210,8 @@ button {
   overflow: hidden;
   border-radius: var(--radius-md);
   border: 2px solid var(--pink-mid);
+  overscroll-behavior: contain;
+  touch-action: manipulation;
 }
 
 .fundo-mina {
@@ -6231,6 +6233,10 @@ button {
   z-index: 2;
   image-rendering: pixelated;
   transition: transform 0.15s;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .pedra-mina:active {
@@ -6456,4 +6462,17 @@ button {
   color: var(--text-mid);
   font-style: italic;
   min-height: 80px;
+}
+
+#modalBilheteMina {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

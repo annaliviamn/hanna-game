@@ -3112,6 +3112,8 @@ const _inventarioMinaTemp = localStorage.getItem("inventarioMina");
 const _nivelMinaTemp = localStorage.getItem("nivelMina");
 const _maiorNivelMinaTemp = localStorage.getItem("maiorNivelMina");
 const _picaretaAtualTemp = localStorage.getItem("picaretaAtual");
+const _bilhetesEncontradosTemp = localStorage.getItem("bilhetesEncontrados");
+const _ultimoBilheteDataTemp = localStorage.getItem("ultimoBilheteData");
 
 localStorage.clear();
 
@@ -3134,6 +3136,8 @@ if (_inventarioMinaTemp) localStorage.setItem("inventarioMina", _inventarioMinaT
 if (_nivelMinaTemp) localStorage.setItem("nivelMina", _nivelMinaTemp);
 if (_maiorNivelMinaTemp) localStorage.setItem("maiorNivelMina", _maiorNivelMinaTemp);
 if (_picaretaAtualTemp) localStorage.setItem("picaretaAtual", _picaretaAtualTemp);
+if (_bilhetesEncontradosTemp) localStorage.setItem("bilhetesEncontrados", _bilhetesEncontradosTemp);
+if (_ultimoBilheteDataTemp) localStorage.setItem("ultimoBilheteData", _ultimoBilheteDataTemp);
 
 
 let fome        = Number(localStorage.getItem("fome"))        || 40;
@@ -4643,6 +4647,8 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   const _nivelMinaTemp = localStorage.getItem("nivelMina");
   const _maiorNivelMinaTemp = localStorage.getItem("maiorNivelMina");
   const _picaretaAtualTemp = localStorage.getItem("picaretaAtual");
+  const _bilhetesEncontradosTemp = localStorage.getItem("bilhetesEncontrados");
+  const _ultimoBilheteDataTemp = localStorage.getItem("ultimoBilheteData");
 
   localStorage.clear();
 
@@ -4662,6 +4668,8 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   if (_nivelMinaTemp) localStorage.setItem("nivelMina", _nivelMinaTemp);
   if (_maiorNivelMinaTemp) localStorage.setItem("maiorNivelMina", _maiorNivelMinaTemp);
   if (_picaretaAtualTemp) localStorage.setItem("picaretaAtual", _picaretaAtualTemp);
+  if (_bilhetesEncontradosTemp) localStorage.setItem("bilhetesEncontrados", _bilhetesEncontradosTemp);
+  if (_ultimoBilheteDataTemp) localStorage.setItem("ultimoBilheteData", _ultimoBilheteDataTemp);
 
   if (resultado.dados) {
     carregarDadosNoJogo(resultado.dados);
@@ -7981,6 +7989,9 @@ const expressoesAnna = [
   { sprite: "assets/sprites/personagens/anna-jogavel/aprontona.png", frase: "Tô aprontando alguma, hehe" },
   { sprite: "assets/sprites/personagens/anna-jogavel/ligacao.png", frase: "Quarta é Kanna day!" },
   { sprite: "assets/sprites/personagens/anna-jogavel/pensativa.png", frase: "Hmm, pensando em algo..." }
+  { sprite: "assets/sprites/personagens/anna-jogavel/pets.png", frase: "Boa Tivinho! haha" },
+  { sprite: "assets/sprites/personagens/anna-jogavel/musica.png", frase: "Waiting for the end to comeee" },
+  { sprite: "assets/sprites/personagens/anna-jogavel/tiktok.png", frase: "haha me sinto igual uma idiota rindo disso" }
 ];
 
 function mostrarFalaAnna(texto) {
@@ -8007,6 +8018,9 @@ const expressoesKika = [
   { sprite: "assets/sprites/personagens/kika-jogavel/pensativa.png", frase: "Hmm, deixa eu pensar..." },
   { sprite: "assets/sprites/personagens/kika-jogavel/fofuxo.png", frase: "Vem cá Cook" },
   { sprite: "assets/sprites/personagens/kika-jogavel/ligacao.png", frase: "Me deu saudades da linda" }
+  { sprite: "assets/sprites/personagens/kika-jogavel/pets.png", frase: "O imenso e o aprontão" },
+  { sprite: "assets/sprites/personagens/kika-jogavel/musica.png", frase: "Pare de dizer que não me amaaaa, que não vai voltaaaar" },
+  { sprite: "assets/sprites/personagens/kika-jogavel/reels.png", frase: "kkkkkk" }
 ];
 
 function mostrarFalaKika(texto) {
@@ -12744,6 +12758,8 @@ function abrirCenaCasamento() {
     const _nivelMinaTemp = localStorage.getItem("nivelMina");
     const _maiorNivelMinaTemp = localStorage.getItem("maiorNivelMina");
     const _picaretaAtualTemp = localStorage.getItem("picaretaAtual");
+    const _bilhetesEncontradosTemp = localStorage.getItem("bilhetesEncontrados");
+    const _ultimoBilheteDataTemp = localStorage.getItem("ultimoBilheteData");
 
     localStorage.clear();
 
@@ -12767,6 +12783,8 @@ function abrirCenaCasamento() {
     if (_nivelMinaTemp) localStorage.setItem("nivelMina", _nivelMinaTemp);
     if (_maiorNivelMinaTemp) localStorage.setItem("maiorNivelMina", _maiorNivelMinaTemp);
     if (_picaretaAtualTemp) localStorage.setItem("picaretaAtual", _picaretaAtualTemp);
+    if (_bilhetesEncontradosTemp) localStorage.setItem("bilhetesEncontrados", _bilhetesEncontradosTemp);
+    if (_ultimoBilheteDataTemp) localStorage.setItem("ultimoBilheteData", _ultimoBilheteDataTemp);
 
     if (resultado.dados) {
       carregarDadosNoJogo(resultado.dados);
@@ -12863,15 +12881,11 @@ function montarTextoComReticencias(numero, texto) {
 }
 
 function ganharPedacoBilhete(leftPedra, topPedra) {
-  if (!podeGanharBilheteHoje()) return;
-
   const numero = sortearPedacoBilhete();
-  if (!numero) return;
+  if (!numero) return; // já achou todos os 14
 
-  if (Math.random() > 0.08) return;
-
-  const hoje = new Date().toDateString();
-  localStorage.setItem("ultimoBilheteData", hoje);
+  // 5% de chance por pedra normal quebrada
+  if (Math.random() > 0.05) return;
 
   let bilhetesEncontrados = JSON.parse(localStorage.getItem("bilhetesEncontrados") || "[]");
   bilhetesEncontrados.push(numero);
