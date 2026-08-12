@@ -12840,6 +12840,8 @@ abaFazendaBtn.addEventListener("click", () => trocarAbaFazenda("fazenda"));
 abaMinerarBtn.addEventListener("click", () => trocarAbaFazenda("minerar"));
 abaForjaBtn.addEventListener("click", () => trocarAbaFazenda("forja"));
 
+let bilheteIntervalId = null;
+
 const textosBilhete = [
   "Meu bem, é impressionante o quão empenhada você é para descobrir cada detalhe no nosso espaço seguro que é a nossa Hanninha, e é justamente por isso que você é a nossa QA Engineer, porque quem mais poderia desbravar nosso jogo com tanto empenho e amor, não é mesmo?!",
   "E falando em amor, esse é mais um dos easter eggs que eu apronto pra poder deixar um sorriso no seu rosto e fazer os olhinhos castanhos brilharem!",
@@ -12899,6 +12901,11 @@ function ganharPedacoBilhete(leftPedra, topPedra) {
 }
 
 function abrirModalBilhete(numero) {
+  if (bilheteIntervalId) {
+    clearInterval(bilheteIntervalId);
+    bilheteIntervalId = null;
+  }
+
   const titulo = numero === 14 ? "Bilhete Secreto Final" : `Bilhete Secreto ${numero}`;
   document.getElementById("bilheteTituloModal").textContent = titulo;
 
@@ -12908,13 +12915,15 @@ function abrirModalBilhete(numero) {
   document.getElementById("modalBilheteMina").style.display = "flex";
 
   let i = 0;
-  const intervalo = setInterval(() => {
+  bilheteIntervalId = setInterval(() => {
     elTexto.textContent += textoFinal[i];
     i++;
-    if (i >= textoFinal.length) clearInterval(intervalo);
+    if (i >= textoFinal.length) {
+      clearInterval(bilheteIntervalId);
+      bilheteIntervalId = null;
+    }
   }, 30);
 }
-
 document.getElementById("btnFecharBilheteMina").addEventListener("click", () => {
   document.getElementById("modalBilheteMina").style.display = "none";
 });
@@ -12941,6 +12950,11 @@ function renderizarBilheteMina() {
 }
 
 function abrirModalBilheteSemDigitar(numero) {
+  if (bilheteIntervalId) {
+    clearInterval(bilheteIntervalId);
+    bilheteIntervalId = null;
+  }
+
   const titulo = numero === 14 ? "Bilhete Secreto Final" : `Bilhete Secreto ${numero}`;
   document.getElementById("bilheteTituloModal").textContent = titulo;
   document.getElementById("bilheteTextoConteudo").textContent = montarTextoComReticencias(numero, textosBilhete[numero - 1]);
