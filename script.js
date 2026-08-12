@@ -13028,7 +13028,7 @@ function ganharPedacoBilhete(leftPedra, topPedra) {
   bilhetesEncontrados.push(numero);
   localStorage.setItem("bilhetesEncontrados", JSON.stringify(bilhetesEncontrados));
 
-  if (bilhetesEncontrados.length >= 14) {
+  if (new Set(bilhetesEncontrados).size >= 14) {
     desbloquearConquista("bilhete_completo");
   }
 
@@ -13100,7 +13100,7 @@ function renderizarBilheteMina() {
 
 function todosOsBilhetesEncontrados() {
   const bilhetesEncontrados = JSON.parse(localStorage.getItem("bilhetesEncontrados") || "[]");
-  return bilhetesEncontrados.length >= 14;
+  return new Set(bilhetesEncontrados).size >= 14;
 }
 
 function abrirCartaCompleta() {
