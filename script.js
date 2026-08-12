@@ -13092,7 +13092,9 @@ function renderizarBilheteMina() {
     slotCompleto.className = "inventario-slot";
     slotCompleto.style.cursor = "pointer";
     slotCompleto.style.gridColumn = "1 / -1";
-    slotCompleto.innerHTML = `<span style="font-size:11px; font-weight:800; color:var(--pink-deep);">Carta Completa</span>`;
+    slotCompleto.style.aspectRatio = "unset";
+    slotCompleto.style.padding = "14px";
+    slotCompleto.innerHTML = `<span style="font-size:11px; font-weight:800; color:var(--pink-deep);">💌 Carta Completa</span>`;
     slotCompleto.addEventListener("click", abrirCartaCompleta);
     container.appendChild(slotCompleto);
   }
