@@ -559,6 +559,21 @@ const CONQUISTAS = {
   familia_completa: { nome: "Família Completa",   desc: "O filhotinho chegou! A família está completa.",           sprite: "assets/sprites/filhote/filhote.png",                secao: "momentos" },
   aonde_quer_que_eu_va: { nome: "Aonde quer que eu vá, levo você", desc: "Fez todos os 10 dates especiais!", sprite: "assets/sprites/date/date-cover.png", secao: "momentos" },
   ate_que_a_morte: { nome: "Até que a morte nos separe", desc: "Realizou o casamento mais especial!", sprite: "assets/sprites/casamento/casamento-perfeito.png", secao: "progressao" },
+  // Kanna
+  todos_os_dias_kanna: { nome: "Todos os dias com você", desc: "Trabalhou 7 dias seguidos com a Anna ou a Kika.", sprite: "assets/sprites/personagens/anna-jogavel/trabalhando.png", secao: "kanna" },
+  te_conheco_de_cor: { nome: "Te conheço de cor", desc: "Descobriu todas as expressões da Anna ou da Kika.", sprite: "assets/sprites/personagens/anna-jogavel/apaixonada.png", secao: "kanna" },
+  nosso_cantinho: { nome: "Nosso Cantinho", desc: "Fez Xamego 20 vezes.", sprite: "assets/sprites/personagens/anna-beija-kika.png", secao: "kanna" },
+  cuidado_e_amor: { nome: "Cuidado é Amor", desc: "Manteve todos os stats acima de 90% por 7 dias seguidos.", sprite: "assets/sprites/personagens/kika-jogavel/apaixonada.png", secao: "kanna" },
+  // Mina
+  meio_caminho_mina: { nome: "Meio Caminho Andado", desc: "Chegou ao nível 50 da mina.", sprite: "assets/sprites/mina/escada.png", secao: "mina" },
+  fundo_da_mina: { nome: "O Fundo da Mina", desc: "Chegou ao nível 150, o fundo da mina!", sprite: "assets/sprites/mina/icon-inventario.png", secao: "mina" },
+  picareta_suprema: { nome: "Picareta Suprema", desc: "Upou a picareta até o nível diamante.", sprite: "assets/sprites/mina/picaretas/picareta-diamante.png", secao: "mina" },
+  primeira_joia_vendida: { nome: "Primeira Venda", desc: "Vendeu sua primeira joia.", sprite: "assets/sprites/mina/itens/anel-diamante.png", secao: "mina" },
+  minerio_da_kanna: { nome: "Achado Raríssimo", desc: "Encontrou o minério da Kanna.", sprite: "assets/sprites/mina/itens/minerio-kanna.png", secao: "mina" },
+  joia_da_kanna_vendida: { nome: "Tesouro Vendido", desc: "Vendeu a joia da Kanna.", sprite: "assets/sprites/mina/itens/joia-kanna.png", secao: "mina" },
+  joalheira: { nome: "Joalheira", desc: "Craftou pelo menos uma joia de cada tipo.", sprite: "assets/sprites/mina/itens/colar-rubi.png", secao: "mina" },
+  colecionadora_minerios: { nome: "Colecionadora", desc: "Coletou pelo menos 1 de cada minério.", sprite: "assets/sprites/mina/itens/minerio-diamante.png", secao: "mina" },
+  bilhete_completo: { nome: "Carta Completa", desc: "Encontrou todos os 14 pedaços do bilhete secreto.", sprite: "assets/sprites/mina/itens/pedaco-bilhete.png", secao: "mina" },
 };
 
 const TOTAL_CONQUISTAS = Object.keys(CONQUISTAS).length;
@@ -652,7 +667,7 @@ function renderizarTrofeus() {
   if (cardPlatina) cardPlatina.classList.toggle("trofeu-desbloqueado", !!platina);
 
   // Grids por seção
-  const secoes = { cuidados: "gridCuidados", progressao: "gridProgressao", minigames: "gridMinigames", momentos: "gridMomentos" };
+  const secoes = { cuidados: "gridCuidados", progressao: "gridProgressao", minigames: "gridMinigames", momentos: "gridMomentos", kanna: "gridKanna", mina: "gridMina" };
 
   Object.entries(secoes).forEach(([secao, gridId]) => {
     const grid = document.getElementById(gridId);
@@ -3114,6 +3129,10 @@ const _maiorNivelMinaTemp = localStorage.getItem("maiorNivelMina");
 const _picaretaAtualTemp = localStorage.getItem("picaretaAtual");
 const _bilhetesEncontradosTemp = localStorage.getItem("bilhetesEncontrados");
 const _ultimoBilheteDataTemp = localStorage.getItem("ultimoBilheteData");
+const _ultimoDiaTrabalhoKannaTemp = localStorage.getItem("ultimoDiaTrabalhoKanna");
+const _streakTrabalhoKannaTemp = localStorage.getItem("streakTrabalhoKanna");
+const _ultimoDiaCuidadoAmorTemp = localStorage.getItem("ultimoDiaCuidadoAmor");
+const _streakCuidadoAmorTemp = localStorage.getItem("streakCuidadoAmor");
 
 localStorage.clear();
 
@@ -3138,6 +3157,10 @@ if (_maiorNivelMinaTemp) localStorage.setItem("maiorNivelMina", _maiorNivelMinaT
 if (_picaretaAtualTemp) localStorage.setItem("picaretaAtual", _picaretaAtualTemp);
 if (_bilhetesEncontradosTemp) localStorage.setItem("bilhetesEncontrados", _bilhetesEncontradosTemp);
 if (_ultimoBilheteDataTemp) localStorage.setItem("ultimoBilheteData", _ultimoBilheteDataTemp);
+if (_ultimoDiaTrabalhoKannaTemp) localStorage.setItem("ultimoDiaTrabalhoKanna", _ultimoDiaTrabalhoKannaTemp);
+if (_streakTrabalhoKannaTemp) localStorage.setItem("streakTrabalhoKanna", _streakTrabalhoKannaTemp);
+if (_ultimoDiaCuidadoAmorTemp) localStorage.setItem("ultimoDiaCuidadoAmor", _ultimoDiaCuidadoAmorTemp);
+if (_streakCuidadoAmorTemp) localStorage.setItem("streakCuidadoAmor", _streakCuidadoAmorTemp);
 
 
 let fome        = Number(localStorage.getItem("fome"))        || 40;
@@ -3801,6 +3824,13 @@ function _salvar() {
   localStorage.setItem("nivelMina", nivelMina);
   localStorage.setItem("maiorNivelMina", maiorNivelMina);
   localStorage.setItem("picaretaAtual", picaretaAtual);
+  localStorage.setItem("picaretaAtual", picaretaAtual);
+  localStorage.setItem("bilhetesEncontrados", localStorage.getItem("bilhetesEncontrados") || "[]");
+  localStorage.setItem("contadorXamego", localStorage.getItem("contadorXamego") || "0");
+  localStorage.setItem("ultimoDiaTrabalhoKanna", localStorage.getItem("ultimoDiaTrabalhoKanna") || "");
+  localStorage.setItem("streakTrabalhoKanna", localStorage.getItem("streakTrabalhoKanna") || "0");
+  localStorage.setItem("ultimoDiaCuidadoAmor", localStorage.getItem("ultimoDiaCuidadoAmor") || "");
+  localStorage.setItem("streakCuidadoAmor", localStorage.getItem("streakCuidadoAmor") || "0");
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -3837,6 +3867,12 @@ function _salvar() {
           annaJogavelDesbloqueada, kikaJogavelDesbloqueada,
           inventarioMina: localStorage.getItem("inventarioMina") || "{}",
           nivelMina, maiorNivelMina, picaretaAtual,
+          bilhetesEncontrados: localStorage.getItem("bilhetesEncontrados") || "[]",
+          contadorXamego: Number(localStorage.getItem("contadorXamego")) || 0,
+          ultimoDiaTrabalhoKanna: localStorage.getItem("ultimoDiaTrabalhoKanna") || "",
+          streakTrabalhoKanna: Number(localStorage.getItem("streakTrabalhoKanna")) || 0,
+          ultimoDiaCuidadoAmor: localStorage.getItem("ultimoDiaCuidadoAmor") || "",
+          streakCuidadoAmor: Number(localStorage.getItem("streakCuidadoAmor")) || 0,
         });
       }).catch(() => {});
     }
@@ -4428,6 +4464,15 @@ function carregarDadosNoJogo(dados) {
   localStorage.setItem("maiorNivelMina", maiorNivelMina);
   localStorage.setItem("picaretaAtual", picaretaAtual);
 
+  if (dados.bilhetesEncontrados) {
+    localStorage.setItem("bilhetesEncontrados", typeof dados.bilhetesEncontrados === "string" ? dados.bilhetesEncontrados : JSON.stringify(dados.bilhetesEncontrados));
+  }
+  localStorage.setItem("contadorXamego", Number(dados.contadorXamego) || Number(localStorage.getItem("contadorXamego")) || 0);
+  localStorage.setItem("ultimoDiaTrabalhoKanna", dados.ultimoDiaTrabalhoKanna || localStorage.getItem("ultimoDiaTrabalhoKanna") || "");
+  localStorage.setItem("streakTrabalhoKanna", Number(dados.streakTrabalhoKanna) || Number(localStorage.getItem("streakTrabalhoKanna")) || 0);
+  localStorage.setItem("ultimoDiaCuidadoAmor", dados.ultimoDiaCuidadoAmor || localStorage.getItem("ultimoDiaCuidadoAmor") || "");
+  localStorage.setItem("streakCuidadoAmor", Number(dados.streakCuidadoAmor) || Number(localStorage.getItem("streakCuidadoAmor")) || 0);
+
   ultimaPagamentoContas = Number(dados.ultimaPagamentoContas) || 0;
   internetPaga = dados.internetPaga !== false && dados.internetPaga !== "false";
   aguaPaga = dados.aguaPaga !== false && dados.aguaPaga !== "false";
@@ -4649,6 +4694,10 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   const _picaretaAtualTemp = localStorage.getItem("picaretaAtual");
   const _bilhetesEncontradosTemp = localStorage.getItem("bilhetesEncontrados");
   const _ultimoBilheteDataTemp = localStorage.getItem("ultimoBilheteData");
+  const _ultimoDiaTrabalhoKannaTemp = localStorage.getItem("ultimoDiaTrabalhoKanna");
+  const _streakTrabalhoKannaTemp = localStorage.getItem("streakTrabalhoKanna");
+  const _ultimoDiaCuidadoAmorTemp = localStorage.getItem("ultimoDiaCuidadoAmor");
+  const _streakCuidadoAmorTemp = localStorage.getItem("streakCuidadoAmor");
 
   localStorage.clear();
 
@@ -4670,6 +4719,10 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   if (_picaretaAtualTemp) localStorage.setItem("picaretaAtual", _picaretaAtualTemp);
   if (_bilhetesEncontradosTemp) localStorage.setItem("bilhetesEncontrados", _bilhetesEncontradosTemp);
   if (_ultimoBilheteDataTemp) localStorage.setItem("ultimoBilheteData", _ultimoBilheteDataTemp);
+  if (_ultimoDiaTrabalhoKannaTemp) localStorage.setItem("ultimoDiaTrabalhoKanna", _ultimoDiaTrabalhoKannaTemp);
+  if (_streakTrabalhoKannaTemp) localStorage.setItem("streakTrabalhoKanna", _streakTrabalhoKannaTemp);
+  if (_ultimoDiaCuidadoAmorTemp) localStorage.setItem("ultimoDiaCuidadoAmor", _ultimoDiaCuidadoAmorTemp);
+  if (_streakCuidadoAmorTemp) localStorage.setItem("streakCuidadoAmor", _streakCuidadoAmorTemp);
 
   if (resultado.dados) {
     carregarDadosNoJogo(resultado.dados);
@@ -7820,6 +7873,8 @@ function atualizarStatusAnna() {
       annaSpriteEl.src = "assets/sprites/personagens/anna-jogavel/neutra.png";
     }
   }
+
+  verificarCuidadoAmor("anna");
 }
 
 // COMIDA DA ANNA
@@ -7950,6 +8005,7 @@ if (btnTrabalharAnna) {
 
       atualizarStatusAnna();
       atualizarStatus(); // atualiza o saldo de moedas em todas as telas
+      registrarTrabalhoKanna();
       mostrarMensagem("A Anna terminou o trabalho e ganhou 10.000 hannacoins!");
     }, 8 * 60 * 1000); // 8 minutos
   });
@@ -7968,6 +8024,10 @@ const xamegoCenas = [
 
 function ativarXamego(personagemAtual) {
   const cena = xamegoCenas[Math.floor(Math.random() * xamegoCenas.length)];
+  let contadorXamego = Number(localStorage.getItem("contadorXamego")) || 0;
+  contadorXamego++;
+  localStorage.setItem("contadorXamego", contadorXamego);
+  if (contadorXamego >= 20) desbloquearConquista("nosso_cantinho");
   const spriteEl = document.getElementById(personagemAtual === "anna" ? "annaSprite" : "kikaSprite");
 
   spriteEl.src = cena.sprite;
@@ -7977,6 +8037,52 @@ function ativarXamego(personagemAtual) {
     if (personagemAtual === "anna") atualizarStatusAnna();
     else atualizarStatusKika();
   }, 3000);
+}
+
+function registrarTrabalhoKanna() {
+  const hoje = new Date().toDateString();
+  const ultimoDia = localStorage.getItem("ultimoDiaTrabalhoKanna");
+
+  if (ultimoDia === hoje) return;
+
+  let streak = Number(localStorage.getItem("streakTrabalhoKanna")) || 0;
+
+  const ontem = new Date();
+  ontem.setDate(ontem.getDate() - 1);
+  const ontemStr = ontem.toDateString();
+
+  streak = (ultimoDia === ontemStr) ? streak + 1 : 1;
+
+  localStorage.setItem("ultimoDiaTrabalhoKanna", hoje);
+  localStorage.setItem("streakTrabalhoKanna", streak);
+
+  if (streak >= 7) desbloquearConquista("todos_os_dias_kanna");
+}
+
+function verificarCuidadoAmor(personagem) {
+  const stats = personagem === "anna"
+    ? [fomeAnna, higieneAnna, banheiroAnna, sonoAnna]
+    : [fomeKika, higieneKika, banheiroKika, sonoKika];
+
+  if (!stats.every(s => s >= 90)) return;
+
+  const hoje = new Date().toDateString();
+  const ultimoDia = localStorage.getItem("ultimoDiaCuidadoAmor");
+
+  if (ultimoDia === hoje) return;
+
+  let streak = Number(localStorage.getItem("streakCuidadoAmor")) || 0;
+
+  const ontem = new Date();
+  ontem.setDate(ontem.getDate() - 1);
+  const ontemStr = ontem.toDateString();
+
+  streak = (ultimoDia === ontemStr) ? streak + 1 : 1;
+
+  localStorage.setItem("ultimoDiaCuidadoAmor", hoje);
+  localStorage.setItem("streakCuidadoAmor", streak);
+
+  if (streak >= 7) desbloquearConquista("cuidado_e_amor");
 }
 
 const btnXamegoAnna = document.getElementById("btnXamegoAnna");
@@ -8009,6 +8115,15 @@ annaSpriteEl2.addEventListener("click", () => {
   annaSpriteEl2.src = expressao.sprite;
   mostrarFalaAnna(expressao.frase);
 
+  let expressoesVistas = JSON.parse(localStorage.getItem("expressoesVistasAnna") || "[]");
+  if (!expressoesVistas.includes(expressao.sprite)) {
+    expressoesVistas.push(expressao.sprite);
+    localStorage.setItem("expressoesVistasAnna", JSON.stringify(expressoesVistas));
+  }
+  if (expressoesVistas.length >= expressoesAnna.length) {
+    desbloquearConquista("te_conheco_de_cor");
+  }
+
   setTimeout(() => { atualizarStatusAnna(); }, 2000);
 });
 
@@ -8038,6 +8153,15 @@ kikaSpriteEl2.addEventListener("click", () => {
   kikaSpriteEl2.src = expressao.sprite;
   mostrarFalaKika(expressao.frase);
 
+  let expressoesVistas = JSON.parse(localStorage.getItem("expressoesVistasKika") || "[]");
+  if (!expressoesVistas.includes(expressao.sprite)) {
+    expressoesVistas.push(expressao.sprite);
+    localStorage.setItem("expressoesVistasKika", JSON.stringify(expressoesVistas));
+  }
+  if (expressoesVistas.length >= expressoesKika.length) {
+    desbloquearConquista("te_conheco_de_cor");
+  }
+
   setTimeout(() => { atualizarStatusKika(); }, 2000);
 });
 
@@ -8065,6 +8189,8 @@ function atualizarStatusKika() {
       kikaSpriteEl.src = "assets/sprites/personagens/kika-jogavel/neutra.png";
     }
   }
+
+  verificarCuidadoAmor("kika");
 }
 
 // COMIDA DA KIKA
@@ -8195,6 +8321,7 @@ if (btnTrabalharKika) {
 
       atualizarStatusKika();
       atualizarStatus();
+      registrarTrabalhoKanna();
       mostrarMensagem("A Kika terminou o trabalho e ganhou 10.000 hannacoins!");
     }, 8 * 60 * 1000);
   });
@@ -12760,6 +12887,10 @@ function abrirCenaCasamento() {
     const _picaretaAtualTemp = localStorage.getItem("picaretaAtual");
     const _bilhetesEncontradosTemp = localStorage.getItem("bilhetesEncontrados");
     const _ultimoBilheteDataTemp = localStorage.getItem("ultimoBilheteData");
+    const _ultimoDiaTrabalhoKannaTemp = localStorage.getItem("ultimoDiaTrabalhoKanna");
+    const _streakTrabalhoKannaTemp = localStorage.getItem("streakTrabalhoKanna");
+    const _ultimoDiaCuidadoAmorTemp = localStorage.getItem("ultimoDiaCuidadoAmor");
+    const _streakCuidadoAmorTemp = localStorage.getItem("streakCuidadoAmor");
 
     localStorage.clear();
 
@@ -12785,6 +12916,10 @@ function abrirCenaCasamento() {
     if (_picaretaAtualTemp) localStorage.setItem("picaretaAtual", _picaretaAtualTemp);
     if (_bilhetesEncontradosTemp) localStorage.setItem("bilhetesEncontrados", _bilhetesEncontradosTemp);
     if (_ultimoBilheteDataTemp) localStorage.setItem("ultimoBilheteData", _ultimoBilheteDataTemp);
+    if (_ultimoDiaTrabalhoKannaTemp) localStorage.setItem("ultimoDiaTrabalhoKanna", _ultimoDiaTrabalhoKannaTemp);
+    if (_streakTrabalhoKannaTemp) localStorage.setItem("streakTrabalhoKanna", _streakTrabalhoKannaTemp);
+    if (_ultimoDiaCuidadoAmorTemp) localStorage.setItem("ultimoDiaCuidadoAmor", _ultimoDiaCuidadoAmorTemp);
+    if (_streakCuidadoAmorTemp) localStorage.setItem("streakCuidadoAmor", _streakCuidadoAmorTemp);
 
     if (resultado.dados) {
       carregarDadosNoJogo(resultado.dados);
@@ -12893,6 +13028,10 @@ function ganharPedacoBilhete(leftPedra, topPedra) {
   bilhetesEncontrados.push(numero);
   localStorage.setItem("bilhetesEncontrados", JSON.stringify(bilhetesEncontrados));
 
+  if (bilhetesEncontrados.length >= 14) {
+    desbloquearConquista("bilhete_completo");
+  }
+
   mostrarFlashItemMina("pedaco-bilhete", leftPedra, topPedra);
 
   setTimeout(() => {
@@ -12947,6 +13086,45 @@ function renderizarBilheteMina() {
 
     container.appendChild(slot);
   }
+
+  if (todosOsBilhetesEncontrados()) {
+    const slotCompleto = document.createElement("div");
+    slotCompleto.className = "inventario-slot";
+    slotCompleto.style.cursor = "pointer";
+    slotCompleto.style.gridColumn = "1 / -1";
+    slotCompleto.innerHTML = `<span style="font-size:11px; font-weight:800; color:var(--pink-deep);">Carta Completa</span>`;
+    slotCompleto.addEventListener("click", abrirCartaCompleta);
+    container.appendChild(slotCompleto);
+  }
+}
+
+function todosOsBilhetesEncontrados() {
+  const bilhetesEncontrados = JSON.parse(localStorage.getItem("bilhetesEncontrados") || "[]");
+  return bilhetesEncontrados.length >= 14;
+}
+
+function abrirCartaCompleta() {
+  if (bilheteIntervalId) {
+    clearInterval(bilheteIntervalId);
+    bilheteIntervalId = null;
+  }
+
+  document.getElementById("bilheteTituloModal").textContent = "Carta Completa";
+
+  const textoCompleto = textosBilhete.join(" ");
+  const elTexto = document.getElementById("bilheteTextoConteudo");
+  elTexto.textContent = "";
+  document.getElementById("modalBilheteMina").style.display = "flex";
+
+  let i = 0;
+  bilheteIntervalId = setInterval(() => {
+    elTexto.textContent += textoCompleto[i];
+    i++;
+    if (i >= textoCompleto.length) {
+      clearInterval(bilheteIntervalId);
+      bilheteIntervalId = null;
+    }
+  }, 20);
 }
 
 function abrirModalBilheteSemDigitar(numero) {
@@ -13178,6 +13356,14 @@ function darItemMina(item) {
   inventarioMina[item] = (inventarioMina[item] || 0) + 1;
   localStorage.setItem("inventarioMina", JSON.stringify(inventarioMina));
 
+  if (item === "minerio-kanna") {
+    desbloquearConquista("minerio_da_kanna");
+  }
+
+  const todosMinerios = ["minerio-bronze", "minerio-prata", "minerio-ouro", "minerio-diamante", "minerio-ametista", "minerio-esmeralda", "minerio-rubi", "minerio-topazio", "minerio-kanna"];
+  const temTodosMinerios = todosMinerios.every(m => (inventarioMina[m] || 0) > 0);
+  if (temTodosMinerios) desbloquearConquista("colecionadora_minerios");
+
   itensSessaoMina[item] = (itensSessaoMina[item] || 0) + 1;
 
   mostrarMensagem(`Você encontrou: ${item.replace("minerio-", "").replace("-", " ")}!`);
@@ -13209,6 +13395,9 @@ function descerNivelMina() {
     maiorNivelMina = nivelMina;
     localStorage.setItem("maiorNivelMina", maiorNivelMina);
   }
+
+  if (nivelMina >= 50) desbloquearConquista("meio_caminho_mina");
+  if (nivelMina >= 150) desbloquearConquista("fundo_da_mina");
 
   document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina}`;
 
@@ -13319,6 +13508,14 @@ function venderItemMina(item) {
   localStorage.setItem("moedas", moedas);
   atualizarStatus();
 
+  const joiasEProdutos = ["anel-diamante", "anel-esmeralda", "colar-ametista", "colar-rubi", "pulseira-topazio", "joia-kanna"];
+  if (joiasEProdutos.includes(item)) {
+    desbloquearConquista("primeira_joia_vendida");
+  }
+  if (item === "joia-kanna") {
+    desbloquearConquista("joia_da_kanna_vendida");
+  }
+
   mostrarMensagem(`Vendido! +${precosVendaMina[item].toLocaleString()} hannacoins`);
   renderizarForjaVender();
 }
@@ -13370,6 +13567,8 @@ function uparPicareta(receita) {
   picaretaAtual = receita.para;
   localStorage.setItem("picaretaAtual", picaretaAtual);
 
+  if (picaretaAtual === "diamante") desbloquearConquista("picareta_suprema");
+
   mostrarMensagem(`Picareta upada para ${receita.para}! ⛏️`);
   renderizarForjaUpgrade();
 }
@@ -13414,6 +13613,10 @@ function criarJoia(receita) {
   inventarioMina[receita.minerio] -= receita.qtd;
   inventarioMina[receita.joia] = (inventarioMina[receita.joia] || 0) + 1;
   localStorage.setItem("inventarioMina", JSON.stringify(inventarioMina));
+
+  const todasAsJoias = ["anel-diamante", "anel-esmeralda", "colar-ametista", "colar-rubi", "pulseira-topazio", "joia-kanna"];
+  const temTodasAsJoias = todasAsJoias.every(j => (inventarioMina[j] || 0) > 0);
+  if (temTodasAsJoias) desbloquearConquista("joalheira");
 
   moedas -= receita.custo;
   localStorage.setItem("moedas", moedas);
