@@ -1499,12 +1499,12 @@ btnPresenteCesta?.addEventListener("click", () => {
   darPresente(40000, 40, "ultimoPresenteCesta", "essa cesta");
 });
 
-// LEMBRETES / MSNHANNA
+// MSNHANNA
 const btnVoltarLembretes = document.getElementById("btnVoltarLembretes");
 const btnAbrirFazenda    = document.getElementById("btnAbrirFazenda");
 const btnVoltarFazenda   = document.getElementById("btnVoltarFazenda");
 
-// MSNHANNA
+// MSNHANNA ID
 const ANNA_UID = "QSvSUBgIIERdE8ukwNgLhVSisF12";
 const KIKA_UID = "YawXVeC0OPUpeNzIua7zXocE1Op2";
 
@@ -2051,8 +2051,10 @@ document.querySelectorAll(".msn-aba").forEach(btn => {
     document.getElementById("msnAbaChat").style.display = aba === "chat" ? "block" : "none";
     document.getElementById("msnAbaCuidar").style.display = aba === "cuidar" ? "block" : "none";
     document.getElementById("msnAbaMimos").style.display = aba === "mimos" ? "block" : "none";
+    document.getElementById("msnAbaFotos").style.display = aba === "fotos" ? "block" : "none";
     if (aba === "cuidar") carregarStatsOutra();
     if (aba === "mimos") document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
+    if (aba === "fotos") renderizarCenariosFoto();
   });
 });
 
@@ -2077,11 +2079,17 @@ async function carregarStatsOutra() {
   document.getElementById("msnStatVinculo").style.width = (d.vinculoGatinhas || 0) + "%";
   document.getElementById("msnStatVinculoVal").textContent = Math.floor(d.vinculoGatinhas || 0) + "%";
 
+  // Recursos e progresso da outra jogadora
+  document.getElementById("msnOutraMoedas").textContent = Math.floor(d.moedas || 0).toLocaleString();
+  document.getElementById("msnOutraSementes").textContent = Math.floor(d.sementes || 0);
+  document.getElementById("msnOutraNivelMina").textContent = `Mina 1 · Nível ${d.nivelMina || 1}`;
+
   // Atualiza título com nome da outra
   const titulo = document.getElementById("msnStatsOutra")?.querySelector(".msn-stats-titulo");
   const outraUidStr = outraUid === ANNA_UID ? "Anna" : "Kika";
   if (titulo) titulo.textContent = `Como tá a Hanna da ${outraUidStr}?`;
 }
+
 
 // SISTEMA DE CARTAS
 const MODELOS_CARTA = [
@@ -3133,6 +3141,9 @@ const _ultimoDiaTrabalhoKannaTemp = localStorage.getItem("ultimoDiaTrabalhoKanna
 const _streakTrabalhoKannaTemp = localStorage.getItem("streakTrabalhoKanna");
 const _ultimoDiaCuidadoAmorTemp = localStorage.getItem("ultimoDiaCuidadoAmor");
 const _streakCuidadoAmorTemp = localStorage.getItem("streakCuidadoAmor");
+const _mina2DesbloqueadaTemp = localStorage.getItem("mina2Desbloqueada");
+const _nivelMina2Temp = localStorage.getItem("nivelMina2");
+const _maiorNivelMina2Temp = localStorage.getItem("maiorNivelMina2");
 
 localStorage.clear();
 
@@ -3161,6 +3172,9 @@ if (_ultimoDiaTrabalhoKannaTemp) localStorage.setItem("ultimoDiaTrabalhoKanna", 
 if (_streakTrabalhoKannaTemp) localStorage.setItem("streakTrabalhoKanna", _streakTrabalhoKannaTemp);
 if (_ultimoDiaCuidadoAmorTemp) localStorage.setItem("ultimoDiaCuidadoAmor", _ultimoDiaCuidadoAmorTemp);
 if (_streakCuidadoAmorTemp) localStorage.setItem("streakCuidadoAmor", _streakCuidadoAmorTemp);
+if (_mina2DesbloqueadaTemp) localStorage.setItem("mina2Desbloqueada", _mina2DesbloqueadaTemp);
+if (_nivelMina2Temp) localStorage.setItem("nivelMina2", _nivelMina2Temp);
+if (_maiorNivelMina2Temp) localStorage.setItem("maiorNivelMina2", _maiorNivelMina2Temp);
 
 
 let fome        = Number(localStorage.getItem("fome"))        || 40;
@@ -3208,8 +3222,50 @@ let sonoKika     = Number(localStorage.getItem("sonoKika"))     || 100;
 // SISTEMA DE MINERAÇÃO
 let nivelMina = Number(localStorage.getItem("nivelMina")) || 1;
 let maiorNivelMina = Number(localStorage.getItem("maiorNivelMina")) || 1;
+let nivelMina2 = Number(localStorage.getItem("nivelMina2")) || 1;
+let maiorNivelMina2 = Number(localStorage.getItem("maiorNivelMina2")) || 1;
 let picaretaAtual = localStorage.getItem("picaretaAtual") || "base";
 let itensSessaoMina = {};
+
+// Trocar de Mina
+function trocarDeMina() {
+  minaAtual = (minaAtual === "mina1") ? "mina2" : "mina1";
+  localStorage.setItem("minaAtual", minaAtual);
+
+  const btn = document.getElementById("btnTrocarMina");
+  const textoNode = Array.from(btn.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+  if (textoNode) {
+    textoNode.textContent = (minaAtual === "mina1") ? " Mina 2" : " Mina 1";
+  }
+
+  document.getElementById("minaNivelTexto").textContent =
+    `Nível ${minaAtual === "mina1" ? nivelMina : nivelMina2}`;
+
+  gerarPedrasMina();
+}
+
+const btnTrocarMina = document.getElementById("btnTrocarMina");
+if (btnTrocarMina) {
+  btnTrocarMina.addEventListener("click", trocarDeMina);
+}
+
+// Mina 1 e 2
+let minaAtual = "mina1"; // "mina1" ou "mina2"
+
+const configMinas = {
+  mina1: {
+    pastaSprites: "assets/sprites/mina",
+    pastaItens: "assets/sprites/mina/itens",
+    cenarios: ["cenario-mina.png", "cenario-mina2.png", "cenario-mina3.png"],
+    totalNiveis: 150,
+  },
+  mina2: {
+    pastaSprites: "assets/sprites/mina2",
+    pastaItens: "assets/sprites/mina2", // itens da mina2 estão soltos na pasta, não numa subpasta "itens"
+    cenarios: ["cenarios/cenario-gelo.png", "cenarios/cenario-gelo2.png", "cenarios/cenario-gelo3.png"],
+    totalNiveis: 100,
+  }
+};
 
 // NOME DA GATINHA — só exibe se foi adotada e já tem nome
 nomeDaGatinhaTexto.textContent = (gatinhaDesbloqueada && nomeGatinha) ? nomeGatinha : "";
@@ -12956,15 +13012,16 @@ function trocarAbaFazenda(abaAtiva) {
   if (abaAtiva === "fazenda") {
     abaFazendaBtn.classList.add("ativa");
     areaFazendaConteudo.style.display = "block";
-  } else if (abaAtiva === "minerar") {
-    abaMinerarBtn.classList.add("ativa");
-    areaMinerarConteudo.style.display = "block";
-    itensSessaoMina = {};
-    atualizarBotaoElevador();
-    if (document.querySelectorAll(".pedra-mina").length === 0) {
-      gerarPedrasMina();
-    }
-  } else if (abaAtiva === "forja") {
+      } else if (abaAtiva === "minerar") {
+      abaMinerarBtn.classList.add("ativa");
+      areaMinerarConteudo.style.display = "block";
+      itensSessaoMina = {};
+      atualizarBotaoElevador();
+      atualizarBotaoTrocarMina();
+      if (document.querySelectorAll(".pedra-mina").length === 0) {
+        gerarPedrasMina();
+      }
+    } else if (abaAtiva === "forja") {
     abaForjaBtn.classList.add("ativa");
     areaForjaConteudo.style.display = "block";
     renderizarForjaVender();
@@ -13094,7 +13151,7 @@ function renderizarBilheteMina() {
     slotCompleto.style.gridColumn = "1 / -1";
     slotCompleto.style.aspectRatio = "unset";
     slotCompleto.style.padding = "14px";
-    slotCompleto.innerHTML = `<span style="font-size:11px; font-weight:800; color:var(--pink-deep);">💌 Carta Completa</span>`;
+    slotCompleto.innerHTML = `<span style="font-size:11px; font-weight:800; color:var(--pink-deep);">Carta Completa</span>`;
     slotCompleto.addEventListener("click", abrirCartaCompleta);
     container.appendChild(slotCompleto);
   }
@@ -13200,19 +13257,18 @@ const receitasJoias = [
 
 function gerarPedrasMina() {
   const cenario = document.getElementById("cenarioMina");
+  const config = configMinas[minaAtual];
+  const nivelAtualDaMina = (minaAtual === "mina1") ? nivelMina : nivelMina2;
 
-  // Remove pedras antigas (mantém só o fundo)
   document.querySelectorAll(".pedra-mina").forEach(p => p.remove());
 
   const colunas = 6;
   const linhas = 6;
   const larguraReal = cenario.clientWidth;
-  const celulaTamanho = larguraReal / colunas; // ajusta conforme o max-width do cenario-mina
+  const celulaTamanho = larguraReal / colunas;
 
-  // Sorteia entre 8 e 14 pedras
-  const totalPedras = 16 + Math.floor(Math.random() * 10); // entre 16 e 25
+  const totalPedras = 16 + Math.floor(Math.random() * 10);
 
-  // Sorteia quais células da grade vão ter pedra (sem repetir)
   const celulasDisponiveis = [];
   for (let l = 0; l < linhas; l++) {
     for (let c = 0; c < colunas; c++) {
@@ -13222,26 +13278,31 @@ function gerarPedrasMina() {
   celulasDisponiveis.sort(() => Math.random() - 0.5);
   const celulasEscolhidas = celulasDisponiveis.slice(0, totalPedras);
 
-  // Sorteia qual célula terá a escada
   const indiceEscada = Math.floor(Math.random() * celulasEscolhidas.length);
 
   celulasEscolhidas.forEach((celula, index) => {
     const pedra = document.createElement("img");
 
-    // 15% de chance de ser uma pedra com minério visível (bronze/prata/ouro)
     const chanceMinerioVisivel = Math.random();
     let tipoPedra = "normal";
-    if (chanceMinerioVisivel < 0.05) tipoPedra = "ouro";
-    else if (chanceMinerioVisivel < 0.10) tipoPedra = "prata";
-    else if (chanceMinerioVisivel < 0.15) tipoPedra = "bronze";
 
-    pedra.src = `assets/sprites/mina/pedra-${tipoPedra === "normal" ? "normal" : tipoPedra}.png`;
+    if (minaAtual === "mina1") {
+      if (chanceMinerioVisivel < 0.05) tipoPedra = "ouro";
+      else if (chanceMinerioVisivel < 0.10) tipoPedra = "prata";
+      else if (chanceMinerioVisivel < 0.15) tipoPedra = "bronze";
+    } else {
+      if (chanceMinerioVisivel < 0.02) tipoPedra = "diamante";
+      else if (chanceMinerioVisivel < 0.05) tipoPedra = "ouro";
+      else if (chanceMinerioVisivel < 0.085) tipoPedra = "prata";
+      else if (chanceMinerioVisivel < 0.12) tipoPedra = "bronze";
+    }
+
+    pedra.src = `${config.pastaSprites}/pedra-${tipoPedra}.png`;
     pedra.className = "pedra-mina";
     pedra.dataset.tipoPedra = tipoPedra;
     pedra.dataset.cliquesRestantes = cliquesPorPicareta[picaretaAtual];
     pedra.dataset.temEscada = (index === indiceEscada) ? "true" : "false";
 
-    // Posição com pequena variação aleatória dentro da célula (evita grid "robótico")
     const offsetX = Math.random() * Math.max(0, celulaTamanho - 48);
     const offsetY = Math.random() * Math.max(0, celulaTamanho - 48);
     pedra.style.left = (celula.coluna * celulaTamanho + offsetX) + "px";
@@ -13260,10 +13321,13 @@ function clicarPedra(pedra) {
     return;
   }
 
+  const config = configMinas[minaAtual];
+  const nivelAtualDaMina = (minaAtual === "mina1") ? nivelMina : nivelMina2;
+
   let restantes = Number(pedra.dataset.cliquesRestantes) - 1;
   pedra.dataset.cliquesRestantes = restantes;
 
-  const multiplicadorEnergia = 1 + Math.floor(nivelMina / 5) * 0.1;
+  const multiplicadorEnergia = 1 + Math.floor(nivelAtualDaMina / 5) * 0.1;
   energia = Math.max(0, energia - (0.1 * multiplicadorEnergia));
   localStorage.setItem("energia", energia);
   atualizarStatus();
@@ -13278,7 +13342,7 @@ function clicarPedra(pedra) {
     return;
   }
 
-  pedra.src = "assets/sprites/mina/pedra-quebrada.png";
+  pedra.src = `${config.pastaSprites}/pedra-quebrada.png`;
   pedra.style.pointerEvents = "none";
 
   setTimeout(() => {
@@ -13306,6 +13370,22 @@ function sortearItemComPeso() {
   return itensComPeso[0].item;
 }
 
+const itensComPesoMina2 = [
+  { item: "minerio-cristal", peso: 60 },
+  { item: "minerio-safira", peso: 30 },
+  { item: "minerio-gelo-eterno", peso: 10 }
+];
+
+function sortearItemComPesoMina2() {
+  const pesoTotal = itensComPesoMina2.reduce((soma, i) => soma + i.peso, 0);
+  let sorteio = Math.random() * pesoTotal;
+  for (const entrada of itensComPesoMina2) {
+    if (sorteio < entrada.peso) return entrada.item;
+    sorteio -= entrada.peso;
+  }
+  return itensComPesoMina2[0].item;
+}
+
 function processarQuebraPedra(pedra) {
   const tipoPedra = pedra.dataset.tipoPedra;
   const temEscada = pedra.dataset.temEscada === "true";
@@ -13314,16 +13394,32 @@ function processarQuebraPedra(pedra) {
 
   let itemGanho = null;
 
-  if (tipoPedra !== "normal") {
-    itemGanho = `minerio-${tipoPedra}`;
-  } else {
-    if (Math.random() < 0.20) {
-      itemGanho = sortearItemComPeso();
+  if (minaAtual === "mina1") {
+    if (tipoPedra !== "normal") {
+      itemGanho = `minerio-${tipoPedra}`;
+    } else {
+      if (Math.random() < 0.20) {
+        itemGanho = sortearItemComPeso();
+      }
     }
-  }
 
-  if (tipoPedra === "normal") {
-    ganharPedacoBilhete(leftPedra, topPedra);
+    if (tipoPedra === "normal") {
+      ganharPedacoBilhete(leftPedra, topPedra);
+    }
+  } else {
+    if (tipoPedra !== "normal") {
+      itemGanho = `minerio-${tipoPedra}`;
+    } else {
+      const sorteio = Math.random();
+      if (sorteio < 0.20) {
+        itemGanho = sortearItemComPesoMina2();
+      } else if (sorteio < 0.38) {
+        spawnInimigoMina(leftPedra, topPedra);
+      } else if (sorteio < 0.45) {
+        itemGanho = "pacote-sementes";
+      }
+      // resto (55%) não dropa nada
+    }
   }
 
   pedra.remove();
@@ -13338,10 +13434,16 @@ function processarQuebraPedra(pedra) {
   }
 }
 
+// TODO: implementar sistema de combate de verdade — por enquanto só um placeholder
+function spawnInimigoMina(left, top) {
+  mostrarMensagem("Um inimigo apareceu! (combate ainda não implementado)");
+}
+
 function mostrarFlashItemMina(item, left, top) {
   const cenario = document.getElementById("cenarioMina");
+  const config = configMinas[minaAtual];
   const flash = document.createElement("img");
-  flash.src = `assets/sprites/mina/itens/${item}.png`;
+  flash.src = `${config.pastaItens}/${item}.png`;
   flash.className = "pedra-mina flash-item-mina";
   flash.style.left = left;
   flash.style.top = top;
@@ -13378,8 +13480,9 @@ function getQtdItemMina(item) {
 
 function mostrarEscadaMina(left, top) {
   const cenario = document.getElementById("cenarioMina");
+  const config = configMinas[minaAtual];
   const escada = document.createElement("img");
-  escada.src = "assets/sprites/mina/escada.png";
+  escada.src = `${config.pastaSprites}/escada.png`;
   escada.className = "pedra-mina";
   escada.style.left = left;
   escada.style.top = top;
@@ -13390,18 +13493,32 @@ function mostrarEscadaMina(left, top) {
 }
 
 function descerNivelMina() {
-  nivelMina++;
-  localStorage.setItem("nivelMina", nivelMina);
+  const config = configMinas[minaAtual];
 
-  if (nivelMina > maiorNivelMina) {
-    maiorNivelMina = nivelMina;
-    localStorage.setItem("maiorNivelMina", maiorNivelMina);
+  if (minaAtual === "mina1") {
+    nivelMina++;
+    localStorage.setItem("nivelMina", nivelMina);
+
+    if (nivelMina > maiorNivelMina) {
+      maiorNivelMina = nivelMina;
+      localStorage.setItem("maiorNivelMina", maiorNivelMina);
+    }
+
+    if (nivelMina >= 50) desbloquearConquista("meio_caminho_mina");
+    if (nivelMina >= 150) desbloquearConquista("fundo_da_mina");
+
+    document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina}`;
+  } else {
+    nivelMina2++;
+    localStorage.setItem("nivelMina2", nivelMina2);
+
+    if (nivelMina2 > maiorNivelMina2) {
+      maiorNivelMina2 = nivelMina2;
+      localStorage.setItem("maiorNivelMina2", maiorNivelMina2);
+    }
+
+    document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina2}`;
   }
-
-  if (nivelMina >= 50) desbloquearConquista("meio_caminho_mina");
-  if (nivelMina >= 150) desbloquearConquista("fundo_da_mina");
-
-  document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina}`;
 
   const cenario = document.getElementById("cenarioMina");
   cenario.style.transition = "opacity 0.4s";
@@ -13415,7 +13532,9 @@ function descerNivelMina() {
 
 function atualizarBotaoElevador() {
   const btnElevador = document.getElementById("btnElevadorMina");
-  if (maiorNivelMina >= 5) {
+  const maiorNivelDaMina = (minaAtual === "mina1") ? maiorNivelMina : maiorNivelMina2;
+
+  if (maiorNivelDaMina >= 5) {
     btnElevador.style.display = "inline-flex";
   } else {
     btnElevador.style.display = "none";
@@ -13426,7 +13545,8 @@ function abrirElevadorMina() {
   const container = document.getElementById("elevadorListaAndares");
   container.innerHTML = "";
 
-  const totalCheckpoints = Math.floor(maiorNivelMina / 5);
+  const maiorNivelDaMina = (minaAtual === "mina1") ? maiorNivelMina : maiorNivelMina2;
+  const totalCheckpoints = Math.floor(maiorNivelDaMina / 5);
 
   for (let i = 1; i <= totalCheckpoints; i++) {
     const andar = i * 5;
@@ -13441,9 +13561,16 @@ function abrirElevadorMina() {
 }
 
 function teletransportarMina(andar) {
-  nivelMina = andar;
-  localStorage.setItem("nivelMina", nivelMina);
-  document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina}`;
+  if (minaAtual === "mina1") {
+    nivelMina = andar;
+    localStorage.setItem("nivelMina", nivelMina);
+    document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina}`;
+  } else {
+    nivelMina2 = andar;
+    localStorage.setItem("nivelMina2", nivelMina2);
+    document.getElementById("minaNivelTexto").textContent = `Nível ${nivelMina2}`;
+  }
+
   document.getElementById("modalElevadorMina").style.display = "none";
   gerarPedrasMina();
   mostrarMensagem(`Você desceu direto pro nível ${andar}!`);
@@ -13524,35 +13651,98 @@ function venderItemMina(item) {
 
 // FORJA: UPGRADE DE PICARETA
 
+const receitaMina2 = {
+  minerios: [
+    { item: "minerio-kanna", qtd: 20 },
+    { item: "minerio-diamante", qtd: 15 },
+    { item: "minerio-ouro", qtd: 10 },
+    { item: "minerio-prata", qtd: 7 },
+    { item: "minerio-bronze", qtd: 5 }
+  ],
+  custo: 1000000
+};
+
 function renderizarForjaUpgrade() {
   const container = document.getElementById("forjaUpgradeConteudo");
   container.innerHTML = "";
 
   const receita = receitasUpgrade.find(r => r.de === picaretaAtual);
 
-  if (!receita) {
-    container.innerHTML = `<p style="text-align:center; color:var(--text-light); font-size:12px;">Sua picareta já está no nível máximo! 💎</p>`;
+  if (receita) {
+    const qtdMinerio = getQtdItemMina(receita.minerio);
+    const temMinerio = qtdMinerio >= receita.qtd;
+    const temMoedas = moedas >= receita.custo;
+    const podeUpar = temMinerio && temMoedas;
+
+    const card = document.createElement("div");
+    card.className = "forja-item-card";
+    card.innerHTML = `
+      <img src="assets/sprites/mina/picaretas/picareta-${receita.para}.png">
+      <div class="forja-item-info">
+        <strong>Picareta de ${receita.para}</strong>
+        <span>Precisa: ${receita.qtd}x ${receita.minerio.replace("minerio-", "")} (tem ${qtdMinerio}) + ${receita.custo.toLocaleString()} hannacoins</span>
+      </div>
+      <button class="forja-item-btn" id="btnUparPicareta" ${podeUpar ? "" : "disabled"}>Upar</button>
+    `;
+    container.appendChild(card);
+    document.getElementById("btnUparPicareta").addEventListener("click", () => uparPicareta(receita));
     return;
   }
 
-  const qtdMinerio = getQtdItemMina(receita.minerio);
-  const temMinerio = qtdMinerio >= receita.qtd;
-  const temMoedas = moedas >= receita.custo;
-  const podeUpar = temMinerio && temMoedas;
+  // Picareta já no máximo — mostra o desbloqueio da Mina 2
+  const mina2Desbloqueada = localStorage.getItem("mina2Desbloqueada") === "true";
+
+  if (mina2Desbloqueada) {
+    container.innerHTML = `<p style="text-align:center; color:var(--text-light); font-size:12px;">Sua picareta já está no nível máximo! A Mina 2 já foi desbloqueada.</p>`;
+    return;
+  }
+
+  const descricaoReq = receitaMina2.minerios
+    .map(m => `${m.qtd}x ${m.item.replace("minerio-", "")} (tem ${getQtdItemMina(m.item)})`)
+    .join(", ");
+
+  const temTudo = receitaMina2.minerios.every(m => getQtdItemMina(m.item) >= m.qtd) && moedas >= receitaMina2.custo;
 
   const card = document.createElement("div");
   card.className = "forja-item-card";
   card.innerHTML = `
-    <img src="assets/sprites/mina/picaretas/picareta-${receita.para}.png">
+    <img src="assets/sprites/mina2/floco-neve.png">
     <div class="forja-item-info">
-      <strong>Picareta de ${receita.para}</strong>
-      <span>Precisa: ${receita.qtd}x ${receita.minerio.replace("minerio-", "")} (tem ${qtdMinerio}) + ${receita.custo.toLocaleString()} hannacoins</span>
+      <strong>Abrir Mina 2</strong>
+      <span>Precisa: ${descricaoReq} + ${receitaMina2.custo.toLocaleString()} hannacoins</span>
     </div>
-    <button class="forja-item-btn" id="btnUparPicareta" ${podeUpar ? "" : "disabled"}>Upar</button>
+    <button class="forja-item-btn" id="btnAbrirMina2" ${temTudo ? "" : "disabled"}>Abrir</button>
   `;
   container.appendChild(card);
+  document.getElementById("btnAbrirMina2").addEventListener("click", desbloquearMina2);
+}
 
-  document.getElementById("btnUparPicareta").addEventListener("click", () => uparPicareta(receita));
+function desbloquearMina2() {
+  const temTudo = receitaMina2.minerios.every(m => getQtdItemMina(m.item) >= m.qtd) && moedas >= receitaMina2.custo;
+  if (!temTudo) return;
+
+  let inventarioMina = JSON.parse(localStorage.getItem("inventarioMina") || "{}");
+  receitaMina2.minerios.forEach(m => {
+    inventarioMina[m.item] -= m.qtd;
+  });
+  localStorage.setItem("inventarioMina", JSON.stringify(inventarioMina));
+
+  moedas -= receitaMina2.custo;
+  localStorage.setItem("moedas", moedas);
+  atualizarStatus();
+
+  localStorage.setItem("mina2Desbloqueada", "true");
+
+  mostrarMensagem("A Mina 2 foi desbloqueada! Uma caverna de gelo te espera...");
+  renderizarForjaUpgrade();
+  atualizarBotaoTrocarMina();
+}
+
+function atualizarBotaoTrocarMina() {
+  const btn = document.getElementById("btnTrocarMina");
+  if (!btn) return;
+  const desbloqueada = localStorage.getItem("mina2Desbloqueada") === "true";
+  btn.style.display = desbloqueada ? "inline-flex" : "none";
 }
 
 function uparPicareta(receita) {
@@ -13743,4 +13933,402 @@ function perderItensSessaoMina() {
 
   abaFazendaBtn.click();
   document.getElementById("minaEnergiaAviso").style.display = "none";
+}
+
+// Cabine de Fotos
+const personagensFoto = [
+  { id: "hanna", tipo: "pet", nome: "Hanna", poses: {
+      feliz: "feliz", brincando: "brincando"
+  }},
+  { id: "gatinha", tipo: "pet", nome: "Gatinha", poses: {
+      neutra: "gatinha", brincando: "gatinha-brincando", sorrindo: "gatinha-sorrindo"
+  }},
+  { id: "anna", tipo: "humano", nome: "Anna", poses: {
+      sorrindo: "anna-sorrindo", careta: "anna-careta", posev: "anna-posev"
+  }},
+  { id: "kika", tipo: "humano", nome: "Kika", poses: {
+      sorrindo: "kika-sorrindo", careta: "kika-careta", posev: "kika-pose-linda"
+  }},
+  { id: "steve", tipo: "pet", nome: "Steve", poses: {
+      fofo: "steve-serelepe", sorrindo: "steve-sorrindo"
+  }},
+  { id: "tonton", tipo: "pet", nome: "João Antônio", poses: {
+      aprontao: "tonton-aprontao", fofo: "tonton-fofo"
+  }},
+  { id: "cook", tipo: "pet", nome: "James Cook", poses: {
+      fofo: "cook-fofo", posev: "cook-posev"
+  }},
+  { id: "filhote", tipo: "pet", nome: "Filhote", poses: {
+      brincando: "filhotes-brincando", fofo: "filhotes-fofin"
+  }}
+];
+
+// Combos especiais (só aparecem quando as duas personagens do combo estão selecionadas)
+const combosFoto = {
+  "anna+kika": {
+    beijinho: "kanna-beijinho",
+    selfie: "kanna-selfie",
+    carinho: "kika-carinho-anna",
+    beijaKika: "anna-beija-kika",
+    cafune: "anna-cafune-kika",
+    rindo: "kanna-rindo",
+    fofoca: "kika-anna-fofoca",
+    beijaAnna: "kika-beija-anna"
+  },
+  "hanna+gatinha": { abraco: "gatinhas-abraco", beijinho: "gatinhas-beijinho", momento: "momento-especial", noite: "noite-feliz" }
+};
+
+const precosFoto = { 1: 50000, 2: 60000, 3: 70000, 4: 80000, 5: 90000, 6: 100000, 7: 110000, 8: 120000 };
+
+const cenariosFoto = [
+  { id: "quarto-anna", nome: "Quarto da Anna", arquivo: "quarto-anna.png" },
+  { id: "quarto-kika", nome: "Quarto da Kika", arquivo: "quarto-kika.png" },
+  { id: "parque", nome: "Parque", arquivo: "parque-recife.png" },
+  { id: "praia", nome: "Praia", arquivo: "praia-boaviagem.png" },
+  { id: "brasilia1", nome: "Congresso", arquivo: "congresso.png" },
+  { id: "brasilia2", nome: "Lago Paranoá", arquivo: "lago-brasilia.png" },
+  { id: "recife", nome: "Recife", arquivo: "marco-zero.png" },
+  { id: "estudio", nome: "Estúdio", arquivo: null }
+];
+
+let fotoSelecionada = { cenario: null, personagens: [], combos: {} }; // personagens: [{id, pose}]
+
+function renderizarCenariosFoto() {
+  const grid = document.getElementById("fotoCenariosGrid");
+  grid.innerHTML = "";
+
+  cenariosFoto.forEach(cenario => {
+    const card = document.createElement("div");
+    card.className = "foto-cenario-card";
+    card.dataset.cenarioId = cenario.id;
+
+    if (cenario.arquivo) {
+      card.innerHTML = `
+        <img src="assets/sprites/cabine-fotos/cenarios/${cenario.arquivo}">
+        <span>${cenario.nome}</span>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="foto-cenario-cor-sample" id="fotoEstudioCorSample" style="background:#ffb8d8;"></div>
+        <span>${cenario.nome}</span>
+      `;
+    }
+
+    card.addEventListener("click", () => selecionarCenarioFoto(cenario.id));
+    grid.appendChild(card);
+  });
+}
+
+const coresEstudio = ["#ffb8d8", "#a8d8ff", "#ffe08a", "#c8ffb8", "#e0b8ff", "#ffffff", "#333333", "#ff8fc2"];
+
+function selecionarCenarioFoto(cenarioId) {
+  if (cenarioId === "estudio") {
+    mostrarEscolhaCorEstudio();
+    return;
+  }
+
+  fotoSelecionada.cenario = cenarioId;
+  fotoSelecionada.personagens = [];
+  fotoSelecionada.combos = {};
+
+  document.getElementById("fotoEtapaCenario").style.display = "none";
+  document.getElementById("fotoEtapaPersonagens").style.display = "block";
+  renderizarPersonagensFoto();
+}
+
+function mostrarEscolhaCorEstudio() {
+  const grid = document.getElementById("fotoCenariosGrid");
+  grid.innerHTML = `<div class="msn-stats-titulo" style="grid-column:1/-1;">Escolha a cor de fundo</div>`;
+
+  const container = document.createElement("div");
+  container.className = "foto-cores-grid";
+
+  coresEstudio.forEach(cor => {
+    const swatch = document.createElement("div");
+    swatch.className = "foto-cor-swatch";
+    swatch.style.background = cor;
+    swatch.addEventListener("click", () => {
+      fotoSelecionada.cenario = "estudio";
+      fotoSelecionada.estudioCor = cor;
+      fotoSelecionada.personagens = [];
+      fotoSelecionada.combos = {};
+      document.getElementById("fotoEtapaCenario").style.display = "none";
+      document.getElementById("fotoEtapaPersonagens").style.display = "block";
+      renderizarPersonagensFoto();
+    });
+    container.appendChild(swatch);
+  });
+
+  grid.appendChild(container);
+}
+
+function renderizarPersonagensFoto() {
+  const grid = document.getElementById("fotoPersonagensGrid");
+  grid.innerHTML = "";
+
+  personagensFoto.forEach(p => {
+    const selecionado = fotoSelecionada.personagens.find(sel => sel.id === p.id);
+    const poseAtual = selecionado ? selecionado.pose : Object.keys(p.poses)[0];
+
+    const card = document.createElement("div");
+    card.className = "foto-personagem-card" + (selecionado ? " selecionado" : "");
+    card.innerHTML = `
+      <img src="assets/sprites/cabine-fotos/${p.poses[poseAtual]}.png">
+      <span>${p.nome}</span>
+    `;
+
+    card.addEventListener("click", () => {
+      const jaSelecionado = fotoSelecionada.personagens.find(sel => sel.id === p.id);
+      if (jaSelecionado) {
+        fotoSelecionada.personagens = fotoSelecionada.personagens.filter(sel => sel.id !== p.id);
+      } else {
+        fotoSelecionada.personagens.push({ id: p.id, pose: Object.keys(p.poses)[0] });
+      }
+      fotoSelecionada.combos = {}; // reseta combo ao mudar seleção
+      renderizarPersonagensFoto();
+    });
+
+    grid.appendChild(card);
+  });
+
+  renderizarPosesFoto();
+  renderizarComboFoto();
+
+  const btnPrevia = document.getElementById("btnFotoVerPrevia");
+  btnPrevia.disabled = fotoSelecionada.personagens.length === 0;
+}
+
+function renderizarPosesFoto() {
+  const container = document.getElementById("fotoPosesContainer");
+  container.innerHTML = "";
+
+  fotoSelecionada.personagens.forEach(sel => {
+    const p = personagensFoto.find(pp => pp.id === sel.id);
+
+    const linha = document.createElement("div");
+    linha.className = "foto-poses-linha";
+    linha.innerHTML = `<span class="foto-poses-nome">${p.nome}</span>`;
+
+    const thumbsWrap = document.createElement("div");
+    thumbsWrap.className = "foto-poses-thumbs";
+
+    Object.keys(p.poses).forEach(poseKey => {
+      const btnPose = document.createElement("img");
+      btnPose.src = `assets/sprites/cabine-fotos/${p.poses[poseKey]}.png`;
+      btnPose.className = "foto-pose-thumb" + (poseKey === sel.pose ? " ativa" : "");
+      btnPose.addEventListener("click", () => {
+        sel.pose = poseKey;
+        renderizarPosesFoto();
+      });
+      thumbsWrap.appendChild(btnPose);
+    });
+
+    linha.appendChild(thumbsWrap);
+    container.appendChild(linha);
+  });
+}
+
+document.getElementById("btnFotoVerPrevia").addEventListener("click", () => {
+  document.getElementById("fotoEtapaPersonagens").style.display = "none";
+  document.getElementById("fotoEtapaPrevia").style.display = "block";
+  renderizarPreviaFoto();
+});
+
+function calcularLarguraFoto(qtdHumanos, qtdPets, temCombo) {
+  const baseHumano = 28;
+  const basePet = 11;
+  const baseCombo = 36;
+
+  const total = qtdHumanos * baseHumano + qtdPets * basePet + (temCombo ? baseCombo : 0);
+  const disponivel = 92;
+  const escala = total > disponivel ? disponivel / total : 1;
+
+  return {
+    humano: baseHumano * escala,
+    pet: basePet * escala,
+    combo: baseCombo * escala
+  };
+}
+
+function renderizarPreviaFoto() {
+  const cenario = cenariosFoto.find(c => c.id === fotoSelecionada.cenario);
+  const frame = document.getElementById("fotoPreviewFrame");
+  frame.innerHTML = "";
+
+  if (cenario.arquivo) {
+    frame.style.backgroundImage = `url('assets/sprites/cabine-fotos/cenarios/${cenario.arquivo}')`;
+    frame.style.backgroundColor = "";
+  } else {
+    frame.style.backgroundImage = "";
+    frame.style.backgroundColor = fotoSelecionada.estudioCor || "#ffb8d8";
+  }
+
+  const combosAtivos = Object.keys(fotoSelecionada.combos);
+  const idsNoCombo = combosAtivos.flatMap(key => key.split("+"));
+
+  const restantes = fotoSelecionada.personagens.filter(sel => !idsNoCombo.includes(sel.id));
+  const qtdHumanos = restantes.filter(sel => personagensFoto.find(p => p.id === sel.id).tipo === "humano").length;
+  const qtdPets = restantes.filter(sel => personagensFoto.find(p => p.id === sel.id).tipo === "pet").length;
+
+  const larguras = calcularLarguraFoto(qtdHumanos, qtdPets, combosAtivos.length);
+
+  combosAtivos.forEach(comboKey => {
+    const poseKey = fotoSelecionada.combos[comboKey];
+    const spriteCombo = combosFoto[comboKey][poseKey];
+    const img = document.createElement("img");
+    img.src = `assets/sprites/cabine-fotos/${spriteCombo}.png`;
+    img.className = "foto-preview-personagem";
+    img.style.width = larguras.combo + "%";
+    frame.appendChild(img);
+  });
+
+  restantes.forEach(sel => {
+    const p = personagensFoto.find(pp => pp.id === sel.id);
+    const img = document.createElement("img");
+    img.src = `assets/sprites/cabine-fotos/${p.poses[sel.pose]}.png`;
+    img.className = "foto-preview-personagem";
+    img.style.width = (p.tipo === "humano" ? larguras.humano : larguras.pet) + "%";
+    frame.appendChild(img);
+  });
+
+  const qtd = fotoSelecionada.personagens.length;
+  document.getElementById("fotoPrecoInfo").innerHTML = `
+    <strong>${qtd} ${qtd > 1 ? "personagens" : "personagem"}</strong> —
+    ${precosFoto[qtd].toLocaleString()} hannacoins
+  `;
+}
+
+document.getElementById("btnFotoVoltar").addEventListener("click", () => {
+  document.getElementById("btnFotoComprar").style.display = "block";
+  document.getElementById("fotoEtapaPrevia").style.display = "none";
+  document.getElementById("fotoEtapaPersonagens").style.display = "block";
+});
+
+document.getElementById("btnFotoVoltarCenario").addEventListener("click", () => {
+  document.getElementById("fotoEtapaPersonagens").style.display = "none";
+  document.getElementById("fotoEtapaCenario").style.display = "block";
+});
+
+function renderizarComboFoto() {
+  const container = document.getElementById("fotoComboContainer");
+  container.innerHTML = "";
+
+  const idsSelecionados = fotoSelecionada.personagens.map(s => s.id);
+
+  Object.keys(combosFoto).forEach(comboKey => {
+    const [idA, idB] = comboKey.split("+");
+    if (!idsSelecionados.includes(idA) || !idsSelecionados.includes(idB)) return;
+
+    const titulo = document.createElement("div");
+    titulo.className = "foto-poses-nome";
+    titulo.style.marginTop = "8px";
+    titulo.textContent = "Pose especial da dupla:";
+    container.appendChild(titulo);
+
+    const thumbsWrap = document.createElement("div");
+    thumbsWrap.className = "foto-poses-thumbs";
+
+    const poseAtiva = fotoSelecionada.combos[comboKey] || null;
+
+    const btnNenhuma = document.createElement("div");
+    btnNenhuma.className = "foto-pose-thumb-texto" + (!poseAtiva ? " ativa" : "");
+    btnNenhuma.textContent = "Nenhuma";
+    btnNenhuma.addEventListener("click", () => {
+      delete fotoSelecionada.combos[comboKey];
+      renderizarComboFoto();
+    });
+    thumbsWrap.appendChild(btnNenhuma);
+
+    Object.keys(combosFoto[comboKey]).forEach(poseKey => {
+      const btnPose = document.createElement("img");
+      btnPose.src = `assets/sprites/cabine-fotos/${combosFoto[comboKey][poseKey]}.png`;
+      btnPose.className = "foto-pose-thumb" + (poseAtiva === poseKey ? " ativa" : "");
+      btnPose.addEventListener("click", () => {
+        fotoSelecionada.combos[comboKey] = poseKey;
+        renderizarComboFoto();
+      });
+      thumbsWrap.appendChild(btnPose);
+    });
+
+    container.appendChild(thumbsWrap);
+  });
+}
+
+// Revelando as fotos
+document.getElementById("btnFotoComprar").addEventListener("click", () => {
+  const qtd = fotoSelecionada.personagens.length;
+  const preco = precosFoto[qtd];
+
+  if (moedas < preco) {
+    mostrarMensagem("Você não tem hannacoins suficientes pra revelar essa foto!");
+    return;
+  }
+
+  moedas -= preco;
+  localStorage.setItem("moedas", moedas);
+  atualizarStatus();
+
+  let fotosReveladas = JSON.parse(localStorage.getItem("fotosReveladas") || "[]");
+  fotosReveladas.push({
+    cenario: fotoSelecionada.cenario,
+    estudioCor: fotoSelecionada.estudioCor || null,
+    personagens: fotoSelecionada.personagens,
+    combos: fotoSelecionada.combos,
+    data: Date.now()
+  });
+  localStorage.setItem("fotosReveladas", JSON.stringify(fotosReveladas));
+
+  mostrarMensagem("Sua foto ficou linda! Confira no Álbum");
+
+  fotoSelecionada = { cenario: null, personagens: [], combos: {} };
+  document.getElementById("fotoEtapaPrevia").style.display = "none";
+  document.getElementById("fotoEtapaCenario").style.display = "block";
+});
+
+document.getElementById("btnVerAlbumFoto").addEventListener("click", () => {
+  document.getElementById("fotoEtapaCenario").style.display = "none";
+  document.getElementById("fotoEtapaAlbum").style.display = "block";
+  renderizarAlbumFoto();
+});
+
+document.getElementById("btnFecharAlbum").addEventListener("click", () => {
+  document.getElementById("fotoEtapaAlbum").style.display = "none";
+  document.getElementById("fotoEtapaCenario").style.display = "block";
+});
+
+function renderizarAlbumFoto() {
+  const grid = document.getElementById("fotoAlbumGrid");
+  grid.innerHTML = "";
+
+  const fotosReveladas = JSON.parse(localStorage.getItem("fotosReveladas") || "[]");
+
+  if (fotosReveladas.length === 0) {
+    grid.innerHTML = `<p style="text-align:center; color:var(--text-light); font-size:12px;">Nenhuma foto revelada ainda!</p>`;
+    return;
+  }
+
+  fotosReveladas.forEach((foto, index) => {
+    const card = document.createElement("div");
+    card.className = "foto-album-card";
+    const cenario = cenariosFoto.find(c => c.id === foto.cenario);
+    card.style.backgroundImage = cenario.arquivo ? `url('assets/sprites/cabine-fotos/cenarios/${cenario.arquivo}')` : "";
+    card.style.backgroundColor = foto.estudioCor || "";
+    card.addEventListener("click", () => abrirFotoDoAlbum(foto));
+    grid.appendChild(card);
+  });
+}
+
+function abrirFotoDoAlbum(foto) {
+  fotoSelecionada = {
+    cenario: foto.cenario,
+    estudioCor: foto.estudioCor,
+    personagens: foto.personagens,
+    combos: foto.combos
+  };
+  document.getElementById("fotoEtapaAlbum").style.display = "none";
+  document.getElementById("fotoEtapaPrevia").style.display = "block";
+  renderizarPreviaFoto();
+
+  // Esconde o botão de comprar (já foi paga) e mostra só voltar
+  document.getElementById("btnFotoComprar").style.display = "none";
 }

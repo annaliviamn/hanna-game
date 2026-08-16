@@ -1372,6 +1372,40 @@ body.dark-mode .msn-btn-acao {
   flex-shrink: 0;
 }
 
+.msn-recursos-titulo {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pink-deep);
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+.msn-recursos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.msn-recurso-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--pink-light);
+  border: 1.5px solid var(--pink-mid);
+  border-radius: var(--radius-sm, 8px);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-mid);
+}
+
+.msn-recurso-icon {
+  width: 20px;
+  height: 20px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
 /* SALDO */
 .msn-saldo {
   display: flex;
@@ -6475,4 +6509,233 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Cabine de Fotos */
+.foto-cenarios-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.foto-cenario-card {
+  cursor: pointer;
+  border: 1.5px solid var(--pink-mid);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-align: center;
+  background: var(--bg-card);
+}
+
+.foto-cenario-card img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.foto-cenario-cor-sample {
+  width: 100%;
+  height: 80px;
+}
+
+.foto-cenario-card span {
+  display: block;
+  padding: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-mid);
+}
+
+.foto-personagens-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.foto-personagem-card {
+  cursor: pointer;
+  border: 1.5px solid var(--pink-mid);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-align: center;
+  background: var(--bg-card);
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.foto-personagem-card.selecionado {
+  border-color: var(--pink-deep);
+  box-shadow: 0 0 0 2px var(--pink-deep);
+}
+
+.foto-personagem-card img {
+  width: 100%;
+  height: 60px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  padding-top: 4px;
+}
+
+.foto-personagem-card span {
+  display: block;
+  padding: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-mid);
+}
+
+.foto-preview-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--pink-mid);
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px;
+}
+
+.foto-preview-personagem {
+  object-fit: contain;
+  image-rendering: pixelated;
+  height: auto;
+}
+
+.foto-preview-humano {
+  width: 22%;
+  max-height: 45%;
+}
+
+.foto-preview-pet {
+  width: 13%;
+  max-height: 25%;
+}
+
+.foto-preco-info {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--pink-deep);
+}
+
+.foto-poses-linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--pink-light);
+}
+
+.foto-poses-nome {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-mid);
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.foto-poses-thumbs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.foto-pose-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 8px;
+  border: 1.5px solid var(--pink-mid);
+  background: var(--pink-light);
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.foto-pose-thumb.ativa {
+  opacity: 1;
+  border-color: var(--pink-deep);
+  box-shadow: 0 0 0 2px var(--pink-deep);
+}
+
+.foto-pose-thumb-texto {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1.5px solid var(--pink-mid);
+  background: var(--pink-light);
+  cursor: pointer;
+  opacity: 0.6;
+  color: var(--text-mid);
+}
+
+.foto-pose-thumb-texto.ativa {
+  opacity: 1;
+  border-color: var(--pink-deep);
+  box-shadow: 0 0 0 2px var(--pink-deep);
+}
+
+.foto-preview-combo {
+  width: 30%;
+  max-height: 45%;
+}
+
+.foto-btn-voltar {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--pink-mid);
+  background: var(--pink-light);
+  color: var(--pink-deep);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.foto-cores-grid {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.foto-cor-swatch {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--pink-mid);
+  cursor: pointer;
+}
+
+.foto-album-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.foto-album-card {
+  aspect-ratio: 1/1;
+  border-radius: var(--radius-sm, 8px);
+  border: 1.5px solid var(--pink-mid);
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
 }

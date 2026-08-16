@@ -1860,6 +1860,10 @@
           <button class="msn-aba ativo" data-aba="chat">Chat</button>
           <button class="msn-aba" data-aba="cuidar">Cuidar</button>
           <button class="msn-aba" data-aba="mimos">Mimos</button>
+          <button class="msn-aba" data-aba="fotos">
+            <img src="assets/sprites/cabine-fotos/camera.png" style="width:16px;height:16px;image-rendering:pixelated;vertical-align:middle;margin-right:4px;">
+            Fotos
+          </button>
         </div>
 
         <!-- ABA CHAT -->
@@ -1883,7 +1887,7 @@
             <div class="msn-figurinhas-btn-wrap">
               <button id="btnAbrirFigurinhas" class="msn-btn-figurinha">Figurinhas</button>
             </div>
-            <input type="text" id="msnInputMsg" class="input-cozy" placeholder="Digite uma mensagem..." maxlength="80">
+            <input type="text" id="msnInputMsg" class="input-cozy" placeholder="Digite uma mensagem..." maxlength="200">
             <button id="msnEnviarMsg" class="msn-btn-enviar">Enviar</button>
           </div>
         </div>
@@ -1919,6 +1923,27 @@
                 <span class="msn-stat-label">Vínculo</span>
                 <div class="msn-stat-barra"><div class="msn-stat-fill" id="msnStatVinculo" style="width:0%;background:#ff69b4;"></div></div>
                 <span class="msn-stat-valor" id="msnStatVinculoVal">0%</span>
+              </div>
+            </div>
+
+            <!-- Recursos e progresso da outra jogadora -->
+            <div class="msn-recursos-titulo">Recursos e progresso</div>
+            <div class="msn-recursos-grid">
+              <div class="msn-recurso-item">
+                <img src="assets/ui/icons/icon-moeda.png" class="msn-recurso-icon">
+                <span id="msnOutraMoedas">0</span>
+              </div>
+              <div class="msn-recurso-item">
+                <img src="assets/ui/icons/icon-farm.png" class="msn-recurso-icon">
+                <span id="msnOutraSementes">0</span>
+              </div>
+              <div class="msn-recurso-item">
+                <img src="assets/sprites/mina/picaretas/picareta-base.png" class="msn-recurso-icon">
+                <span id="msnOutraNivelMina">Nível 1</span>
+              </div>
+              <div class="msn-recurso-item">
+                <img src="assets/sprites/mina/escada.png" class="msn-recurso-icon">
+                <span id="msnOutraQualMina">Mina 1</span>
               </div>
             </div>
           </div>
@@ -2056,6 +2081,44 @@
           <div id="msnArquivoCartas" style="display:flex;flex-direction:column;gap:8px;padding-bottom:16px;"></div>
 
         </div>
+
+        <!-- ABA FOTOS -->
+        <div id="msnAbaFotos" class="msn-aba-conteudo" style="display:none;">
+          <button id="btnVerAlbumFoto" class="foto-btn-voltar" style="margin-bottom:10px;">Ver Álbum de Fotos</button>
+
+          <!-- Álbum -->
+          <div id="fotoEtapaAlbum" style="display:none;">
+            <div class="msn-stats-titulo">Álbum de Fotos</div>
+            <div class="foto-album-grid" id="fotoAlbumGrid"></div>
+            <button id="btnFecharAlbum" class="foto-btn-voltar">Fechar Álbum</button>
+          </div>
+
+        <!-- Etapa 1: Escolher cenário -->
+        <div id="fotoEtapaCenario">
+          <div class="msn-stats-titulo">Escolha o cenário</div>
+          <div class="foto-cenarios-grid" id="fotoCenariosGrid"></div>
+        </div>
+
+        <!-- Etapa 2: Escolher personagens e poses -->
+        <div id="fotoEtapaPersonagens" style="display:none;">
+          <div class="msn-stats-titulo">Quem vai estar na foto?</div>
+          <div class="foto-personagens-grid" id="fotoPersonagensGrid"></div>
+          <div id="fotoPosesContainer"></div>
+          <div id="fotoComboContainer"></div>
+          <button id="btnFotoVerPrevia" class="msn-btn-enviar" style="width:100%;margin-top:12px;" disabled>Ver Prévia</button>
+          <button id="btnFotoVoltarCenario" class="foto-btn-voltar">Trocar cenário</button>
+        </div>
+
+        <!-- Etapa 3: Prévia e compra -->
+        <div id="fotoEtapaPrevia" style="display:none;">
+          <div class="msn-stats-titulo">Sua foto ficou assim!</div>
+          <div class="foto-preview-frame" id="fotoPreviewFrame"></div>
+          <div class="foto-preco-info" id="fotoPrecoInfo"></div>
+          <button id="btnFotoComprar" class="msn-btn-enviar" style="width:100%;margin-top:8px;">Revelar Foto</button>
+          <button id="btnFotoVoltar" class="foto-btn-voltar">Voltar</button>
+        </div>
+
+      </div>
 
       </div>
     </div>  
@@ -2218,6 +2281,10 @@
 
       <div class="mina-header">
         <span id="minaNivelTexto">Nível 1</span>
+        <button class="mina-trocar-btn" id="btnTrocarMina" style="display:none;">
+          <img src="assets/sprites/mina2/floco-neve.png" class="icone-aba">
+          Mina 2
+        </button>
         <button class="mina-elevador-btn" id="btnElevadorMina" style="display:none;">
           <img src="assets/sprites/mina/elevador.png" class="icone-aba">
           Elevador
