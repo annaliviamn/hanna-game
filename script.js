@@ -3141,6 +3141,7 @@ const _ultimoDiaTrabalhoKannaTemp = localStorage.getItem("ultimoDiaTrabalhoKanna
 const _streakTrabalhoKannaTemp = localStorage.getItem("streakTrabalhoKanna");
 const _ultimoDiaCuidadoAmorTemp = localStorage.getItem("ultimoDiaCuidadoAmor");
 const _streakCuidadoAmorTemp = localStorage.getItem("streakCuidadoAmor");
+const _fotosReveladasTemp = localStorage.getItem("fotosReveladas");
 const _mina2DesbloqueadaTemp = localStorage.getItem("mina2Desbloqueada");
 const _nivelMina2Temp = localStorage.getItem("nivelMina2");
 const _maiorNivelMina2Temp = localStorage.getItem("maiorNivelMina2");
@@ -3175,6 +3176,7 @@ if (_streakCuidadoAmorTemp) localStorage.setItem("streakCuidadoAmor", _streakCui
 if (_mina2DesbloqueadaTemp) localStorage.setItem("mina2Desbloqueada", _mina2DesbloqueadaTemp);
 if (_nivelMina2Temp) localStorage.setItem("nivelMina2", _nivelMina2Temp);
 if (_maiorNivelMina2Temp) localStorage.setItem("maiorNivelMina2", _maiorNivelMina2Temp);
+if (_fotosReveladasTemp) localStorage.setItem("fotosReveladas", _fotosReveladasTemp);
 
 
 let fome        = Number(localStorage.getItem("fome"))        || 40;
@@ -3880,13 +3882,16 @@ function _salvar() {
   localStorage.setItem("nivelMina", nivelMina);
   localStorage.setItem("maiorNivelMina", maiorNivelMina);
   localStorage.setItem("picaretaAtual", picaretaAtual);
-  localStorage.setItem("picaretaAtual", picaretaAtual);
   localStorage.setItem("bilhetesEncontrados", localStorage.getItem("bilhetesEncontrados") || "[]");
   localStorage.setItem("contadorXamego", localStorage.getItem("contadorXamego") || "0");
   localStorage.setItem("ultimoDiaTrabalhoKanna", localStorage.getItem("ultimoDiaTrabalhoKanna") || "");
   localStorage.setItem("streakTrabalhoKanna", localStorage.getItem("streakTrabalhoKanna") || "0");
   localStorage.setItem("ultimoDiaCuidadoAmor", localStorage.getItem("ultimoDiaCuidadoAmor") || "");
   localStorage.setItem("streakCuidadoAmor", localStorage.getItem("streakCuidadoAmor") || "0");
+  localStorage.setItem("nivelMina2", nivelMina2);
+  localStorage.setItem("maiorNivelMina2", maiorNivelMina2);
+  localStorage.setItem("mina2Desbloqueada", localStorage.getItem("mina2Desbloqueada") || "false");
+  localStorage.setItem("fotosReveladas", localStorage.getItem("fotosReveladas") || "[]");
   salvarFazenda();
 
   // Save na nuvem a cada 2 minutos pra não esgotar o limite gratuito
@@ -3929,6 +3934,9 @@ function _salvar() {
           streakTrabalhoKanna: Number(localStorage.getItem("streakTrabalhoKanna")) || 0,
           ultimoDiaCuidadoAmor: localStorage.getItem("ultimoDiaCuidadoAmor") || "",
           streakCuidadoAmor: Number(localStorage.getItem("streakCuidadoAmor")) || 0,
+          nivelMina2, maiorNivelMina2,
+          mina2Desbloqueada: localStorage.getItem("mina2Desbloqueada") === "true",
+          fotosReveladas: localStorage.getItem("fotosReveladas") || "[]",
         });
       }).catch(() => {});
     }
@@ -4529,6 +4537,16 @@ function carregarDadosNoJogo(dados) {
   localStorage.setItem("ultimoDiaCuidadoAmor", dados.ultimoDiaCuidadoAmor || localStorage.getItem("ultimoDiaCuidadoAmor") || "");
   localStorage.setItem("streakCuidadoAmor", Number(dados.streakCuidadoAmor) || Number(localStorage.getItem("streakCuidadoAmor")) || 0);
 
+  nivelMina2 = Number(dados.nivelMina2) || nivelMina2 || 1;
+  maiorNivelMina2 = Number(dados.maiorNivelMina2) || maiorNivelMina2 || 1;
+  localStorage.setItem("nivelMina2", nivelMina2);
+  localStorage.setItem("maiorNivelMina2", maiorNivelMina2);
+  localStorage.setItem("mina2Desbloqueada", dados.mina2Desbloqueada === true ? "true" : (localStorage.getItem("mina2Desbloqueada") || "false"));
+
+  if (dados.fotosReveladas) {
+    localStorage.setItem("fotosReveladas", typeof dados.fotosReveladas === "string" ? dados.fotosReveladas : JSON.stringify(dados.fotosReveladas));
+  }
+
   ultimaPagamentoContas = Number(dados.ultimaPagamentoContas) || 0;
   internetPaga = dados.internetPaga !== false && dados.internetPaga !== "false";
   aguaPaga = dados.aguaPaga !== false && dados.aguaPaga !== "false";
@@ -4754,6 +4772,10 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   const _streakTrabalhoKannaTemp = localStorage.getItem("streakTrabalhoKanna");
   const _ultimoDiaCuidadoAmorTemp = localStorage.getItem("ultimoDiaCuidadoAmor");
   const _streakCuidadoAmorTemp = localStorage.getItem("streakCuidadoAmor");
+  const _fotosReveladasTemp = localStorage.getItem("fotosReveladas");
+  const _mina2DesbloqueadaTemp = localStorage.getItem("mina2Desbloqueada");
+  const _nivelMina2Temp = localStorage.getItem("nivelMina2");
+  const _maiorNivelMina2Temp = localStorage.getItem("maiorNivelMina2");
 
   localStorage.clear();
 
@@ -4779,6 +4801,10 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   if (_streakTrabalhoKannaTemp) localStorage.setItem("streakTrabalhoKanna", _streakTrabalhoKannaTemp);
   if (_ultimoDiaCuidadoAmorTemp) localStorage.setItem("ultimoDiaCuidadoAmor", _ultimoDiaCuidadoAmorTemp);
   if (_streakCuidadoAmorTemp) localStorage.setItem("streakCuidadoAmor", _streakCuidadoAmorTemp);
+  if (_mina2DesbloqueadaTemp) localStorage.setItem("mina2Desbloqueada", _mina2DesbloqueadaTemp);
+  if (_nivelMina2Temp) localStorage.setItem("nivelMina2", _nivelMina2Temp);
+  if (_maiorNivelMina2Temp) localStorage.setItem("maiorNivelMina2", _maiorNivelMina2Temp);
+  if (_fotosReveladasTemp) localStorage.setItem("fotosReveladas", _fotosReveladasTemp);
 
   if (resultado.dados) {
     carregarDadosNoJogo(resultado.dados);
@@ -12947,6 +12973,10 @@ function abrirCenaCasamento() {
     const _streakTrabalhoKannaTemp = localStorage.getItem("streakTrabalhoKanna");
     const _ultimoDiaCuidadoAmorTemp = localStorage.getItem("ultimoDiaCuidadoAmor");
     const _streakCuidadoAmorTemp = localStorage.getItem("streakCuidadoAmor");
+    const _fotosReveladasTemp = localStorage.getItem("fotosReveladas");
+    const _mina2DesbloqueadaTemp = localStorage.getItem("mina2Desbloqueada");
+    const _nivelMina2Temp = localStorage.getItem("nivelMina2");
+    const _maiorNivelMina2Temp = localStorage.getItem("maiorNivelMina2");
 
     localStorage.clear();
 
@@ -12976,6 +13006,10 @@ function abrirCenaCasamento() {
     if (_streakTrabalhoKannaTemp) localStorage.setItem("streakTrabalhoKanna", _streakTrabalhoKannaTemp);
     if (_ultimoDiaCuidadoAmorTemp) localStorage.setItem("ultimoDiaCuidadoAmor", _ultimoDiaCuidadoAmorTemp);
     if (_streakCuidadoAmorTemp) localStorage.setItem("streakCuidadoAmor", _streakCuidadoAmorTemp);
+    if (_mina2DesbloqueadaTemp) localStorage.setItem("mina2Desbloqueada", _mina2DesbloqueadaTemp);
+    if (_nivelMina2Temp) localStorage.setItem("nivelMina2", _nivelMina2Temp);
+    if (_maiorNivelMina2Temp) localStorage.setItem("maiorNivelMina2", _maiorNivelMina2Temp);
+    if (_fotosReveladasTemp) localStorage.setItem("fotosReveladas", _fotosReveladasTemp);
 
     if (resultado.dados) {
       carregarDadosNoJogo(resultado.dados);
