@@ -14007,7 +14007,13 @@ const combosFoto = {
     cafune: "anna-cafune-kika",
     rindo: "kanna-rindo",
     fofoca: "kika-anna-fofoca",
-    beijaAnna: "kika-beija-anna"
+    beijaAnna: "kika-beija-anna",
+    aniversarioAnna: "anna-aniversario",
+    aniversarioKika: "kika-aniversario",
+    abraco: "kanna-abraco",
+    flor: "kanna-flor",
+    poseBeijo: "kanna-pose-beijinho",
+    sorrindo: "kanna-sorrindo"
   },
   "hanna+gatinha": { abraco: "gatinhas-abraco", beijinho: "gatinhas-beijinho", momento: "momento-especial", noite: "noite-feliz" }
 };
