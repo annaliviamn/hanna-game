@@ -4691,6 +4691,7 @@ function entrarNoJogo() {
     atualizarBtnsLoja();
     atualizarConfigGatinha();
     atualizarCardGravidez();
+    verificarEventosEspeciais();
 
     // Filhotinho
     if (filhoteDesbloqueado) exibirFilhote();
@@ -4776,6 +4777,9 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   const _mina2DesbloqueadaTemp = localStorage.getItem("mina2Desbloqueada");
   const _nivelMina2Temp = localStorage.getItem("nivelMina2");
   const _maiorNivelMina2Temp = localStorage.getItem("maiorNivelMina2");
+  const _ultimoNiverKikaTemp = localStorage.getItem("ultimoNiverKika");
+  const _ultimoNiverAnnaTemp = localStorage.getItem("ultimoNiverAnna");
+  const _ultimoKannaDayTemp = localStorage.getItem("ultimoKannaDay");
 
   localStorage.clear();
 
@@ -4805,6 +4809,9 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   if (_nivelMina2Temp) localStorage.setItem("nivelMina2", _nivelMina2Temp);
   if (_maiorNivelMina2Temp) localStorage.setItem("maiorNivelMina2", _maiorNivelMina2Temp);
   if (_fotosReveladasTemp) localStorage.setItem("fotosReveladas", _fotosReveladasTemp);
+  if (_ultimoNiverKikaTemp) localStorage.setItem("ultimoNiverKika", _ultimoNiverKikaTemp);
+  if (_ultimoNiverAnnaTemp) localStorage.setItem("ultimoNiverAnna", _ultimoNiverAnnaTemp);
+  if (_ultimoKannaDayTemp) localStorage.setItem("ultimoKannaDay", _ultimoKannaDayTemp);
 
   if (resultado.dados) {
     carregarDadosNoJogo(resultado.dados);
@@ -6348,6 +6355,110 @@ function abrirCenaDate(date, falas) {
   });
 
   mostrarFala();
+}
+
+// Lembretes de aniversário e Kanna Day
+function podeMostrarEventoHoje(chave) {
+  return localStorage.getItem(chave) !== new Date().toDateString();
+}
+
+function marcarEventoMostradoHoje(chave) {
+  localStorage.setItem(chave, new Date().toDateString());
+}
+
+function abrirCenaAniversario({ sprite, texto, titulo, onFechar }) {
+  const overlay = document.createElement("div");
+  overlay.id = "overlayAniversario";
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 16px; gap: 12px;
+  `;
+
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:380px;text-align:center;">
+      ${titulo ? `<div style="font-size:16px;font-weight:800;color:#ff8fc2;margin-bottom:12px;">${titulo}</div>` : ""}
+      <img src="${sprite}" 
+        style="width:100%;max-width:340px;height:auto;aspect-ratio:1402/1122;object-fit:cover;border-radius:20px;
+        border:3px solid #ff8fc2;
+        box-shadow: 0 0 25px #ff8fc2, 0 0 50px rgba(255,143,194,0.5);
+        animation: brilhoCasamento 2s ease-in-out infinite;
+        margin-bottom:12px;">
+
+      <div style="background:rgba(255,255,255,0.1);border:1.5px solid #ff8fc2;
+        border-radius:16px;padding:14px;margin-bottom:12px;min-height:90px;text-align:left;">
+        <p id="textoAniversario" style="font-size:13px;color:white;line-height:1.6;font-style:italic;margin:0;"></p>
+      </div>
+
+      <button id="btnFecharAniversario" class="msn-btn-enviar" style="width:100%;" disabled>...</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const el = document.getElementById("textoAniversario");
+  const btn = document.getElementById("btnFecharAniversario");
+  let i = 0;
+  const intervalo = setInterval(() => {
+    if (i < texto.length) {
+      el.textContent += texto[i];
+      i++;
+    } else {
+      clearInterval(intervalo);
+      btn.disabled = false;
+      btn.textContent = "Fechar";
+    }
+  }, 35);
+
+  btn.addEventListener("click", () => {
+    overlay.remove();
+    if (onFechar) onFechar();
+  });
+}
+
+function verificarEventosEspeciais() {
+  const hoje = new Date();
+  const dia = hoje.getDate();
+  const mes = hoje.getMonth() + 1;
+
+  if (mes === 11 && dia === 1 && podeMostrarEventoHoje("ultimoNiverKika")) {
+    abrirCenaAniversario({
+      sprite: "assets/sprites/aniversarios/niver-kika.png",
+      texto: "Hoje é um dia muito especial: é aniversário da Kika! A Hanna quer desejar tudo de mais lindo pra ela, que esse dia seja repleto de amor, carinho e muita felicidade. Parabéns, mamãe Kika!",
+      onFechar: () => marcarEventoMostradoHoje("ultimoNiverKika")
+    });
+  }
+
+  if (mes === 12 && dia === 10) {
+    if (podeMostrarEventoHoje("ultimoNiverAnna")) {
+      abrirCenaAniversario({
+        sprite: "assets/sprites/aniversarios/niver-anna.png",
+        texto: "Hoje é aniversário da Anna! A Hanna está toda animada torcendo por um dia incrível, cheio de amor e alegria. Parabéns, mamãe Anna!",
+        onFechar: () => {
+          marcarEventoMostradoHoje("ultimoNiverAnna");
+          if (podeMostrarEventoHoje("ultimoKannaDay")) {
+            setTimeout(() => {
+              abrirCenaAniversario({
+                titulo: "O Dia que Kanna Começou",
+                sprite: "assets/sprites/aniversarios/kanna-day.png",
+                texto: "Mas hoje também é outro dia muito especial... foi nesse dia que Anna e Kika se declararam uma pra outra, e tudo começou. A Hanna se sente honrada de fazer parte dessa história de amor.",
+                onFechar: () => marcarEventoMostradoHoje("ultimoKannaDay")
+              });
+            }, 400);
+          }
+        }
+      });
+    } else if (podeMostrarEventoHoje("ultimoKannaDay")) {
+      abrirCenaAniversario({
+        titulo: "O Dia que Kanna Começou",
+        sprite: "assets/sprites/aniversarios/kanna-day.png",
+        texto: "Foi nesse dia que Anna e Kika se declararam uma pra outra, e tudo começou. A Hanna se sente honrada de fazer parte dessa história de amor.",
+        onFechar: () => marcarEventoMostradoHoje("ultimoKannaDay")
+      });
+    }
+  }
 }
 
 // CASAMENTO
