@@ -7752,6 +7752,7 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
     else if (jogo === "esconde")      jogoEscondeEsconde();
     else if (jogo === "esportes") jogoEsportes();
     else if (jogo === "forca") jogoForca();
+    else if (jogo === "conexaokanna") jogoConexaoKanna();
   });
 });
 
@@ -12331,6 +12332,299 @@ function jogoForca() {
     }
 
     renderForca();
+  }
+}
+
+// TECLADO PARA JOGO CONEXÃO KANNA
+function gerarTecladoDigitacao(bufferInicial, onConfirmar, placeholder) {
+  let buffer = bufferInicial || "";
+
+  const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇÑ".split("");
+
+  const html = `
+    <div id="tecladoDigitacaoWrap" style="display:flex;flex-direction:column;gap:10px;">
+      <div id="tecladoDigitacaoTexto" style="
+        background:rgba(255,255,255,0.1);border:1.5px solid #ff8fc2;border-radius:12px;
+        padding:12px;min-height:44px;font-size:14px;color:white;word-break:break-word;">
+        ${buffer || `<span style="color:rgba(255,255,255,0.4);">${placeholder || "Digite aqui..."}</span>`}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;">
+        ${letras.map(l => `
+          <button class="steve-btn" data-tecla="${l}"
+            style="width:28px;height:28px;padding:0;font-size:10px;font-weight:800;">${l}</button>
+        `).join("")}
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="steve-btn" id="btnTecladoEspaco" style="flex:2;">Espaço</button>
+        <button class="steve-btn" id="btnTecladoApagar" style="flex:1;">⌫</button>
+      </div>
+      <button class="msn-btn-enviar" id="btnTecladoConfirmar" style="width:100%;">Confirmar</button>
+    </div>
+  `;
+
+  function ligarListeners() {
+    const textoEl = document.getElementById("tecladoDigitacaoTexto");
+
+    function atualizarTexto() {
+      textoEl.innerHTML = buffer || `<span style="color:rgba(255,255,255,0.4);">${placeholder || "Digite aqui..."}</span>`;
+    }
+
+    document.querySelectorAll("[data-tecla]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (buffer.length >= 60) return;
+        buffer += btn.dataset.tecla;
+        atualizarTexto();
+      });
+    });
+
+    document.getElementById("btnTecladoEspaco")?.addEventListener("click", () => {
+      if (buffer.length >= 60) return;
+      buffer += " ";
+      atualizarTexto();
+    });
+
+    document.getElementById("btnTecladoApagar")?.addEventListener("click", () => {
+      buffer = buffer.slice(0, -1);
+      atualizarTexto();
+    });
+
+    document.getElementById("btnTecladoConfirmar")?.addEventListener("click", () => {
+      if (buffer.trim().length < 2) { mostrarMensagem("Digite algo primeiro!"); return; }
+      onConfirmar(buffer.trim());
+    });
+  }
+
+  return { html, ligarListeners };
+}
+
+// CONEXÃO KANNA — QUIZ
+function jogoConexaoKanna() {
+  abrirArena("Conexão Kanna");
+
+  setTimeout(() => {
+    telaSelecaoConexaoKanna();
+  }, 300);
+
+  async function carregarPlacarKanna() {
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+    const snap = await getDoc(doc(db, "conexaoKannaPlacar", "placar"));
+    return snap.exists() ? snap.data() : { anna: 0, kika: 0 };
+  }
+
+  function spriteReacao(minhasVitorias, outrasVitorias, quem) {
+    const diferenca = minhasVitorias - outrasVitorias;
+    let estado = "neutra";
+    if (diferenca >= 2) estado = "feliz";
+    else if (diferenca <= -2) estado = "triste";
+    return `assets/sprites/conexao-kanna/${quem}-${estado}.png`;
+  }
+
+  async function telaSelecaoConexaoKanna() {
+    const placar = await carregarPlacarKanna();
+    const minhaUid = getMinhaUidStr();
+    const outraUid = minhaUid === "anna" ? "kika" : "anna";
+    const minhasVitorias = placar[minhaUid] || 0;
+    const outrasVitorias = placar[outraUid] || 0;
+
+    const uid = localStorage.getItem("hannaUid");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+    const snap = await getDoc(doc(db, "saves", uid));
+    const partida = snap.exists() ? snap.data().conexaoKannaPartidaAtiva : null;
+    const temPartida = partida && partida.de !== minhaUid;
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:16px;">
+
+        <!-- Placar -->
+        <div style="background:rgba(255,255,255,0.1);border:1.5px solid #ff8fc2;border-radius:16px;padding:16px;">
+          <div style="text-align:center;font-size:11px;font-weight:800;color:#ff8fc2;margin-bottom:12px;">PLACAR</div>
+          <div style="display:flex;justify-content:space-around;align-items:center;">
+            <div style="text-align:center;">
+              <img src="${spriteReacao(placar.anna || 0, placar.kika || 0, "anna")}" style="width:64px;height:64px;image-rendering:pixelated;border-radius:50%;border:2px solid #ff8fc2;">
+              <div style="font-size:12px;font-weight:800;color:#ff8fc2;margin-top:4px;">Anna</div>
+              <div style="font-size:24px;font-weight:800;color:white;">${placar.anna || 0}</div>
+            </div>
+            <div style="font-size:28px;color:rgba(255,255,255,0.3);">x</div>
+            <div style="text-align:center;">
+              <img src="${spriteReacao(placar.kika || 0, placar.anna || 0, "kika")}" style="width:64px;height:64px;image-rendering:pixelated;border-radius:50%;border:2px solid #ff8fc2;">
+              <div style="font-size:12px;font-weight:800;color:#ff8fc2;margin-top:4px;">Kika</div>
+              <div style="font-size:24px;font-weight:800;color:white;">${placar.kika || 0}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pergunta esperando -->
+        ${temPartida ? `
+          <div style="background:rgba(255,140,0,0.2);border:1.5px solid #ffb347;border-radius:12px;padding:12px;text-align:center;">
+            <div style="font-size:12px;font-weight:800;color:#ffb347;margin-bottom:8px;">Você tem uma pergunta esperando!</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-bottom:10px;">${partida.de === "anna" ? "Anna" : "Kika"} quer saber o quanto você a conhece.</div>
+            <button class="steve-btn" id="btnResponderKanna" style="width:100%;">Responder!</button>
+          </div>
+        ` : ""}
+
+        <!-- Criar pergunta -->
+        <div style="font-size:11px;font-weight:700;color:#ff8fc2;margin-bottom:6px;">Criar pergunta pra ${minhaUid === "anna" ? "Kika" : "Anna"}</div>
+        <button class="msn-btn-enviar" id="btnCriarPerguntaKanna" style="width:100%;">Criar pergunta</button>
+
+      </div>`;
+
+    if (temPartida) {
+      document.getElementById("btnResponderKanna")?.addEventListener("click", () => {
+        iniciarRespostaConexaoKanna(partida);
+      });
+    }
+
+    document.getElementById("btnCriarPerguntaKanna")?.addEventListener("click", () => {
+      iniciarCriarPerguntaConexaoKanna();
+    });
+  }
+
+    function iniciarCriarPerguntaConexaoKanna() {
+    const teclado = gerarTecladoDigitacao("", (perguntaDigitada) => {
+      iniciarDigitarRespostaConexaoKanna(perguntaDigitada);
+    }, "Digite a pergunta...");
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:10px;">
+        <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">Etapa 1 de 2: A pergunta</div>
+        <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.6);">Escreva algo sobre você que ${getMinhaUidStr() === "anna" ? "a Kika" : "a Anna"} vai tentar adivinhar!</div>
+        ${teclado.html}
+      </div>`;
+    teclado.ligarListeners();
+  }
+
+  function iniciarDigitarRespostaConexaoKanna(pergunta) {
+    const teclado = gerarTecladoDigitacao("", (respostaDigitada) => {
+      enviarPerguntaConexaoKanna(pergunta, respostaDigitada);
+    }, "Digite a resposta correta...");
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:10px;">
+        <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">Etapa 2 de 2: A resposta certa</div>
+        <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.6);">Pergunta: "${pergunta}"</div>
+        ${teclado.html}
+      </div>`;
+    teclado.ligarListeners();
+  }
+
+  async function enviarPerguntaConexaoKanna(pergunta, resposta) {
+    const minhaUidStr = getMinhaUidStr();
+    const payload = {
+      pergunta,
+      resposta: resposta.toUpperCase(),
+      de: minhaUidStr,
+      timestamp: Date.now(),
+    };
+
+    const { getFirestore, doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+
+    await updateDoc(doc(db, "saves", getOutraUid()), {
+      conexaoKannaPartidaAtiva: payload,
+      caixaDeEntrada: arrayUnion({
+        tipo: "convite_kanna",
+        de: minhaUidStr,
+        timestamp: Date.now(),
+        texto: `${minhaUidStr === "anna" ? "Anna" : "Kika"} te fez uma pergunta na Conexão Kanna!`,
+      })
+    });
+
+    mostrarMensagem("Pergunta enviada!");
+    const outraStr = minhaUidStr === "anna" ? "Kika" : "Anna";
+    salvarNoHistoricoMSN({
+      tipo: "convite_kanna",
+      de: minhaUidStr,
+      timestamp: Date.now(),
+      texto: `Você mandou uma pergunta pra ${outraStr} na Conexão Kanna!`
+    });
+    const pendentesCriar = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
+    pendentesCriar.push({
+      texto: `Você mandou uma pergunta pra ${outraStr} na Conexão Kanna!`,
+      tipo: "enviado",
+      src: null,
+      de: minhaUidStr,
+      timestamp: Date.now()
+    });
+    localStorage.setItem("msnPendentes", JSON.stringify(pendentesCriar));
+
+    await telaSelecaoConexaoKanna();
+  }
+
+    function iniciarRespostaConexaoKanna(partida) {
+    const teclado = gerarTecladoDigitacao("", (respostaDigitada) => {
+      finalizarRespostaConexaoKanna(partida, respostaDigitada);
+    }, "Digite sua resposta...");
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:10px;">
+        <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">${partida.de === "anna" ? "Anna" : "Kika"} pergunta:</div>
+        <div style="text-align:center;font-size:16px;color:white;font-weight:700;padding:10px;">"${partida.pergunta}"</div>
+        ${teclado.html}
+      </div>`;
+    teclado.ligarListeners();
+  }
+
+  async function finalizarRespostaConexaoKanna(partida, respostaDigitada) {
+    const acertou = respostaDigitada.toUpperCase().trim() === partida.resposta.trim();
+    const minhaUidStr = getMinhaUidStr();
+
+    const { getFirestore, doc, getDoc, updateDoc, setDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+
+    if (acertou) {
+      moedas += 3000;
+      atualizarStatus();
+      _salvar();
+    }
+
+    // Lê placar centralizado
+    const placarRef = doc(db, "conexaoKannaPlacar", "placar");
+    const placarSnap = await getDoc(placarRef);
+    const placarAtual = placarSnap.exists() ? placarSnap.data() : { anna: 0, kika: 0 };
+
+    if (acertou) placarAtual[minhaUidStr] = (placarAtual[minhaUidStr] || 0) + 1;
+
+    await updateDoc(placarRef, placarAtual).catch(async () => {
+      await setDoc(placarRef, placarAtual);
+    });
+
+    // Notifica quem criou a pergunta
+    await updateDoc(doc(db, "saves", getOutraUid()), {
+      caixaDeEntrada: arrayUnion({
+        tipo: "resultado_kanna",
+        de: minhaUidStr,
+        timestamp: Date.now(),
+        texto: acertou
+          ? `${minhaUidStr === "anna" ? "Anna" : "Kika"} acertou sua pergunta na Conexão Kanna!`
+          : `${minhaUidStr === "anna" ? "Anna" : "Kika"} não acertou sua pergunta. A resposta era: ${partida.resposta}`,
+      })
+    });
+
+    // Limpa a partida ativa
+    const uid = localStorage.getItem("hannaUid");
+    await updateDoc(doc(db, "saves", uid), {
+      conexaoKannaPartidaAtiva: null,
+    });
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:12px;">
+        <div style="text-align:center;padding:16px;background:${acertou ? "rgba(45,138,45,0.3)" : "rgba(204,0,0,0.3)"};border-radius:12px;border:1.5px solid ${acertou ? "#2d8a2d" : "#cc0000"};">
+          <img src="assets/sprites/conexao-kanna/${minhaUidStr}-${acertou ? "feliz" : "triste"}.png" style="width:80px;height:80px;image-rendering:pixelated;">
+          <div style="font-size:16px;font-weight:800;color:${acertou ? "#2d8a2d" : "#cc0000"};margin:8px 0;">${acertou ? "Acertou!" : "Não foi dessa vez!"}</div>
+          ${acertou ? '<div style="font-size:12px;color:rgba(255,255,255,0.7);">+3.000 hannacoins</div>' : `<div style="font-size:12px;color:rgba(255,255,255,0.7);">A resposta era: <strong>${partida.resposta}</strong></div>`}
+          <button class="msn-btn-enviar" id="btnFinalizarKanna" style="width:100%;margin-top:12px;">Continuar</button>
+        </div>
+      </div>`;
+
+    document.getElementById("btnFinalizarKanna")?.addEventListener("click", async () => {
+      await telaSelecaoConexaoKanna();
+    });
   }
 }
 
