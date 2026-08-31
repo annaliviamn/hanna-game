@@ -12484,31 +12484,51 @@ function jogoConexaoKanna() {
   }
 
     function iniciarCriarPerguntaConexaoKanna() {
-    const teclado = gerarTecladoDigitacao("", (perguntaDigitada) => {
-      iniciarDigitarRespostaConexaoKanna(perguntaDigitada);
-    }, "Digite a pergunta...");
+  arenaConteudo.innerHTML = `
+    <div class="pz-wrap" style="gap:10px;">
+      <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">Etapa 1 de 2: A pergunta</div>
+      <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.6);">Escreva algo sobre você que ${getMinhaUidStr() === "anna" ? "a Kika" : "a Anna"} vai tentar adivinhar!</div>
+      <input type="text" id="inputPerguntaKanna" class="input-cozy" placeholder="Digite a pergunta..." maxlength="60">
+      <button class="msn-btn-enviar" id="btnConfirmarPerguntaKanna" style="width:100%;">Continuar</button>
+    </div>`;
 
-    arenaConteudo.innerHTML = `
-      <div class="pz-wrap" style="gap:10px;">
-        <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">Etapa 1 de 2: A pergunta</div>
-        <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.6);">Escreva algo sobre você que ${getMinhaUidStr() === "anna" ? "a Kika" : "a Anna"} vai tentar adivinhar!</div>
-        ${teclado.html}
-      </div>`;
-    teclado.ligarListeners();
-  }
+  document.getElementById("btnConfirmarPerguntaKanna")?.addEventListener("click", () => {
+    const pergunta = document.getElementById("inputPerguntaKanna").value.trim();
+    if (pergunta.length < 2) { mostrarMensagem("Digite algo primeiro!"); return; }
+    iniciarDigitarRespostaConexaoKanna(pergunta);
+  });
+}
 
   function iniciarDigitarRespostaConexaoKanna(pergunta) {
-    const teclado = gerarTecladoDigitacao("", (respostaDigitada) => {
-      enviarPerguntaConexaoKanna(pergunta, respostaDigitada);
-    }, "Digite a resposta correta...");
-
     arenaConteudo.innerHTML = `
       <div class="pz-wrap" style="gap:10px;">
         <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">Etapa 2 de 2: A resposta certa</div>
         <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.6);">Pergunta: "${pergunta}"</div>
-        ${teclado.html}
+        <input type="text" id="inputRespostaKanna" class="input-cozy" placeholder="Digite a resposta correta..." maxlength="60">
+        <button class="msn-btn-enviar" id="btnConfirmarRespostaKanna" style="width:100%;">Enviar</button>
       </div>`;
-    teclado.ligarListeners();
+
+    document.getElementById("btnConfirmarRespostaKanna")?.addEventListener("click", () => {
+      const resposta = document.getElementById("inputRespostaKanna").value.trim();
+      if (resposta.length < 1) { mostrarMensagem("Digite a resposta!"); return; }
+      enviarPerguntaConexaoKanna(pergunta, resposta);
+    });
+  }
+
+  function iniciarRespostaConexaoKanna(partida) {
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:10px;">
+        <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">${partida.de === "anna" ? "Anna" : "Kika"} pergunta:</div>
+        <div style="text-align:center;font-size:16px;color:white;font-weight:700;padding:10px;">"${partida.pergunta}"</div>
+        <input type="text" id="inputRespostaJogadorKanna" class="input-cozy" placeholder="Digite sua resposta..." maxlength="60">
+        <button class="msn-btn-enviar" id="btnEnviarRespostaKanna" style="width:100%;">Responder</button>
+      </div>`;
+
+    document.getElementById("btnEnviarRespostaKanna")?.addEventListener("click", () => {
+      const respostaDigitada = document.getElementById("inputRespostaJogadorKanna").value.trim();
+      if (respostaDigitada.length < 1) { mostrarMensagem("Digite sua resposta!"); return; }
+      finalizarRespostaConexaoKanna(partida, respostaDigitada);
+    });
   }
 
   async function enviarPerguntaConexaoKanna(pergunta, resposta) {
