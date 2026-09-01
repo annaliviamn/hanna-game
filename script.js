@@ -8182,26 +8182,14 @@ if (btnTrabalharAnna) {
       return;
     }
 
+    if (localStorage.getItem("trabalhandoDesdeAnna")) {
+      mostrarMensagem("A Anna já está trabalhando!");
+      return;
+    }
+
+    localStorage.setItem("trabalhandoDesdeAnna", Date.now());
     document.getElementById("annaSprite").src = "assets/sprites/personagens/anna-jogavel/trabalhando.png";
     mostrarMensagem("A Anna foi trabalhar...");
-
-    setTimeout(() => {
-      fomeAnna = Math.max(0, fomeAnna - 20);
-      banheiroAnna = Math.max(0, banheiroAnna - 15);
-      sonoAnna = Math.max(0, sonoAnna - 25);
-
-      moedas += 10000; // salário
-      localStorage.setItem("moedas", moedas);
-      localStorage.setItem("ultimoTrabalhoAnna", hoje);
-      localStorage.setItem("fomeAnna", fomeAnna);
-      localStorage.setItem("banheiroAnna", banheiroAnna);
-      localStorage.setItem("sonoAnna", sonoAnna);
-
-      atualizarStatusAnna();
-      atualizarStatus(); // atualiza o saldo de moedas em todas as telas
-      registrarTrabalhoKanna();
-      mostrarMensagem("A Anna terminou o trabalho e ganhou 10.000 hannacoins!");
-    }, 8 * 60 * 1000); // 8 minutos
   });
 }
 
@@ -8498,26 +8486,14 @@ if (btnTrabalharKika) {
       return;
     }
 
+    if (localStorage.getItem("trabalhandoDesdeKika")) {
+      mostrarMensagem("A Kika já está trabalhando!");
+      return;
+    }
+
+    localStorage.setItem("trabalhandoDesdeKika", Date.now());
     document.getElementById("kikaSprite").src = "assets/sprites/personagens/kika-jogavel/trabalhando.png";
     mostrarMensagem("A Kika foi trabalhar...");
-
-    setTimeout(() => {
-      fomeKika = Math.max(0, fomeKika - 20);
-      banheiroKika = Math.max(0, banheiroKika - 15);
-      sonoKika = Math.max(0, sonoKika - 25);
-
-      moedas += 10000;
-      localStorage.setItem("moedas", moedas);
-      localStorage.setItem("ultimoTrabalhoKika", hoje);
-      localStorage.setItem("fomeKika", fomeKika);
-      localStorage.setItem("banheiroKika", banheiroKika);
-      localStorage.setItem("sonoKika", sonoKika);
-
-      atualizarStatusKika();
-      atualizarStatus();
-      registrarTrabalhoKanna();
-      mostrarMensagem("A Kika terminou o trabalho e ganhou 10.000 hannacoins!");
-    }, 8 * 60 * 1000);
   });
 }
 
