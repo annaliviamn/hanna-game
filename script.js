@@ -4480,6 +4480,10 @@ setInterval(() => {
     localStorage.setItem("sonoKika", sonoKika);
     atualizarStatusKika();
   }
+
+  // Checa se algum trabalho em andamento já terminou (roda sempre, não só no perfil ativo)
+  verificarTrabalhoConcluido("anna");
+  verificarTrabalhoConcluido("kika");
 }, 60000); // 1 min
 
 // Carregar dados do Jogo
@@ -4692,6 +4696,8 @@ function entrarNoJogo() {
     atualizarConfigGatinha();
     atualizarCardGravidez();
     verificarEventosEspeciais();
+    verificarTrabalhoConcluido("anna");
+    verificarTrabalhoConcluido("kika");
 
     // Filhotinho
     if (filhoteDesbloqueado) exibirFilhote();
@@ -4780,6 +4786,8 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   const _ultimoNiverKikaTemp = localStorage.getItem("ultimoNiverKika");
   const _ultimoNiverAnnaTemp = localStorage.getItem("ultimoNiverAnna");
   const _ultimoKannaDayTemp = localStorage.getItem("ultimoKannaDay");
+  const _trabalhandoDesdeAnnaTemp = localStorage.getItem("trabalhandoDesdeAnna");
+  const _trabalhandoDesdeKikaTemp = localStorage.getItem("trabalhandoDesdeKika");
 
   localStorage.clear();
 
@@ -4812,6 +4820,8 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   if (_ultimoNiverKikaTemp) localStorage.setItem("ultimoNiverKika", _ultimoNiverKikaTemp);
   if (_ultimoNiverAnnaTemp) localStorage.setItem("ultimoNiverAnna", _ultimoNiverAnnaTemp);
   if (_ultimoKannaDayTemp) localStorage.setItem("ultimoKannaDay", _ultimoKannaDayTemp);
+  if (_trabalhandoDesdeAnnaTemp) localStorage.setItem("trabalhandoDesdeAnna", _trabalhandoDesdeAnnaTemp);
+  if (_trabalhandoDesdeKikaTemp) localStorage.setItem("trabalhandoDesdeKika", _trabalhandoDesdeKikaTemp);
 
   if (resultado.dados) {
     carregarDadosNoJogo(resultado.dados);
@@ -8190,6 +8200,8 @@ if (btnTrabalharAnna) {
     localStorage.setItem("trabalhandoDesdeAnna", Date.now());
     document.getElementById("annaSprite").src = "assets/sprites/personagens/anna-jogavel/trabalhando.png";
     mostrarMensagem("A Anna foi trabalhar...");
+
+    setTimeout(() => verificarTrabalhoConcluido("anna"), 60 * 1000);
   });
 }
 
@@ -8494,7 +8506,51 @@ if (btnTrabalharKika) {
     localStorage.setItem("trabalhandoDesdeKika", Date.now());
     document.getElementById("kikaSprite").src = "assets/sprites/personagens/kika-jogavel/trabalhando.png";
     mostrarMensagem("A Kika foi trabalhar...");
+
+    setTimeout(() => verificarTrabalhoConcluido("kika"), 60 * 1000);
   });
+}
+
+// Verifica se o trabalho foi executado
+function verificarTrabalhoConcluido(personagem) {
+  const chaveInicio = personagem === "anna" ? "trabalhandoDesdeAnna" : "trabalhandoDesdeKika";
+  const inicio = localStorage.getItem(chaveInicio);
+  if (!inicio) return;
+
+  const tempoPassado = Date.now() - Number(inicio);
+  const UM_MINUTO = 60 * 1000;
+
+  if (tempoPassado < UM_MINUTO) return;
+
+  localStorage.removeItem(chaveInicio);
+  const hoje = new Date().toDateString();
+
+  if (personagem === "anna") {
+    fomeAnna = Math.max(0, fomeAnna - 20);
+    banheiroAnna = Math.max(0, banheiroAnna - 15);
+    sonoAnna = Math.max(0, sonoAnna - 25);
+    localStorage.setItem("fomeAnna", fomeAnna);
+    localStorage.setItem("banheiroAnna", banheiroAnna);
+    localStorage.setItem("sonoAnna", sonoAnna);
+    localStorage.setItem("ultimoTrabalhoAnna", hoje);
+    atualizarStatusAnna();
+    mostrarMensagem("A Anna terminou o trabalho e ganhou 10.000 hannacoins!");
+  } else {
+    fomeKika = Math.max(0, fomeKika - 20);
+    banheiroKika = Math.max(0, banheiroKika - 15);
+    sonoKika = Math.max(0, sonoKika - 25);
+    localStorage.setItem("fomeKika", fomeKika);
+    localStorage.setItem("banheiroKika", banheiroKika);
+    localStorage.setItem("sonoKika", sonoKika);
+    localStorage.setItem("ultimoTrabalhoKika", hoje);
+    atualizarStatusKika();
+    mostrarMensagem("A Kika terminou o trabalho e ganhou 10.000 hannacoins!");
+  }
+
+  moedas += 10000;
+  localStorage.setItem("moedas", moedas);
+  atualizarStatus();
+  registrarTrabalhoKanna();
 }
 
 // XAMEGO DA KIKA (reaproveita a mesma função central já criada)
