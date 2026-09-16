@@ -6739,3 +6739,79 @@ button {
   background-position: center;
   cursor: pointer;
 }
+
+/* Presentes virtuais */
+.presente-icone {
+  background-color: #0f0e0e;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  border: 2px solid #2a2a2a; 
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.presente-preview-confirmar {
+  background-color: #0f0e0e;
+  border: 3px solid var(--pink-mid, #ff8fc2);
+  border-radius: 14px;
+  padding: 16px;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(255, 143, 194, 0.4);
+}
+
+.presente-preview-confirmar img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.presente-icone img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+
+.presentes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  padding: 10px;
+}
+
+.presente-icone {
+  background-color: #0f0e0e;
+  border: 2px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.presente-icone:hover {
+  transform: scale(1.05);
+}
+
+.presente-icone img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.presente-popup-texto {
+  font-family: 'Fredoka', sans-serif;
+  text-align: justify;
+  font-size: 16px;
+  line-height: 1.5;
+}

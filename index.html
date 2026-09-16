@@ -1864,6 +1864,10 @@
             <img src="assets/sprites/cabine-fotos/camera.png" style="width:16px;height:16px;image-rendering:pixelated;vertical-align:middle;margin-right:4px;">
             Fotos
           </button>
+          <button class="msn-aba" data-aba="presentes">
+            <img src="assets/sprites/presentes/hanna-encomenda.png" style="width:16px;height:16px;image-rendering:pixelated;vertical-align:middle;margin-right:4px;">
+            Presentes
+          </button>
         </div>
 
         <!-- ABA CHAT -->
@@ -2093,32 +2097,71 @@
             <button id="btnFecharAlbum" class="foto-btn-voltar">Fechar Álbum</button>
           </div>
 
-        <!-- Etapa 1: Escolher cenário -->
-        <div id="fotoEtapaCenario">
-          <div class="msn-stats-titulo">Escolha o cenário</div>
-          <div class="foto-cenarios-grid" id="fotoCenariosGrid"></div>
+          <!-- Etapa 1: Escolher cenário -->
+          <div id="fotoEtapaCenario">
+            <div class="msn-stats-titulo">Escolha o cenário</div>
+            <div class="foto-cenarios-grid" id="fotoCenariosGrid"></div>
+          </div>
+
+          <!-- Etapa 2: Escolher personagens e poses -->
+          <div id="fotoEtapaPersonagens" style="display:none;">
+            <div class="msn-stats-titulo">Quem vai estar na foto?</div>
+            <div class="foto-personagens-grid" id="fotoPersonagensGrid"></div>
+            <div id="fotoPosesContainer"></div>
+            <div id="fotoComboContainer"></div>
+            <button id="btnFotoVerPrevia" class="msn-btn-enviar" style="width:100%;margin-top:12px;" disabled>Ver Prévia</button>
+            <button id="btnFotoVoltarCenario" class="foto-btn-voltar">Trocar cenário</button>
+          </div>
+
+          <!-- Etapa 3: Prévia e compra -->
+          <div id="fotoEtapaPrevia" style="display:none;">
+            <div class="msn-stats-titulo">Sua foto ficou assim!</div>
+            <div class="foto-preview-frame" id="fotoPreviewFrame"></div>
+            <div class="foto-preco-info" id="fotoPrecoInfo"></div>
+            <button id="btnFotoComprar" class="msn-btn-enviar" style="width:100%;margin-top:8px;">Revelar Foto</button>
+            <button id="btnFotoVoltar" class="foto-btn-voltar">Voltar</button>
+          </div>
         </div>
 
-        <!-- Etapa 2: Escolher personagens e poses -->
-        <div id="fotoEtapaPersonagens" style="display:none;">
-          <div class="msn-stats-titulo">Quem vai estar na foto?</div>
-          <div class="foto-personagens-grid" id="fotoPersonagensGrid"></div>
-          <div id="fotoPosesContainer"></div>
-          <div id="fotoComboContainer"></div>
-          <button id="btnFotoVerPrevia" class="msn-btn-enviar" style="width:100%;margin-top:12px;" disabled>Ver Prévia</button>
-          <button id="btnFotoVoltarCenario" class="foto-btn-voltar">Trocar cenário</button>
+        <!-- ABA PRESENTES -->
+        <div id="msnAbaPresentes" class="msn-aba-conteudo" style="display:none;">
+          <button id="btnVerAlbumPresente" class="foto-btn-voltar" style="margin-bottom:10px;">Ver Presentes Recebidos</button>
+
+          <!-- Etapa 1: escolher presente -->
+          <div id="presenteEtapaEnvio">
+            <div class="msn-stats-titulo">Mandar um Presente</div>
+            <div class="presentes-grid" id="gridPresentes"></div>
+          </div>
+
+          <!-- Etapa 2: confirmar envio -->
+          <div id="presenteEtapaConfirmar" style="display:none;">
+            <div class="presente-preview-confirmar">
+              <img id="previewPresenteEnvio" src="" alt="">
+            </div>
+            <div class="msn-stats-titulo" id="nomePresenteEnvio" style="text-align:center;"></div>
+            <textarea id="mensagemPresente" class="input-cozy" maxlength="180" placeholder="Escreva algo junto (opcional)" style="width:100%;min-height:70px;margin-top:10px;resize:none;"></textarea>
+            <p style="text-align:center;color:var(--text-mid);font-size:12px;margin:10px 0;">Custo: 50.000 hannacoins</p>
+            <button id="btnConfirmarEnvioPresente" class="msn-btn-enviar" style="width:100%;">Enviar Presente</button>
+            <button id="btnCancelarEnvioPresente" class="foto-btn-voltar">Voltar</button>
+          </div>
+
+          <!-- Etapa 3: álbum -->
+          <div id="presenteEtapaAlbum" style="display:none;">
+            <div class="msn-stats-titulo">Presentes Recebidos</div>
+            <div class="presentes-grid" id="presentesAlbumGrid"></div>
+            <button id="btnFecharAlbumPresente" class="foto-btn-voltar">Fechar Álbum</button>
+          </div>
         </div>
 
-        <!-- Etapa 3: Prévia e compra -->
-        <div id="fotoEtapaPrevia" style="display:none;">
-          <div class="msn-stats-titulo">Sua foto ficou assim!</div>
-          <div class="foto-preview-frame" id="fotoPreviewFrame"></div>
-          <div class="foto-preco-info" id="fotoPrecoInfo"></div>
-          <button id="btnFotoComprar" class="msn-btn-enviar" style="width:100%;margin-top:8px;">Revelar Foto</button>
-          <button id="btnFotoVoltar" class="foto-btn-voltar">Voltar</button>
+        <!-- Popup de presente recebido (fica fora do MSN, junto dos outros modais) -->
+        <div id="modalPresenteRecebido" class="modal-overlay" style="display:none;">
+          <div class="modal-conteudo">
+            <img id="imgPresenteRecebido" src="" alt="" style="max-width:150px;">
+            <p id="nomePresenteRecebido" class="presente-popup-texto"></p>
+            <p id="mensagemPresenteRecebido" class="presente-popup-texto"></p>
+            <button id="btnFecharPresenteRecebido" class="btn-cozy">Guardar no Álbum</button>
+          </div>
         </div>
-
-      </div>
 
       </div>
     </div>  
@@ -2653,6 +2696,19 @@
             <div class="mg-card-recompensa">🪙 3.000 por acerto</div>
           </div>
           <button class="mg-btn-jogar" data-jogo="conexaokanna">Jogar</button>
+        </div>
+
+        <!-- Jogo 21: Trilha Kanna -->
+        <div class="mg-card" id="mgCardTrilhaKanna">
+          <div class="mg-card-icon">
+            <img src="assets/sprites/trilha-kanna/trilha-icon.png" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">
+          </div>
+          <div class="mg-card-info">
+            <div class="mg-card-titulo">Trilha Kanna</div>
+            <div class="mg-card-desc">Crie perguntas musicais e veja se ela acerta a alternativa certa!</div>
+            <div class="mg-card-recompensa">🪙 5.000 por acerto</div>
+          </div>
+          <button class="mg-btn-jogar" data-jogo="trilhakanna">Jogar</button>
         </div>
 
     </div>

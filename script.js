@@ -1800,6 +1800,19 @@ function processarItemMSN(item) {
       mostrarBannerMSN(spriteQuem, item.texto);
       adicionarMensagemMSN(item.texto, "recebido", null, item.de, item.timestamp);
       break;
+    case "presente":
+      mostrarBannerMSN(spriteQuem, `${quem} te mandou um presente!`);
+      adicionarMensagemMSN(`${quem} te mandou um presente! Confira na aba Presentes.`, "recebido", null, item.de, item.timestamp);
+      verificarPresentePendente();
+      break;
+    case "convite_trilha":
+      mostrarBannerMSN(spriteQuem, `${quem} te mandou uma pergunta musical na Trilha Kanna!`);
+      adicionarMensagemMSN(`${quem} te mandou uma pergunta musical na Trilha Kanna!`, "recebido", null, item.de, item.timestamp);
+      break;
+    case "resultado_trilha":
+      mostrarBannerMSN(spriteQuem, item.texto);
+      adicionarMensagemMSN(item.texto, "recebido", null, item.de, item.timestamp);
+      break;
   }
 
   salvarNoHistoricoMSN(item);
@@ -2052,9 +2065,11 @@ document.querySelectorAll(".msn-aba").forEach(btn => {
     document.getElementById("msnAbaCuidar").style.display = aba === "cuidar" ? "block" : "none";
     document.getElementById("msnAbaMimos").style.display = aba === "mimos" ? "block" : "none";
     document.getElementById("msnAbaFotos").style.display = aba === "fotos" ? "block" : "none";
+    document.getElementById("msnAbaPresentes").style.display = aba === "presentes" ? "block" : "none";
     if (aba === "cuidar") carregarStatsOutra();
     if (aba === "mimos") document.getElementById("msnSaldoAtual").textContent = moedas.toLocaleString();
     if (aba === "fotos") renderizarCenariosFoto();
+    if (aba === "presentes") renderizarGridPresentes();
   });
 });
 
@@ -3145,6 +3160,7 @@ const _fotosReveladasTemp = localStorage.getItem("fotosReveladas");
 const _mina2DesbloqueadaTemp = localStorage.getItem("mina2Desbloqueada");
 const _nivelMina2Temp = localStorage.getItem("nivelMina2");
 const _maiorNivelMina2Temp = localStorage.getItem("maiorNivelMina2");
+const _presentesRecebidosTemp = localStorage.getItem("presentesRecebidos");
 
 localStorage.clear();
 
@@ -3177,6 +3193,7 @@ if (_mina2DesbloqueadaTemp) localStorage.setItem("mina2Desbloqueada", _mina2Desb
 if (_nivelMina2Temp) localStorage.setItem("nivelMina2", _nivelMina2Temp);
 if (_maiorNivelMina2Temp) localStorage.setItem("maiorNivelMina2", _maiorNivelMina2Temp);
 if (_fotosReveladasTemp) localStorage.setItem("fotosReveladas", _fotosReveladasTemp);
+if (_presentesRecebidosTemp) localStorage.setItem("presentesRecebidos", _presentesRecebidosTemp);
 
 
 let fome        = Number(localStorage.getItem("fome"))        || 40;
@@ -4551,6 +4568,10 @@ function carregarDadosNoJogo(dados) {
     localStorage.setItem("fotosReveladas", typeof dados.fotosReveladas === "string" ? dados.fotosReveladas : JSON.stringify(dados.fotosReveladas));
   }
 
+  if (dados.presentesRecebidos) {
+    localStorage.setItem("presentesRecebidos", typeof dados.presentesRecebidos === "string" ? dados.presentesRecebidos : JSON.stringify(dados.presentesRecebidos));
+  }
+
   ultimaPagamentoContas = Number(dados.ultimaPagamentoContas) || 0;
   internetPaga = dados.internetPaga !== false && dados.internetPaga !== "false";
   aguaPaga = dados.aguaPaga !== false && dados.aguaPaga !== "false";
@@ -4703,6 +4724,8 @@ function entrarNoJogo() {
     if (filhoteDesbloqueado) exibirFilhote();
     if (dataGravidez > 0) verificarNascimentoFilhote();
 
+    verificarPresentePendente();
+
     // Inicia sistema de visitas (fila central)
     iniciarSistemaVisitas();
 
@@ -4780,6 +4803,7 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   const _ultimoDiaCuidadoAmorTemp = localStorage.getItem("ultimoDiaCuidadoAmor");
   const _streakCuidadoAmorTemp = localStorage.getItem("streakCuidadoAmor");
   const _fotosReveladasTemp = localStorage.getItem("fotosReveladas");
+  const _presentesRecebidosTemp = localStorage.getItem("presentesRecebidos");
   const _mina2DesbloqueadaTemp = localStorage.getItem("mina2Desbloqueada");
   const _nivelMina2Temp = localStorage.getItem("nivelMina2");
   const _maiorNivelMina2Temp = localStorage.getItem("maiorNivelMina2");
@@ -4817,6 +4841,7 @@ document.getElementById("btnEntrar")?.addEventListener("click", async () => {
   if (_nivelMina2Temp) localStorage.setItem("nivelMina2", _nivelMina2Temp);
   if (_maiorNivelMina2Temp) localStorage.setItem("maiorNivelMina2", _maiorNivelMina2Temp);
   if (_fotosReveladasTemp) localStorage.setItem("fotosReveladas", _fotosReveladasTemp);
+  if (_presentesRecebidosTemp) localStorage.setItem("presentesRecebidos", _presentesRecebidosTemp);
   if (_ultimoNiverKikaTemp) localStorage.setItem("ultimoNiverKika", _ultimoNiverKikaTemp);
   if (_ultimoNiverAnnaTemp) localStorage.setItem("ultimoNiverAnna", _ultimoNiverAnnaTemp);
   if (_ultimoKannaDayTemp) localStorage.setItem("ultimoKannaDay", _ultimoKannaDayTemp);
@@ -7758,14 +7783,13 @@ document.querySelectorAll(".mg-btn-jogar").forEach(btn => {
     else if (jogo === "quebracabeca") jogoQuebracabeca();
     else if (jogo === "recados")      jogoRecados();
     else if (jogo === "colorir")      jogoColorir();
-    else if (jogo === "recados")      jogoRecados();
     else if (jogo === "esconde")      jogoEscondeEsconde();
     else if (jogo === "esportes") jogoEsportes();
     else if (jogo === "forca") jogoForca();
     else if (jogo === "conexaokanna") jogoConexaoKanna();
+    else if (jogo === "trilhakanna") jogoTrilhaKanna();
   });
 });
-
 
 //   JOGO DA MEMÓRIA DAS CARTINHAS
 
@@ -12101,7 +12125,7 @@ function jogoForca() {
           placeholder="Digite a palavra secreta..." maxlength="20"
           style="text-transform:uppercase;">
         <input type="text" id="inputDicaForca" class="input-cozy" 
-          placeholder="Dica opcional..." maxlength="50" style="margin-top:8px;">
+          placeholder="Dica opcional..." maxlength="150" style="margin-top:8px;">
         <button class="msn-btn-enviar" id="btnCriarForca" style="width:100%;margin-top:8px;">
           Enviar desafio!
         </button>
@@ -12520,7 +12544,7 @@ function jogoConexaoKanna() {
     <div class="pz-wrap" style="gap:10px;">
       <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">Etapa 1 de 2: A pergunta</div>
       <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.6);">Escreva algo sobre você que ${getMinhaUidStr() === "anna" ? "a Kika" : "a Anna"} vai tentar adivinhar!</div>
-      <input type="text" id="inputPerguntaKanna" class="input-cozy" placeholder="Digite a pergunta..." maxlength="60">
+      <input type="text" id="inputPerguntaKanna" class="input-cozy" placeholder="Digite a pergunta..." maxlength="150">
       <button class="msn-btn-enviar" id="btnConfirmarPerguntaKanna" style="width:100%;">Continuar</button>
     </div>`;
 
@@ -12536,7 +12560,7 @@ function jogoConexaoKanna() {
       <div class="pz-wrap" style="gap:10px;">
         <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">Etapa 2 de 2: A resposta certa</div>
         <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.6);">Pergunta: "${pergunta}"</div>
-        <input type="text" id="inputRespostaKanna" class="input-cozy" placeholder="Digite a resposta correta..." maxlength="60">
+        <input type="text" id="inputRespostaKanna" class="input-cozy" placeholder="Digite a resposta correta..." maxlength="150">
         <button class="msn-btn-enviar" id="btnConfirmarRespostaKanna" style="width:100%;">Enviar</button>
       </div>`;
 
@@ -12552,7 +12576,7 @@ function jogoConexaoKanna() {
       <div class="pz-wrap" style="gap:10px;">
         <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">${partida.de === "anna" ? "Anna" : "Kika"} pergunta:</div>
         <div style="text-align:center;font-size:16px;color:white;font-weight:700;padding:10px;">"${partida.pergunta}"</div>
-        <input type="text" id="inputRespostaJogadorKanna" class="input-cozy" placeholder="Digite sua resposta..." maxlength="60">
+        <input type="text" id="inputRespostaJogadorKanna" class="input-cozy" placeholder="Digite sua resposta..." maxlength="150">
         <button class="msn-btn-enviar" id="btnEnviarRespostaKanna" style="width:100%;">Responder</button>
       </div>`;
 
@@ -12676,6 +12700,280 @@ function jogoConexaoKanna() {
 
     document.getElementById("btnFinalizarKanna")?.addEventListener("click", async () => {
       await telaSelecaoConexaoKanna();
+    });
+  }
+}
+
+// TRILHA KANNA — QUIZ MUSICAL (kanna in concert / kanna fm)
+function jogoTrilhaKanna() {
+  abrirArena("Trilha Kanna");
+
+  setTimeout(() => {
+    telaSelecaoTrilhaKanna();
+  }, 300);
+
+  async function carregarPlacarTrilha() {
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+    const snap = await getDoc(doc(db, "trilhaKannaPlacar", "placar"));
+    return snap.exists() ? snap.data() : { anna: 0, kika: 0 };
+  }
+
+  function spriteReacaoTrilha(minhasVitorias, outrasVitorias, quem) {
+    const diferenca = minhasVitorias - outrasVitorias;
+    let estado = "neutra";
+    if (diferenca >= 2) estado = "feliz";
+    else if (diferenca <= -2) estado = "triste";
+    return `assets/sprites/trilha-kanna/${quem}-${estado}.png`;
+  }
+
+  async function telaSelecaoTrilhaKanna() {
+    const placar = await carregarPlacarTrilha();
+    const minhaUid = getMinhaUidStr();
+    const outraUid = minhaUid === "anna" ? "kika" : "anna";
+
+    const uid = localStorage.getItem("hannaUid");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+    const snap = await getDoc(doc(db, "saves", uid));
+    const partida = snap.exists() ? snap.data().trilhaKannaPartidaAtiva : null;
+    const temPartida = partida && partida.de !== minhaUid;
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:16px;">
+
+        <div style="background:rgba(255,255,255,0.1);border:1.5px solid #ff8fc2;border-radius:16px;padding:16px;">
+          <div style="text-align:center;font-size:11px;font-weight:800;color:#ff8fc2;margin-bottom:12px;">PLACAR</div>
+          <div style="display:flex;justify-content:space-around;align-items:center;">
+            <div style="text-align:center;">
+              <img src="${spriteReacaoTrilha(placar.anna || 0, placar.kika || 0, "anna")}" style="width:64px;height:64px;image-rendering:pixelated;border-radius:50%;border:2px solid #ff8fc2;">
+              <div style="font-size:12px;font-weight:800;color:#ff8fc2;margin-top:4px;">Anna</div>
+              <div style="font-size:24px;font-weight:800;color:white;">${placar.anna || 0}</div>
+            </div>
+            <div style="font-size:28px;color:rgba(255,255,255,0.3);">x</div>
+            <div style="text-align:center;">
+              <img src="${spriteReacaoTrilha(placar.kika || 0, placar.anna || 0, "kika")}" style="width:64px;height:64px;image-rendering:pixelated;border-radius:50%;border:2px solid #ff8fc2;">
+              <div style="font-size:12px;font-weight:800;color:#ff8fc2;margin-top:4px;">Kika</div>
+              <div style="font-size:24px;font-weight:800;color:white;">${placar.kika || 0}</div>
+            </div>
+          </div>
+        </div>
+
+        ${temPartida ? `
+          <div style="background:rgba(255,140,0,0.2);border:1.5px solid #ffb347;border-radius:12px;padding:12px;text-align:center;">
+            <div style="font-size:12px;font-weight:800;color:#ffb347;margin-bottom:8px;">Você tem uma pergunta musical esperando!</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-bottom:10px;">${partida.de === "anna" ? "Anna" : "Kika"} testou seu conhecimento musical.</div>
+            <button class="steve-btn" id="btnResponderTrilha" style="width:100%;">Responder!</button>
+          </div>
+        ` : ""}
+
+        <div style="font-size:11px;font-weight:700;color:#ff8fc2;margin-bottom:6px;">Criar pergunta musical pra ${minhaUid === "anna" ? "Kika" : "Anna"}</div>
+        <button class="msn-btn-enviar" id="btnCriarPerguntaTrilha" style="width:100%;">Criar pergunta</button>
+
+      </div>`;
+
+    if (temPartida) {
+      document.getElementById("btnResponderTrilha")?.addEventListener("click", () => {
+        iniciarRespostaTrilhaKanna(partida);
+      });
+    }
+
+    document.getElementById("btnCriarPerguntaTrilha")?.addEventListener("click", () => {
+      iniciarCriarPerguntaTrilhaKanna();
+    });
+  }
+
+  function iniciarCriarPerguntaTrilhaKanna() {
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:10px;">
+        <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">Etapa 1 de 2: O enunciado</div>
+        <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.6);">Nome da música, trecho de letra, artista ou contexto. O que quiser!</div>
+        <input type="text" id="inputEnunciadoTrilha" class="input-cozy" placeholder="Digite o enunciado..." maxlength="150">
+        <button class="msn-btn-enviar" id="btnConfirmarEnunciadoTrilha" style="width:100%;">Continuar</button>
+      </div>`;
+
+    document.getElementById("btnConfirmarEnunciadoTrilha")?.addEventListener("click", () => {
+      const enunciado = document.getElementById("inputEnunciadoTrilha").value.trim();
+      if (enunciado.length < 2) { mostrarMensagem("Digite algo primeiro!"); return; }
+      iniciarCriarAlternativasTrilhaKanna(enunciado);
+    });
+  }
+
+  function iniciarCriarAlternativasTrilhaKanna(enunciado) {
+    let alternativas = ["", ""];
+    let corretaIndex = 0;
+
+    function render() {
+      arenaConteudo.innerHTML = `
+        <div class="pz-wrap" style="gap:10px;">
+          <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">Etapa 2 de 2: As alternativas</div>
+          <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.6);">De 2 a 4 alternativas. Marque a certa.</div>
+          <div id="listaAlternativasTrilha" style="display:flex;flex-direction:column;gap:8px;"></div>
+          <div style="display:flex;gap:6px;">
+            <button class="steve-btn" id="btnAddAlternativaTrilha" style="flex:1;">+ Alternativa</button>
+            <button class="steve-btn" id="btnRemAlternativaTrilha" style="flex:1;">- Alternativa</button>
+          </div>
+          <button class="msn-btn-enviar" id="btnConfirmarAlternativasTrilha" style="width:100%;">Enviar</button>
+        </div>`;
+
+      const lista = document.getElementById("listaAlternativasTrilha");
+      lista.innerHTML = alternativas.map((val, i) => `
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input type="radio" name="corretaTrilha" data-idx="${i}" ${corretaIndex === i ? "checked" : ""}>
+          <input type="text" class="input-cozy" data-alt-idx="${i}" placeholder="Alternativa ${i + 1}" maxlength="150" value="${val}" style="flex:1;">
+        </div>
+      `).join("");
+
+      lista.querySelectorAll("input[type=text]").forEach(inp => {
+        inp.addEventListener("input", () => {
+          alternativas[Number(inp.dataset.altIdx)] = inp.value;
+        });
+      });
+      lista.querySelectorAll("input[type=radio]").forEach(radio => {
+        radio.addEventListener("change", () => {
+          corretaIndex = Number(radio.dataset.idx);
+        });
+      });
+
+      document.getElementById("btnAddAlternativaTrilha").addEventListener("click", () => {
+        if (alternativas.length >= 4) { mostrarMensagem("Máximo de 4 alternativas!"); return; }
+        alternativas.push("");
+        render();
+      });
+      document.getElementById("btnRemAlternativaTrilha").addEventListener("click", () => {
+        if (alternativas.length <= 2) { mostrarMensagem("Mínimo de 2 alternativas!"); return; }
+        alternativas.pop();
+        if (corretaIndex >= alternativas.length) corretaIndex = 0;
+        render();
+      });
+      document.getElementById("btnConfirmarAlternativasTrilha").addEventListener("click", () => {
+        const preenchidas = alternativas.every(a => a.trim().length > 0);
+        if (!preenchidas) { mostrarMensagem("Preencha todas as alternativas!"); return; }
+        enviarPerguntaTrilhaKanna(enunciado, alternativas.map(a => a.trim()), corretaIndex);
+      });
+    }
+
+    render();
+  }
+
+  async function enviarPerguntaTrilhaKanna(enunciado, alternativas, corretaIndex) {
+    const minhaUidStr = getMinhaUidStr();
+    const payload = {
+      enunciado,
+      alternativas,
+      corretaIndex,
+      de: minhaUidStr,
+      timestamp: Date.now(),
+    };
+
+    const { getFirestore, doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+
+    await updateDoc(doc(db, "saves", getOutraUid()), {
+      trilhaKannaPartidaAtiva: payload,
+      caixaDeEntrada: arrayUnion({
+        tipo: "convite_trilha",
+        de: minhaUidStr,
+        timestamp: Date.now(),
+        texto: `${minhaUidStr === "anna" ? "Anna" : "Kika"} te mandou uma pergunta na Trilha Kanna!`,
+      })
+    });
+
+    mostrarMensagem("Pergunta enviada!");
+    const outraStr = minhaUidStr === "anna" ? "Kika" : "Anna";
+    salvarNoHistoricoMSN({
+      tipo: "convite_trilha",
+      de: minhaUidStr,
+      timestamp: Date.now(),
+      texto: `Você mandou uma pergunta pra ${outraStr} na Trilha Kanna!`
+    });
+    const pendentesCriar = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
+    pendentesCriar.push({
+      texto: `Você mandou uma pergunta pra ${outraStr} na Trilha Kanna!`,
+      tipo: "enviado",
+      src: null,
+      de: minhaUidStr,
+      timestamp: Date.now()
+    });
+    localStorage.setItem("msnPendentes", JSON.stringify(pendentesCriar));
+
+    await telaSelecaoTrilhaKanna();
+  }
+
+  function iniciarRespostaTrilhaKanna(partida) {
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:10px;">
+        <div style="text-align:center;font-size:13px;font-weight:800;color:#ff8fc2;">${partida.de === "anna" ? "Anna" : "Kika"} pergunta:</div>
+        <div style="text-align:center;font-size:16px;color:white;font-weight:700;padding:10px;">"${partida.enunciado}"</div>
+        <div id="alternativasRespostaTrilha" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>`;
+
+    const container = document.getElementById("alternativasRespostaTrilha");
+    partida.alternativas.forEach((alt, i) => {
+      const btn = document.createElement("button");
+      btn.className = "steve-btn";
+      btn.style.width = "100%";
+      btn.textContent = alt;
+      btn.addEventListener("click", () => finalizarRespostaTrilhaKanna(partida, i));
+      container.appendChild(btn);
+    });
+  }
+
+  async function finalizarRespostaTrilhaKanna(partida, escolhaIndex) {
+    const acertou = escolhaIndex === partida.corretaIndex;
+    const minhaUidStr = getMinhaUidStr();
+
+    const { getFirestore, doc, getDoc, updateDoc, setDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+    const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const db = getFirestore(getApp());
+
+    if (acertou) {
+      moedas += 3000;
+      atualizarStatus();
+      _salvar();
+    }
+
+    const placarRef = doc(db, "trilhaKannaPlacar", "placar");
+    const placarSnap = await getDoc(placarRef);
+    const placarAtual = placarSnap.exists() ? placarSnap.data() : { anna: 0, kika: 0 };
+
+    if (acertou) placarAtual[minhaUidStr] = (placarAtual[minhaUidStr] || 0) + 1;
+
+    await updateDoc(placarRef, placarAtual).catch(async () => {
+      await setDoc(placarRef, placarAtual);
+    });
+
+    await updateDoc(doc(db, "saves", getOutraUid()), {
+      caixaDeEntrada: arrayUnion({
+        tipo: "resultado_trilha",
+        de: minhaUidStr,
+        timestamp: Date.now(),
+        texto: acertou
+          ? `${minhaUidStr === "anna" ? "Anna" : "Kika"} acertou sua pergunta na Trilha Kanna!`
+          : `${minhaUidStr === "anna" ? "Anna" : "Kika"} não acertou sua pergunta. A resposta era: ${partida.alternativas[partida.corretaIndex]}`,
+      })
+    });
+
+    const uid = localStorage.getItem("hannaUid");
+    await updateDoc(doc(db, "saves", uid), {
+      trilhaKannaPartidaAtiva: null,
+    });
+
+    arenaConteudo.innerHTML = `
+      <div class="pz-wrap" style="gap:12px;">
+        <div style="text-align:center;padding:16px;background:${acertou ? "rgba(45,138,45,0.3)" : "rgba(204,0,0,0.3)"};border-radius:12px;border:1.5px solid ${acertou ? "#2d8a2d" : "#cc0000"};">
+          <img src="assets/sprites/trilha-kanna/${minhaUidStr}-${acertou ? "feliz" : "triste"}.png" style="width:80px;height:80px;image-rendering:pixelated;">
+          <div style="font-size:16px;font-weight:800;color:${acertou ? "#2d8a2d" : "#cc0000"};margin:8px 0;">${acertou ? "Acertou!" : "Não foi dessa vez!"}</div>
+          ${acertou ? '<div style="font-size:12px;color:rgba(255,255,255,0.7);">+5.000 hannacoins</div>' : `<div style="font-size:12px;color:rgba(255,255,255,0.7);">A resposta era: <strong>${partida.alternativas[partida.corretaIndex]}</strong></div>`}
+          <button class="msn-btn-enviar" id="btnFinalizarTrilha" style="width:100%;margin-top:12px;">Continuar</button>
+        </div>
+      </div>`;
+
+    document.getElementById("btnFinalizarTrilha")?.addEventListener("click", async () => {
+      await telaSelecaoTrilhaKanna();
     });
   }
 }
@@ -13431,6 +13729,7 @@ function abrirCenaCasamento() {
     const _ultimoDiaCuidadoAmorTemp = localStorage.getItem("ultimoDiaCuidadoAmor");
     const _streakCuidadoAmorTemp = localStorage.getItem("streakCuidadoAmor");
     const _fotosReveladasTemp = localStorage.getItem("fotosReveladas");
+    const _presentesRecebidosTemp = localStorage.getItem("presentesRecebidos");
     const _mina2DesbloqueadaTemp = localStorage.getItem("mina2Desbloqueada");
     const _nivelMina2Temp = localStorage.getItem("nivelMina2");
     const _maiorNivelMina2Temp = localStorage.getItem("maiorNivelMina2");
@@ -13467,6 +13766,7 @@ function abrirCenaCasamento() {
     if (_nivelMina2Temp) localStorage.setItem("nivelMina2", _nivelMina2Temp);
     if (_maiorNivelMina2Temp) localStorage.setItem("maiorNivelMina2", _maiorNivelMina2Temp);
     if (_fotosReveladasTemp) localStorage.setItem("fotosReveladas", _fotosReveladasTemp);
+    if (_presentesRecebidosTemp) localStorage.setItem("presentesRecebidos", _presentesRecebidosTemp);
 
     if (resultado.dados) {
       carregarDadosNoJogo(resultado.dados);
@@ -14829,3 +15129,195 @@ function abrirFotoDoAlbum(foto) {
   // Esconde o botão de comprar (já foi paga) e mostra só voltar
   document.getElementById("btnFotoComprar").style.display = "none";
 }
+
+// Presentes virtuais
+const PASTA_PRESENTES = "assets/sprites/presentes/";
+const PRECO_PRESENTE = 50000;
+
+const presentesDisponiveis = [
+  { id: "buque-girassois",         nome: "Buquê de Girassóis",           arquivo: "presente-buque-girassois.png" },
+  { id: "buque-rosas",             nome: "Buquê de Rosas e Girassóis",   arquivo: "presente-buque-rosas.png" },
+  { id: "cd-anavitoria",           nome: "CD Ana Vitória",               arquivo: "presente-cd-anavitoria.png" },
+  { id: "cd-linkinpark",           nome: "CD Linkin Park",               arquivo: "presente-cd-linkinpark.png" },
+  { id: "cd-demilovato",           nome: "CD Demi Lovato",               arquivo: "presente-cd-demilovato.png" },
+  { id: "cd-alceuvalenca",         nome: "CD Alceu Valença",             arquivo: "presente-cd-alceuvalenca.png" },
+  { id: "cd-calcinhapreta",        nome: "CD Calcinha Preta",            arquivo: "presente-cd-calcinhapreta.png" },
+  { id: "camisa-volei",            nome: "Camisa de Vôlei",              arquivo: "presente-camisa-volei.png" },
+  { id: "camisa-futebol",          nome: "Camisa de Futebol",            arquivo: "presente-camisa-futebol.png" },
+  { id: "hello-kitty",             nome: "Hello Kitty",                  arquivo: "presente-hello-kitty.png" },
+  { id: "box-twd",                 nome: "Box The Walking Dead",         arquivo: "presente-box-twd.png" },
+  { id: "box-friends",             nome: "Box Friends",                  arquivo: "presente-box-friends.png" },
+  { id: "boneca-ellie",            nome: "Boneca Ellie",                 arquivo: "presente-boneca-ellie.png" },
+  { id: "bobbie-goods",            nome: "Coleção Bobbie Goods",         arquivo: "presente-bobbie-goods.png" },
+  { id: "box-cod",                 nome: "Box Call of Duty Mobile",      arquivo: "presente-box-cod.png" },
+  { id: "bonecas-hanna-gatinha",   nome: "Bonequinhas Hanna e Gatinha",  arquivo: "presente-bonecas-hanna-gatinha.png" },
+  { id: "cesta-cafe",              nome: "Cesta de Café da Manhã",       arquivo: "presente-cesta-cafe.png" },
+  { id: "caixa-bombons",           nome: "Caixa de Bombons",             arquivo: "presente-caixa-bombons.png" }
+];
+
+let presenteSelecionadoParaEnvio = null;
+
+function renderizarGridPresentes() {
+  const grid = document.getElementById("gridPresentes");
+  grid.innerHTML = "";
+  presentesDisponiveis.forEach(presente => {
+    const div = document.createElement("div");
+    div.className = "presente-icone";
+    div.innerHTML = `<img src="${PASTA_PRESENTES}${presente.arquivo}" alt="${presente.nome}">`;
+    div.onclick = () => abrirTelaEnvioPresente(presente);
+    grid.appendChild(div);
+  });
+}
+
+function abrirTelaEnvioPresente(presente) {
+  presenteSelecionadoParaEnvio = presente;
+  document.getElementById("previewPresenteEnvio").src = PASTA_PRESENTES + presente.arquivo;
+  document.getElementById("nomePresenteEnvio").textContent = presente.nome;
+  document.getElementById("mensagemPresente").value = "";
+  document.getElementById("presenteEtapaEnvio").style.display = "none";
+  document.getElementById("presenteEtapaConfirmar").style.display = "block";
+}
+
+document.getElementById("btnCancelarEnvioPresente").addEventListener("click", () => {
+  presenteSelecionadoParaEnvio = null;
+  document.getElementById("presenteEtapaConfirmar").style.display = "none";
+  document.getElementById("presenteEtapaEnvio").style.display = "block";
+});
+
+document.getElementById("btnConfirmarEnvioPresente").addEventListener("click", () => {
+  if (!presenteSelecionadoParaEnvio) return;
+  const mensagem = document.getElementById("mensagemPresente").value;
+  enviarPresente(presenteSelecionadoParaEnvio, mensagem);
+  presenteSelecionadoParaEnvio = null;
+});
+
+async function enviarPresente(presente, mensagem) {
+  if (moedas < PRECO_PRESENTE) {
+    mostrarMensagem("Você não tem hannacoins suficientes pra mandar esse presente!");
+    return;
+  }
+
+  moedas -= PRECO_PRESENTE;
+  localStorage.setItem("moedas", moedas);
+  atualizarStatus();
+
+  const minhaUidStr = getMinhaUidStr();
+  const outraStr = minhaUidStr === "anna" ? "Kika" : "Anna";
+
+  const payload = {
+    id: presente.id,
+    mensagem: mensagem.trim().slice(0, 180),
+    de: minhaUidStr,
+    timestamp: Date.now(),
+    aberto: false
+  };
+
+  const { getFirestore, doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+  const db = getFirestore(getApp());
+
+  await updateDoc(doc(db, "saves", getOutraUid()), {
+    presentesRecebidos: arrayUnion(payload),
+    caixaDeEntrada: arrayUnion({
+      tipo: "presente",
+      de: minhaUidStr,
+      timestamp: Date.now(),
+      texto: `${minhaUidStr === "anna" ? "Anna" : "Kika"} te mandou um presente!`
+    })
+  });
+
+  mostrarMensagem("Presente enviado! Ela vai adorar");
+
+  salvarNoHistoricoMSN({
+    tipo: "presente",
+    de: minhaUidStr,
+    timestamp: Date.now(),
+    texto: `Você mandou um presente pra ${outraStr}!`
+  });
+  const pendentesCriar = JSON.parse(localStorage.getItem("msnPendentes") || "[]");
+  pendentesCriar.push({
+    texto: `Você mandou um presente pra ${outraStr}!`,
+    tipo: "enviado",
+    src: null,
+    de: minhaUidStr,
+    timestamp: Date.now()
+  });
+  localStorage.setItem("msnPendentes", JSON.stringify(pendentesCriar));
+
+  document.getElementById("presenteEtapaConfirmar").style.display = "none";
+  document.getElementById("presenteEtapaEnvio").style.display = "block";
+}
+
+document.getElementById("btnVerAlbumPresente").addEventListener("click", () => {
+  document.getElementById("presenteEtapaEnvio").style.display = "none";
+  document.getElementById("presenteEtapaConfirmar").style.display = "none";
+  document.getElementById("presenteEtapaAlbum").style.display = "block";
+  renderizarAlbumPresentes();
+});
+
+document.getElementById("btnFecharAlbumPresente").addEventListener("click", () => {
+  document.getElementById("presenteEtapaAlbum").style.display = "none";
+  document.getElementById("presenteEtapaEnvio").style.display = "block";
+});
+
+function renderizarAlbumPresentes() {
+  const grid = document.getElementById("presentesAlbumGrid");
+  grid.innerHTML = "";
+  const presentesRecebidos = JSON.parse(localStorage.getItem("presentesRecebidos") || "[]");
+
+  if (presentesRecebidos.length === 0) {
+    grid.innerHTML = `<p style="text-align:center; color:var(--text-light); font-size:12px;">Nenhum presente recebido ainda!</p>`;
+    return;
+  }
+
+  presentesRecebidos.forEach(presente => {
+    const dados = presentesDisponiveis.find(p => p.id === presente.id);
+    const div = document.createElement("div");
+    div.className = "presente-icone";
+    div.innerHTML = `<img src="${PASTA_PRESENTES}${dados.arquivo}" alt="${dados.nome}">`;
+    div.onclick = () => abrirPresenteRecebido(presente);
+    grid.appendChild(div);
+  });
+}
+
+function verificarPresentePendente() {
+  const presentesRecebidos = JSON.parse(localStorage.getItem("presentesRecebidos") || "[]");
+  const pendente = presentesRecebidos.find(p => !p.aberto);
+  const elemento = document.getElementById("spriteEncomenda");
+  if (!elemento) return;
+
+  if (!pendente) {
+    elemento.style.display = "none";
+    return;
+  }
+
+  const nomeRemetente = pendente.de === "anna" ? "Anna" : "Kika";
+  document.getElementById("balaoEncomenda").textContent = `Chegou encomenda pra você, da ${nomeRemetente}!`;
+  elemento.style.display = "block";
+  elemento.onclick = () => abrirPresenteRecebido(pendente);
+}
+
+async function abrirPresenteRecebido(presente) {
+  const dados = presentesDisponiveis.find(p => p.id === presente.id);
+  document.getElementById("imgPresenteRecebido").src = PASTA_PRESENTES + dados.arquivo;
+  document.getElementById("nomePresenteRecebido").textContent = dados.nome;
+  document.getElementById("mensagemPresenteRecebido").textContent = presente.mensagem || "";
+  document.getElementById("modalPresenteRecebido").style.display = "flex";
+
+  const presentesRecebidos = JSON.parse(localStorage.getItem("presentesRecebidos") || "[]");
+  const atualizado = presentesRecebidos.map(p =>
+    p.timestamp === presente.timestamp ? { ...p, aberto: true } : p
+  );
+  localStorage.setItem("presentesRecebidos", JSON.stringify(atualizado));
+
+  const { getFirestore, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+  const { getApp } = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+  const db = getFirestore(getApp());
+  await updateDoc(doc(db, "saves", getMinhaUidStr()), { presentesRecebidos: atualizado });
+
+  document.getElementById("spriteEncomenda").style.display = "none";
+}
+
+document.getElementById("btnFecharPresenteRecebido").addEventListener("click", () => {
+  document.getElementById("modalPresenteRecebido").style.display = "none";
+});
